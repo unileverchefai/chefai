@@ -1,7 +1,7 @@
-Please always provide the [GitHub issue(s)](../issues) your PR is for, as well as test URLs where your change can be observed (before and after):
+Please always provide the [Jira ticket(s)](../issues) your PR is for, as well as test URLs where your change can be observed (before and after):
 
-Fix #<gh-issue-id>
+Fix: <jira-ticket-id>
 
 Test URLs:
-- Before: https://main--{repo}--{owner}.aem.live/
-- After: https://<branch>--{repo}--{owner}.aem.live/
+- Before: https://main--chefai--unileverchefai.aem.live/
+- After: https://<branch>--chefai--unileverchefai.aem.live/
