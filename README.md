@@ -2,8 +2,8 @@
 Your project's description...
 
 ## Environments
-- Preview: https://main--{repo}--{owner}.aem.page/
-- Live: https://main--{repo}--{owner}.aem.live/
+- Preview: https://main--chefai--unileverchefai.aem.page/
+- Live: https://main--chefai--unileverchefai.aem.live/
 
 ## Documentation
 
@@ -23,6 +23,7 @@ npm i
 
 ```sh
 npm run lint
+npm run lint -- -- fix
 ```
 
 ## Local development
