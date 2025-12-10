@@ -23,7 +23,7 @@ npm i
 
 ```sh
 npm run lint
-npm run lint -- -- fix
+npm run lint -- --fix
 ```
 
 ## Local development
