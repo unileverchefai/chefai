@@ -1,5 +1,5 @@
 # Your Project's Title...
-Your project's description...
+This is the Organisation and Repo for the Chef AI 2026 project.
 
 ## Environments
 - Preview: https://main--chefai--unileverchefai.aem.page/
