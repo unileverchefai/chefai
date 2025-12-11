@@ -1,4 +1,4 @@
-# Your Project's Title...
+# Unilever Chef AI 2026 
 This is the Organisation and Repo for the Chef AI 2026 project.
 
 ## Environments
@@ -23,7 +23,7 @@ npm i
 
 ```sh
 npm run lint
-npm run lint -- -- fix
+npm run lint -- --fix
 ```
 
 ## Local development
