@@ -154,7 +154,6 @@ button {
 a:any-link {
   color: var(--link-color);
   text-decoration: none;
-  /*word-break: break-word;*/
   overflow-wrap: break-word;
 }
 
