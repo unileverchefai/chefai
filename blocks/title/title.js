@@ -12,12 +12,12 @@ function convertHeadingsToH2(block) {
 function mergeConsecutiveH2(block) {
   const h2Elements = block.querySelectorAll('h2');
 
-  for (let i = 0; i < h2Elements.length - 1; i += 1) {
-    const firstH2 = h2Elements[i];
+  h2Elements.forEach((firstH2, i) => {
     const secondH2 = h2Elements[i + 1];
+    if (!secondH2) return;
 
     const areSiblings = firstH2.nextElementSibling === secondH2
-    || (firstH2.parentElement.nextElementSibling?.querySelector('h2') === secondH2);
+      || (firstH2.parentElement.nextElementSibling?.querySelector('h2') === secondH2);
 
     if (areSiblings) {
       firstH2.appendChild(document.createElement('br'));
@@ -28,7 +28,7 @@ function mergeConsecutiveH2(block) {
 
       secondH2.remove();
     }
-  }
+  });
 }
 
 function wrapSubtitles(block) {
