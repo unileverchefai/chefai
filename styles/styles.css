@@ -19,6 +19,41 @@
   --link-color: #3b63fb;
   --link-hover-color: #1d3ecf;
 
+  /* Brand colors */
+  --ufs-orange: #FF5A00;
+  --squid-ink: #221D37;
+  --aubergine: #5C3657;
+  --smoke: #94889D;
+  --mushroom: #CBC5C7;
+
+  /* Shades */
+  --accessible-orange: #FF5A00;
+  --mid-smoke: #C9C3CE;
+  --mid-mushroom: #E5E2E3;
+  --light-smoke: #EAE7EB;
+  --light-mushroom: #F5F3F4;
+
+  /* Trends */
+  --street-food-couture: #622C57;
+  --street-food-couture-bright: #622C57;
+  --borderless-cuisine: #ED6C00;
+  --borderless-cuisine-bright: #F9B000;
+  --diner-designed: #679641;
+  --diner-designed-bright: #A1B83B;
+  --culinary-roots: #00102D;
+  --culinary-roots-bright: #0090BA;
+
+  /* Functional */
+  --success: #81BC2A;
+  --error: #D0021B;
+  --information: #0A7FFE;
+
+  /* Neon */
+  --neon-fm-1: #EB2263;
+  --neon-fm-2: #F15A22;
+  --neon-fm-3: #B02B9F;
+  --neon-fm-4: #FCB315;
+
   /* fonts */
   --ff-chefs-hand: 'Chefs Hand', cursive, sans-serif;
   --ff-unilever-shilling: 'Unilever Shilling', sans-serif;
