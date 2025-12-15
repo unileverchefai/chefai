@@ -1,0 +1,254 @@
+/* ===== MOBILE FIRST - MEDIA TITLE SECTION ===== */
+
+/* Main container */
+.media-text-cards {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 390px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* Media section (video/image with overlay) */
+.media-text-cards .media-title {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  width: 322px;
+  height: 257px;
+  padding: 57px 24px;
+  gap: 28px;
+  border-radius: 32px;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+/* Inner wrapper - this contains h2 and p */
+.media-text-cards .media-title > div {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Background image - now a direct child of media-title */
+.media-text-cards .media-title > picture {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.media-text-cards .media-title > picture img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Gradient overlay */
+.media-text-cards .media-title::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 32px;
+  background: linear-gradient(180deg, rgb(34 29 55 / 0%) 42.857%, rgb(34 29 55 / 70%) 79.515%), 
+              linear-gradient(90deg, rgb(0 0 0 / 30%) 0%, rgb(0 0 0 / 30%) 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* H2 title */
+.media-text-cards .media-title h2 {
+  position: relative;
+  margin: 0;
+  width: 100%;
+  font-family: var(--ff-unilever-shilling);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 25px;
+  text-align: center;
+  color: var(--background-color);
+  text-shadow: 0 2px 6px rgb(0 0 0 / 50%);
+  z-index: 2;
+}
+
+/* Duration text */
+.media-text-cards .media-title p {
+  position: relative;
+  margin: 0;
+  font-family: var(--ff-unilever-shilling);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: normal;
+  color: var(--background-color);
+  text-shadow: 0 2px 6px rgb(0 0 0 / 50%);
+  z-index: 2;
+}
+
+/* ===== CARDS TEXT SECTION ===== */
+
+/* Cards container */
+.media-text-cards .cards-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 24px 0 40px;
+}
+
+/* Individual card */
+.media-text-cards .cards-text > div {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+/* Inner wrapper of each card */
+.media-text-cards .cards-text > div > div {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+/* Icon container - h4 wrapping picture */
+.media-text-cards .cards-text > div > div > h4 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 110px;
+  height: 110px;
+  min-width: 110px;
+  flex-shrink: 0;
+  margin: 0;
+  border-radius: 8px;
+  border: 1px solid #f15a22;
+  background: linear-gradient(121.62deg, rgb(241 90 34 / 10%) 30.082%, rgb(235 34 99 / 10%) 55.841%, rgb(176 43 159 / 10%) 68.189%);
+  overflow: hidden;
+}
+
+.media-text-cards .cards-text > div > div > h4 picture {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 48px;
+  height: 48px;
+}
+
+.media-text-cards .cards-text > div > div > h4 picture img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+/* Text content wrapper - contains h4 and p */
+.media-text-cards .cards-text > div > div > div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+  max-width: 221px;
+}
+
+/* H4 heading (text only, inside text wrapper) */
+.media-text-cards .cards-text > div > div > div > h4 {
+  margin: 0;
+  color: var(--text-color);
+  font-family: var(--ff-unilever-shilling);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 22px;
+}
+
+/* Paragraph text */
+.media-text-cards .cards-text p {
+  margin: 0;
+  color: var(--text-color);
+  font-family: var(--ff-unilever-shilling);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  white-space: pre-wrap;
+}
+
+/* ===== DESKTOP RESPONSIVE STYLES ===== */
+
+@media (width >= 900px) {
+  /* Main container - horizontal layout */
+  .media-text-cards {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 20px;
+    max-width: 1240px;
+    padding: 0;
+  }
+
+  /* Media section - Desktop */
+  .media-text-cards .media-title {
+    width: 715px;
+    height: 414px;
+    max-height: 414px;
+    flex-shrink: 0;
+    box-sizing: border-box;
+  }
+
+  /* H2 title - Desktop */
+  .media-text-cards .media-title h2 {
+    font-size: 25px;
+    font-weight: 500;
+    line-height: 32px;
+  }
+
+  /* Duration text - Desktop */
+  .media-text-cards .media-title p {
+    font-size: 14px;
+  }
+
+  /* Cards container - Desktop */
+  .media-text-cards .cards-text {
+    width: 505px;
+    padding: 0 0 0 24px;
+    gap: 24px;
+    flex-shrink: 0;
+    height: 414px;
+    max-height: 414px;
+    box-sizing: border-box;
+  }
+
+  /* Icon container - Desktop */
+  .media-text-cards .cards-text > div > div > h4 {
+    width: 120px;
+    height: 120px;
+    min-width: 120px;
+  }
+
+  /* Text content wrapper - Desktop */
+  .media-text-cards .cards-text > div > div > div {
+    gap: 8px;
+    flex: 1;
+    max-width: none;
+  }
+
+  /* H4 heading - Desktop */
+  .media-text-cards .cards-text > div > div > div > h4 {
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  /* Paragraph text - Desktop */
+  .media-text-cards .cards-text p {
+    font-size: 14px;
+    line-height: 22px;
+  }
+}
