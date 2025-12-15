@@ -1,6 +1,5 @@
-/* ===== MOBILE FIRST - MEDIA TITLE SECTION ===== */
+/* ===== MEDIA SECTION ===== */
 
-/* Main container */
 .media-text-cards {
   display: flex;
   flex-direction: column;
@@ -11,7 +10,7 @@
   padding: 0;
 }
 
-/* Media section (video/image with overlay) */
+/* Media section */
 .media-text-cards .media-title {
   display: flex;
   flex-direction: column;
@@ -27,7 +26,7 @@
   flex-shrink: 0;
 }
 
-/* Inner wrapper - this contains h2 and p */
+/* Inner wrapper for h2 and p */
 .media-text-cards .media-title > div {
   position: relative;
   z-index: 2;
@@ -38,7 +37,7 @@
   gap: 8px;
 }
 
-/* Background image - now a direct child of media-title */
+/* Background image */
 .media-text-cards .media-title > picture {
   position: absolute;
   top: 0;
@@ -66,7 +65,7 @@
   pointer-events: none;
 }
 
-/* H2 title */
+/* H2*/
 .media-text-cards .media-title h2 {
   position: relative;
   margin: 0;
@@ -81,7 +80,7 @@
   z-index: 2;
 }
 
-/* Duration text */
+/* duration of video */
 .media-text-cards .media-title p {
   position: relative;
   margin: 0;
@@ -96,7 +95,6 @@
 
 /* ===== CARDS TEXT SECTION ===== */
 
-/* Cards container */
 .media-text-cards .cards-text {
   display: flex;
   flex-direction: column;
@@ -106,7 +104,6 @@
   padding: 24px 0 40px;
 }
 
-/* Individual card */
 .media-text-cards .cards-text > div {
   display: flex;
   align-items: center;
@@ -114,7 +111,6 @@
   width: 100%;
 }
 
-/* Inner wrapper of each card */
 .media-text-cards .cards-text > div > div {
   display: flex;
   align-items: center;
@@ -122,7 +118,7 @@
   width: 100%;
 }
 
-/* Icon container - h4 wrapping picture */
+/* Icon container */
 .media-text-cards .cards-text > div > div > h4 {
   display: flex;
   justify-content: center;
@@ -152,7 +148,7 @@
   object-fit: contain;
 }
 
-/* Text content wrapper - contains h4 and p */
+/* Text content wrapper for h4 and p */
 .media-text-cards .cards-text > div > div > div {
   display: flex;
   flex-direction: column;
@@ -161,7 +157,7 @@
   max-width: 221px;
 }
 
-/* H4 heading (text only, inside text wrapper) */
+/* H4 */
 .media-text-cards .cards-text > div > div > div > h4 {
   margin: 0;
   color: var(--text-color);
@@ -182,7 +178,7 @@
   white-space: pre-wrap;
 }
 
-/* ===== DESKTOP RESPONSIVE STYLES ===== */
+/* ===== DESKTOP  ===== */
 
 @media (width >= 900px) {
   /* Main container - horizontal layout */
@@ -194,7 +190,7 @@
     padding: 0;
   }
 
-  /* Media section - Desktop */
+  /* Media section*/
   .media-text-cards .media-title {
     width: 715px;
     height: 414px;
@@ -203,19 +199,19 @@
     box-sizing: border-box;
   }
 
-  /* H2 title - Desktop */
+  /* H2 */
   .media-text-cards .media-title h2 {
     font-size: 25px;
     font-weight: 500;
     line-height: 32px;
   }
 
-  /* Duration text - Desktop */
+  /* Duration text */
   .media-text-cards .media-title p {
     font-size: 14px;
   }
 
-  /* Cards container - Desktop */
+  /* Cards container  */
   .media-text-cards .cards-text {
     width: 505px;
     padding: 0 0 0 24px;
@@ -226,27 +222,27 @@
     box-sizing: border-box;
   }
 
-  /* Icon container - Desktop */
+  /* Icon container */
   .media-text-cards .cards-text > div > div > h4 {
     width: 120px;
     height: 120px;
     min-width: 120px;
   }
 
-  /* Text content wrapper - Desktop */
+  /* Text content wrapper */
   .media-text-cards .cards-text > div > div > div {
     gap: 8px;
     flex: 1;
     max-width: none;
   }
 
-  /* H4 heading - Desktop */
+  /* H4 */
   .media-text-cards .cards-text > div > div > div > h4 {
     font-size: 16px;
     line-height: 24px;
   }
 
-  /* Paragraph text - Desktop */
+  /* Paragraph text */
   .media-text-cards .cards-text p {
     font-size: 14px;
     line-height: 22px;
