@@ -65,7 +65,7 @@
   pointer-events: none;
 }
 
-/* H2*/
+/* H2 */
 .media-text-cards .media-title h2 {
   position: relative;
   margin: 0;
@@ -100,7 +100,6 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 12px;
-  width: 100%;
   padding: 24px 0 40px;
 }
 
@@ -180,7 +179,7 @@
 
 /* ===== DESKTOP  ===== */
 
-@media (width >= 900px) {
+@media (width >= 700px) {
   /* Main container - horizontal layout */
   .media-text-cards {
     flex-direction: row;
@@ -190,7 +189,7 @@
     padding: 0;
   }
 
-  /* Media section*/
+  /* Media section */
   .media-text-cards .media-title {
     width: 715px;
     height: 414px;
