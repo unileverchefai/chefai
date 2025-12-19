@@ -123,6 +123,7 @@ export async function loadVariantScript({ blockName, variantName }) {
   try {
     await loadScript(scriptPath, { type: 'module', charset: 'utf-8', nonce: 'aem' });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error(`Error loading variant script: %c${scriptPath}`, 'color: red;', error);
   }
 }
