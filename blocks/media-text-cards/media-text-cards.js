@@ -1,4 +1,4 @@
-import { createVideoEmbed, findVideoLink } from '../../scripts/scripts.js';
+import { createVideoEmbed, findVideoLink } from '../../scripts/common.js';
 
 function openVideoModal(videoUrl) {
   const modalOverlay = document.createElement('div');

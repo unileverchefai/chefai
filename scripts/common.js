@@ -127,3 +127,111 @@ export async function loadVariantScript({ blockName, variantName }) {
     console.error(`Error loading variant script: %c${scriptPath}`, 'color: red;', error);
   }
 }
+
+/**
+ * Video embedding utilities
+ */
+
+/**
+ * Extract video ID from YouTube URL
+ * Supports formats:
+ * - https://www.youtube.com/watch?v=VIDEO_ID
+ * - https://youtu.be/VIDEO_ID
+ * - https://www.youtube.com/embed/VIDEO_ID
+ * - https://www.youtube.com/shorts/VIDEO_ID (YouTube Shorts)
+ * - /media_HASH.mp4 (DAM files that might be YouTube URLs)
+ */
+export function getYouTubeVideoId(url) {
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([^&\s?#]+)/,
+  ];
+
+  for (let i = 0; i < patterns.length; i += 1) {
+    const match = url.match(patterns[i]);
+    if (match && match[1]) {
+      return match[1];
+    }
+  }
+  return null;
+}
+
+/**
+ * Extract video ID from Vimeo URL
+ * Supports formats:
+ * - https://vimeo.com/VIDEO_ID
+ * - https://player.vimeo.com/video/VIDEO_ID
+ * - /media_HASH.mp4 (DAM files that might be Vimeo URLs)
+ */
+export function getVimeoVideoId(url) {
+  const patterns = [
+    /vimeo\.com\/(\d+)/,
+    /player\.vimeo\.com\/video\/(\d+)/,
+  ];
+
+  for (let i = 0; i < patterns.length; i += 1) {
+    const match = url.match(patterns[i]);
+    if (match && match[1]) {
+      return match[1];
+    }
+  }
+  return null;
+}
+
+/**
+ * Check if a URL is a video link and return the embed iframe if it is
+ * Returns null if not a video link
+ * @param {string} url The URL to check (can be YouTube, Vimeo, or DAM link)
+ * @returns {HTMLIFrameElement|null} The iframe element or null
+ */
+export function createVideoEmbed(url) {
+  if (!url) return null;
+
+  let videoId;
+  let embedUrl;
+
+  // YouTube (including Shorts)
+  videoId = getYouTubeVideoId(url);
+  if (videoId) {
+    embedUrl = `https://www.youtube.com/embed/${videoId}`;
+    const iframe = document.createElement('iframe');
+    iframe.setAttribute('src', embedUrl);
+    iframe.setAttribute('width', '560');
+    iframe.setAttribute('height', '315');
+    iframe.setAttribute('frameborder', '0');
+    iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+    iframe.setAttribute('allowfullscreen', '');
+    iframe.setAttribute('title', 'YouTube video player');
+    iframe.setAttribute('loading', 'lazy');
+    return iframe;
+  }
+
+  // Vimeo
+  videoId = getVimeoVideoId(url);
+  if (videoId) {
+    embedUrl = `https://player.vimeo.com/video/${videoId}`;
+    const iframe = document.createElement('iframe');
+    iframe.setAttribute('src', embedUrl);
+    iframe.setAttribute('width', '560');
+    iframe.setAttribute('height', '315');
+    iframe.setAttribute('frameborder', '0');
+    iframe.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture');
+    iframe.setAttribute('allowfullscreen', '');
+    iframe.setAttribute('title', 'Vimeo video player');
+    iframe.setAttribute('loading', 'lazy');
+    return iframe;
+  }
+
+  return null;
+}
+
+/**
+ * Find video link in a container element
+ * @param {Element} container The container element to search within
+ * @returns {Element|null} The video link element or null
+ */
+export function findVideoLink(container) {
+  const videoLink = container.querySelector(
+    'a[href*="youtube.com"], a[href*="youtu.be"], a[href*="vimeo.com"]',
+  );
+  return videoLink;
+}
