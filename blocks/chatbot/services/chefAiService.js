@@ -1,14 +1,9 @@
 /**
  * Chef AI Service
- * Handles API communication with the Chef AI middleware/backend
- * Supports multiple endpoints (Capgemini LLM, Formula 1, UFS internal)
+ * Handles communication with the Azure Chef AI API
  */
 
-/**
- * Configuration for Chef AI API endpoints
- */
 const API_CONFIG = {
-  // Azure Chef AI API endpoints
   endpoints: {
     capgemini: 'https://api-hub-we.azure-api.net/chefaibe/st/api/v1/chat/message',
     formula1: 'https://api-hub-we.azure-api.net/chefaibe/st/api/v1/chat/message',
@@ -17,7 +12,6 @@ const API_CONFIG = {
   defaultEndpoint: 'capgemini',
   timeout: 30000,
   retryAttempts: 2,
-  subscriptionKey: '3040',
 };
 
 /**
@@ -72,33 +66,29 @@ class ChefAiService {
     };
 
     try {
-      const headers = {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      };
-
-      // Add Azure subscription key if configured
-      if (this.config.subscriptionKey) {
-        headers['Ocp-Apim-Subscription-Key'] = this.config.subscriptionKey;
-      }
-
       const response = await fetch(endpoint, {
         method: 'POST',
-        headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
         body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
+        const errorText = await response.text();
+        // eslint-disable-next-line no-console
+        console.error('API error response:', errorText);
         throw new Error(`API error: ${response.status} ${response.statusText}`);
       }
 
-      // Check if response has content
-      const contentLength = response.headers.get('content-length');
-      if (contentLength === '0') {
-        throw new Error('API returned empty response - check subscription key');
+      const responseText = await response.text();
+
+      if (!responseText || responseText.length === 0) {
+        throw new Error('API returned empty response');
       }
 
-      const data = await response.json();
+      const data = JSON.parse(responseText);
       
       // Transform API response to chat message format
       return this.formatResponse(data);
@@ -113,14 +103,15 @@ class ChefAiService {
    * Get or create thread ID for conversation tracking
    * @returns {string} Thread ID
    */
-  // eslint-disable-next-line class-methods-use-this
   getThreadId() {
-    let threadId = sessionStorage.getItem('chef-ai-thread-id');
+    const storageKey = 'chef-ai-thread-id';
+    let threadId = sessionStorage.getItem(storageKey);
+    
     if (!threadId) {
-      // Generate UUID-like thread ID
-      threadId = `${Date.now().toString(16)}-${Math.random().toString(36).substring(2, 15)}`;
-      sessionStorage.setItem('chef-ai-thread-id', threadId);
+      threadId = `thread_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+      sessionStorage.setItem(storageKey, threadId);
     }
+    
     return threadId;
   }
 
@@ -174,15 +165,14 @@ class ChefAiService {
   }
 
   /**
-   * Get conversation history
+   * Get conversation history from session storage
    * @returns {Promise<Array>} Array of messages
    */
-  // eslint-disable-next-line class-methods-use-this
   async getHistory() {
-    // Placeholder for history retrieval
-    // Can be implemented to fetch from localStorage, sessionStorage, or API
+    const storageKey = 'chef-ai-history';
+    
     try {
-      const history = sessionStorage.getItem('chef-ai-history');
+      const history = sessionStorage.getItem(storageKey);
       return history ? JSON.parse(history) : [];
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -192,13 +182,15 @@ class ChefAiService {
   }
 
   /**
-   * Save conversation history
+   * Save conversation history to session storage
    * @param {Array} messages - Array of messages
+   * @returns {Promise<void>}
    */
-  // eslint-disable-next-line class-methods-use-this
   async saveHistory(messages) {
+    const storageKey = 'chef-ai-history';
+    
     try {
-      sessionStorage.setItem('chef-ai-history', JSON.stringify(messages));
+      sessionStorage.setItem(storageKey, JSON.stringify(messages));
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Failed to save history:', error);
@@ -206,12 +198,13 @@ class ChefAiService {
   }
 
   /**
-   * Clear conversation history
+   * Clear conversation history and thread ID
+   * @returns {Promise<void>}
    */
-  // eslint-disable-next-line class-methods-use-this
   async clearHistory() {
     try {
       sessionStorage.removeItem('chef-ai-history');
+      sessionStorage.removeItem('chef-ai-thread-id');
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Failed to clear history:', error);

@@ -1,76 +1,80 @@
 /**
  * Chatbot Block
- * Chef AI conversational assistant powered by React Native Gifted Chat
+ * Chef AI conversational assistant
  */
 
 import { getCompleteConfig } from './config.js';
 
 /**
- * Loads and decorates the chatbot
- * @param {Element} block The chatbot block element
+ * Decorate the chatbot block
+ * @param {HTMLElement} block - The chatbot block element
  */
 export default async function decorate(block) {
-  // Get configuration
   const config = getCompleteConfig();
 
-  // Create container for React root
   block.textContent = '';
   const chatContainer = document.createElement('div');
   chatContainer.className = 'chatbot-container';
   chatContainer.id = 'chatbot-root';
 
-  // Add loading state
-  const loadingIndicator = document.createElement('div');
-  loadingIndicator.className = 'chatbot-loading';
-  loadingIndicator.textContent = 'Loading Chef AI...';
+  const loadingIndicator = createLoadingIndicator();
   chatContainer.appendChild(loadingIndicator);
-
   block.appendChild(chatContainer);
 
-  // Dynamically load React from CDN and render ChatWidget
   try {
-    // Load React and ReactDOM from CDN
     await loadReactFromCDN();
     
-    // Import ChatWidget component and service
     const { default: ChatWidget } = await import('./ChatWidget.js');
     const { default: chefAiService } = await import('./services/chefAiService.js');
     
-    // Configure the service with loaded config
     chefAiService.config = { ...chefAiService.config, ...config };
     chefAiService.setEndpoint(config.defaultEndpoint);
     
-    // Remove loading indicator
     chatContainer.removeChild(loadingIndicator);
     
-    // Create React root and render using global React
     const root = window.ReactDOM.createRoot(chatContainer);
     root.render(window.React.createElement(ChatWidget, { config }));
     
-    // Store root for cleanup if needed
     block.reactRoot = root;
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Failed to load chatbot:', error);
-    chatContainer.innerHTML = '<div class="chatbot-error">Failed to load chatbot. Please refresh the page.</div>';
+    showError(chatContainer);
   }
 }
 
 /**
+ * Create loading indicator element
+ * @returns {HTMLElement} Loading indicator
+ */
+function createLoadingIndicator() {
+  const indicator = document.createElement('div');
+  indicator.className = 'chatbot-loading';
+  indicator.textContent = 'Loading Chef AI...';
+  return indicator;
+}
+
+/**
+ * Show error message in chatbot container
+ * @param {HTMLElement} container - Container element
+ */
+function showError(container) {
+  container.innerHTML = '<div class="chatbot-error">Failed to load chatbot. Please refresh the page.</div>';
+}
+
+/**
  * Load React and ReactDOM from CDN
+ * @returns {Promise<void>}
  */
 async function loadReactFromCDN() {
-  // Check if already loaded
   if (window.React && window.ReactDOM) {
     return;
   }
 
-  // Load React
   if (!window.React) {
     await loadScript('https://unpkg.com/react@18/umd/react.production.min.js');
   }
 
-  // Load ReactDOM
   if (!window.ReactDOM) {
     await loadScript('https://unpkg.com/react-dom@18/umd/react-dom.production.min.js');
   }
@@ -79,6 +83,7 @@ async function loadReactFromCDN() {
 /**
  * Load a script dynamically
  * @param {string} src - Script URL
+ * @returns {Promise<void>}
  */
 function loadScript(src) {
   return new Promise((resolve, reject) => {
@@ -89,8 +94,8 @@ function loadScript(src) {
 
     const script = document.createElement('script');
     script.src = src;
-    script.onload = resolve;
-    script.onerror = reject;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
     document.head.appendChild(script);
   });
 }

@@ -1,37 +1,39 @@
 /**
  * Chef AI Chat Widget
- * Simple React chat interface without external dependencies
- * Note: React is loaded from CDN and available as window.React
+ * React-based chat interface for Chef AI assistant
  */
 
 import chefAiService from './services/chefAiService.js';
 
-// Use React from global window object (loaded from CDN)
 const {
   useState, useCallback, useEffect, useRef,
 } = window.React;
 const { createElement: h } = window.React;
 
-// eslint-disable-next-line no-console
-console.log('React hooks:', {
-  useState, useCallback, useEffect, useRef,
-});
+const USER_ID = 1;
+const AI_ID = 2;
+const MESSAGE_CONTEXT_LIMIT = 5;
+
+const WELCOME_MESSAGE = {
+  _id: '1',
+  text: 'Hello! I\'m your Chef AI assistant. I can help you with menu planning, recipe ideas, cost optimization, and culinary trends. How can I assist you today?',
+  createdAt: new Date(),
+  user: {
+    _id: AI_ID,
+    name: 'Chef AI',
+  },
+};
 
 /**
- * ChatWidget functional component
+ * Chat Widget Component
+ * @returns {ReactElement} Chat widget UI
  */
 export default function ChatWidget() {
-  // eslint-disable-next-line no-console
-  console.log('ChatWidget component rendering...');
-
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [error, setError] = useState(null);
   const messagesEndRef = useRef(null);
-
-  // eslint-disable-next-line no-console
-  console.log('Current inputValue:', inputValue);
 
   // Scroll to bottom when messages change
   const scrollToBottom = () => {
@@ -42,40 +44,16 @@ export default function ChatWidget() {
     scrollToBottom();
   }, [messages]);
 
-  // Initialize with welcome message
+  // Initialize with history or welcome message
   useEffect(() => {
     const loadHistory = async () => {
       try {
         const history = await chefAiService.getHistory();
-
-        if (history.length > 0) {
-          setMessages(history);
-        } else {
-          // Welcome message
-          const welcomeMessage = {
-            _id: '1',
-            text: 'Hello! I\'m your Chef AI assistant. I can help you with menu planning, recipe ideas, cost optimization, and culinary trends. How can I assist you today?',
-            createdAt: new Date(),
-            user: {
-              _id: 2,
-              name: 'Chef AI',
-            },
-          };
-          setMessages([welcomeMessage]);
-        }
+        setMessages(history.length > 0 ? history : [WELCOME_MESSAGE]);
       } catch (err) {
         // eslint-disable-next-line no-console
         console.error('Failed to load history:', err);
-        const welcomeMessage = {
-          _id: '1',
-          text: 'Hello! I\'m your Chef AI assistant. How can I help you today?',
-          createdAt: new Date(),
-          user: {
-            _id: 2,
-            name: 'Chef AI',
-          },
-        };
-        setMessages([welcomeMessage]);
+        setMessages([WELCOME_MESSAGE]);
       }
     };
 
@@ -95,59 +73,45 @@ export default function ChatWidget() {
   const handleSend = useCallback(async (e) => {
     e.preventDefault();
 
-    // eslint-disable-next-line no-console
-    console.log('handleSend called, input value:', inputValue);
-
     const messageText = inputValue.trim();
     if (!messageText) {
-      // eslint-disable-next-line no-console
-      console.log('Message is empty, returning');
       return;
     }
 
-    // Create user message
     const userMessage = {
       _id: Date.now().toString(),
       text: messageText,
       createdAt: new Date(),
       user: {
-        _id: 1,
+        _id: USER_ID,
         name: 'You',
       },
     };
 
-    // Add user message and clear input
     setMessages((prev) => [...prev, userMessage]);
     setInputValue('');
     setError(null);
+    setIsTyping(true);
 
     try {
-      // Show typing indicator
-      setIsTyping(true);
-
-      // Send message to Chef AI API
       const response = await chefAiService.sendMessage(messageText, {
         context: {
-          messageHistory: messages.slice(-5), // Last 5 messages for context
+          messageHistory: messages.slice(-MESSAGE_CONTEXT_LIMIT),
         },
       });
 
-      // Add AI response
       setMessages((prev) => [...prev, response]);
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error('Failed to send message:', err);
 
-      // Show error message
       setError('Sorry, I\'m having trouble connecting. Please try again.');
 
-      // Add error message to chat
       const errorMessage = {
         _id: Date.now().toString(),
         text: 'Sorry, I\'m having trouble connecting right now. Please try again in a moment.',
         createdAt: new Date(),
         user: {
-          _id: 2,
+          _id: AI_ID,
           name: 'Chef AI',
         },
         system: true,
@@ -160,9 +124,11 @@ export default function ChatWidget() {
 
   /**
    * Render a single message
+   * @param {object} message - Message object
+   * @returns {ReactElement} Message element
    */
   const renderMessage = (message) => {
-    const isUser = message.user._id === 1;
+    const isUser = message.user._id === USER_ID;
 
     return h('div', {
       key: message._id,

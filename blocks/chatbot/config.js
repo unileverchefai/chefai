@@ -1,16 +1,16 @@
 /**
  * Chatbot Configuration
- * Manages configuration from block metadata and environment
+ * Manages chatbot configuration from metadata and environment detection
+ * Priority: Block metadata > Defaults
  */
 
 import { getMetadata } from '../../scripts/aem.js';
 
 /**
- * Get chatbot configuration from various sources
- * Priority: Block metadata > Environment variables > Defaults
+ * Get chatbot configuration
+ * @returns {object} Chatbot configuration
  */
 export function getChatbotConfig() {
-  // Default configuration - Azure Chef AI API
   const defaultConfig = {
     endpoints: {
       capgemini: 'https://api-hub-we.azure-api.net/chefaibe/st/api/v1/chat/message',
@@ -20,7 +20,6 @@ export function getChatbotConfig() {
     defaultEndpoint: 'capgemini',
     timeout: 30000,
     retryAttempts: 2,
-    subscriptionKey: 'YOUR_AZURE_SUBSCRIPTION_KEY_HERE', // Azure APIM key
     features: {
       voiceInput: false,
       fileUpload: false,
@@ -28,31 +27,25 @@ export function getChatbotConfig() {
     },
   };
 
-  // Get configuration from metadata
   const metadataConfig = {
     endpoint: getMetadata('chatbot-endpoint'),
     apiUrl: getMetadata('chatbot-api-url'),
     timeout: getMetadata('chatbot-timeout'),
-    subscriptionKey: getMetadata('chatbot-subscription-key'),
     voiceInput: getMetadata('chatbot-voice-input'),
     fileUpload: getMetadata('chatbot-file-upload'),
   };
 
-  // Merge configurations
   const config = { ...defaultConfig };
 
-  // Override endpoint if specified in metadata
   if (metadataConfig.endpoint) {
     config.defaultEndpoint = metadataConfig.endpoint;
   }
 
-  // Override API URL if specified
   if (metadataConfig.apiUrl) {
     const endpoint = metadataConfig.endpoint ?? 'capgemini';
     config.endpoints[endpoint] = metadataConfig.apiUrl;
   }
 
-  // Override timeout if specified
   if (metadataConfig.timeout) {
     const timeoutValue = parseInt(metadataConfig.timeout, 10);
     if (!Number.isNaN(timeoutValue)) {
@@ -60,12 +53,6 @@ export function getChatbotConfig() {
     }
   }
 
-  // Override subscription key if specified
-  if (metadataConfig.subscriptionKey) {
-    config.subscriptionKey = metadataConfig.subscriptionKey;
-  }
-
-  // Override feature flags
   if (metadataConfig.voiceInput) {
     config.features.voiceInput = metadataConfig.voiceInput === 'true';
   }
@@ -78,49 +65,35 @@ export function getChatbotConfig() {
 }
 
 /**
- * Get environment-specific configuration
+ * Get environment configuration based on hostname
+ * @returns {object} Environment configuration
  */
 export function getEnvironmentConfig() {
   const { hostname } = window.location;
 
-  // Detect environment based on hostname
   if (hostname.includes('localhost') || hostname.includes('127.0.0.1')) {
-    return {
-      environment: 'development',
-      debug: true,
-    };
+    return { environment: 'development', debug: true };
   }
 
   if (hostname.includes('.aem.page')) {
-    return {
-      environment: 'preview',
-      debug: false,
-    };
+    return { environment: 'preview', debug: false };
   }
 
   if (hostname.includes('.aem.live')) {
-    return {
-      environment: 'production',
-      debug: false,
-    };
+    return { environment: 'production', debug: false };
   }
 
-  return {
-    environment: 'unknown',
-    debug: false,
-  };
+  return { environment: 'unknown', debug: false };
 }
 
 /**
- * Get complete configuration merging all sources
+ * Get complete configuration (chatbot + environment)
+ * @returns {object} Complete configuration
  */
 export function getCompleteConfig() {
-  const chatbotConfig = getChatbotConfig();
-  const envConfig = getEnvironmentConfig();
-
   return {
-    ...chatbotConfig,
-    ...envConfig,
+    ...getChatbotConfig(),
+    ...getEnvironmentConfig(),
   };
 }
 
