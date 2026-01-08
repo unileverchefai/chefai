@@ -18,7 +18,7 @@ function openVideoModal(videoUrl) {
   const videoEmbed = createVideoEmbed(videoUrl);
 
   if (videoEmbed) {
-    // add autoplay parameter to URL for better UX
+    // dd autoplay parameter to URL for better UX
     const currentSrc = videoEmbed.getAttribute('src');
     videoEmbed.setAttribute('src', `${currentSrc}${currentSrc.includes('?') ? '&' : '?'}autoplay=1`);
 
