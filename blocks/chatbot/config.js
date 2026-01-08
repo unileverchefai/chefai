@@ -10,12 +10,12 @@ import { getMetadata } from '../../scripts/aem.js';
  * Priority: Block metadata > Environment variables > Defaults
  */
 export function getChatbotConfig() {
-  // Default configuration
+  // Default configuration - Azure Chef AI API
   const defaultConfig = {
     endpoints: {
-      capgemini: '/api/chat/capgemini',
-      formula1: '/api/chat/formula1',
-      ufs: '/api/chat/ufs',
+      capgemini: 'https://api-hub-we.azure-api.net/chefaibe/st/api/v1/chat/message',
+      formula1: 'https://api-hub-we.azure-api.net/chefaibe/st/api/v1/chat/message',
+      ufs: 'https://api-hub-we.azure-api.net/chefaibe/st/api/v1/chat/message',
     },
     defaultEndpoint: 'capgemini',
     timeout: 30000,

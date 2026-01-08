@@ -8,11 +8,11 @@
  * Configuration for Chef AI API endpoints
  */
 const API_CONFIG = {
-  // API endpoints - currently using mock responses
+  // Azure Chef AI API endpoints
   endpoints: {
-    capgemini: '/api/chat/capgemini',
-    formula1: '/api/chat/formula1',
-    ufs: '/api/chat/ufs',
+    capgemini: 'https://api-hub-we.azure-api.net/chefaibe/st/api/v1/chat/message',
+    formula1: 'https://api-hub-we.azure-api.net/chefaibe/st/api/v1/chat/message',
+    ufs: 'https://api-hub-we.azure-api.net/chefaibe/st/api/v1/chat/message',
   },
   defaultEndpoint: 'capgemini',
   timeout: 30000,
@@ -52,58 +52,111 @@ class ChefAiService {
   /**
    * Send a message to the Chef AI API
    * @param {string} message - User message
+   * @param {object} options - Additional options
    * @returns {Promise<object>} API response
    */
-  async sendMessage(message) {
-    // Mock mode for development - returns fake responses
-    // TODO: Replace with real API when ready
-    return this.getMockResponse(message);
+  async sendMessage(message, options = {}) {
+    const endpoint = this.getEndpointUrl();
+    
+    // Get or create thread ID
+    const threadId = this.getThreadId();
+    
+    // Build request payload
+    const payload = {
+      message,
+      thread_id: threadId,
+      user_id: options.user_id || 'user123',
+      country: options.country || 'BE',
+      ...options,
+    };
+
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      
+      // Transform API response to chat message format
+      return this.formatResponse(data);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to send message:', error);
+      throw error;
+    }
   }
 
   /**
-   * Get mock response for development
-   * @returns {Promise<object>} Mock response
+   * Get or create thread ID for conversation tracking
+   * @returns {string} Thread ID
    */
-  // eslint-disable-next-line no-unused-vars
-  async getMockResponse() {
-    // Simulate API delay
-    await this.delay(800 + Math.random() * 700);
+  // eslint-disable-next-line class-methods-use-this
+  getThreadId() {
+    let threadId = sessionStorage.getItem('chef-ai-thread-id');
+    if (!threadId) {
+      // Generate UUID-like thread ID
+      threadId = `${Date.now().toString(16)}-${Math.random().toString(36).substring(2, 15)}`;
+      sessionStorage.setItem('chef-ai-thread-id', threadId);
+    }
+    return threadId;
+  }
 
-    const responses = [
-      "That's a great question about culinary trends! Let me help you with that.",
-      'As a Chef AI assistant, I can provide insights on menu planning and cost optimization.',
-      "I'd be happy to help you with recipe ideas and ingredient suggestions.",
-      'Based on current trends, here are some recommendations for your menu.',
-      "Let's explore some creative culinary solutions for your needs.",
-    ];
+  /**
+   * Format API response to chat message format
+   * @param {object} apiResponse - Response from Chef AI API
+   * @returns {object} Formatted message
+   */
+  // eslint-disable-next-line class-methods-use-this
+  formatResponse(apiResponse) {
+    // Extract message text
+    let messageText = '';
+    
+    if (apiResponse.response?.message) {
+      messageText = apiResponse.response.message;
+    } else if (typeof apiResponse.response === 'string') {
+      messageText = apiResponse.response;
+    } else {
+      messageText = 'I received your message. How can I help you further?';
+    }
 
-    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+    // Add recipes if present
+    if (apiResponse.response?.recipes && apiResponse.response.recipes.length > 0) {
+      messageText += '\n\n📚 Recipes:\n';
+      apiResponse.response.recipes.forEach((recipe, index) => {
+        messageText += `\n${index + 1}. ${recipe.title_in_user_language || recipe.title_in_original_language}`;
+        if (recipe.description) {
+          messageText += `\n   ${recipe.description}`;
+        }
+        if (recipe.url) {
+          messageText += `\n   🔗 ${recipe.url}`;
+        }
+      });
+    }
 
     return {
-      _id: `msg_${Date.now()}_${Math.random().toString(36).substring(7)}`,
-      text: `${randomResponse}\n\n(Note: This is a mock response. Real API will be connected later.)`,
-      createdAt: new Date(),
+      _id: apiResponse.message_id || `msg_${Date.now()}`,
+      text: messageText,
+      createdAt: new Date(apiResponse.timestamp || Date.now()),
       user: {
         _id: 2,
         name: 'Chef AI',
         avatar: '/icons/chef-ai-avatar.svg',
       },
       metadata: {
-        mock: true,
+        run_id: apiResponse.run_id,
+        thread_id: apiResponse.thread_id,
+        recipes: apiResponse.response?.recipes || [],
       },
     };
-  }
-
-  /**
-   * Utility: Delay function
-   * @param {number} ms - Milliseconds to delay
-   * @returns {Promise}
-   */
-  // eslint-disable-next-line class-methods-use-this
-  delay(ms) {
-    return new Promise((resolve) => {
-      setTimeout(resolve, ms);
-    });
   }
 
   /**
