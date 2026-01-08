@@ -17,6 +17,7 @@ const API_CONFIG = {
   defaultEndpoint: 'capgemini',
   timeout: 30000,
   retryAttempts: 2,
+  subscriptionKey: '3040',
 };
 
 /**
@@ -71,17 +72,30 @@ class ChefAiService {
     };
 
     try {
+      const headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+
+      // Add Azure subscription key if configured
+      if (this.config.subscriptionKey) {
+        headers['Ocp-Apim-Subscription-Key'] = this.config.subscriptionKey;
+      }
+
       const response = await fetch(endpoint, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
+        headers,
         body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
         throw new Error(`API error: ${response.status} ${response.statusText}`);
+      }
+
+      // Check if response has content
+      const contentLength = response.headers.get('content-length');
+      if (contentLength === '0') {
+        throw new Error('API returned empty response - check subscription key');
       }
 
       const data = await response.json();

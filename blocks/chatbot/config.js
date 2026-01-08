@@ -20,6 +20,7 @@ export function getChatbotConfig() {
     defaultEndpoint: 'capgemini',
     timeout: 30000,
     retryAttempts: 2,
+    subscriptionKey: 'YOUR_AZURE_SUBSCRIPTION_KEY_HERE', // Azure APIM key
     features: {
       voiceInput: false,
       fileUpload: false,
@@ -32,6 +33,7 @@ export function getChatbotConfig() {
     endpoint: getMetadata('chatbot-endpoint'),
     apiUrl: getMetadata('chatbot-api-url'),
     timeout: getMetadata('chatbot-timeout'),
+    subscriptionKey: getMetadata('chatbot-subscription-key'),
     voiceInput: getMetadata('chatbot-voice-input'),
     fileUpload: getMetadata('chatbot-file-upload'),
   };
@@ -56,6 +58,11 @@ export function getChatbotConfig() {
     if (!Number.isNaN(timeoutValue)) {
       config.timeout = timeoutValue;
     }
+  }
+
+  // Override subscription key if specified
+  if (metadataConfig.subscriptionKey) {
+    config.subscriptionKey = metadataConfig.subscriptionKey;
   }
 
   // Override feature flags
