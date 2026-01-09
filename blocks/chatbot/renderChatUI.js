@@ -81,14 +81,6 @@ export default function renderChatUI({
           key: 'input-form',
           className: 'chat-input-form',
           onSubmit: handleSend,
-          style: {
-            padding: '16px',
-            borderTop: '1px solid var(--light-color)',
-            backgroundColor: 'var(--light-color)',
-            display: 'flex',
-            gap: '8px',
-            flexShrink: 0,
-          },
         },
         [
           h('input', {

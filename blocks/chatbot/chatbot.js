@@ -12,25 +12,35 @@ export default async function chatbot(block) {
   chatContainer.id = 'chatbot-root';
   block.appendChild(chatContainer);
 
-  const loadingIndicator = document.createElement('div');
-  loadingIndicator.className = 'chatbot-loading';
-  loadingIndicator.textContent = 'Loading Chef AI...';
-  chatContainer.appendChild(loadingIndicator);
+  const skeleton = document.createElement('div');
+  skeleton.className = 'chatbot-skeleton';
+  chatContainer.appendChild(skeleton);
 
   try {
     await loadReact();
+
+    if (!window.React || !window.ReactDOM) {
+      throw new Error('React or ReactDOM not loaded');
+    }
+
     const { default: ChatWidget } = await import('./ChatWidget.js');
-    chatContainer.removeChild(loadingIndicator);
+
+    if (skeleton && skeleton.parentNode === chatContainer) {
+      chatContainer.removeChild(skeleton);
+    }
+
     const root = window.ReactDOM.createRoot(chatContainer);
     root.render(window.React.createElement(ChatWidget));
     block.reactRoot = root;
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Failed to load chatbot:', error);
-    chatContainer.removeChild(loadingIndicator);
+    if (skeleton && skeleton.parentNode === chatContainer) {
+      chatContainer.removeChild(skeleton);
+    }
     const errorDiv = document.createElement('div');
     errorDiv.className = 'chatbot-error';
-    errorDiv.textContent = 'Failed to load chatbot. Please refresh the page.';
+    errorDiv.textContent = `Failed to load chatbot: ${error.message}. Please refresh the page.`;
     chatContainer.appendChild(errorDiv);
   }
 }
