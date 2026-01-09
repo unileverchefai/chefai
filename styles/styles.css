@@ -12,12 +12,17 @@
 
 :root {
   /* colors */
-  --background-color: white;
+  --c-white: #fff;
+  --background-color: var(--c-white);
   --light-color: #f8f8f8;
   --dark-color: #505050;
   --text-color: #131313;
   --link-color: #3b63fb;
   --link-hover-color: #1d3ecf;
+
+  /* Unilever colors */
+  --ufs-orange: #FF5A00;
+  --ufs-purple: #221D37;
 
   /* fonts */
   --ff-chefs-hand: 'Chefs Hand', cursive, sans-serif;
@@ -40,6 +45,10 @@
 
   /* nav height */
   --nav-height: 64px;
+
+  /* future menu logo */
+  --future-menu-logo-text-url: url('../media/media_1c84ff22a0de724b285c4a8f7096544e3f3830f22.png');
+  --future-menu-logo-number-url: url('../media/media_1b533b6db481a3a27c53b6af9f2f15520433f194e.png');
 }
 
 @media (width >= 900px) {

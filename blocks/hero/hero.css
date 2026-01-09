@@ -30,6 +30,36 @@
   height: 100%;
 }
 
+.hero .hero--logo-wrapper {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  translate: -50%;
+}
+
+.hero .hero--logo-text::after {
+  content: '';
+  display: block;
+  background-image: var(--future-menu-logo-text-url);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 240px;
+  height: 124px;
+}
+
+.hero .hero--logo-number::after {
+  content: '';
+  display: block;
+  background-image: var(--future-menu-logo-number-url);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 40px;
+  height: 56px;
+  translate: 188px -58px;
+}
+
 @media (width >= 900px) {
   .hero {
     padding: 40px 32px;
