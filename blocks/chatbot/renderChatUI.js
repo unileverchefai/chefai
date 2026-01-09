@@ -18,6 +18,7 @@ export default function renderChatUI({
       className: 'chat-widget',
       style: {
         height: '100%',
+        minHeight: '600px',
         display: 'flex',
         flexDirection: 'column',
         backgroundColor: 'var(--background-color)',

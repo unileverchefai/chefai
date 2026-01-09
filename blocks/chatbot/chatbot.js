@@ -6,7 +6,6 @@ export default async function chatbot(block) {
   const endpoint = getMetadata('chatbot-endpoint') || 'capgemini';
   setEndpoint(endpoint);
 
-  block.textContent = '';
   const chatContainer = document.createElement('div');
   chatContainer.className = 'chatbot-container';
   chatContainer.id = 'chatbot-root';
@@ -15,6 +14,8 @@ export default async function chatbot(block) {
   loadingIndicator.className = 'chatbot-loading';
   loadingIndicator.textContent = 'Loading Chef AI...';
   chatContainer.appendChild(loadingIndicator);
+
+  block.textContent = '';
   block.appendChild(chatContainer);
 
   try {
@@ -27,6 +28,10 @@ export default async function chatbot(block) {
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Failed to load chatbot:', error);
-    chatContainer.innerHTML = '<div class="chatbot-error">Failed to load chatbot. Please refresh the page.</div>';
+    chatContainer.removeChild(loadingIndicator);
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'chatbot-error';
+    errorDiv.textContent = 'Failed to load chatbot. Please refresh the page.';
+    chatContainer.appendChild(errorDiv);
   }
 }
