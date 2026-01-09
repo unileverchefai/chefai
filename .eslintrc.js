@@ -18,5 +18,6 @@ module.exports = {
     'linebreak-style': ['error', 'unix'], // enforce unix linebreaks
     'no-param-reassign': [2, { props: false }], // allow modifying properties of param
     'no-underscore-dangle': ['error', { allow: ['_id'] }], // allow underscore in Gifted Chat format
+    'no-use-before-define': ['error', { functions: false, classes: false, variables: true }], // allow function hoisting
   },
 };
