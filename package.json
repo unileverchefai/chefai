@@ -21,10 +21,18 @@
   "homepage": "https://github.com/adobe/aem-boilerplate#readme",
   "devDependencies": {
     "@babel/eslint-parser": "7.28.5",
+    "@babel/preset-react": "^7.28.5",
     "eslint": "8.57.1",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-plugin-import": "2.32.0",
     "stylelint": "16.26.1",
     "stylelint-config-standard": "39.0.1"
+  },
+  "dependencies": {
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "react-native": "^0.83.1",
+    "react-native-gifted-chat": "^3.2.3",
+    "react-native-web": "^0.21.2"
   }
 }
