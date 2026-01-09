@@ -18,7 +18,6 @@ export default function renderChatUI({
       className: 'chat-widget',
       style: {
         height: '100%',
-        minHeight: '600px',
         display: 'flex',
         flexDirection: 'column',
         backgroundColor: 'var(--background-color)',
@@ -88,6 +87,7 @@ export default function renderChatUI({
             backgroundColor: 'var(--light-color)',
             display: 'flex',
             gap: '8px',
+            flexShrink: 0,
           },
         },
         [
@@ -126,6 +126,7 @@ export default function renderChatUI({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                flexShrink: 0,
               },
             },
             '→',

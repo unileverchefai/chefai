@@ -6,17 +6,16 @@ export default async function chatbot(block) {
   const endpoint = getMetadata('chatbot-endpoint') || 'capgemini';
   setEndpoint(endpoint);
 
+  block.textContent = '';
   const chatContainer = document.createElement('div');
   chatContainer.className = 'chatbot-container';
   chatContainer.id = 'chatbot-root';
+  block.appendChild(chatContainer);
 
   const loadingIndicator = document.createElement('div');
   loadingIndicator.className = 'chatbot-loading';
   loadingIndicator.textContent = 'Loading Chef AI...';
   chatContainer.appendChild(loadingIndicator);
-
-  block.textContent = '';
-  block.appendChild(chatContainer);
 
   try {
     await loadReact();

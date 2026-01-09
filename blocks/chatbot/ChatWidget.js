@@ -25,18 +25,21 @@ const WELCOME_MESSAGE = {
 };
 
 export default function ChatWidget() {
-  const [messages, setMessages] = useState([]);
+  const history = getHistory();
+  const [messages, setMessages] = useState(history.length > 0 ? history : [WELCOME_MESSAGE]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [error, setError] = useState(null);
   const messagesEndRef = useRef(null);
-
-  useEffect(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), [messages]);
+  const isInitialMount = useRef(true);
 
   useEffect(() => {
-    const history = getHistory();
-    setMessages(history.length > 0 ? history : [WELCOME_MESSAGE]);
-  }, []);
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   useEffect(() => {
     if (messages.length > 0) saveHistory(messages);
