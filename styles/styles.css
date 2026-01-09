@@ -43,6 +43,51 @@
 
   /* nav height */
   --nav-height: 64px;
+
+  /* spacing scale */
+  --spacing-xxs: 5px;
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 28px;
+  --spacing-2xl: 40px;
+  --spacing-3xl: 57px;
+
+  /* border radius */
+  --radius-sm: 8px;
+  --radius-lg: 32px;
+  --radius-full: 50%;
+
+  /* icon/component sizes */
+  --icon-size-sm: 48px;
+  --icon-size-md: 72px;
+  --icon-size-lg: 88px;
+  --icon-size-xl: 110px;
+  --icon-size-2xl: 120px;
+
+  /* z-index scale */
+  --z-base: 0;
+  --z-content: 1;
+  --z-overlay: 2;
+  --z-interactive: 3;
+  --z-dropdown: 10;
+  --z-sticky: 50;
+  --z-modal: 100;
+  --z-modal-close: 101;
+
+  /* transitions */
+  --transition-fast: 0.2s ease;
+  --transition-base: 0.3s ease;
+
+  /* effects */
+  --overlay-gradient: linear-gradient(180deg, rgb(34 29 55 / 0%) 42.857%, rgb(34 29 55 / 70%) 79.515%),
+                      linear-gradient(90deg, rgb(0 0 0 / 30%) 0%, rgb(0 0 0 / 30%) 100%);
+  --modal-backdrop: rgb(0 0 0 / 85%);
+  --backdrop-blur: blur(8px);
+  --text-shadow-base: 0 2px 6px rgb(0 0 0 / 50%);
+  --box-shadow-lg: 0 10px 40px rgb(0 0 0 / 50%);
+  --box-shadow-md: 0 4px 12px rgb(0 0 0 / 30%);
 }
 
 @media (width >= 900px) {
