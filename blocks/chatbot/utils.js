@@ -55,69 +55,6 @@ export function saveHistory(messages) {
   }
 }
 
-export function renderMessage(message) {
-  const { createElement: h } = window.React;
-  const USER_ID = 1;
-  const isUser = message.user._id === USER_ID;
-
-  return h(
-    'div',
-    {
-      key: message._id,
-      className: `chat-message ${isUser ? 'user-message' : 'ai-message'}`,
-      style: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: isUser ? 'flex-end' : 'flex-start',
-        marginBottom: '16px',
-      },
-    },
-    [
-      h(
-        'div',
-        {
-          className: 'message-bubble',
-          style: {
-            maxWidth: '70%',
-            padding: '12px 16px',
-            borderRadius: '20px',
-            backgroundColor: isUser ? '#3b63fb' : '#f0f0f0',
-            color: isUser ? '#ffffff' : '#131313',
-          },
-        },
-        [
-          h(
-            'div',
-            {
-              style: {
-                fontFamily: 'var(--body-font-family)',
-                fontSize: '16px',
-                lineHeight: '1.5',
-                whiteSpace: 'pre-wrap',
-              },
-            },
-            message.text,
-          ),
-          h(
-            'div',
-            {
-              style: {
-                fontSize: '12px',
-                opacity: 0.7,
-                marginTop: '4px',
-              },
-            },
-            new Date(message.createdAt).toLocaleTimeString([], {
-              hour: '2-digit',
-              minute: '2-digit',
-            }),
-          ),
-        ],
-      ),
-    ],
-  );
-}
-
 export async function loadReact() {
   if (window.React && window.ReactDOM) return;
   if (!window.React) await loadScript('https://unpkg.com/react@18/umd/react.production.min.js');

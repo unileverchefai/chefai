@@ -2,8 +2,8 @@ import sendMessage from './sendMessage.js';
 import {
   getHistory,
   saveHistory,
-  renderMessage,
 } from './utils.js';
+import renderChatUI from './renderChatUI.js';
 
 const {
   useState,
@@ -11,7 +11,6 @@ const {
   useEffect,
   useRef,
 } = window.React;
-const { createElement: h } = window.React;
 
 const USER_ID = 1;
 const AI_ID = 2;
@@ -89,125 +88,16 @@ export default function ChatWidget() {
     }
   }, [inputValue, messages]);
 
-  return h(
-    'div',
-    {
-      className: 'chat-widget',
-      style: {
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        backgroundColor: '#ffffff',
-      },
-    },
-    [
-      error && h(
-        'div',
-        {
-          key: 'error',
-          className: 'chat-error',
-          style: {
-            backgroundColor: '#ffebee',
-            color: '#d32f2f',
-            padding: '12px',
-            textAlign: 'center',
-            fontSize: '14px',
-            fontFamily: 'var(--body-font-family)',
-          },
-        },
-        error,
-      ),
-      h(
-        'div',
-        {
-          key: 'messages',
-          className: 'chat-messages',
-          style: {
-            flex: 1,
-            overflowY: 'auto',
-            padding: '20px',
-            display: 'flex',
-            flexDirection: 'column',
-          },
-        },
-        [
-          ...messages.map(renderMessage),
-          isTyping && h(
-            'div',
-            {
-              key: 'typing',
-              className: 'typing-indicator',
-              style: {
-                padding: '12px 16px',
-                marginBottom: '16px',
-                color: '#666',
-                fontStyle: 'italic',
-              },
-            },
-            'Chef AI is typing...',
-          ),
-          h('div', {
-            key: 'scroll-anchor',
-            ref: messagesEndRef,
-          }),
-        ],
-      ),
-      h(
-        'form',
-        {
-          key: 'input-form',
-          className: 'chat-input-form',
-          onSubmit: handleSend,
-          style: {
-            padding: '16px',
-            borderTop: '1px solid #e0e0e0',
-            backgroundColor: '#f8f8f8',
-            display: 'flex',
-            gap: '8px',
-          },
-        },
-        [
-          h('input', {
-            key: 'input',
-            type: 'text',
-            value: inputValue,
-            onChange: (e) => setInputValue(e.target.value),
-            placeholder: 'Type your message here...',
-            disabled: isTyping,
-            style: {
-              flex: 1,
-              padding: '12px 16px',
-              borderRadius: '24px',
-              border: '1px solid #e0e0e0',
-              fontSize: '16px',
-              fontFamily: 'var(--body-font-family)',
-              outline: 'none',
-            },
-          }),
-          h(
-            'button',
-            {
-              key: 'send',
-              type: 'submit',
-              disabled: !inputValue.trim() || isTyping,
-              style: {
-                width: '48px',
-                height: '48px',
-                borderRadius: '50%',
-                border: 'none',
-                backgroundColor: inputValue.trim() && !isTyping ? '#3b63fb' : '#ccc',
-                color: '#ffffff',
-                fontSize: '20px',
-                cursor: inputValue.trim() && !isTyping ? 'pointer' : 'not-allowed',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              },
-            },
-            '→',
-          ),
-        ],
-      ),
-    ],
-  );
+  const disabled = !inputValue.trim() || isTyping;
+
+  return renderChatUI({
+    error,
+    messages,
+    isTyping,
+    messagesEndRef,
+    inputValue,
+    setInputValue,
+    handleSend,
+    disabled,
+  });
 }
