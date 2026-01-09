@@ -14,6 +14,14 @@ export default async function chatbot(block) {
 
   const skeleton = document.createElement('div');
   skeleton.className = 'chatbot-skeleton';
+  skeleton.innerHTML = `
+    <div class="chatbot-skeleton-messages">
+      <div class="chatbot-skeleton-message">
+        <div class="chatbot-skeleton-bubble"></div>
+      </div>
+    </div>
+    <div class="chatbot-skeleton-form"></div>
+  `;
   chatContainer.appendChild(skeleton);
 
   try {
@@ -25,13 +33,15 @@ export default async function chatbot(block) {
 
     const { default: ChatWidget } = await import('./ChatWidget.js');
 
-    if (skeleton && skeleton.parentNode === chatContainer) {
-      chatContainer.removeChild(skeleton);
-    }
-
     const root = window.ReactDOM.createRoot(chatContainer);
-    root.render(window.React.createElement(ChatWidget));
-    block.reactRoot = root;
+
+    requestAnimationFrame(() => {
+      if (skeleton && skeleton.parentNode === chatContainer) {
+        chatContainer.removeChild(skeleton);
+      }
+      root.render(window.React.createElement(ChatWidget));
+      block.reactRoot = root;
+    });
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Failed to load chatbot:', error);
