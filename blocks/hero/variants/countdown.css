@@ -68,6 +68,14 @@
   margin-right: 12px;
 }
 
+@media (width < 353px) {
+  .hero__countdown--label-title::after,
+  .hero__countdown--label-title::before {
+    content: none;
+  }
+}
+
+
 .hero__countdown--segments {
   display: flex;
   justify-content: center;
@@ -155,10 +163,6 @@
     max-width: 503px;
     margin: 0 auto;
 
-    &::before {
-      left: 50%;
-    }
-
     &::after {
       left: -50%;
       background: var(--ufs-purple);
@@ -200,16 +204,21 @@
   .hero__countdown--number-segment {
     display: grid;
     justify-items: center;
-
-    &:not(:last-child) {
-      grid-template-columns: 1fr 18px;
-      grid-template-rows: auto auto;
-    }
+    grid-template-columns: 1fr 10px;
+    grid-template-rows: 66px auto;
 
     &:not(:last-child)::after {
       content: url('/icons/gradient-line-vertical.svg');
       margin-top: 20px;
       margin-left: 34px;
+      order: 2;
+    }
+
+    &:last-child::after {
+      content: '';
+      height: 1px;
+      display: block;
+      width: 1px;
       order: 2;
     }
   }
@@ -241,5 +250,25 @@
     width: 100%;
     font-size: 12px;
     text-align: left;
+  }
+}
+
+@media (width >= 992px) and (width <= 1079px) {
+  .hero__countdown--number-value,
+  .hero__countdown--text-content h1 {
+    font-size: 36px;
+  }
+
+  .hero__countdown--label-title,
+  .hero__countdown--text-content p {
+    font-size: 16px;
+  }
+
+  .hero .hero__countdown--number-label {
+    font-size: 12px;
+  }
+
+  .hero__countdown--number-segment {
+    grid-template-rows: 56px auto;
   }
 }
