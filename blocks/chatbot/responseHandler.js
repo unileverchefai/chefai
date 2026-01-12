@@ -83,41 +83,28 @@ export default function formatResponse(apiResponse) {
   // Collect all images from response
   const images = [];
 
-  // Extract images from recipes
-  if (apiResponse.response?.recipes?.length > 0) {
-    apiResponse.response.recipes.forEach((recipe) => {
-      if (recipe.image_url || recipe.image) {
+  const extractImages = (items, altKeyOrDefault) => {
+    items?.forEach((item) => {
+      if (item.image_url || item.image) {
         images.push({
-          url: recipe.image_url || recipe.image,
-          alt: recipe.title_in_user_language || recipe.title_in_original_language || 'Recipe image',
+          url: item.image_url || item.image,
+          alt: typeof altKeyOrDefault === 'function'
+            ? altKeyOrDefault(item)
+            : (item[altKeyOrDefault] || altKeyOrDefault),
         });
       }
     });
-  }
+  };
 
-  // Extract images from recipe_details
-  if (apiResponse.response?.recipe_details?.length > 0) {
-    apiResponse.response.recipe_details.forEach((recipe) => {
-      if (recipe.image_url || recipe.image) {
-        images.push({
-          url: recipe.image_url || recipe.image,
-          alt: recipe.title_in_user_language || recipe.title_in_original_language || 'Recipe image',
-        });
-      }
-    });
-  }
-
-  // Extract images from product_details
-  if (apiResponse.response?.product_details?.length > 0) {
-    apiResponse.response.product_details.forEach((product) => {
-      if (product.image_url || product.image) {
-        images.push({
-          url: product.image_url || product.image,
-          alt: product.name || 'Product image',
-        });
-      }
-    });
-  }
+  extractImages(
+    apiResponse.response?.recipes,
+    (recipe) => recipe.title_in_user_language || recipe.title_in_original_language || 'Recipe image',
+  );
+  extractImages(
+    apiResponse.response?.recipe_details,
+    (recipe) => recipe.title_in_user_language || recipe.title_in_original_language || 'Recipe image',
+  );
+  extractImages(apiResponse.response?.product_details, (product) => product.name || 'Product image');
 
   return {
     _id: apiResponse.message_id || `msg_${Date.now()}`,

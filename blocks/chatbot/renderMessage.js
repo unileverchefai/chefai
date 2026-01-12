@@ -43,11 +43,10 @@ function convertLinksToClickable(text) {
 
 export default function renderMessage(message) {
   const isUser = message.user._id === USER_ID;
-  const hasImages = message.metadata?.images?.length > 0;
 
   const bubbleContent = [
     // Images wrapper
-    ...(hasImages
+    ...(message.metadata?.images?.length > 0
       ? [
         h(
           'div',
