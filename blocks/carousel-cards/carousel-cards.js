@@ -1,0 +1,97 @@
+import { createCarousel } from '../../scripts/common.js';
+
+export default function decorate(block) {
+  // Parse the block content - each row is a card
+  const cards = [...block.children].map((row) => {
+    const cell = row.children[0];
+
+    // Look for h2 as title
+    const h2 = cell.querySelector('h2');
+    const title = h2 ? h2.textContent.trim() : '';
+
+    // Get the text content (everything else)
+    let textHTML = '';
+    if (h2) {
+      // Remove h2 and get remaining content
+      const clone = cell.cloneNode(true);
+      const h2Clone = clone.querySelector('h2');
+      if (h2Clone) h2Clone.remove();
+      textHTML = clone.innerHTML.trim();
+    } else {
+      textHTML = cell.innerHTML.trim();
+    }
+
+    return {
+      title,
+      textHTML,
+    };
+  }).filter((cardData) => cardData.textHTML); // // Text is mandatory (title is optional!)
+
+  // Validate minimum 3 items requirement (specs requirement)
+  const MIN_ITEMS = 3;
+  if (cards.length < MIN_ITEMS) {
+    block.remove();
+    return;
+  }
+
+  block.innerHTML = '';
+
+  // Carousel with cards is a list
+  const carouselContainer = document.createElement('ul');
+  carouselContainer.className = 'carousel-cards-container';
+
+  cards.forEach((cardData, index) => {
+    const card = document.createElement('li');
+    card.className = 'card';
+    card.setAttribute('data-node-id', `card-${index}`);
+
+    if (cardData.title) {
+      const title = document.createElement('div');
+      title.className = 'cards-card-title';
+
+      // Add small class for text titles (not percentage titles)
+      const isPercentage = /^\d+%$/.test(cardData.title);
+      if (!isPercentage) {
+        title.classList.add('small');
+      }
+
+      title.textContent = cardData.title;
+      card.appendChild(title);
+    }
+
+    if (cardData.textHTML) {
+      const text = document.createElement('div');
+      text.className = 'cards-card-body';
+
+      const htmlContent = cardData.textHTML.replace(/<u>(.*?)<\/u>/gi, '<span class="highlight">$1</span>');
+
+      text.innerHTML = htmlContent;
+      card.appendChild(text);
+    }
+
+    carouselContainer.appendChild(card);
+  });
+
+  block.appendChild(carouselContainer);
+
+  // If exactly 3 items, display as static layout (no carousel on desktop)
+  // Mobile always uses carousel :)
+  const STATIC_LAYOUT_COUNT = 3;
+  const isStaticDesktop = cards.length === STATIC_LAYOUT_COUNT;
+
+  if (isStaticDesktop) {
+    block.classList.add('carousel-cards-static');
+  }
+
+  createCarousel({
+    container: carouselContainer,
+    block,
+    itemCount: cards.length,
+    mobileItemsPerSlide: 1,
+    desktopItemsPerSlide: 3,
+    mobileBreakpoint: 900,
+    mobileGap: 16,
+    desktopGap: 24,
+    disableDesktopCarousel: isStaticDesktop,
+  });
+}

@@ -235,3 +235,162 @@ export function findVideoLink(container) {
   );
   return videoLink;
 }
+
+/**
+ * Carousel utilities
+ */
+
+/**
+ * Creates a carousel controller for a given container
+ * @param {Object} options Configuration options for the carousel
+ * @param {Element} options.container The container element that holds carousel items
+ * @param {Element} options.block The block element to append controls to
+ * @param {number} options.itemCount Total number of items in the carousel
+ * @param {number} [options.mobileItemsPerSlide=1] Items visible per slide on mobile
+ * @param {number} [options.desktopItemsPerSlide=3] Items visible per slide on desktop
+ * @param {number} [options.mobileBreakpoint=900] Breakpoint for mobile/desktop switch
+ * @param {number} [options.mobileGap=16] Gap between items on mobile (in px)
+ * @param {number} [options.desktopGap=24] Gap between items on desktop (in px)
+ * @param {boolean} [options.disableDesktopCarousel=false] Disable carousel on desktop (mobile only)
+ * @returns {Object} Carousel controller with destroy method
+ * @example
+ * const carousel = createCarousel({
+ *   container: carouselContainer,
+ *   block: blockElement,
+ *   itemCount: cards.length,
+ *   mobileItemsPerSlide: 1,
+ *   desktopItemsPerSlide: 3
+ * });
+ * // Later, cleanup: carousel.destroy();
+ */
+export function createCarousel(options) {
+  const {
+    container,
+    block,
+    itemCount,
+    mobileItemsPerSlide = 1,
+    desktopItemsPerSlide = 3,
+    mobileBreakpoint = 900,
+    mobileGap = 16,
+    desktopGap = 24,
+    disableDesktopCarousel = false,
+  } = options;
+
+  // Carousel state
+  let currentSlide = 0;
+
+  // Create controls container
+  const controls = document.createElement('div');
+  controls.className = 'controls';
+
+  // Create indicators
+  const indicators = document.createElement('div');
+  indicators.className = 'indicators';
+
+  // Create arrows
+  const arrows = document.createElement('div');
+  arrows.className = 'arrows';
+
+  const prevArrow = document.createElement('button');
+  prevArrow.className = 'arrow prev';
+  prevArrow.setAttribute('aria-label', 'Previous slide');
+  prevArrow.innerHTML = `
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8.33 14.67L10.8 12.2L8.33 9.73L9.27 8.8L12.67 12.2L9.27 15.6L8.33 14.67Z"/>
+    </svg>
+  `;
+
+  const nextArrow = document.createElement('button');
+  nextArrow.className = 'arrow next';
+  nextArrow.setAttribute('aria-label', 'Next slide');
+  nextArrow.innerHTML = `
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8.33 14.67L10.8 12.2L8.33 9.73L9.27 8.8L12.67 12.2L9.27 15.6L8.33 14.67Z"/>
+    </svg>
+  `;
+
+  function updateCarousel() {
+    const firstItem = container.querySelector('.card, .carousel-item');
+    const itemWidth = firstItem?.offsetWidth || 0;
+    const isMobile = window.innerWidth < mobileBreakpoint;
+    const gap = isMobile ? mobileGap : desktopGap;
+    const itemsPerSlide = isMobile ? mobileItemsPerSlide : desktopItemsPerSlide;
+    const slideWidth = (itemWidth + gap) * itemsPerSlide;
+
+    // Disable carousel transform on desktop if disableDesktopCarousel is true
+    if (disableDesktopCarousel && !isMobile) {
+      container.style.transform = 'translateX(0)';
+    } else {
+      container.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
+    }
+
+    // Update indicators
+    indicators.querySelectorAll('.indicator').forEach((ind, idx) => {
+      ind.classList.toggle('active', idx === currentSlide);
+    });
+  }
+
+  function navigate(direction) {
+    const isMobile = window.innerWidth < mobileBreakpoint;
+    const itemsPerSlide = isMobile ? mobileItemsPerSlide : desktopItemsPerSlide;
+    const total = Math.ceil(itemCount / itemsPerSlide);
+    currentSlide = (currentSlide + direction + total) % total;
+    updateCarousel();
+  }
+
+  function goToSlide(index) {
+    currentSlide = index;
+    updateCarousel();
+  }
+
+  // Resizing must be checked, not really working as expected.
+  function handleResize() {
+    const isMobile = window.innerWidth < mobileBreakpoint;
+    const itemsPerSlide = isMobile ? mobileItemsPerSlide : desktopItemsPerSlide;
+
+    // If desktop carousel is disabled and we're on desktop, only show 1 slide (all items)
+    const total = (disableDesktopCarousel && !isMobile) ? 1 : Math.ceil(itemCount / itemsPerSlide);
+
+    // Rebuild indicators if count changed
+    const currentIndicatorCount = indicators.querySelectorAll('.indicator').length;
+    if (currentIndicatorCount !== total) {
+      indicators.innerHTML = '';
+      for (let i = 0; i < total; i += 1) {
+        const indicator = document.createElement('button');
+        indicator.className = `indicator${i === 0 ? ' active' : ''}`;
+        indicator.setAttribute('aria-label', `Go to slide ${i + 1} of ${total}`);
+        indicator.setAttribute('type', 'button');
+        indicator.addEventListener('click', () => goToSlide(i));
+        indicators.appendChild(indicator);
+      }
+      currentSlide = 0;
+    }
+
+    updateCarousel();
+  }
+
+  // Event listeners
+  prevArrow.addEventListener('click', () => navigate(-1));
+  nextArrow.addEventListener('click', () => navigate(1));
+
+  // Assemble controls
+  arrows.appendChild(prevArrow);
+  arrows.appendChild(nextArrow);
+  controls.appendChild(indicators);
+  controls.appendChild(arrows);
+  block.appendChild(controls);
+
+  // Initial setup
+  handleResize();
+  window.addEventListener('resize', handleResize);
+
+  return {
+    destroy: () => {
+      window.removeEventListener('resize', handleResize);
+      controls.remove();
+    },
+    goToSlide,
+    navigate,
+    getCurrentSlide: () => currentSlide,
+  };
+}
