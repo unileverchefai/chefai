@@ -1,3 +1,5 @@
+import { SUBSCRIPTION_KEY, API_BASE_URL } from './constants/api.js';
+
 export function getThreadId() {
   let threadId = sessionStorage.getItem('chef-ai-thread-id');
   if (!threadId) {
@@ -52,6 +54,61 @@ export function saveHistory(messages) {
   } catch (err) {
     // eslint-disable-next-line no-console
     console.error('Failed to save history:', err);
+  }
+}
+
+export async function fetchChatHistory(threadId) {
+  const endpoint = `${API_BASE_URL}/chat/threads/${threadId}/messages`;
+
+  try {
+    const response = await fetch(endpoint, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'Ocp-Apim-Subscription-Key': SUBSCRIPTION_KEY,
+      },
+    });
+
+    if (!response.ok) {
+      // eslint-disable-next-line no-console
+      console.warn('Failed to fetch chat history:', response.status, response.statusText);
+      return [];
+    }
+
+    // Check if response has content before parsing
+    const responseText = await response.text();
+    if (!responseText || responseText.trim() === '') {
+      // eslint-disable-next-line no-console
+      console.info('No chat history available for thread:', threadId);
+      return [];
+    }
+
+    const data = JSON.parse(responseText);
+
+    // Check if response has messages array
+    if (!data || !Array.isArray(data.messages)) {
+      // eslint-disable-next-line no-console
+      console.warn('API response does not contain messages array:', data);
+      return [];
+    }
+
+    // Convert API messages to internal format
+    return data.messages.map((msg) => ({
+      _id: msg.message_id || msg.id || `msg_${Date.now()}_${Math.random()}`,
+      text: msg.message || msg.text || '',
+      createdAt: new Date(msg.timestamp || msg.created_at || Date.now()),
+      user: {
+        _id: msg.role === 'user' ? 1 : 2,
+        name: msg.role === 'user' ? 'You' : 'Chef AI',
+        avatar: msg.role === 'assistant' ? '/icons/chef-ai-avatar.svg' : undefined,
+      },
+      metadata: msg.metadata || {},
+    }));
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error('Error fetching chat history:', err);
+    return [];
   }
 }
 
