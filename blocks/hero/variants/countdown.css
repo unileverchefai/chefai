@@ -147,15 +147,16 @@
 
   .hero__countdown--content {
     order: 1;
-    padding-block-start: 0;
+    padding: 0 16px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    max-width: 503px;
+    margin: 0 auto;
 
     &::before {
-      right: 50%;
-      left: -50%;
+      left: 50%;
     }
 
     &::after {
@@ -166,6 +167,79 @@
 
   .hero__countdown--text-content {
     max-width: 503px;
-    padding-inline: 16px;
+    text-align: left;
+
+    > h1 {
+      font-size: 42px;
+    }
+
+    > p {
+      font-size: 18px;
+    }
+  }
+
+  .hero__countdown--countdown-timer {
+    text-align: left;
+  }
+
+  .hero__countdown--container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    align-items: baseline;
+  }
+
+  .hero__countdown--label-title {
+    font-size: 18px;
+  }
+
+  .hero__countdown--label-title::before,
+  .hero__countdown--label-title::after {
+    content: none;
+  }
+
+  .hero__countdown--number-segment {
+    display: grid;
+    justify-items: center;
+
+    &:not(:last-child) {
+      grid-template-columns: 1fr 18px;
+      grid-template-rows: auto auto;
+    }
+
+    &:not(:last-child)::after {
+      content: url('/icons/gradient-line-vertical.svg');
+      margin-top: 20px;
+      margin-left: 34px;
+      order: 2;
+    }
+  }
+
+  .hero__countdown--number-value {
+    font-size: 40px;
+    order: 1;
+  }
+
+  .hero .hero__countdown--number-label {
+    font-size: 13px;
+    order: 3;
+    margin: 0;
+  }
+
+  .hero__countdown--cta {
+    font-size: 18px;
+    width: 100%;
+
+    & .button-container a {
+      max-width: 503px;
+      height: 60px;
+      padding: 19px 40px;
+      width: 100%;
+    }
+  }
+
+  .hero__countdown--disclaimer {
+    width: 100%;
+    font-size: 12px;
+    text-align: left;
   }
 }
