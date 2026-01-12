@@ -1,3 +1,7 @@
+import formatResponse from './responseHandler.js';
+
+export { formatResponse };
+
 export function getThreadId() {
   let threadId = sessionStorage.getItem('chef-ai-thread-id');
   if (!threadId) {
@@ -5,36 +9,6 @@ export function getThreadId() {
     sessionStorage.setItem('chef-ai-thread-id', threadId);
   }
   return threadId;
-}
-
-export function formatResponse(apiResponse) {
-  let messageText = apiResponse.response?.message
-    || (typeof apiResponse.response === 'string' ? apiResponse.response : 'I received your message. How can I help you further?');
-
-  if (apiResponse.response?.recipes?.length > 0) {
-    messageText += '\n\n📚 Recipes:\n';
-    apiResponse.response.recipes.forEach((recipe, index) => {
-      messageText += `\n${index + 1}. ${recipe.title_in_user_language || recipe.title_in_original_language}`;
-      if (recipe.description) messageText += `\n   ${recipe.description}`;
-      if (recipe.url) messageText += `\n   🔗 ${recipe.url}`;
-    });
-  }
-
-  return {
-    _id: apiResponse.message_id || `msg_${Date.now()}`,
-    text: messageText,
-    createdAt: new Date(apiResponse.timestamp || Date.now()),
-    user: {
-      _id: 2,
-      name: 'Chef AI',
-      avatar: '/icons/chef-ai-avatar.svg',
-    },
-    metadata: {
-      run_id: apiResponse.run_id,
-      thread_id: apiResponse.thread_id,
-      recipes: apiResponse.response?.recipes || [],
-    },
-  };
 }
 
 export function getHistory() {

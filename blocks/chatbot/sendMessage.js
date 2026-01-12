@@ -1,10 +1,5 @@
 import { getThreadId, formatResponse } from './utils.js';
-
-const ENDPOINTS = {
-  capgemini: 'https://api-hub-we.azure-api.net/chefaibe/st/api/v1/chat/message',
-  formula1: 'https://api-hub-we.azure-api.net/chefaibe/st/api/v1/chat/message',
-  ufs: 'https://api-hub-we.azure-api.net/chefaibe/st/api/v1/chat/message',
-};
+import { SUBSCRIPTION_KEY, ENDPOINTS } from './constants/api.js';
 
 let currentEndpoint = 'capgemini';
 
@@ -31,6 +26,7 @@ export default async function sendMessage(message, options = {}) {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
+      'Ocp-Apim-Subscription-Key': SUBSCRIPTION_KEY,
     },
     body: JSON.stringify(payload),
   });

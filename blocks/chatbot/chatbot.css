@@ -186,3 +186,36 @@
     outline: 2px solid var(--link-color);
     outline-offset: 2px;
 }
+
+/* Message content styles */
+.message-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.message-bubble img {
+    display: block;
+    height: auto;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.message-bubble a {
+    color: inherit;
+    text-decoration: underline;
+    overflow-wrap: break-word;
+}
+
+.message-bubble a:hover {
+    opacity: 0.8;
+}
+
+.user-message .message-bubble a {
+    color: var(--background-color);
+}
+
+.ai-message .message-bubble a {
+    color: var(--link-color);
+    font-weight: 500;
+}
