@@ -235,3 +235,420 @@ export function findVideoLink(container) {
   );
   return videoLink;
 }
+
+/**
+ * Carousel utilities
+ */
+
+/**
+ * Debounce utility function
+ * @param {Function} fn Function to debounce
+ * @param {number} delay Delay in milliseconds
+ * @returns {Function} Debounced function
+ */
+function debounce(fn, delay) {
+  let timeoutId;
+  return (...args) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => fn(...args), delay);
+  };
+}
+
+/**
+ * Easing function for smooth momentum scrolling
+ * @param {number} t Progress value between 0 and 1
+ * @returns {number} Eased value
+ */
+function easeOutCubic(t) {
+  return 1 - ((1 - t) ** 3);
+}
+
+/**
+ * Creates a carousel controller for a given container
+ * @typedef {Object} CarouselOptions
+ * @property {Element} container - Container with carousel items
+ * @property {Element} block - Block element for controls
+ * @property {number} itemCount - Total items
+ * @property {number} [mobileItemsPerSlide=1] - Items per slide (mobile)
+ * @property {number} [desktopItemsPerSlide=3] - Items per slide (desktop)
+ * @property {number} [mobileBreakpoint=900] - Mobile breakpoint (px)
+ * @property {number} [mobileGap=16] - Gap between items (mobile, px)
+ * @property {number} [desktopGap=24] - Gap between items (desktop, px)
+ * @property {boolean} [disableDesktopCarousel=false] - Disable on desktop
+ * @property {boolean} [enableMomentum=true] - Enable momentum scrolling
+ * @property {number} [momentumMultiplier=2] - Momentum strength (1-5)
+ * @property {number} [snapThreshold=0.3] - Swipe threshold to trigger slide change
+ * @property {number} [minSwipeDistance=50] - Minimum swipe distance (px)
+ * @property {number} [maxMomentumDuration=800] - Max momentum animation duration (ms)
+ * @returns {Object} Carousel controller with destroy method
+ * @example
+ * const carousel = createCarousel({
+ *   container: carouselContainer,
+ *   block: blockElement,
+ *   itemCount: cards.length,
+ *   mobileItemsPerSlide: 1,
+ *   desktopItemsPerSlide: 3
+ * });
+ * // Later, cleanup: carousel.destroy();
+ */
+export function createCarousel(options) {
+  const {
+    container,
+    block,
+    itemCount,
+    mobileItemsPerSlide = 1,
+    desktopItemsPerSlide = 3,
+    mobileBreakpoint = 900,
+    mobileGap = 16,
+    desktopGap = 24,
+    disableDesktopCarousel = false,
+    enableMomentum = true,
+    momentumMultiplier = 2,
+    snapThreshold = 0.3,
+    minSwipeDistance = 50,
+    maxMomentumDuration = 800,
+  } = options;
+
+  // Carousel state
+  let currentSlide = 0;
+  let lastItemsPerSlide = null;
+
+  // Touch/drag interaction state
+  const interactionState = {
+    isDragging: false,
+    startX: 0,
+    currentX: 0,
+    startTime: 0,
+    velocityX: 0,
+    lastX: 0,
+    lastTime: 0,
+    dragOffset: 0,
+    animationId: null,
+  };
+
+  // Create controls container
+  const controls = document.createElement('div');
+  controls.className = 'controls';
+
+  // Create ARIA live region for screen readers
+  const liveRegion = document.createElement('div');
+  liveRegion.setAttribute('aria-live', 'polite');
+  liveRegion.setAttribute('aria-atomic', 'true');
+  liveRegion.className = 'sr-only';
+  block.appendChild(liveRegion);
+
+  // Create indicators
+  const indicators = document.createElement('div');
+  indicators.className = 'indicators';
+
+  // Create arrows
+  const arrows = document.createElement('div');
+  arrows.className = 'arrows';
+
+  const prevArrow = document.createElement('button');
+  prevArrow.className = 'arrow prev';
+  prevArrow.setAttribute('aria-label', 'Previous slide');
+  prevArrow.innerHTML = `
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8.33 14.67L10.8 12.2L8.33 9.73L9.27 8.8L12.67 12.2L9.27 15.6L8.33 14.67Z"/>
+    </svg>
+  `;
+
+  const nextArrow = document.createElement('button');
+  nextArrow.className = 'arrow next';
+  nextArrow.setAttribute('aria-label', 'Next slide');
+  nextArrow.innerHTML = `
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8.33 14.67L10.8 12.2L8.33 9.73L9.27 8.8L12.67 12.2L9.27 15.6L8.33 14.67Z"/>
+    </svg>
+  `;
+
+  function getCarouselMetrics() {
+    const firstItem = container.querySelector('.card, .carousel-item');
+    const itemWidth = firstItem?.offsetWidth || 0;
+    const isMobile = window.innerWidth < mobileBreakpoint;
+    const gap = isMobile ? mobileGap : desktopGap;
+    const itemsPerSlide = isMobile ? mobileItemsPerSlide : desktopItemsPerSlide;
+    const slideWidth = (itemWidth + gap) * itemsPerSlide;
+    const totalSlides = (disableDesktopCarousel && !isMobile)
+      ? 1
+      : Math.ceil(itemCount / itemsPerSlide);
+
+    return {
+      itemWidth, isMobile, gap, itemsPerSlide, slideWidth, totalSlides,
+    };
+  }
+
+  function updateCarousel(immediate = false) {
+    const { isMobile, slideWidth, totalSlides } = getCarouselMetrics();
+
+    // Disable carousel transform on desktop if disableDesktopCarousel is true
+    if (disableDesktopCarousel && !isMobile) {
+      container.style.transform = 'translateX(0)';
+    } else {
+      const offset = -currentSlide * slideWidth;
+      if (immediate) {
+        container.style.transition = 'none';
+        container.style.transform = `translateX(${offset}px)`;
+        // Force reflow
+        // eslint-disable-next-line no-unused-expressions
+        container.offsetHeight;
+        container.style.transition = '';
+      } else {
+        container.style.transform = `translateX(${offset}px)`;
+      }
+    }
+
+    // Update indicators
+    indicators.querySelectorAll('.indicator').forEach((ind, idx) => {
+      ind.classList.toggle('active', idx === currentSlide);
+    });
+
+    // Announce slide change to screen readers
+    liveRegion.textContent = `Slide ${currentSlide + 1} of ${totalSlides}`;
+  }
+
+  function navigate(direction) {
+    const { totalSlides } = getCarouselMetrics();
+    currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
+    updateCarousel();
+  }
+
+  function goToSlide(index, immediate = false) {
+    const { totalSlides } = getCarouselMetrics();
+    currentSlide = Math.max(0, Math.min(index, totalSlides - 1));
+    updateCarousel(immediate);
+  }
+
+  function calculateMomentum(velocity, dragDistance) {
+    const { slideWidth } = getCarouselMetrics();
+    const duration = Math.min(
+      Math.abs(velocity) * momentumMultiplier * 100,
+      maxMomentumDuration,
+    );
+
+    const finalPosition = dragDistance + ((velocity * duration) / 2);
+    const slideOffset = Math.round((-finalPosition) / slideWidth);
+
+    return { slideOffset, duration };
+  }
+
+  function animateMomentum(targetSlide, duration) {
+    const { slideWidth } = getCarouselMetrics();
+    const startSlide = currentSlide;
+    const startOffset = interactionState.dragOffset;
+    const startTime = performance.now();
+
+    function animate(time) {
+      const elapsed = time - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = easeOutCubic(progress);
+
+      const slideProgress = startSlide + (targetSlide - startSlide) * eased;
+      const offset = -slideProgress * slideWidth + startOffset * (1 - eased);
+
+      container.style.transition = 'none';
+      container.style.transform = `translateX(${offset}px)`;
+
+      if (progress < 1) {
+        interactionState.animationId = requestAnimationFrame(animate);
+      } else {
+        currentSlide = targetSlide;
+        interactionState.dragOffset = 0;
+        updateCarousel();
+      }
+    }
+
+    if (interactionState.animationId) {
+      cancelAnimationFrame(interactionState.animationId);
+    }
+
+    interactionState.animationId = requestAnimationFrame(animate);
+  }
+
+  function handleInteractionStart(clientX) {
+    if (interactionState.animationId) {
+      cancelAnimationFrame(interactionState.animationId);
+      interactionState.animationId = null;
+    }
+
+    interactionState.isDragging = true;
+    interactionState.startX = clientX;
+    interactionState.currentX = clientX;
+    interactionState.lastX = clientX;
+    interactionState.startTime = performance.now();
+    interactionState.lastTime = performance.now();
+    interactionState.velocityX = 0;
+    interactionState.dragOffset = 0;
+
+    container.classList.add('is-dragging');
+  }
+
+  function handleInteractionMove(clientX) {
+    if (!interactionState.isDragging) return;
+
+    const currentTime = performance.now();
+    const deltaX = clientX - interactionState.lastX;
+    const deltaTime = currentTime - interactionState.lastTime;
+
+    if (deltaTime > 0) {
+      interactionState.velocityX = deltaX / deltaTime;
+    }
+
+    interactionState.currentX = clientX;
+    interactionState.lastX = clientX;
+    interactionState.lastTime = currentTime;
+
+    const dragDistance = clientX - interactionState.startX;
+    interactionState.dragOffset = dragDistance;
+
+    const { slideWidth, isMobile } = getCarouselMetrics();
+
+    if (disableDesktopCarousel && !isMobile) return;
+
+    const offset = -currentSlide * slideWidth + dragDistance;
+    container.style.transition = 'none';
+    container.style.transform = `translateX(${offset}px)`;
+  }
+
+  function handleInteractionEnd() {
+    if (!interactionState.isDragging) return;
+
+    interactionState.isDragging = false;
+    container.classList.remove('is-dragging');
+
+    const dragDistance = interactionState.currentX - interactionState.startX;
+    const dragDuration = performance.now() - interactionState.startTime;
+    const { slideWidth, totalSlides } = getCarouselMetrics();
+
+    if (Math.abs(dragDistance) < minSwipeDistance && dragDuration < 200) {
+      updateCarousel();
+      return;
+    }
+
+    let targetSlide = currentSlide;
+
+    if (enableMomentum && Math.abs(interactionState.velocityX) > 0.5) {
+      const { slideOffset, duration } = calculateMomentum(
+        interactionState.velocityX,
+        dragDistance,
+      );
+      targetSlide = Math.max(0, Math.min(currentSlide + slideOffset, totalSlides - 1));
+      animateMomentum(targetSlide, duration);
+    } else {
+      const threshold = slideWidth * snapThreshold;
+      if (Math.abs(dragDistance) > threshold) {
+        targetSlide = dragDistance > 0 ? currentSlide - 1 : currentSlide + 1;
+      }
+      targetSlide = Math.max(0, Math.min(targetSlide, totalSlides - 1));
+      goToSlide(targetSlide);
+    }
+  }
+
+  function handleTouchStart(e) {
+    handleInteractionStart(e.touches[0].clientX);
+  }
+
+  function handleTouchMove(e) {
+    handleInteractionMove(e.touches[0].clientX);
+  }
+
+  function handleTouchEnd() {
+    handleInteractionEnd();
+  }
+
+  function handleKeyDown(e) {
+    switch (e.key) {
+      case 'ArrowLeft':
+        e.preventDefault();
+        navigate(-1);
+        break;
+      case 'ArrowRight':
+        e.preventDefault();
+        navigate(1);
+        break;
+      case 'Home':
+        e.preventDefault();
+        goToSlide(0);
+        break;
+      case 'End':
+        e.preventDefault();
+        goToSlide(getCarouselMetrics().totalSlides - 1);
+        break;
+      default:
+        break;
+    }
+  }
+
+  function handleResize() {
+    const { itemsPerSlide, totalSlides } = getCarouselMetrics();
+
+    // Only rebuild indicators if itemsPerSlide changed (not just window width)
+    if (lastItemsPerSlide !== itemsPerSlide) {
+      lastItemsPerSlide = itemsPerSlide;
+
+      indicators.innerHTML = '';
+      for (let i = 0; i < totalSlides; i += 1) {
+        const indicator = document.createElement('button');
+        indicator.className = `indicator${i === 0 ? ' active' : ''}`;
+        indicator.setAttribute('aria-label', `Go to slide ${i + 1} of ${totalSlides}`);
+        indicator.setAttribute('type', 'button');
+        indicator.addEventListener('click', () => goToSlide(i));
+        indicators.appendChild(indicator);
+      }
+
+      if (currentSlide >= totalSlides) {
+        currentSlide = totalSlides - 1;
+      }
+    }
+
+    updateCarousel(true);
+  }
+
+  // Event listeners - arrows
+  prevArrow.addEventListener('click', () => navigate(-1));
+  nextArrow.addEventListener('click', () => navigate(1));
+
+  // Touch events
+  container.addEventListener('touchstart', handleTouchStart, { passive: true });
+  container.addEventListener('touchmove', handleTouchMove, { passive: true });
+  container.addEventListener('touchend', handleTouchEnd);
+  container.addEventListener('touchcancel', handleTouchEnd);
+
+  // Keyboard navigation
+  container.setAttribute('tabindex', '0');
+  container.addEventListener('keydown', handleKeyDown);
+
+  // Debounced resize handler
+  const debouncedResize = debounce(handleResize, 150);
+
+  // Assemble controls
+  arrows.appendChild(prevArrow);
+  arrows.appendChild(nextArrow);
+  controls.appendChild(indicators);
+  controls.appendChild(arrows);
+  block.appendChild(controls);
+
+  // Initial setup
+  handleResize();
+  window.addEventListener('resize', debouncedResize);
+
+  return {
+    destroy: () => {
+      window.removeEventListener('resize', debouncedResize);
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchmove', handleTouchMove);
+      container.removeEventListener('touchend', handleTouchEnd);
+      container.removeEventListener('touchcancel', handleTouchEnd);
+      container.removeEventListener('keydown', handleKeyDown);
+      if (interactionState.animationId) {
+        cancelAnimationFrame(interactionState.animationId);
+      }
+      controls.remove();
+      liveRegion.remove();
+    },
+    goToSlide,
+    navigate,
+    getCurrentSlide: () => currentSlide,
+  };
+}

@@ -19,8 +19,44 @@
   --link-color: #3b63fb;
   --link-hover-color: #1d3ecf;
 
-  /* Unilever colors */
+   /* Unilever colors */
   --ufs-orange: #FF5A00;
+  --squid-ink: #221D37;
+  --aubergine: #5C3657;
+  --smoke: #94889D;
+  --mushroom: #CBC5C7;
+
+  /* Shades */
+  --accessible-orange: #FF5A00;
+  --mid-smoke: #C9C3CE;
+  --mid-mushroom: #E5E2E3;
+  --light-smoke: #EAE7EB;
+  --light-mushroom: #F5F3F4;
+
+  /* Trends */
+  --street-food-couture: #622C57;
+  --street-food-couture-bright: #622C57;
+  --borderless-cuisine: #ED6C00;
+  --borderless-cuisine-bright: #F9B000;
+  --diner-designed: #679641;
+  --diner-designed-bright: #A1B83B;
+  --culinary-roots: #00102D;
+  --culinary-roots-bright: #0090BA;
+
+  /* Functional */
+  --success: #81BC2A;
+  --error: #D0021B;
+  --information: #0A7FFE;
+
+  /* Neon */
+  --neon-fm-1: #EB2263;
+  --neon-fm-2: #F15A22;
+  --neon-fm-3: #B02B9F;
+  --neon-fm-4: #FCB315;
+
+  /* Gradient colors */
+  --orange-dark: #d14900;
+  --purple: #7b3872;
 
   /* fonts */
   --ff-chefs-hand: 'Chefs Hand', cursive, sans-serif;
@@ -56,6 +92,7 @@
 
   /* border radius */
   --radius-sm: 8px;
+  --radius-md: 12px;
   --radius-lg: 32px;
   --radius-full: 50%;
 
@@ -88,6 +125,9 @@
   --text-shadow-base: 0 2px 6px rgb(0 0 0 / 50%);
   --box-shadow-lg: 0 10px 40px rgb(0 0 0 / 50%);
   --box-shadow-md: 0 4px 12px rgb(0 0 0 / 30%);
+  --box-shadow-card: 0 4px 14px rgb(0 0 0 / 5%);
+  --gradient-highlight: linear-gradient(90deg, var(--orange-dark) 0%, var(--purple) 100%);
+  --gradient-border: linear-gradient(135deg, var(--ufs-orange) 0%, var(--orange-dark) 50%, var(--purple) 100%);
 }
 
 @media (width >= 900px) {
@@ -270,7 +310,7 @@ main > .section {
 }
 
 main > .section > div {
-  max-width: 1200px;
+  max-width: 100%;
   margin: auto;
   padding: 0 24px;
 }
