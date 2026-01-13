@@ -61,7 +61,66 @@ function openVideoModal(videoUrl) {
   document.addEventListener('keydown', handleEscape);
 }
 
+function validateRequiredElements(block) {
+  const children = Array.from(block.children);
+
+  if (children.length < 2) return false;
+
+  const mediaSection = children[0];
+  const mediaSectionContent = mediaSection.querySelector('div');
+  if (!mediaSectionContent) return false;
+
+  // Required: picture element
+  if (!mediaSectionContent.querySelector('picture')) return false;
+
+  // Required: h2 with title text (not just picture/link)
+  const allH2s = mediaSectionContent.querySelectorAll('h2');
+  if (allH2s.length === 0) return false;
+
+  let hasTitleText = false;
+  allH2s.forEach((h2) => {
+    const textNodes = Array.from(h2.childNodes)
+      .filter((node) => node.nodeType === Node.TEXT_NODE)
+      .map((node) => node.textContent.trim())
+      .join('');
+    const hasOnlyText = !h2.querySelector('picture, a') && h2.textContent.trim();
+    if (textNodes || hasOnlyText) hasTitleText = true;
+  });
+  if (!hasTitleText) return false;
+
+  // Required: paragraph text
+  const textContent = mediaSectionContent.querySelector('p');
+  if (!textContent || !textContent.textContent.trim()) return false;
+
+  // Required: 3 USP cards
+  const cards = children.slice(1);
+  if (cards.length !== 3) return false;
+
+  // Validate each card
+  for (let i = 0; i < cards.length; i += 1) {
+    const innerDiv = cards[i].querySelector('div');
+    if (!innerDiv) return false;
+
+    const cardTitle = innerDiv.querySelector('h4');
+    const cardDescription = innerDiv.querySelector('p');
+    const cardIcon = cardTitle?.querySelector('picture');
+
+    if (!cardTitle || !cardTitle.textContent.trim()) return false;
+    if (!cardDescription || !cardDescription.textContent.trim()) return false;
+    if (!cardIcon) return false;
+  }
+
+  return true;
+}
+
 export default function decorate(block) {
+  // check if required elements are present
+  if (!validateRequiredElements(block)) {
+    // if not, remove the block entirely
+    block.remove();
+    return;
+  }
+
   const children = Array.from(block.children);
 
   // media section
