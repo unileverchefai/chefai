@@ -25,7 +25,7 @@ export default function decorate(block) {
       title,
       textHTML,
     };
-  }).filter((cardData) => cardData.textHTML); // // Text is mandatory (title is optional!)
+  }).filter((cardData) => cardData.textHTML); // Text is mandatory (title is optional!)
 
   // Validate minimum 3 items requirement (specs requirement)
   const MIN_ITEMS = 3;
@@ -83,15 +83,36 @@ export default function decorate(block) {
     block.classList.add('carousel-cards-static');
   }
 
-  createCarousel({
-    container: carouselContainer,
-    block,
-    itemCount: cards.length,
-    mobileItemsPerSlide: 1,
-    desktopItemsPerSlide: 3,
-    mobileBreakpoint: 900,
-    mobileGap: 16,
-    desktopGap: 24,
-    disableDesktopCarousel: isStaticDesktop,
-  });
+  try {
+    const carousel = createCarousel({
+      container: carouselContainer,
+      block,
+      itemCount: cards.length,
+      mobileItemsPerSlide: 1,
+      desktopItemsPerSlide: 3,
+      mobileBreakpoint: 900,
+      mobileGap: 16,
+      desktopGap: 24,
+      disableDesktopCarousel: isStaticDesktop,
+    });
+
+    // Store carousel instance for cleanup
+    block.carouselInstance = carousel;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('Failed to initialize carousel:', error);
+    // Fallback: show all cards in static layout
+    block.classList.add('carousel-cards-static');
+  }
+}
+
+/**
+ * Cleanup function to destroy carousel instance
+ * @param {Element} block The carousel block element
+ */
+export function destroy(block) {
+  if (block.carouselInstance) {
+    block.carouselInstance.destroy();
+    block.carouselInstance = null;
+  }
 }
