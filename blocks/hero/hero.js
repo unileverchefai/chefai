@@ -85,7 +85,7 @@ function buildHero({ heroClassList, heroContent, heroContainer }) {
   const contentArea = heroContainer.querySelector(`.${heroClassList.textContent}`);
   const ctaArea = heroContainer.querySelector(`.${heroClassList.cta}`);
   const disclaimerArea = heroContainer.querySelector(`.${heroClassList.disclaimer}`);
-//! build media area. (to build just by now an image, later video & carousel)
+  // TODO: build media area. (to build just by now an image, later video & carousel)
   const content = heroContent.querySelector(':scope > div');
   const mediaElement = content.querySelector(':scope > p');
   if (mediaElement) {
