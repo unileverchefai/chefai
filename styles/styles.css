@@ -20,9 +20,44 @@
   --link-color: #3b63fb;
   --link-hover-color: #1d3ecf;
 
-  /* Unilever colors */
+   /* Unilever colors */
   --ufs-orange: #ff5a00;
-  --ufs-purple: #221d37;
+  --squid-ink: #221d37;
+  --aubergine: #5c3657;
+  --smoke: #94889d;
+  --mushroom: #cbc5c7;
+
+  /* Shades */
+  --accessible-orange: #ff5a00;
+  --mid-smoke: #c9c3ce;
+  --mid-mushroom: #e5e2e3;
+  --light-smoke: #eae7eb;
+  --light-mushroom: #f5f3f4;
+
+  /* Trends */
+  --street-food-couture: #622c57;
+  --street-food-couture-bright: #622c57;
+  --borderless-cuisine: #ed6c00;
+  --borderless-cuisine-bright: #f9b000;
+  --diner-designed: #679641;
+  --diner-designed-bright: #a1b83b;
+  --culinary-roots: #00102d;
+  --culinary-roots-bright: #0090ba;
+
+  /* Functional */
+    --success: #81BC2A;
+    --error: #D0021B;
+    --information: #0A7FFE;
+
+  /* Neon */
+  --neon-fm-1: #eb2263;
+  --neon-fm-2: #f15a22;
+  --neon-fm-3: #b02b9f;
+  --neon-fm-4: #fcb315;
+
+  /* Gradient colors */
+  --orange-dark: #d14900;
+  --purple: #7b3872;
 
   /* fonts */
   --ff-chefs-hand: 'Chefs Hand', cursive, sans-serif;
@@ -49,6 +84,55 @@
   /* future menu logo */
   --future-menu-logo-text-url: url('../media/media_1c84ff22a0de724b285c4a8f7096544e3f3830f22.png');
   --future-menu-logo-number-url: url('../media/media_1b533b6db481a3a27c53b6af9f2f15520433f194e.png');
+
+  /* spacing scale */
+  --spacing-xxs: 5px;
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 28px;
+  --spacing-2xl: 40px;
+  --spacing-3xl: 57px;
+
+  /* border radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 32px;
+  --radius-full: 50%;
+
+  /* icon/component sizes */
+  --icon-size-sm: 48px;
+  --icon-size-md: 72px;
+  --icon-size-lg: 88px;
+  --icon-size-xl: 110px;
+  --icon-size-2xl: 120px;
+
+  /* z-index scale */
+  --z-base: 0;
+  --z-content: 1;
+  --z-overlay: 2;
+  --z-interactive: 3;
+  --z-dropdown: 10;
+  --z-sticky: 50;
+  --z-modal: 100;
+  --z-modal-close: 101;
+
+  /* transitions */
+  --transition-fast: 0.2s ease;
+  --transition-base: 0.3s ease;
+
+  /* effects */
+  --overlay-gradient: linear-gradient(180deg, rgb(34 29 55 / 0%) 42.857%, rgb(34 29 55 / 70%) 79.515%),
+                      linear-gradient(90deg, rgb(0 0 0 / 30%) 0%, rgb(0 0 0 / 30%) 100%);
+  --modal-backdrop: rgb(0 0 0 / 85%);
+  --backdrop-blur: blur(8px);
+  --text-shadow-base: 0 2px 6px rgb(0 0 0 / 50%);
+  --box-shadow-lg: 0 10px 40px rgb(0 0 0 / 50%);
+  --box-shadow-md: 0 4px 12px rgb(0 0 0 / 30%);
+  --box-shadow-card: 0 4px 14px rgb(0 0 0 / 5%);
+  --gradient-highlight: linear-gradient(90deg, var(--orange-dark) 0%, var(--purple) 100%);
+  --gradient-border: linear-gradient(135deg, var(--ufs-orange) 0%, var(--orange-dark) 50%, var(--purple) 100%);
 }
 
 @media (width >= 900px) {
@@ -231,7 +315,7 @@ main > .section {
 }
 
 main > .section > div {
-  max-width: 1200px;
+  max-width: 100%;
   margin: auto;
   padding: 0 24px;
 }
