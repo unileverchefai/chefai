@@ -26,7 +26,7 @@ export default async function sendMessage(message, options = {}) {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      'Ocp-Apim-Subscription-Key': SUBSCRIPTION_KEY,
+      'X-Subscription-Key': SUBSCRIPTION_KEY,
     },
     body: JSON.stringify(payload),
   });
