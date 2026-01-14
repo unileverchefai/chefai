@@ -12,7 +12,8 @@
 
 :root {
   /* colors */
-  --background-color: white;
+  --c-white: #fff;
+  --background-color: var(--c-white);
   --light-color: #f8f8f8;
   --dark-color: #505050;
   --text-color: #131313;
@@ -20,39 +21,39 @@
   --link-hover-color: #1d3ecf;
 
    /* Unilever colors */
-  --ufs-orange: #FF5A00;
-  --squid-ink: #221D37;
-  --aubergine: #5C3657;
-  --smoke: #94889D;
-  --mushroom: #CBC5C7;
+  --ufs-orange: #ff5a00;
+  --squid-ink: #221d37;
+  --aubergine: #5c3657;
+  --smoke: #94889d;
+  --mushroom: #cbc5c7;
 
   /* Shades */
-  --accessible-orange: #FF5A00;
-  --mid-smoke: #C9C3CE;
-  --mid-mushroom: #E5E2E3;
-  --light-smoke: #EAE7EB;
-  --light-mushroom: #F5F3F4;
+  --accessible-orange: #ff5a00;
+  --mid-smoke: #c9c3ce;
+  --mid-mushroom: #e5e2e3;
+  --light-smoke: #eae7eb;
+  --light-mushroom: #f5f3f4;
 
   /* Trends */
-  --street-food-couture: #622C57;
-  --street-food-couture-bright: #622C57;
-  --borderless-cuisine: #ED6C00;
-  --borderless-cuisine-bright: #F9B000;
+  --street-food-couture: #622c57;
+  --street-food-couture-bright: #622c57;
+  --borderless-cuisine: #ed6c00;
+  --borderless-cuisine-bright: #f9b000;
   --diner-designed: #679641;
-  --diner-designed-bright: #A1B83B;
-  --culinary-roots: #00102D;
-  --culinary-roots-bright: #0090BA;
+  --diner-designed-bright: #a1b83b;
+  --culinary-roots: #00102d;
+  --culinary-roots-bright: #0090ba;
 
   /* Functional */
-  --success: #81BC2A;
-  --error: #D0021B;
-  --information: #0A7FFE;
+    --success: #81BC2A;
+    --error: #D0021B;
+    --information: #0A7FFE;
 
   /* Neon */
-  --neon-fm-1: #EB2263;
-  --neon-fm-2: #F15A22;
-  --neon-fm-3: #B02B9F;
-  --neon-fm-4: #FCB315;
+  --neon-fm-1: #eb2263;
+  --neon-fm-2: #f15a22;
+  --neon-fm-3: #b02b9f;
+  --neon-fm-4: #fcb315;
 
   /* Gradient colors */
   --orange-dark: #d14900;
@@ -79,6 +80,10 @@
 
   /* nav height */
   --nav-height: 64px;
+
+  /* future menu logo */
+  --future-menu-logo-text-url: url('../media/media_1c84ff22a0de724b285c4a8f7096544e3f3830f22.png');
+  --future-menu-logo-number-url: url('../media/media_1b533b6db481a3a27c53b6af9f2f15520433f194e.png');
 
   /* spacing scale */
   --spacing-xxs: 5px;
