@@ -20,6 +20,7 @@
   --background-color: var(--c-white);
   --light-color: #f8f8f8;
   --dark-color: #505050;
+  --dark-gray: #323232;
   --text-color: #131313;
   --link-color: #3b63fb;
   --link-hover-color: var(--ufs-orange);
@@ -124,6 +125,19 @@
   --icon-size-xl: 110px;
   --icon-size-2xl: 120px;
 
+  /* trend card sizes */
+  --card-width-desktop: 295px;
+  --card-height-desktop: 393px;
+  --card-width-mobile: 280px;
+  --card-height-mobile: 360px;
+  --radius-card: 20px;
+
+  /* stat font sizes */
+  --stat-size-number: 72px;
+  --stat-size-number-mobile: 60px;
+  --stat-size-word: 40px;
+  --stat-size-word-mobile: 36px;
+
   /* z-index scale */
   --z-base: 0;
   --z-content: 1;
@@ -144,10 +158,13 @@
   --modal-backdrop: rgb(0 0 0 / 85%);
   --modal-overlay-bg: rgb(34 29 55 / 70%);
   --backdrop-blur: blur(8px);
+  --backdrop-blur-sm: blur(5px);
   --text-shadow-base: 0 2px 6px rgb(0 0 0 / 50%);
+  --text-shadow-sm: 0 1px 2px rgb(0 0 0 / 25%);
   --box-shadow-lg: 0 10px 40px rgb(0 0 0 / 50%);
   --box-shadow-md: 0 4px 12px rgb(0 0 0 / 30%);
   --box-shadow-card: 0 4px 14px rgb(0 0 0 / 5%);
+  --box-shadow-card-trend: 0 0 24px rgb(0 0 0 / 25%);
   --gradient-highlight: linear-gradient(90deg, var(--orange-dark) 0%, var(--purple) 100%);
   --gradient-border: linear-gradient(135deg, var(--ufs-orange) 0%, var(--orange-dark) 50%, var(--purple) 100%);
 }
