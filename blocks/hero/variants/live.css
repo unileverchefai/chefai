@@ -1,1 +1,63 @@
-/* nothing yet */
+.hero__live--cta .button-container a {
+  background: linear-gradient(
+    180deg, #0000 0%, #0003 100%),
+    radial-gradient(68.81% 47.63% at 50% 100%,
+    #fcb315cc 0%,
+    #fcb31500 100%),
+    linear-gradient(270deg, #eb346300 -1.69%,
+    #eb3463b3 100%), var(--neon-fm-2);
+  box-shadow:
+    0 0 14px 0 #ff3cac00,
+    0 0 18px 0 #ff8a0000,
+    -5px 0 14px 0 #ff3cac99;
+  animation: flow-line 4s linear infinite;
+
+  &::after {
+    content: '';
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background-image: url('/icons/sparkles-icon.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    translate: 0 2px;
+  }
+}
+
+@keyframes flow-line {
+  0% {
+    box-shadow:
+      -5px 0 14px 0 #ff3cac99,
+      0 -5px 14px 0 #ff8a0000,
+      5px 0 14px 0 #ff3cac00;
+  }
+
+  25% {
+    box-shadow:
+      0 -5px 14px 0 #ff3cac00,
+      5px 0 14px 0 #ff8a0099,
+      0 5px 14px 0 #ff3cac00;
+  }
+
+  50% {
+    box-shadow:
+      5px 0 14px 0 #ff3cac00,
+      0 5px 14px 0 #ff8a0099,
+      -5px 0 14px 0 #ff3cac00;
+  }
+
+  75% {
+    box-shadow:
+      0 5px 14px 0 #ff3cac00,
+      -5px 0 14px 0 #ff8a0099,
+      0 -5px 14px 0 #ff3cac00;
+  }
+
+  100% {
+    box-shadow:
+      -5px 0 14px 0 #ff3cac99,
+      0 -5px 14px 0 #ff8a0000,
+      5px 0 14px 0 #ff3cac00;
+  }
+}
