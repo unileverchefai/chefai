@@ -90,20 +90,15 @@ The project uses **Unilever Food Solutions (UFS)** branding via CSS variables in
 
 ### Block CSS Naming
 
-Use **class-based scoping**, not BEM (no `__` or `--` modifiers found in codebase):
+**BEM notation** Helper functions in [scripts/common.js](scripts/common.js) are available if needed:
 
+- `variantClassesToBEM()` - Converts `large` → `hero__large`
+- `getBEMTemplateName()` - Generates `hero__countdown` or `button__primary--large`
+
+Standard nested selectors also work fine:
 ```css
-/* ✅ Correct - nested class selectors */
-.media-text-cards .media-title {
-  display: flex;
-}
-
-.media-text-cards .cards-text h4 picture {
-  width: var(--icon-size-sm);
-}
-
-/* ❌ Avoid - BEM notation not used here */
-.media-text-cards__media-title { }
+.media-text-cards .media-title { }
+.media-text-cards .cards-text h4 picture { }
 ```
 
 ### CSS Color Syntax
