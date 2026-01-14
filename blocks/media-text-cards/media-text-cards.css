@@ -68,11 +68,21 @@
 
 .media-text-cards .media-title .video-thumbnail-wrapper {
   cursor: pointer;
-  transition: transform var(--transition-base);
 }
 
-.media-text-cards .media-title .video-thumbnail-wrapper:hover {
-  transform: scale(1.02);
+.media-text-cards .media-title .video-thumbnail-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgb(92 54 87 / 0%) 42.85%, rgb(92 54 87 / 70%) 79.5%);
+  opacity: 0;
+  transition: opacity var(--transition-base);
+  z-index: var(--z-content);
+  pointer-events: none;
+}
+
+.media-text-cards .media-title .video-thumbnail-wrapper:hover::before {
+  opacity: 1;
 }
 
 .media-text-cards .media-title .video-thumbnail-wrapper:focus {
@@ -143,7 +153,7 @@
   position: absolute;
   inset: 0;
   border-radius: var(--radius-lg);
-  background: var(--overlay-gradient);
+  background: rgb(0 0 0 / 30%);
   z-index: var(--z-content);
   pointer-events: none;
 }
