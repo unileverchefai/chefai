@@ -29,47 +29,80 @@ export function variantClassesToBEM({ blockClassList = '', variantClasses = {}, 
 
 /**
  * Generates a BEM template name for a given block and variant.
- * @param {string} blockName The base name of the block.
- * @param {string} variantName The name of the variant.
- * @param {string} [modifierName=''] An optional modifier name.
+ * @param {Object} params The parameters object.
+ * @param {string} params.blockName The base name of the block.
+ * @param {string} params.variantName The name of the variant.
+ * @param {string} [params.modifierName=''] An optional modifier name.
+ * @param {string} [params.variantClass=''] An optional BEM base name override.
  * @return {string} The BEM formatted template name.
  * @example
  * // Generate BEM template name for block 'hero' and variant 'countdown'
- * const templateName = getBEMTemplateName('hero', 'countdown');
+ * const templateName = getBEMTemplateName({ blockName: 'hero', variantName: 'countdown' });
  * // Result: 'hero__countdown'
  * @example
- * // Generate BEM template name for block 'button', variant 'primary', and modifier 'large'
- * const templateNameWithModifier = getBEMTemplateName('button', 'primary', 'large');
+ * // Generate BEM template name with modifier
+ * const templateNameWithModifier = getBEMTemplateName({
+ *   blockName: 'button',
+ *   variantName: 'primary',
+ *   modifierName: 'large'
+ * });
  * // Result: 'button__primary--large'
+ * @example
+ * // Generate BEM template name using custom variant class as base name
+ * const templateNameCustom = getBEMTemplateName({
+ *   variantClass: 'btn__custom',
+ *   modifierName: 'active'
+ * });
+ * // Result: 'btn__custom--active'
  */
-export function getBEMTemplateName(blockName, variantName, modifierName = '') {
-  return `${blockName}__${variantName}${modifierName ? `--${modifierName}` : ''}`;
+export function getBEMTemplateName({
+  blockName, variantName, modifierName = '', variantClass = '',
+}) {
+  const baseName = variantClass || `${blockName}__${variantName}`;
+  return `${baseName}${modifierName ? `--${modifierName}` : ''}`;
 }
 
 /**
  * Creates a DOM element with specified options.
- * @param {string} tag The HTML tag name for the element.
+ * @param {string} tag The HTML tag name for the element. [Mandatory]
  * @param {Object} [options={}] The options for creating the element.
  * @param {string|string[]} [options.className=''] The class name(s) to add to the element.
+ * Can be a single class, space-separated, comma-separated, or an array.
  * @param {Object} [options.properties={}] The properties to set on the element.
  * @param {string} [options.textContent=''] The text content of the element.
  * @param {string} [options.fragment=''] The HTML fragment to append to the element.
  * @return {Element} The created DOM element.
  * @example
- * // Create a div element with class 'container', id 'main', and text content 'Hello World'
+ * // Single class
+ * const element = createElement('div', { className: 'container' });
+ * // Result: <div class="container"></div>
+ * @example
+ * // Space-separated classes
+ * const element = createElement('div', { className: 'container large' });
+ * // Result: <div class="container large"></div>
+ * @example
+ * // Comma-separated classes
+ * const element = createElement('div', { className: 'container,large,primary' });
+ * // Result: <div class="container large primary"></div>
+ * @example
+ * // Array of classes
+ * const element = createElement('div', { className: ['container', 'large', 'primary'] });
+ * // Result: <div class="container large primary"></div>
+ * @example
+ * // With properties and text content
  * const element = createElement('div', {
- *   className: 'container',
+ *   className: 'container large',
  *   properties: { id: 'main' },
  *   textContent: 'Hello World'
  * });
- * // Resulting element: <div class="container" id="main">Hello World</div>
+ * // Result: <div class="container large" id="main">Hello World</div>
  * @example
- * // Create a div with an HTML fragment
+ * // With HTML fragment
  * const element = createElement('div', {
  *   className: 'container',
  *   fragment: '<p>Nested content</p>'
  * });
- * // Resulting element: <div class="container"><p>Nested content</p></div>
+ * // Result: <div class="container"><p>Nested content</p></div>
 */
 export function createElement(tag, options = {}) {
   const {
@@ -78,7 +111,7 @@ export function createElement(tag, options = {}) {
   const element = document.createElement(tag);
   const isString = typeof className === 'string' || className instanceof String;
   if (className || (isString && className !== '') || (!isString && className.length > 0)) {
-    const classes = isString ? [...className] : className;
+    const classes = isString ? className.split(/[\s,]+/).filter(Boolean) : className;
     element.classList.add(...classes);
   }
   if (!isString && className.length === 0) {
@@ -97,8 +130,8 @@ export function createElement(tag, options = {}) {
   }
 
   if (fragment) {
-    document.createRange().createContextualFragment(fragment);
-    element.appendChild(fragment);
+    const fragmentNode = document.createRange().createContextualFragment(fragment);
+    element.appendChild(fragmentNode);
   }
 
   return element;
@@ -109,38 +142,105 @@ export function createElement(tag, options = {}) {
  * @param {Object} params The parameters object.
  * @param {string} params.blockName The name of the block.
  * @param {string} params.variantName The name of the variant.
- * @return {Promise<void>} A promise that resolves when the script is loaded.
+ * @return {Promise<void>} A promise that resolves when the script is loaded
+ * , or logs an error if loading fails.
  * @example
  * // Load the countdown variant script for the hero block
  * await loadVariantScript({ blockName: 'hero', variantName: 'countdown' });
- * @example
- * // not existing example or something went wrong
- * await loadVariantScript({ blockName: 'footer', variantName: 'nonexistent' });
- * // Error loading variant script: /blocks/footer/variants/nonexistent.js
  */
 export async function loadVariantScript({ blockName, variantName }) {
+  if (!blockName || !variantName) {
+    console.error('Both %cblockName%c and %cvariantName%c are required to load a variant script.', 'color: red;', '', 'color: red;', '');
+    return;
+  }
+
   const scriptPath = `/blocks/${blockName}/variants/${variantName}.js`;
+  if (document.querySelector(`script[src="${scriptPath}"]`)) {
+    // Script already loaded
+    return;
+  }
+
   try {
     await loadScript(scriptPath, { type: 'module', charset: 'utf-8', nonce: 'aem' });
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.error(`Error loading variant script: %c${scriptPath}`, 'color: red;', error);
   }
 }
 
-/**
- * Video embedding utilities
+/** Retrieves placeholder text based on key and optional prefix.
+ * @param {string} key The placeholder key
+ * @param {string} [prefix='default'] The optional prefix for placeholder categories
+ * @returns {string} The corresponding placeholder text or an empty string if not found
  */
+export function getPlaceholderText({ key, prefix = 'default' } = {}) {
+  try {
+    const placeholders = window.placeholders[prefix] || {};
+    return placeholders[key] || '';
+  } catch (e) {
+    return null;
+  }
+}
 
 /**
+ * Gets placeholders object.
+ * @param {string} [prefix] Location of placeholders, _default_ or custom prefix.
+ * @returns {object} Window placeholders object
+ */
+export async function fetchPlaceholders({ prefix = 'default' } = {}) {
+  window.placeholders = window.placeholders || {};
+  if (window.placeholders[prefix]) {
+    return window.placeholders[prefix];
+  }
+
+  window.placeholders[prefix] = new Promise((resolve) => {
+    const pathname = prefix === 'default' ? '' : `/${prefix.toLowerCase()}`;
+    const url = new URL(
+      window.location.origin,
+    );
+    url.pathname = `${pathname}/placeholders.json`;
+    fetch(url.href)
+      .then((resp) => {
+        if (!resp.ok) {
+          throw new Error(`HTTP error! status: %c${resp.status}`, 'color: red;');
+        }
+        return resp.json();
+      })
+      .then((json) => {
+        const placeholders = {};
+        json.data
+          .filter((item) => item.key)
+          .forEach((item) => {
+            placeholders[item.key] = item.text;
+          });
+        window.placeholders[prefix] = placeholders;
+        resolve(window.placeholders[prefix]);
+      })
+      .catch((error) => {
+        console.error('Error loading placeholders:', { error });
+        window.placeholders[prefix] = {};
+        resolve(window.placeholders[prefix]);
+      });
+  });
+  return window.placeholders[prefix];
+}
+/**
  * Extract video ID from YouTube URL
+ * @param {string} url The YouTube URL
+ * @returns {string|null} The extracted video ID or null if not found
  * Supports formats:
  * - https://www.youtube.com/watch?v=VIDEO_ID
  * - https://youtu.be/VIDEO_ID
  * - https://www.youtube.com/embed/VIDEO_ID
- * - https://www.youtube.com/shorts/VIDEO_ID (YouTube Shorts)
- * - /media_HASH.mp4 (DAM files that might be YouTube URLs)
- */
+ * - https://www.youtube.com/shorts/VIDEO_ID
+ * @example
+ * // Extract YouTube video ID
+ * const videoId = getYouTubeVideoId('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+ * // Result: 'dQw4w9WgXcQ'
+ * @example
+ * // Extract YouTube Shorts video ID
+ * const shortsVideoId = getYouTubeVideoId('https://www.youtube.com/shorts/dQw4w9WgXcQ');
+ * // Result: 'dQw4w9WgXcQ'
+*/
 export function getYouTubeVideoId(url) {
   const patterns = [
     /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([^&\s?#]+)/,
@@ -157,10 +257,20 @@ export function getYouTubeVideoId(url) {
 
 /**
  * Extract video ID from Vimeo URL
+ * @param {string} url The Vimeo URL
+ * @returns {string|null} The extracted video ID or null if not found
  * Supports formats:
  * - https://vimeo.com/VIDEO_ID
  * - https://player.vimeo.com/video/VIDEO_ID
  * - /media_HASH.mp4 (DAM files that might be Vimeo URLs)
+ * @example
+ * // Extract Vimeo video ID
+ * const videoId = getVimeoVideoId('https://vimeo.com/123456789');
+ * // Result: '123456789'
+ * @example
+ * // Extract Vimeo video ID from player URL
+ * const playerVideoId = getVimeoVideoId('https://player.vimeo.com/video/987654321');
+ * // Result: '987654321'
  */
 export function getVimeoVideoId(url) {
   const patterns = [
@@ -178,10 +288,11 @@ export function getVimeoVideoId(url) {
 }
 
 /**
- * Check if a URL is a video link and return the embed iframe if it is
- * Returns null if not a video link
+ * Checks if a URL is a video link and creates an embed iframe if it is
+ * if not, returns null
  * @param {string} url The URL to check (can be YouTube, Vimeo, or DAM link)
  * @returns {HTMLIFrameElement|null} The iframe element or null
+ * @description Supports YouTube and Vimeo links
  */
 export function createVideoEmbed(url) {
   if (!url) return null;
@@ -193,15 +304,18 @@ export function createVideoEmbed(url) {
   videoId = getYouTubeVideoId(url);
   if (videoId) {
     embedUrl = `https://www.youtube.com/embed/${videoId}`;
-    const iframe = document.createElement('iframe');
-    iframe.setAttribute('src', embedUrl);
-    iframe.setAttribute('width', '560');
-    iframe.setAttribute('height', '315');
-    iframe.setAttribute('frameborder', '0');
-    iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
-    iframe.setAttribute('allowfullscreen', '');
-    iframe.setAttribute('title', 'YouTube video player');
-    iframe.setAttribute('loading', 'lazy');
+    const iframe = createElement('iframe', {
+      properties: {
+        src: embedUrl,
+        width: '560',
+        height: '315',
+        frameborder: '0',
+        allow: 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture',
+        allowfullscreen: '',
+        title: 'YouTube video player',
+        loading: 'lazy',
+      },
+    });
     return iframe;
   }
 
@@ -209,15 +323,18 @@ export function createVideoEmbed(url) {
   videoId = getVimeoVideoId(url);
   if (videoId) {
     embedUrl = `https://player.vimeo.com/video/${videoId}`;
-    const iframe = document.createElement('iframe');
-    iframe.setAttribute('src', embedUrl);
-    iframe.setAttribute('width', '560');
-    iframe.setAttribute('height', '315');
-    iframe.setAttribute('frameborder', '0');
-    iframe.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture');
-    iframe.setAttribute('allowfullscreen', '');
-    iframe.setAttribute('title', 'Vimeo video player');
-    iframe.setAttribute('loading', 'lazy');
+    const iframe = createElement('iframe', {
+      properties: {
+        src: embedUrl,
+        width: '560',
+        height: '315',
+        frameborder: '0',
+        allow: 'autoplay; fullscreen; picture-in-picture',
+        allowfullscreen: '',
+        title: 'Vimeo video player',
+        loading: 'lazy',
+      },
+    });
     return iframe;
   }
 
@@ -327,42 +444,48 @@ export function createCarousel(options) {
   };
 
   // Create controls container
-  const controls = document.createElement('div');
-  controls.className = 'controls';
+  const controls = createElement('div', { className: 'controls' });
 
   // Create ARIA live region for screen readers
-  const liveRegion = document.createElement('div');
-  liveRegion.setAttribute('aria-live', 'polite');
-  liveRegion.setAttribute('aria-atomic', 'true');
-  liveRegion.className = 'sr-only';
+  const liveRegion = createElement('div', {
+    className: 'sr-only',
+    properties: {
+      'aria-live': 'polite',
+      'aria-atomic': 'true',
+    },
+  });
   block.appendChild(liveRegion);
 
   // Create indicators
-  const indicators = document.createElement('div');
-  indicators.className = 'indicators';
-
+  const indicators = createElement('div', { className: 'indicators' });
   // Create arrows
-  const arrows = document.createElement('div');
-  arrows.className = 'arrows';
+  const arrows = createElement('div', { className: 'arrows' });
 
-  const prevArrow = document.createElement('button');
-  prevArrow.className = 'arrow prev';
-  prevArrow.setAttribute('aria-label', 'Previous slide');
-  prevArrow.innerHTML = `
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <path d="M8.33 14.67L10.8 12.2L8.33 9.73L9.27 8.8L12.67 12.2L9.27 15.6L8.33 14.67Z"/>
-    </svg>
-  `;
+  const prevArrow = createElement('button', {
+    className: 'arrow prev',
+    properties: { 'aria-label': 'Previous slide' },
+    fragment: `
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8.33 14.67L10.8 12.2L8.33 9.73L9.27 8.8L12.67 12.2L9.27 15.6L8.33 14.67Z"/>
+      </svg>
+    `,
+  });
 
-  const nextArrow = document.createElement('button');
-  nextArrow.className = 'arrow next';
-  nextArrow.setAttribute('aria-label', 'Next slide');
-  nextArrow.innerHTML = `
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <path d="M8.33 14.67L10.8 12.2L8.33 9.73L9.27 8.8L12.67 12.2L9.27 15.6L8.33 14.67Z"/>
-    </svg>
-  `;
+  const nextArrow = createElement('button', {
+    className: 'arrow next',
+    properties: { 'aria-label': 'Next slide' },
+    fragment: `
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M15.67 14.67L13.2 12.2L15.67 9.73L14.73 8.8L11.33 12.2L14.73 15.6L15.67 14.67Z"/>
+      </svg>
+    `,
+  });
 
+  /**
+   * Calculates carousel metrics based on current viewport and settings
+   * @returns {Object} Metrics including:
+   * itemWidth, isMobile, gap, itemsPerSlide, slideWidth, totalSlides
+  */
   function getCarouselMetrics() {
     const firstItem = container.querySelector('.card, .carousel-item');
     const itemWidth = firstItem?.offsetWidth || 0;
@@ -379,6 +502,10 @@ export function createCarousel(options) {
     };
   }
 
+  /**
+   * Updates the carousel position and UI elements
+   * @param {boolean} immediate If true, updates without animation
+   */
   function updateCarousel(immediate = false) {
     const { isMobile, slideWidth, totalSlides } = getCarouselMetrics();
 
@@ -408,18 +535,33 @@ export function createCarousel(options) {
     liveRegion.textContent = `Slide ${currentSlide + 1} of ${totalSlides}`;
   }
 
+  /**
+   * Navigates to the next or previous slide
+   * @param {number} direction -1 for previous, 1 for next
+   */
   function navigate(direction) {
     const { totalSlides } = getCarouselMetrics();
     currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
     updateCarousel();
   }
 
+  /**
+   * Navigates to a specific slide
+   * @param {number} index The slide index to navigate to
+   * @param {boolean} immediate If true, updates without animation
+   */
   function goToSlide(index, immediate = false) {
     const { totalSlides } = getCarouselMetrics();
     currentSlide = Math.max(0, Math.min(index, totalSlides - 1));
     updateCarousel(immediate);
   }
 
+  /**
+   * Calculates momentum for swipe gestures
+   * @param {number} velocity The swipe velocity
+   * @param {number} dragDistance The distance dragged
+   * @returns {Object} Contains slideOffset and duration for the momentum animation
+   */
   function calculateMomentum(velocity, dragDistance) {
     const { slideWidth } = getCarouselMetrics();
     const duration = Math.min(
@@ -433,12 +575,21 @@ export function createCarousel(options) {
     return { slideOffset, duration };
   }
 
+  /**
+   * Animates the carousel momentum after a swipe gesture
+   * @param {number} targetSlide The target slide index
+   * @param {number} duration The duration of the animation in milliseconds
+   */
   function animateMomentum(targetSlide, duration) {
     const { slideWidth } = getCarouselMetrics();
     const startSlide = currentSlide;
     const startOffset = interactionState.dragOffset;
     const startTime = performance.now();
 
+    /**
+     * Performs the animation frame updates
+     * @param {DOMHighResTimeStamp} time The current time
+     */
     function animate(time) {
       const elapsed = time - startTime;
       const progress = Math.min(elapsed / duration, 1);
@@ -466,6 +617,10 @@ export function createCarousel(options) {
     interactionState.animationId = requestAnimationFrame(animate);
   }
 
+  /**
+   * Handles the start of an interaction (touch or mouse)
+   * @param {number} clientX The X coordinate of the interaction start
+   */
   function handleInteractionStart(clientX) {
     if (interactionState.animationId) {
       cancelAnimationFrame(interactionState.animationId);
@@ -484,6 +639,10 @@ export function createCarousel(options) {
     container.classList.add('is-dragging');
   }
 
+  /**
+   * Handles the movement during an interaction (touch or mouse)
+   * @param {number} clientX The current X coordinate of the interaction
+   */
   function handleInteractionMove(clientX) {
     if (!interactionState.isDragging) return;
 
@@ -511,6 +670,9 @@ export function createCarousel(options) {
     container.style.transform = `translateX(${offset}px)`;
   }
 
+  /**
+   * Handles the end of an interaction (touch or mouse)
+   */
   function handleInteractionEnd() {
     if (!interactionState.isDragging) return;
 
@@ -545,41 +707,50 @@ export function createCarousel(options) {
     }
   }
 
+  /**
+   * Handles the start of a touch interaction
+   * @param {TouchEvent} e The touch event
+   */
   function handleTouchStart(e) {
     handleInteractionStart(e.touches[0].clientX);
   }
 
+  /**
+   * Handles the movement during a touch interaction
+   * @param {TouchEvent} e The touch event
+   */
   function handleTouchMove(e) {
     handleInteractionMove(e.touches[0].clientX);
   }
 
+  /**
+   * Handles the end of a touch interaction
+   */
   function handleTouchEnd() {
     handleInteractionEnd();
   }
 
+  /**
+   * Handles keyboard navigation for the carousel
+   * @param {KeyboardEvent} e The keyboard event
+   */
   function handleKeyDown(e) {
-    switch (e.key) {
-      case 'ArrowLeft':
-        e.preventDefault();
-        navigate(-1);
-        break;
-      case 'ArrowRight':
-        e.preventDefault();
-        navigate(1);
-        break;
-      case 'Home':
-        e.preventDefault();
-        goToSlide(0);
-        break;
-      case 'End':
-        e.preventDefault();
-        goToSlide(getCarouselMetrics().totalSlides - 1);
-        break;
-      default:
-        break;
+    const keyActions = {
+      ArrowLeft: () => navigate(-1),
+      ArrowRight: () => navigate(1),
+      Home: () => goToSlide(0),
+      End: () => goToSlide(getCarouselMetrics().totalSlides - 1),
+    };
+
+    if (keyActions[e.key]) {
+      e.preventDefault();
+      keyActions[e.key]();
     }
   }
 
+  /**
+   * Handles window resize events to recalculate carousel metrics
+   */
   function handleResize() {
     const { itemsPerSlide, totalSlides } = getCarouselMetrics();
 
@@ -587,12 +758,15 @@ export function createCarousel(options) {
     if (lastItemsPerSlide !== itemsPerSlide) {
       lastItemsPerSlide = itemsPerSlide;
 
-      indicators.innerHTML = '';
+      indicators.textContent = '';
       for (let i = 0; i < totalSlides; i += 1) {
-        const indicator = document.createElement('button');
-        indicator.className = `indicator${i === 0 ? ' active' : ''}`;
-        indicator.setAttribute('aria-label', `Go to slide ${i + 1} of ${totalSlides}`);
-        indicator.setAttribute('type', 'button');
+        const indicator = createElement('button', {
+          className: `indicator${i === 0 ? ' active' : ''}`,
+          properties: {
+            'aria-label': `Go to slide ${i + 1} of ${totalSlides}`,
+            type: 'button',
+          },
+        });
         indicator.addEventListener('click', () => goToSlide(i));
         indicators.appendChild(indicator);
       }
@@ -623,10 +797,8 @@ export function createCarousel(options) {
   const debouncedResize = debounce(handleResize, 150);
 
   // Assemble controls
-  arrows.appendChild(prevArrow);
-  arrows.appendChild(nextArrow);
-  controls.appendChild(indicators);
-  controls.appendChild(arrows);
+  arrows.append(prevArrow, nextArrow);
+  controls.append(indicators, arrows);
   block.appendChild(controls);
 
   // Initial setup

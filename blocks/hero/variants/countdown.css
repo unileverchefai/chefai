@@ -1,0 +1,119 @@
+.hero__countdown--countdown-timer {
+  margin-block-start: 16px;
+}
+
+.hero__countdown--label-title {
+  font-size: 14px;
+  margin-block-end: 12px;
+}
+
+.hero__countdown--label-title::after {
+  content: url('/icons/gradient-line-right.svg');
+  margin-left: 12px;
+
+}
+
+.hero__countdown--label-title::before {
+  content: url('/icons/gradient-line-left.svg');
+  margin-right: 12px;
+}
+
+@media (width < 353px) {
+  .hero__countdown--label-title::after,
+  .hero__countdown--label-title::before {
+    content: none;
+  }
+}
+
+
+.hero__countdown--segments {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+}
+
+.hero__countdown--number-segment {
+  display: flex;
+  flex-direction: column;
+}
+
+.hero__countdown--number-value {
+  font-size: 32px;
+}
+
+.hero .hero__countdown--number-label {
+  font-size: 11px;
+  margin-block-start: 4px;
+}
+
+@media (width >= 992px) {
+  .hero__countdown--countdown-timer {
+    text-align: left;
+  }
+
+  .hero__countdown--container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    align-items: baseline;
+  }
+
+  .hero__countdown--label-title {
+    font-size: 18px;
+  }
+
+  .hero__countdown--label-title::before,
+  .hero__countdown--label-title::after {
+    content: none;
+  }
+
+  .hero__countdown--number-segment {
+    display: grid;
+    justify-items: center;
+    grid-template-columns: 1fr 10px;
+    grid-template-rows: 66px auto;
+
+    &:not(:last-child)::after {
+      content: url('/icons/gradient-line-vertical.svg');
+      margin-top: 20px;
+      margin-left: 34px;
+      order: 2;
+    }
+
+    &:last-child::after {
+      content: '';
+      height: 1px;
+      display: block;
+      width: 1px;
+      order: 2;
+    }
+  }
+
+  .hero__countdown--number-value {
+    font-size: 40px;
+    order: 1;
+  }
+
+  .hero .hero__countdown--number-label {
+    font-size: 13px;
+    order: 3;
+    margin: 0;
+  }
+}
+
+@media (width >= 992px) and (width <= 1079px) {
+  .hero__countdown--number-value {
+    font-size: 36px;
+  }
+
+  .hero__countdown--label-title {
+    font-size: 16px;
+  }
+
+  .hero .hero__countdown--number-label {
+    font-size: 12px;
+  }
+
+  .hero__countdown--number-segment {
+    grid-template-rows: 56px auto;
+  }
+}
