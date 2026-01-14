@@ -12,6 +12,7 @@ import {
   loadSections,
   loadCSS,
 } from './aem.js';
+import { fetchPlaceholders } from './common.js';
 
 /**
  * Builds hero block and prepends to main in a new section.
@@ -20,10 +21,14 @@ import {
 function buildHeroBlock(main) {
   const h1 = main.querySelector('h1');
   const picture = main.querySelector('picture');
+  const isRegularBlock = h1 && h1.closest('.hero') !== null;
+  if (!h1 || !picture || isRegularBlock) return;
   // eslint-disable-next-line no-bitwise
   if (h1 && picture && (h1.compareDocumentPosition(picture) & Node.DOCUMENT_POSITION_PRECEDING)) {
     const section = document.createElement('div');
-    section.append(buildBlock('hero', { elems: [picture, h1] }));
+    const heroBlock = buildBlock('hero', { elems: [picture, h1] });
+    heroBlock.classList.add('auto-block');
+    section.appendChild(heroBlock);
     main.prepend(section);
   }
 }
@@ -90,7 +95,12 @@ export function decorateMain(main) {
  * @param {Element} doc The container element
  */
 async function loadEager(doc) {
+  const prefix = 'default';
+  if (!window.placeholders || !window.placeholders[prefix]) {
+    window.placeholders = { prefix };
+  }
   document.documentElement.lang = 'en';
+  await fetchPlaceholders({ prefix });
   decorateTemplateAndTheme();
   const main = doc.querySelector('main');
   if (main) {
