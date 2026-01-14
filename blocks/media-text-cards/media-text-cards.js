@@ -117,6 +117,7 @@ export default function decorate(block) {
   // check if required elements are present
   if (!validateRequiredElements(block)) {
     // if not, remove the block entirely
+    console.warn('One or more elements are missing. Please review the content source');
     block.remove();
     return;
   }
