@@ -1,4 +1,5 @@
 /* Chatbot Block Styles */
+@import url('../../styles/chat-input.css');
 
 .chatbot {
     width: 100%;
@@ -6,6 +7,10 @@
     margin: 0 auto;
     position: relative;
     min-height: 600px;
+}
+
+.chatbot-wrapper {
+    padding: 0 !important;
 }
 
 .chatbot-container {
@@ -20,6 +25,14 @@
     display: flex;
     flex-direction: column;
     contain: layout style paint;
+    position: relative;
+}
+
+.chatbot-root {
+    width: 100%;
+    height: 100%;
+    min-height: 600px;
+    max-height: 600px;
     position: relative;
 }
 
@@ -51,17 +64,10 @@
     overflow-wrap: break-word;
 }
 
-.chat-input-form {
-    height: 80px;
-    min-height: 80px;
-    max-height: 80px;
-    padding: 16px;
-    border-top: 1px solid var(--light-color);
-    background-color: var(--light-color);
-    display: flex;
-    gap: 8px;
-    flex-shrink: 0;
-    box-sizing: border-box;
+/* Chatbot-specific input form styling */
+.chatbot .chat-input-form {
+  border-top: 1px solid var(--light-color);
+  background-color: var(--light-color);
 }
 
 /* Skeleton placeholder - matches final layout exactly */
@@ -101,7 +107,7 @@
     min-height: 80px;
     padding: 12px 16px;
     border-radius: 20px;
-    background-color: var(--light-color);
+    background-color: var(--light-mushroom);
     font-family: var(--body-font-family);
     font-size: var(--body-font-size-s);
     line-height: 1.5;
@@ -130,7 +136,7 @@
     max-height: 600px;
     font-family: var(--body-font-family);
     font-size: var(--body-font-size-m);
-    color: #d32f2f;
+    color: var(--error);
     padding: 24px;
     text-align: center;
     contain: layout style;
@@ -147,6 +153,11 @@
         min-height: 500px;
         max-height: 500px;
         border-radius: 0;
+    }
+
+    .chatbot-root {
+        min-height: 500px;
+        max-height: 500px;
     }
 
     .chat-widget {
@@ -182,10 +193,10 @@
     outline-offset: 2px;
 }
 
-.chatbot-container input:focus {
+/* .chatbot-container input:focus {
     outline: 2px solid var(--link-color);
     outline-offset: 2px;
-}
+} */
 
 /* Message content styles */
 .message-images {
@@ -212,7 +223,8 @@
 }
 
 .user-message .message-bubble a {
-    color: var(--background-color);
+    color: var(--link-color);
+    font-weight: 500;
 }
 
 .ai-message .message-bubble a {

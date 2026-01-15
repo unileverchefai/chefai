@@ -1,5 +1,6 @@
 import sendMessage from '../chatbot/sendMessage.js';
 import renderMessage from '../chatbot/renderMessage.js';
+import ChatInput from '../chatbot/ChatInput.js';
 
 const {
   useState, useCallback, useRef, useEffect,
@@ -67,8 +68,7 @@ export default function PersonalizedChatWidget({ onBusinessNameSubmit }) {
     }
   }, [messages]);
 
-  const handleBusinessNameSubmit = useCallback((e) => {
-    e.preventDefault();
+  const handleBusinessNameSubmit = useCallback(() => {
     const trimmedName = businessName.trim();
     if (!trimmedName) return;
 
@@ -137,43 +137,15 @@ export default function PersonalizedChatWidget({ onBusinessNameSubmit }) {
               question,
             )),
           ),
-          h(
-            'form',
-            {
-              key: 'form',
-              onSubmit: handleBusinessNameSubmit,
-            },
-            h(
-              'div',
-              { className: 'ph-input-wrapper' },
-              [
-                h('input', {
-                  key: 'input',
-                  type: 'text',
-                  value: businessName,
-                  onChange: (e) => setBusinessName(e.target.value),
-                  placeholder: 'Type your business name',
-                  className: 'ph-input',
-                  disabled: isTyping,
-                }),
-                h(
-                  'button',
-                  {
-                    key: 'submit',
-                    type: 'submit',
-                    className: 'ph-submit-btn',
-                    disabled: !businessName.trim() || isTyping,
-                    'aria-label': 'Submit',
-                  },
-                  h('img', {
-                    src: '/icons/arrow_right.svg',
-                    alt: 'Submit',
-                    className: 'ph-submit-icon',
-                  }),
-                ),
-              ],
-            ),
-          ),
+          h(ChatInput, {
+            key: 'input',
+            value: businessName,
+            onChange: setBusinessName,
+            onSubmit: handleBusinessNameSubmit,
+            placeholder: 'Type your business name',
+            disabled: isTyping,
+            submitDisabled: !businessName.trim() || isTyping,
+          }),
         ],
       ),
     ],

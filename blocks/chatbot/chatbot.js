@@ -8,7 +8,7 @@ export default async function chatbot(block) {
 
   block.textContent = '';
   const chatContainer = document.createElement('div');
-  chatContainer.className = 'chatbot-container';
+  chatContainer.className = 'chatbot-root';
   chatContainer.id = 'chatbot-root';
   block.appendChild(chatContainer);
 
