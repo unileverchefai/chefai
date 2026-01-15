@@ -1,5 +1,5 @@
 import renderMessage from './renderMessage.js';
-import ChatInput from './ChatInput.js';
+import ChatInput from '../../components/ChatInput.js';
 
 const { createElement: h } = window.React;
 

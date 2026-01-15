@@ -1,5 +1,5 @@
 /* Chatbot Block Styles */
-@import url('../../styles/chat-input.css');
+@import url('../../components/chat-input.css');
 
 .chatbot {
     width: 100%;
