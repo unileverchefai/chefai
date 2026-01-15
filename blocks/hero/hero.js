@@ -172,9 +172,10 @@ function setVariantClass(variant) {
 * @param {boolean} [params.hasScript=false] - Whether the variant has an associated script to load.
 * @param {boolean} [params.hasStyle=false] - Whether the variant has an associated style to load.
  * @param {boolean} [params.isCountdown=false] - Whether to include the countdown timer area.
+ * @param {boolean} [params.useButtons=false] - Whether to include buttons in the variant.
 */
 async function buildVariant({
-  variant, block, hasScript = false, hasStyle = false, isCountdown = false,
+  variant, block, hasScript = false, hasStyle = false, isCountdown = false, useButtons = false,
 }) {
   // Placeholder for future variant-specific build logic
   const variantName = variant;
@@ -184,6 +185,9 @@ async function buildVariant({
   }
   if (hasStyle) {
     await loadCSS(`${window.hlx.codeBasePath}/blocks/${blockName}/variants/${variantName}.css`);
+  }
+  if (useButtons) {
+    await loadCSS(`${window.hlx.codeBasePath}/styles/buttons.css`);
   }
 
   const heroContainer = buildHeroContainer({ variantClass, isCountdown });
@@ -231,12 +235,19 @@ export default async function decorate(block) {
   }
 
   if (isLive) {
-    await buildVariant({ variant: live, block, hasStyle: true });
+    await buildVariant({
+      variant: live, block, useButtons: true,
+    });
   }
 
   if (isCountdown) {
     await buildVariant({
-      variant: countdown, block, hasScript: true, hasStyle: true, isCountdown: true,
+      variant: countdown,
+      block,
+      hasScript: true,
+      hasStyle: true,
+      isCountdown: true,
+      useButtons: true,
     });
     const countdownClass = getBEMTemplateName({ blockName, variantName: countdown, modifierName: 'countdown-timer' });
     const countdownArea = block.querySelector(`.${countdownClass}`);
