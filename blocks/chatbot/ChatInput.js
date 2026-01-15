@@ -11,7 +11,7 @@ export default function ChatInput({
   const handleSubmit = (e) => {
     e.preventDefault();
     if (onSubmit && !submitDisabled) {
-      onSubmit();
+      onSubmit(e);
     }
   };
 

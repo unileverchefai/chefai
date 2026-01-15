@@ -19,13 +19,45 @@ export default function LoadingState({ businessData }) {
             [
               h('div', { key: 'ring1', className: 'ph-loading-ring ph-loading-ring-1' }),
               h('div', { key: 'ring2', className: 'ph-loading-ring ph-loading-ring-2' }),
-              h('div', { key: 'ring3', className: 'ph-loading-ring ph-loading-ring-3' }),
-              logoUrl && h('img', {
-                key: 'logo',
-                src: logoUrl,
-                alt: businessData?.business_name ?? 'Business logo',
-                className: 'ph-loading-logo',
-              }),
+              h(
+                'div',
+                { key: 'logo', className: 'ph-loading-logo' },
+                logoUrl ? h('img', {
+                  src: logoUrl,
+                  alt: businessData?.business_name ?? 'Business logo',
+                  style: {
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                  },
+                }) : h(
+                  'div',
+                  {
+                    style: {
+                      width: '100%',
+                      height: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '8px',
+                      color: 'var(--c-white)',
+                      fontFamily: 'var(--body-font-family)',
+                      fontSize: '11px',
+                      textAlign: 'center',
+                      lineHeight: '1.2',
+                    },
+                  },
+                  [
+                    h('div', {
+                      style: {
+                        fontStyle: 'italic',
+                        marginBottom: '2px',
+                      },
+                    }, businessData?.business_name ?? 'Business'),
+                  ],
+                ),
+              ),
             ],
           ),
           h(

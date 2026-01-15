@@ -60,7 +60,6 @@ export default async function personalizedHub(block) {
       };
 
       const handleBusinessNameSubmit = async (businessName) => {
-        setCurrentScreen(SCREENS.LOADING);
         setError(null);
 
         // Mock data for testing
@@ -71,20 +70,15 @@ export default async function personalizedHub(block) {
           logo_url: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=100&h=100&fit=crop',
         };
 
-        setTimeout(() => {
-          setBusinessData(mockData);
-          setCurrentScreen(SCREENS.CONFIRMATION);
-        }, 2000);
+        setBusinessData(mockData);
+        setCurrentScreen(SCREENS.CONFIRMATION);
 
         // Uncomment below to use real API
         /*
         try {
           const data = await fetchBusinessInfo(businessName);
           setBusinessData(data);
-
-          setTimeout(() => {
-            setCurrentScreen(SCREENS.CONFIRMATION);
-          }, 2000);
+          setCurrentScreen(SCREENS.CONFIRMATION);
         } catch (err) {
           // eslint-disable-next-line no-console
           console.error('Failed to fetch business info:', err);
@@ -96,7 +90,7 @@ export default async function personalizedHub(block) {
 
       const handleConfirm = () => {
         sessionStorage.setItem('personalized-hub-business-data', JSON.stringify(businessData));
-        setCurrentScreen(SCREENS.COMPLETED);
+        setCurrentScreen(SCREENS.LOADING);
       };
 
       const handleReject = () => {
@@ -156,23 +150,6 @@ export default async function personalizedHub(block) {
           onConfirm: handleConfirm,
           onReject: handleReject,
         });
-      }
-
-      if (currentScreen === SCREENS.COMPLETED) {
-        return h(
-          'div',
-          {
-            style: {
-              padding: '24px',
-              textAlign: 'center',
-              fontFamily: 'var(--body-font-family)',
-            },
-          },
-          [
-            h('h2', { key: 'title' }, 'Business Confirmed!'),
-            h('p', { key: 'message' }, 'Your personalized insights are ready.'),
-          ],
-        );
       }
 
       return null;

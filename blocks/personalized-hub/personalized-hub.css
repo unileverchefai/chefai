@@ -3,26 +3,27 @@
 /* Shared Chat Input Styles (copied from chat-input.css for proper loading) */
 .personalized-hub .chat-input-form {
   min-height: 80px;
-  padding: var(--spacing-md);
+  padding: 0;
   flex-shrink: 0;
   box-sizing: border-box;
+  margin-top: auto;
 }
 
 .personalized-hub .chat-input-wrapper {
-  background: #f4f4f4 !important;
-  border: 1px solid var(--smoke) !important;
-  border-radius: 50px !important;
-  padding: var(--spacing-xs) var(--spacing-xs) var(--spacing-xs) var(--spacing-md) !important;
-  display: flex !important;
+  background: var(--light-color);
+  border: 1px solid var(--smoke);
+  border-radius: 50px;
+  padding: var(--spacing-xs) var(--spacing-xs) var(--spacing-xs) var(--spacing-md);
+  display: flex;
   align-items: center;
   gap: var(--spacing-xs);
-  height: 48px !important;
+  height: 35px;
 }
 
 .personalized-hub .chat-input {
   flex: 1;
-  border: none !important;
-  background: transparent !important;
+  border: none;
+  background: transparent;
   font-family: var(--body-font-family);
   font-size: var(--body-font-size-s);
   color: var(--text-color);
@@ -36,26 +37,26 @@
 }
 
 .personalized-hub .chat-submit-btn {
-  width: 32px !important;
-  height: 32px !important;
-  border-radius: 50% !important;
-  border: none !important;
-  background: var(--ufs-orange) !important;
-  display: flex !important;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: var(--ufs-orange);
+  display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   flex-shrink: 0;
   position: relative;
-  padding: 0 !important;
+  padding: 0;
 }
 
 .personalized-hub .chat-submit-btn:hover {
-  background: var(--orange-dark) !important;
+  background: var(--orange-dark);
 }
 
 .personalized-hub .chat-submit-btn:disabled {
-  background: #ccc !important;
+  background: var(--mid-smoke);
   cursor: not-allowed;
 }
 
@@ -71,13 +72,14 @@
   margin: 0 auto;
   position: relative;
   min-height: 600px;
+  display: flex;
+  flex-direction: column;
 }
 
 .personalized-hub-container {
   width: 100%;
-  height: 600px;
-  min-height: 600px;
-  max-height: 600px;
+  min-height: 700px;
+  max-height: 700px;
   background-color: var(--background-color);
   border-radius: var(--radius-sm);
   overflow: hidden;
@@ -106,11 +108,11 @@
   width: 100%;
   max-height: 680px;
   min-height: 300px;
-  padding: 70px 12px 12px;
+  padding: 70px var(--spacing-sm) var(--spacing-sm);
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--spacing-xs);
 }
 
 .ph-cookie-modal-close {
@@ -121,7 +123,7 @@
   height: 38px;
   background: var(--light-mushroom);
   border: none;
-  border-radius: 50px;
+  border-radius: var(--radius-full);
   cursor: pointer;
   z-index: var(--z-modal-close);
   display: flex;
@@ -185,26 +187,26 @@
 @media (width < 900px) {
   .ph-modal-overlay {
     align-items: flex-end;
-    padding: var(--spacing-md) var(--spacing-md) 48px;
+    padding: var(--spacing-md) var(--spacing-md) var(--spacing-2xl);
   }
 
   .ph-cookie-modal {
     max-width: 358px;
-    border-radius: 28px;
-    padding: 40px 8px 8px;
+    border-radius: var(--spacing-xl);
+    padding: var(--spacing-2xl) var(--spacing-xs) var(--spacing-xs);
   }
 
 
 
   .ph-cookie-modal-handle {
     position: absolute;
-    top: 8px;
+    top: var(--spacing-xs);
     left: 50%;
     transform: translateX(-50%);
     width: 70px;
-    height: 5px;
-    background: #d9d9d9;
-    border-radius: 10px;
+    height: var(--spacing-xxs);
+    background: var(--mushroom);
+    border-radius: var(--radius-sm);
   }
 
   .ph-cookie-modal-close {
@@ -226,27 +228,27 @@
 /* Chat Widget Container */
 .ph-chat-container {
   background: var(--c-white);
-  border-radius: 28px;
+  border-radius: var(--spacing-xl);
   max-width: 95%;
   width: 100%;
   max-height: 680px;
   min-height: 300px;
-  padding: 40px 8px 8px;
+  padding: var(--spacing-2xl) var(--spacing-xs) var(--spacing-xs);
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--spacing-xs);
 }
 
 .ph-chat-handle {
   position: absolute;
-  top: 8px;
+  top: var(--spacing-xs);
   left: 50%;
   transform: translateX(-50%);
   width: 70px;
-  height: 5px;
-  background: #d9d9d9;
-  border-radius: 10px;
+  height: var(--spacing-xxs);
+  background: var(--mushroom);
+  border-radius: var(--radius-sm);
 }
 
 .ph-chat-gradient {
@@ -317,6 +319,15 @@
   text-align: left;
   cursor: pointer;
   max-width: 330px;
+  margin: 0;
+}
+
+.ph-btn-gradient {
+  background: linear-gradient(91.765deg, rgb(232 91 14 / 6%) 3.749%, rgb(255 90 0 / 6%) 28.36%, rgb(92 54 87 / 6%) 69.867%, rgb(134 36 121 / 6%) 103.17%);
+}
+
+.ph-btn-gradient:hover {
+  background: linear-gradient(91.765deg, rgb(232 91 14 / 12%) 3.749%, rgb(255 90 0 / 12%) 28.36%, rgb(92 54 87 / 12%) 69.867%, rgb(134 36 121 / 12%) 103.17%);
 }
 
 .ph-question-btn:hover {
@@ -328,12 +339,9 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xs);
+  height: 100%;
 }
 
-/* Personalized-hub specific input form styling */
-.personalized-hub .chat-input-form {
-  padding: 0;
-}
 
 /* Loading State */
 .ph-loading-container {
@@ -358,52 +366,65 @@
 .ph-loading-ring {
   position: absolute;
   border-radius: 50%;
-  animation: pulse 2s ease-in-out infinite;
 }
 
 .ph-loading-ring-1 {
-  width: 206px;
-  height: 206px;
-  border: 20px solid var(--neon-fm-2);
-  opacity: 0.1;
+  width: 150px;
+  height: 150px;
+  border: 1px solid var(--mushroom);
+  opacity: 1;
+  animation: pulse 2s ease-in-out infinite;
   animation-delay: 0s;
 }
 
 .ph-loading-ring-2 {
-  width: 150px;
-  height: 150px;
-  border: 15px solid var(--neon-fm-1);
-  opacity: 0.15;
-  animation-delay: 0.4s;
-}
-
-.ph-loading-ring-3 {
-  width: 82px;
-  height: 82px;
-  border: 10px solid var(--neon-fm-3);
-  opacity: 0.2;
-  animation-delay: 0.8s;
+  width: 180px;
+  height: 180px;
+  border: 1px solid var(--mushroom);
+  opacity: 0.6;
+  animation: pulse-outer 2.5s ease-in-out infinite;
+  animation-delay: 0.3s;
 }
 
 .ph-loading-logo {
-  width: 70px;
-  height: 70px;
+  width: 90px;
+  height: 90px;
   border-radius: 50%;
-  object-fit: cover;
   z-index: 1;
+  border: 2px solid var(--c-white);
+  background: var(--squid-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  box-sizing: border-box;
 }
 
 @keyframes pulse {
   0%, 100% {
     transform: scale(1);
-    opacity: 0.1;
+    opacity: 1;
   }
 
   50% {
-    transform: scale(1.05);
-    opacity: 0.25;
+    transform: scale(1.02);
+    opacity: 0.8;
   }
 }
+
+@keyframes pulse-outer {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: scale(1.03);
+    opacity: 0.4;
+  }
+}
+
 
 .ph-loading-title {
   font-family: var(--body-font-family);
@@ -416,7 +437,7 @@
 .ph-loading-steps {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--spacing-xxs);
   text-align: center;
 }
 
@@ -450,9 +471,9 @@
   position: relative;
   width: 100%;
   aspect-ratio: 208 / 156;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   overflow: hidden;
-  background: #d9d9d9;
+  background: var(--mushroom);
 }
 
 .ph-business-image {
@@ -465,13 +486,13 @@
   display: flex;
   gap: var(--spacing-xs);
   align-items: center;
-  padding: 0 4px;
+  padding: 0 var(--spacing-xxs);
 }
 
 .ph-business-logo {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+  width: var(--spacing-2xl);
+  height: var(--spacing-2xl);
+  border-radius: var(--radius-full);
   object-fit: cover;
   flex-shrink: 0;
 }
@@ -480,7 +501,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--spacing-xxs);
 }
 
 .ph-business-name {
@@ -546,9 +567,8 @@
   }
 
   .personalized-hub-container {
-    height: 500px;
-    min-height: 500px;
-    max-height: 500px;
+    height: 70vh;
+    max-height: 70vh;
     border-radius: 0;
   }
 
@@ -562,7 +582,7 @@
   .ph-chat-container {
     max-width: 95%;
     border-radius: var(--radius-lg);
-    padding: 70px 12px 12px;
+    padding: 70px var(--spacing-sm) var(--spacing-sm);
   }
 
   .ph-chat-handle {
