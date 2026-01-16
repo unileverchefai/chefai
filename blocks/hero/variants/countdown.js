@@ -81,7 +81,7 @@ export default function setCountdownToHero({ countdownArea, countdownClass }) {
   const endDate = new Date(endDateISO);
   const difference = endDate - startDate;
 
-  if (difference <= 0) {
+  if (difference < 0) {
     console.warn(
       'Countdown %cend%c date must be later than %cstart%c date. %cCountdown will not be displayed.',
       'color: red;',
