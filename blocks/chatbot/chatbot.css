@@ -193,10 +193,6 @@
     outline-offset: 2px;
 }
 
-/* .chatbot-container input:focus {
-    outline: 2px solid var(--link-color);
-    outline-offset: 2px;
-} */
 
 /* Message content styles */
 .message-images {

@@ -1,4 +1,5 @@
 import { loadReact } from '../chatbot/utils.js';
+import { createElement } from '../../scripts/common.js';
 
 const SCREENS = {
   COOKIE_CONSENT: 'cookie-consent',
@@ -10,21 +11,23 @@ const SCREENS = {
 
 export default async function personalizedHub(block) {
   block.textContent = '';
-  const container = document.createElement('div');
-  container.className = 'personalized-hub-container';
-  container.id = 'personalized-hub-root';
+  const container = createElement('div', {
+    className: 'personalized-hub-container',
+    properties: { id: 'personalized-hub-root' },
+  });
   block.appendChild(container);
 
-  const skeleton = document.createElement('div');
-  skeleton.className = 'chatbot-skeleton';
-  skeleton.innerHTML = `
-    <div class="chatbot-skeleton-messages">
-      <div class="chatbot-skeleton-message">
-        <div class="chatbot-skeleton-bubble"></div>
+  const skeleton = createElement('div', {
+    className: 'chatbot-skeleton',
+    fragment: `
+      <div class="chatbot-skeleton-messages">
+        <div class="chatbot-skeleton-message">
+          <div class="chatbot-skeleton-bubble"></div>
+        </div>
       </div>
-    </div>
-    <div class="chatbot-skeleton-form"></div>
-  `;
+      <div class="chatbot-skeleton-form"></div>
+    `,
+  });
   container.appendChild(skeleton);
 
   try {
@@ -72,20 +75,6 @@ export default async function personalizedHub(block) {
 
         setBusinessData(mockData);
         setCurrentScreen(SCREENS.CONFIRMATION);
-
-        // Uncomment below to use real API
-        /*
-        try {
-          const data = await fetchBusinessInfo(businessName);
-          setBusinessData(data);
-          setCurrentScreen(SCREENS.CONFIRMATION);
-        } catch (err) {
-          // eslint-disable-next-line no-console
-          console.error('Failed to fetch business info:', err);
-          setError(err.message);
-          setCurrentScreen(SCREENS.CHAT);
-        }
-        */
       };
 
       const handleConfirm = () => {
@@ -165,14 +154,14 @@ export default async function personalizedHub(block) {
       block.reactRoot = root;
     });
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.error('Failed to load personalized hub:', error);
     if (skeleton && skeleton.parentNode === container) {
       container.removeChild(skeleton);
     }
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'chatbot-error';
-    errorDiv.textContent = `Failed to load personalized hub: ${error.message}. Please refresh the page.`;
+    const errorDiv = createElement('div', {
+      className: 'chatbot-error',
+      textContent: `Failed to load personalized hub: ${error.message}. Please refresh the page.`,
+    });
     container.appendChild(errorDiv);
   }
 }
