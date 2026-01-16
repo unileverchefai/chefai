@@ -88,6 +88,24 @@
   --gradient-color-start: #221d3700;
 
   max-height: 782px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 1%;
+    left: 50%;
+    translate: -50%;
+    width: 17px;
+    height: 22px;
+    background-image: url('/icons/scroll-arrow.svg');
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    pointer-events: none;
+
+    @media (width >= 992px) {
+      display: none;
+    }
+  }
 }
 
 :is(.hero__countdown--media, .hero__live--media) img {
