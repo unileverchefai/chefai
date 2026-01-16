@@ -1,4 +1,5 @@
 import renderMessage from './renderMessage.js';
+import ChatInput from '../../components/ChatInput.js';
 
 const { createElement: h } = window.React;
 
@@ -31,7 +32,7 @@ export default function renderChatUI({
           className: 'chat-error',
           style: {
             backgroundColor: '#ffebee',
-            color: '#d32f2f',
+            color: 'var(--error)',
             padding: '12px',
             textAlign: 'center',
             fontSize: 'var(--body-font-size-xs)',
@@ -75,56 +76,15 @@ export default function renderChatUI({
           }),
         ],
       ),
-      h(
-        'form',
-        {
-          key: 'input-form',
-          className: 'chat-input-form',
-          onSubmit: handleSend,
-        },
-        [
-          h('input', {
-            key: 'input',
-            type: 'text',
-            value: inputValue,
-            onChange: (e) => setInputValue(e.target.value),
-            placeholder: 'Type your message here...',
-            disabled: isTyping,
-            style: {
-              flex: 1,
-              padding: '12px 16px',
-              borderRadius: '24px',
-              border: '1px solid var(--light-color)',
-              fontSize: 'var(--body-font-size-s)',
-              fontFamily: 'var(--body-font-family)',
-              outline: 'none',
-            },
-          }),
-          h(
-            'button',
-            {
-              key: 'send',
-              type: 'submit',
-              disabled,
-              style: {
-                width: '48px',
-                height: '48px',
-                borderRadius: '50%',
-                border: 'none',
-                backgroundColor: !disabled ? 'var(--link-color)' : '#ccc',
-                color: 'var(--background-color)',
-                fontSize: '20px',
-                cursor: !disabled ? 'pointer' : 'not-allowed',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-              },
-            },
-            '→',
-          ),
-        ],
-      ),
+      h(ChatInput, {
+        key: 'input',
+        value: inputValue,
+        onChange: setInputValue,
+        onSubmit: handleSend,
+        placeholder: 'Type your message here...',
+        disabled: isTyping,
+        submitDisabled: disabled,
+      }),
     ],
   );
 }
