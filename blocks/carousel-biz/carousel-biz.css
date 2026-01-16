@@ -1,0 +1,392 @@
+.carousel-biz {
+  background: var(--background-color);
+  padding: 24px 100px 80px;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+/* Filter Dropdown */
+.carousel-biz-filter {
+  margin-bottom: 28px;
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+
+.biz-dropdown {
+  width: 100%;
+  max-width: 590px;
+  height: 54px;
+  padding: 13px 16px;
+  background: linear-gradient(180deg, var(--background-color) 0%, var(--light-smoke) 100%);
+  border: 1px solid var(--mid-smoke);
+  border-radius: var(--radius-sm);
+  font-family: var(--ff-unilever-shilling);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  color: var(--text-color);
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='6' viewBox='0 0 12 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 5L11 1' stroke='%23131313' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-right: 40px;
+}
+
+.biz-dropdown:hover {
+  border-color: var(--smoke);
+}
+
+.biz-dropdown:focus {
+  outline: none;
+  border-color: var(--mid-smoke);
+}
+
+.biz-dropdown[aria-expanded="true"] {
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='6' viewBox='0 0 12 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 5L6 1L1 5' stroke='%23131313' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+/* Carousel Container */
+.carousel-biz-container {
+  display: flex;
+  gap: 20px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  transition: transform 0.3s ease;
+}
+
+/* Trend Card Base Styles */
+.trend-card {
+  position: relative;
+  width: var(--card-width-desktop);
+  height: var(--card-height-desktop);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  box-shadow: var(--box-shadow-card-trend);
+  background-size: cover;
+  background-position: center;
+}
+
+/* Gradient overlays for each trend type */
+.trend-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-card);
+  z-index: 1;
+}
+
+.trend-card.borderless-cuisine::after {
+  background: linear-gradient(203.69deg, rgb(237 108 0 / 0%) 24.34%, rgb(237 108 0 / 100%) 50.162%);
+}
+
+.trend-card.street-food-couture::after {
+  background: linear-gradient(203.69deg, rgb(98 44 87 / 0%) 24.34%, rgb(98 44 87 / 100%) 50.162%);
+}
+
+.trend-card.diner-designed::after {
+  background: linear-gradient(203.69deg, rgb(103 150 65 / 0%) 24.34%, rgb(103 150 65 / 100%) 50.162%);
+}
+
+.trend-card.culinary-roots::after {
+  background: linear-gradient(203.69deg, rgb(0 16 45 / 0%) 24.34%, rgb(0 16 45 / 100%) 50.162%);
+}
+
+.trend-card.cross-trend {
+  box-shadow: var(--box-shadow-card-trend), inset 0 0 14px rgb(176 43 159 / 20%);
+}
+
+.trend-card.cross-trend::after {
+  background: linear-gradient(203.69deg, rgb(255 255 255 / 0%) 24.34%, rgb(255 255 255 / 100%) 50.162%);
+}
+
+/* Header (Trend Name) */
+.trend-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: -1px;
+  padding: 12px 0;
+  text-align: center;
+  font-family: var(--ff-unilever-shilling);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--background-color);
+  text-shadow: var(--text-shadow-sm);
+  backdrop-filter: var(--backdrop-blur-sm);
+  box-shadow: 0 0 4px var(--dark-gray), inset 0 -1px 0 var(--background-color);
+  z-index: 3;
+}
+
+.trend-card.borderless-cuisine .trend-header {
+  background: linear-gradient(90deg, rgb(249 176 2 / 80%) 0%, rgb(249 176 2 / 80%) 100%),
+              linear-gradient(180deg, rgb(255 255 255 / 10%) 0%, rgb(255 255 255 / 2.7%) 100%);
+}
+
+.trend-card.street-food-couture .trend-header {
+  background: linear-gradient(90deg, rgb(220 77 139 / 80%) 0%, rgb(220 77 139 / 80%) 100%),
+              linear-gradient(180deg, rgb(255 255 255 / 10%) 0%, rgb(255 255 255 / 2.7%) 100%);
+}
+
+.trend-card.diner-designed .trend-header {
+  background: linear-gradient(90deg, rgb(161 184 59 / 80%) 0%, rgb(161 184 59 / 80%) 100%),
+              linear-gradient(180deg, rgb(255 255 255 / 10%) 0%, rgb(255 255 255 / 2.7%) 100%);
+}
+
+.trend-card.culinary-roots .trend-header {
+  background: linear-gradient(90deg, rgb(0 144 186 / 80%) 0%, rgb(0 144 186 / 80%) 100%),
+              linear-gradient(180deg, rgb(255 255 255 / 10%) 0%, rgb(255 255 255 / 2.7%) 100%);
+}
+
+.trend-card.cross-trend .trend-header {
+  background: linear-gradient(90deg, rgb(201 195 206 / 80%) 0%, rgb(201 195 206 / 80%) 100%),
+              linear-gradient(180deg, rgb(255 255 255 / 10%) 0%, rgb(255 255 255 / 2.7%) 100%);
+  color: var(--squid-ink);
+  text-shadow: none;
+}
+
+/* Content Area */
+.trend-content {
+  position: relative;
+  z-index: 2;
+  padding: 0 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.trend-stat {
+  font-family: var(--ff-unilever-shilling);
+  font-weight: 700;
+  line-height: normal;
+  color: var(--background-color);
+}
+
+.trend-stat.stat-number {
+  font-size: var(--stat-size-number);
+  letter-spacing: -2px;
+}
+
+.trend-stat.stat-word {
+  font-size: var(--stat-size-word);
+  letter-spacing: -1.5px;
+}
+
+/* Text shadow per trend type */
+.trend-card.borderless-cuisine .trend-stat {
+  text-shadow: 
+    0 0 3px rgb(255 171 0 / 25%),
+    0 0 8px rgb(255 171 0 / 80%),
+    0 0 8px rgb(255 171 0 / 80%),
+    0 0 3px #ffab00;
+}
+
+.trend-card.street-food-couture .trend-stat {
+  text-shadow: 
+    0 0 3px rgb(220 77 139 / 25%),
+    0 0 8px rgb(220 77 139 / 80%),
+    0 0 8px rgb(220 77 139 / 80%),
+    0 0 3px #dc4d8b;
+}
+
+.trend-card.diner-designed .trend-stat {
+  text-shadow: 
+    0 0 3px rgb(161 184 59 / 25%),
+    0 0 8px rgb(161 184 59 / 80%),
+    0 0 8px rgb(161 184 59 / 80%),
+    0 0 3px #a1b83b;
+}
+
+.trend-card.culinary-roots .trend-stat {
+  text-shadow: 
+    0 0 3px rgb(0 144 186 / 25%),
+    0 0 8px rgb(0 144 186 / 80%),
+    0 0 8px rgb(0 144 186 / 80%),
+    0 0 3px #0090ba;
+}
+
+.trend-card.cross-trend .trend-stat {
+  color: transparent;
+  -webkit-text-stroke: 2px var(--squid-ink);
+}
+
+.trend-description {
+  font-family: var(--ff-unilever-shilling);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 25px;
+  letter-spacing: -0.1px;
+  color: var(--background-color);
+  text-shadow: var(--text-shadow-sm);
+  margin: 0;
+}
+
+.trend-card.cross-trend .trend-description {
+  color: var(--squid-ink);
+  text-shadow: none;
+}
+
+/* CTA Link */
+.trend-cta {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  text-decoration: none;
+  transition: opacity var(--transition-fast);
+}
+
+.trend-cta:hover {
+  opacity: 0.8;
+}
+
+.cta-text {
+  font-family: var(--ff-unilever-shilling);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 21px;
+  color: var(--background-color);
+  text-shadow: var(--text-shadow-sm);
+}
+
+.trend-card.cross-trend .cta-text {
+  color: var(--squid-ink);
+  text-shadow: none;
+}
+
+.cta-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--background-color);
+}
+
+.trend-card.cross-trend .cta-arrow {
+  color: var(--squid-ink);
+}
+
+/* Carousel Controls */
+.carousel-biz .controls {
+  margin-top: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+
+.carousel-biz .indicators {
+  display: flex;
+  gap: 8px;
+}
+
+.carousel-biz .indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--mid-smoke);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.carousel-biz .indicator.active {
+  background: var(--ufs-orange);
+}
+
+.carousel-biz .arrows {
+  display: flex;
+  gap: 16px;
+}
+
+.carousel-biz .arrow {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--mid-smoke);
+  background: var(--background-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.carousel-biz .arrow:hover {
+  border-color: var(--ufs-orange);
+  background: var(--light-mushroom);
+}
+
+.carousel-biz .arrow:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.carousel-biz .arrow::before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border-right: 2px solid var(--text-color);
+  border-bottom: 2px solid var(--text-color);
+}
+
+.carousel-biz .arrow.prev::before {
+  transform: rotate(135deg);
+  margin-left: 4px;
+}
+
+.carousel-biz .arrow.next::before {
+  transform: rotate(-45deg);
+  margin-right: 4px;
+}
+
+/* Mobile Responsive */
+@media (width <= 899px) {
+  .carousel-biz {
+    padding: 24px 20px 40px;
+  }
+
+  .carousel-biz-filter {
+    margin-bottom: 20px;
+  }
+
+  .biz-dropdown {
+    max-width: 100%;
+  }
+
+  .trend-card {
+    width: var(--card-width-mobile);
+    height: var(--card-height-mobile);
+  }
+
+  .trend-stat.stat-number {
+    font-size: var(--stat-size-number-mobile);
+  }
+
+  .trend-stat.stat-word {
+    font-size: var(--stat-size-word-mobile);
+  }
+
+  .trend-description {
+    font-size: 16px;
+    line-height: 22px;
+  }
+}
+
+/* Tablet */
+@media (width >= 600px) and (width <= 899px) {
+  .carousel-biz {
+    padding: 24px 40px 60px;
+  }
+}
