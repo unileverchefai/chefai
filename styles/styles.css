@@ -29,10 +29,12 @@
 
   /* Shades */
   --accessible-orange: #ff5a00;
+  --light-orange: #ffeee5;
   --mid-smoke: #c9c3ce;
   --mid-mushroom: #e5e2e3;
   --light-smoke: #eae7eb;
   --light-mushroom: #f5f3f4;
+  --dark-grey: #333;
 
   /* Trends */
   --street-food-couture: #622c57;
@@ -43,6 +45,16 @@
   --diner-designed-bright: #a1b83b;
   --culinary-roots: #00102d;
   --culinary-roots-bright: #0090ba;
+
+  /* Future Menus */
+  --fm-modernized-comfort-food: #ba65be;
+  --fm-irresistible-vegetables: #ff7604;
+  --fm-wild-pure: #8598aa;
+  --fm-flavor-contrast: #00b3bb;
+  --fm-feel-good-food: #feaf00;
+  --fm-new-sharing: #ff0b9b;
+  --fm-mindful-proteins: #98b850;
+  --fm-low-waste-menus: #ad4800;
 
   /* Functional */
     --success: #81BC2A;
