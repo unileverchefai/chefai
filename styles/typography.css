@@ -1,0 +1,608 @@
+/*
+ * Typography System
+ * Based on UFS Rosana Style Guide (Figma)
+ * 
+ * This file contains the complete typography system including:
+ * - Headlines (Unilever Shilling & Chefs Hand)
+ * - Paragraphs/Body copy
+ * - Display sizes
+ * - Interactive elements (links, buttons, navigation)
+ * - Labels and captions
+ * 
+ * All styles follow mobile-first responsive design with desktop breakpoint at 900px
+ */
+
+:root {
+  /* ===================================
+     HEADLINES - Unilever Shilling
+     =================================== */
+  
+  /* H1 */
+  --typo-h1-size-mobile: 25px;
+  --typo-h1-line-mobile: 32px;
+  --typo-h1-weight: 500;
+  --typo-h1-size-desktop: 31px;
+  --typo-h1-line-desktop: 40px;
+
+  /* H2 */
+  --typo-h2-size-mobile: 20px;
+  --typo-h2-line-mobile: 25px;
+  --typo-h2-weight: 500;
+  --typo-h2-size-desktop: 25px;
+  --typo-h2-line-desktop: 32px;
+
+  /* H3 Regular */
+  --typo-h3-reg-size-mobile: 16px;
+  --typo-h3-reg-line-mobile: 24px;
+  --typo-h3-reg-weight: 400;
+  --typo-h3-reg-size-desktop: 20px;
+  --typo-h3-reg-line-desktop: 26px;
+
+  /* H3 Medium */
+  --typo-h3-med-size-mobile: 16px;
+  --typo-h3-med-line-mobile: 24px;
+  --typo-h3-med-weight: 500;
+  --typo-h3-med-size-desktop: 20px;
+  --typo-h3-med-line-desktop: 26px;
+
+  /* H4 Regular */
+  --typo-h4-reg-size-mobile: 14px;
+  --typo-h4-reg-line-mobile: 22px;
+  --typo-h4-reg-weight: 400;
+  --typo-h4-reg-size-desktop: 16px;
+  --typo-h4-reg-line-desktop: 24px;
+
+  /* H4 Medium */
+  --typo-h4-med-size-mobile: 14px;
+  --typo-h4-med-line-mobile: 22px;
+  --typo-h4-med-weight: 500;
+  --typo-h4-med-size-desktop: 16px;
+  --typo-h4-med-line-desktop: 24px;
+
+  /* H5 */
+  --typo-h5-size-mobile: 12px;
+  --typo-h5-line-mobile: 18px;
+  --typo-h5-weight: 500;
+  --typo-h5-size-desktop: 14px;
+  --typo-h5-line-desktop: 22px;
+
+  /* ===================================
+     HEADLINES - Chefs Hand
+     =================================== */
+  
+  /* Chefs Hand H1 */
+  --typo-ch-h1-size-mobile: 43px;
+  --typo-ch-h1-line-mobile: 32px;
+  --typo-ch-h1-weight: 400;
+  --typo-ch-h1-tracking: -0.3px;
+  --typo-ch-h1-size-desktop: 53px;
+  --typo-ch-h1-line-desktop: 40px;
+
+  /* Chefs Hand H2 */
+  --typo-ch-h2-size-mobile: 34px;
+  --typo-ch-h2-line-mobile: 25px;
+  --typo-ch-h2-weight: 400;
+  --typo-ch-h2-tracking: -0.3px;
+  --typo-ch-h2-size-desktop: 42px;
+  --typo-ch-h2-line-desktop: 32px;
+
+  /* Chefs Hand H3 */
+  --typo-ch-h3-size-mobile: 27px;
+  --typo-ch-h3-line-mobile: 24px;
+  --typo-ch-h3-weight: 400;
+  --typo-ch-h3-tracking: -0.2px;
+  --typo-ch-h3-size-desktop: 34px;
+  --typo-ch-h3-line-desktop: 26px;
+
+  /* Chefs Hand H4 */
+  --typo-ch-h4-size-mobile: 24px;
+  --typo-ch-h4-line-mobile: 22px;
+  --typo-ch-h4-weight: 400;
+  --typo-ch-h4-tracking: -0.1px;
+  --typo-ch-h4-size-desktop: 27px;
+  --typo-ch-h4-line-desktop: 24px;
+
+  /* Chefs Hand H5 */
+  --typo-ch-h5-size-mobile: 20px;
+  --typo-ch-h5-line-mobile: 18px;
+  --typo-ch-h5-weight: 400;
+  --typo-ch-h5-size-desktop: 24px;
+  --typo-ch-h5-line-desktop: 22px;
+
+  /* ===================================
+     PARAGRAPHS / BODY COPY
+     =================================== */
+  
+  /* Subheadline */
+  --typo-subheadline-size-mobile: 18px;
+  --typo-subheadline-line-mobile: 1.5;
+  --typo-subheadline-weight: 400;
+  --typo-subheadline-style: italic;
+  --typo-subheadline-size-desktop: 22px;
+  --typo-subheadline-line-desktop: 1.5;
+
+  /* P1 Regular (default) */
+  --typo-p1-reg-size-mobile: 14px;
+  --typo-p1-reg-line-mobile: 22px;
+  --typo-p1-reg-weight: 400;
+  --typo-p1-reg-size-desktop: 16px;
+  --typo-p1-reg-line-desktop: 24px;
+
+  /* P1 Bold (default bold) */
+  --typo-p1-bold-size-mobile: 14px;
+  --typo-p1-bold-line-mobile: 22px;
+  --typo-p1-bold-weight: 500;
+  --typo-p1-bold-size-desktop: 16px;
+  --typo-p1-bold-line-desktop: 24px;
+
+  /* P2 Regular (small) */
+  --typo-p2-reg-size-mobile: 12px;
+  --typo-p2-reg-line-mobile: 18px;
+  --typo-p2-reg-weight: 400;
+  --typo-p2-reg-size-desktop: 14px;
+  --typo-p2-reg-line-desktop: 22px;
+
+  /* P2 Bold (small bold) */
+  --typo-p2-bold-size-mobile: 12px;
+  --typo-p2-bold-line-mobile: 18px;
+  --typo-p2-bold-weight: 500;
+  --typo-p2-bold-size-desktop: 14px;
+  --typo-p2-bold-line-desktop: 22px;
+
+  /* ===================================
+     DISPLAY
+     =================================== */
+  
+  --typo-display-size-mobile: 31px;
+  --typo-display-line-mobile: 37px;
+  --typo-display-weight: bold;
+  --typo-display-size-desktop: 39px;
+  --typo-display-line-desktop: 47px;
+
+  /* ===================================
+     INTERACTIVE ELEMENTS
+     =================================== */
+  
+  /* Navigation */
+  --typo-nav-size: 16px;
+  --typo-nav-line: 24px;
+  --typo-nav-weight: 500;
+
+  /* Buttons */
+  --typo-button-size: 14px;
+  --typo-button-line: 22px;
+  --typo-button-weight: 500;
+
+  /* Filters */
+  --typo-filter-size: 16px;
+  --typo-filter-line: 24px;
+  --typo-filter-weight: 400;
+
+  /* Breadcrumbs */
+  --typo-breadcrumb-size: 14px;
+  --typo-breadcrumb-line: 22px;
+  --typo-breadcrumb-weight: 400;
+
+  /* Links Normal */
+  --typo-link-normal-size: 16px;
+  --typo-link-normal-line: 24px;
+  --typo-link-normal-weight: 500;
+
+  /* Links Small */
+  --typo-link-small-size: 14px;
+  --typo-link-small-line: 22px;
+  --typo-link-small-weight: 500;
+
+  /* ===================================
+     LABELS / CAPTIONS
+     =================================== */
+  
+  /* Caption Large CAPS */
+  --typo-caption-lg-caps-size-mobile: 14px;
+  --typo-caption-lg-caps-line-mobile: 18px;
+  --typo-caption-lg-caps-weight: 500;
+  --typo-caption-lg-caps-size-desktop: 16px;
+  --typo-caption-lg-caps-line-desktop: 20px;
+
+  /* Caption Large Regular */
+  --typo-caption-lg-reg-size-mobile: 14px;
+  --typo-caption-lg-reg-line-mobile: 18px;
+  --typo-caption-lg-reg-weight: 400;
+  --typo-caption-lg-reg-size-desktop: 16px;
+  --typo-caption-lg-reg-line-desktop: 20px;
+
+  /* Caption Small Medium CAPS */
+  --typo-caption-sm-caps-size: 12px;
+  --typo-caption-sm-caps-line: 16px;
+  --typo-caption-sm-caps-weight: bold;
+  --typo-caption-sm-caps-tracking: 0.4px;
+
+  /* Caption Small Medium */
+  --typo-caption-sm-med-size: 12px;
+  --typo-caption-sm-med-line: 16px;
+  --typo-caption-sm-med-weight: 500;
+  --typo-caption-sm-med-tracking: 0.4px;
+
+  /* Caption Small Regular */
+  --typo-caption-sm-reg-size: 12px;
+  --typo-caption-sm-reg-line: 16px;
+  --typo-caption-sm-reg-weight: 400;
+}
+
+/* ===================================
+   UTILITY CLASSES - HEADLINES (Unilever Shilling)
+   =================================== */
+
+.typo-h1 {
+  font-family: var(--ff-unilever-shilling);
+  font-size: var(--typo-h1-size-mobile);
+  line-height: var(--typo-h1-line-mobile);
+  font-weight: var(--typo-h1-weight);
+  letter-spacing: 0;
+}
+
+.typo-h2 {
+  font-family: var(--ff-unilever-shilling);
+  font-size: var(--typo-h2-size-mobile);
+  line-height: var(--typo-h2-line-mobile);
+  font-weight: var(--typo-h2-weight);
+  letter-spacing: 0;
+}
+
+.typo-h3-reg {
+  font-family: var(--ff-unilever-shilling);
+  font-size: var(--typo-h3-reg-size-mobile);
+  line-height: var(--typo-h3-reg-line-mobile);
+  font-weight: var(--typo-h3-reg-weight);
+  letter-spacing: 0;
+}
+
+.typo-h3-med {
+  font-family: var(--ff-unilever-shilling);
+  font-size: var(--typo-h3-med-size-mobile);
+  line-height: var(--typo-h3-med-line-mobile);
+  font-weight: var(--typo-h3-med-weight);
+  letter-spacing: 0;
+}
+
+.typo-h4-reg {
+  font-family: var(--ff-unilever-shilling);
+  font-size: var(--typo-h4-reg-size-mobile);
+  line-height: var(--typo-h4-reg-line-mobile);
+  font-weight: var(--typo-h4-reg-weight);
+  letter-spacing: 0;
+}
+
+.typo-h4-med {
+  font-family: var(--ff-unilever-shilling);
+  font-size: var(--typo-h4-med-size-mobile);
+  line-height: var(--typo-h4-med-line-mobile);
+  font-weight: var(--typo-h4-med-weight);
+  letter-spacing: 0;
+}
+
+.typo-h5 {
+  font-family: var(--ff-unilever-shilling);
+  font-size: var(--typo-h5-size-mobile);
+  line-height: var(--typo-h5-line-mobile);
+  font-weight: var(--typo-h5-weight);
+  letter-spacing: 0;
+}
+
+/* ===================================
+   UTILITY CLASSES - HEADLINES (Chefs Hand)
+   =================================== */
+
+.typo-ch-h1 {
+  font-family: var(--ff-chefs-hand);
+  font-size: var(--typo-ch-h1-size-mobile);
+  line-height: var(--typo-ch-h1-line-mobile);
+  font-weight: var(--typo-ch-h1-weight);
+  letter-spacing: var(--typo-ch-h1-tracking);
+}
+
+.typo-ch-h2 {
+  font-family: var(--ff-chefs-hand);
+  font-size: var(--typo-ch-h2-size-mobile);
+  line-height: var(--typo-ch-h2-line-mobile);
+  font-weight: var(--typo-ch-h2-weight);
+  letter-spacing: var(--typo-ch-h2-tracking);
+}
+
+.typo-ch-h3 {
+  font-family: var(--ff-chefs-hand);
+  font-size: var(--typo-ch-h3-size-mobile);
+  line-height: var(--typo-ch-h3-line-mobile);
+  font-weight: var(--typo-ch-h3-weight);
+  letter-spacing: var(--typo-ch-h3-tracking);
+}
+
+.typo-ch-h4 {
+  font-family: var(--ff-chefs-hand);
+  font-size: var(--typo-ch-h4-size-mobile);
+  line-height: var(--typo-ch-h4-line-mobile);
+  font-weight: var(--typo-ch-h4-weight);
+  letter-spacing: var(--typo-ch-h4-tracking);
+}
+
+.typo-ch-h5 {
+  font-family: var(--ff-chefs-hand);
+  font-size: var(--typo-ch-h5-size-mobile);
+  line-height: var(--typo-ch-h5-line-mobile);
+  font-weight: var(--typo-ch-h5-weight);
+  letter-spacing: 0;
+}
+
+/* ===================================
+   UTILITY CLASSES - PARAGRAPHS
+   =================================== */
+
+.typo-subheadline {
+  font-family: var(--ff-unilever-shilling);
+  font-size: var(--typo-subheadline-size-mobile);
+  line-height: var(--typo-subheadline-line-mobile);
+  font-weight: var(--typo-subheadline-weight);
+  font-style: var(--typo-subheadline-style);
+  letter-spacing: 0;
+}
+
+.typo-p1,
+.typo-p1-reg {
+  font-family: var(--ff-unilever-shilling);
+  font-size: var(--typo-p1-reg-size-mobile);
+  line-height: var(--typo-p1-reg-line-mobile);
+  font-weight: var(--typo-p1-reg-weight);
+  letter-spacing: 0;
+}
+
+.typo-p1-bold {
+  font-family: var(--ff-unilever-shilling);
+  font-size: var(--typo-p1-bold-size-mobile);
+  line-height: var(--typo-p1-bold-line-mobile);
+  font-weight: var(--typo-p1-bold-weight);
+  letter-spacing: 0;
+}
+
+.typo-p2,
+.typo-p2-reg {
+  font-family: var(--ff-unilever-shilling);
+  font-size: var(--typo-p2-reg-size-mobile);
+  line-height: var(--typo-p2-reg-line-mobile);
+  font-weight: var(--typo-p2-reg-weight);
+  letter-spacing: 0;
+}
+
+.typo-p2-bold {
+  font-family: var(--ff-unilever-shilling);
+  font-size: var(--typo-p2-bold-size-mobile);
+  line-height: var(--typo-p2-bold-line-mobile);
+  font-weight: var(--typo-p2-bold-weight);
+  letter-spacing: 0;
+}
+
+/* ===================================
+   UTILITY CLASSES - DISPLAY
+   =================================== */
+
+.typo-display {
+  font-family: var(--ff-unilever-shilling);
+  font-size: var(--typo-display-size-mobile);
+  line-height: var(--typo-display-line-mobile);
+  font-weight: var(--typo-display-weight);
+  letter-spacing: 0;
+}
+
+/* ===================================
+   UTILITY CLASSES - INTERACTIVE
+   =================================== */
+
+.typo-nav {
+  font-family: var(--ff-unilever-shilling);
+  font-size: var(--typo-nav-size);
+  line-height: var(--typo-nav-line);
+  font-weight: var(--typo-nav-weight);
+  letter-spacing: 0;
+}
+
+.typo-button {
+  font-family: var(--ff-unilever-shilling);
+  font-size: var(--typo-button-size);
+  line-height: var(--typo-button-line);
+  font-weight: var(--typo-button-weight);
+  letter-spacing: 0;
+}
+
+.typo-filter {
+  font-family: var(--ff-unilever-shilling);
+  font-size: var(--typo-filter-size);
+  line-height: var(--typo-filter-line);
+  font-weight: var(--typo-filter-weight);
+  letter-spacing: 0;
+}
+
+.typo-breadcrumb {
+  font-family: var(--ff-unilever-shilling);
+  font-size: var(--typo-breadcrumb-size);
+  line-height: var(--typo-breadcrumb-line);
+  font-weight: var(--typo-breadcrumb-weight);
+  letter-spacing: 0;
+}
+
+.typo-link-normal {
+  font-family: var(--ff-unilever-shilling);
+  font-size: var(--typo-link-normal-size);
+  line-height: var(--typo-link-normal-line);
+  font-weight: var(--typo-link-normal-weight);
+  letter-spacing: 0;
+  text-decoration: underline;
+  text-decoration-skip-ink: none;
+}
+
+.typo-link-small {
+  font-family: var(--ff-unilever-shilling);
+  font-size: var(--typo-link-small-size);
+  line-height: var(--typo-link-small-line);
+  font-weight: var(--typo-link-small-weight);
+  letter-spacing: 0;
+  text-decoration: underline;
+  text-decoration-skip-ink: none;
+}
+
+/* ===================================
+   UTILITY CLASSES - LABELS/CAPTIONS
+   =================================== */
+
+.typo-caption-lg-caps {
+  font-family: var(--ff-unilever-shilling);
+  font-size: var(--typo-caption-lg-caps-size-mobile);
+  line-height: var(--typo-caption-lg-caps-line-mobile);
+  font-weight: var(--typo-caption-lg-caps-weight);
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.typo-caption-lg-reg {
+  font-family: var(--ff-unilever-shilling);
+  font-size: var(--typo-caption-lg-reg-size-mobile);
+  line-height: var(--typo-caption-lg-reg-line-mobile);
+  font-weight: var(--typo-caption-lg-reg-weight);
+  letter-spacing: 0;
+}
+
+.typo-caption-sm-caps {
+  font-family: var(--ff-unilever-shilling);
+  font-size: var(--typo-caption-sm-caps-size);
+  line-height: var(--typo-caption-sm-caps-line);
+  font-weight: var(--typo-caption-sm-caps-weight);
+  letter-spacing: var(--typo-caption-sm-caps-tracking);
+  text-transform: uppercase;
+}
+
+.typo-caption-sm-med {
+  font-family: var(--ff-unilever-shilling);
+  font-size: var(--typo-caption-sm-med-size);
+  line-height: var(--typo-caption-sm-med-line);
+  font-weight: var(--typo-caption-sm-med-weight);
+  letter-spacing: var(--typo-caption-sm-med-tracking);
+}
+
+.typo-caption-sm-reg {
+  font-family: var(--ff-unilever-shilling);
+  font-size: var(--typo-caption-sm-reg-size);
+  line-height: var(--typo-caption-sm-reg-line);
+  font-weight: var(--typo-caption-sm-reg-weight);
+  letter-spacing: 0;
+}
+
+/* ===================================
+   DESKTOP RESPONSIVE STYLES
+   =================================== */
+
+@media (width >= 900px) {
+  /* Headlines - Unilever Shilling */
+  .typo-h1 {
+    font-size: var(--typo-h1-size-desktop);
+    line-height: var(--typo-h1-line-desktop);
+  }
+
+  .typo-h2 {
+    font-size: var(--typo-h2-size-desktop);
+    line-height: var(--typo-h2-line-desktop);
+  }
+
+  .typo-h3-reg {
+    font-size: var(--typo-h3-reg-size-desktop);
+    line-height: var(--typo-h3-reg-line-desktop);
+  }
+
+  .typo-h3-med {
+    font-size: var(--typo-h3-med-size-desktop);
+    line-height: var(--typo-h3-med-line-desktop);
+  }
+
+  .typo-h4-reg {
+    font-size: var(--typo-h4-reg-size-desktop);
+    line-height: var(--typo-h4-reg-line-desktop);
+  }
+
+  .typo-h4-med {
+    font-size: var(--typo-h4-med-size-desktop);
+    line-height: var(--typo-h4-med-line-desktop);
+  }
+
+  .typo-h5 {
+    font-size: var(--typo-h5-size-desktop);
+    line-height: var(--typo-h5-line-desktop);
+  }
+
+  /* Headlines - Chefs Hand */
+  .typo-ch-h1 {
+    font-size: var(--typo-ch-h1-size-desktop);
+    line-height: var(--typo-ch-h1-line-desktop);
+  }
+
+  .typo-ch-h2 {
+    font-size: var(--typo-ch-h2-size-desktop);
+    line-height: var(--typo-ch-h2-line-desktop);
+  }
+
+  .typo-ch-h3 {
+    font-size: var(--typo-ch-h3-size-desktop);
+    line-height: var(--typo-ch-h3-line-desktop);
+  }
+
+  .typo-ch-h4 {
+    font-size: var(--typo-ch-h4-size-desktop);
+    line-height: var(--typo-ch-h4-line-desktop);
+  }
+
+  .typo-ch-h5 {
+    font-size: var(--typo-ch-h5-size-desktop);
+    line-height: var(--typo-ch-h5-line-desktop);
+  }
+
+  /* Paragraphs */
+  .typo-subheadline {
+    font-size: var(--typo-subheadline-size-desktop);
+    line-height: var(--typo-subheadline-line-desktop);
+  }
+
+  .typo-p1,
+  .typo-p1-reg {
+    font-size: var(--typo-p1-reg-size-desktop);
+    line-height: var(--typo-p1-reg-line-desktop);
+  }
+
+  .typo-p1-bold {
+    font-size: var(--typo-p1-bold-size-desktop);
+    line-height: var(--typo-p1-bold-line-desktop);
+  }
+
+  .typo-p2,
+  .typo-p2-reg {
+    font-size: var(--typo-p2-reg-size-desktop);
+    line-height: var(--typo-p2-reg-line-desktop);
+  }
+
+  .typo-p2-bold {
+    font-size: var(--typo-p2-bold-size-desktop);
+    line-height: var(--typo-p2-bold-line-desktop);
+  }
+
+  /* Display */
+  .typo-display {
+    font-size: var(--typo-display-size-desktop);
+    line-height: var(--typo-display-line-desktop);
+  }
+
+  /* Labels/Captions */
+  .typo-caption-lg-caps {
+    font-size: var(--typo-caption-lg-caps-size-desktop);
+    line-height: var(--typo-caption-lg-caps-line-desktop);
+  }
+
+  .typo-caption-lg-reg {
+    font-size: var(--typo-caption-lg-reg-size-desktop);
+    line-height: var(--typo-caption-lg-reg-line-desktop);
+  }
+}
