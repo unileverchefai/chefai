@@ -77,12 +77,12 @@
   --body-font-family: var(--ff-unilever-shilling), sans-serif;
   --heading-font-family: var(--ff-unilever-shilling), sans-serif;
 
-  /* body sizes */
+  /* body sizes - legacy support, use typography.css for new implementations */
   --body-font-size-m: 22px;
   --body-font-size-s: 19px;
   --body-font-size-xs: 17px;
 
-  /* heading sizes */
+  /* heading sizes - legacy support, use typography.css for new implementations */
   --heading-font-size-xxl: 55px;
   --heading-font-size-xl: 44px;
   --heading-font-size-l: 34px;
@@ -149,18 +149,49 @@
 
 @media (width >= 900px) {
   :root {
-    /* body sizes */
+    /* body sizes - legacy support */
     --body-font-size-m: 18px;
     --body-font-size-s: 16px;
     --body-font-size-xs: 14px;
 
-    /* heading sizes */
+    /* heading sizes - legacy support */
     --heading-font-size-xxl: 45px;
     --heading-font-size-xl: 36px;
     --heading-font-size-l: 28px;
     --heading-font-size-m: 22px;
     --heading-font-size-s: 20px;
     --heading-font-size-xs: 18px;
+  }
+
+  /* Desktop heading styles using new typography system */
+  h1 {
+    font-size: var(--typo-h1-size-desktop);
+    line-height: var(--typo-h1-line-desktop);
+  }
+
+  h2 {
+    font-size: var(--typo-h2-size-desktop);
+    line-height: var(--typo-h2-line-desktop);
+  }
+
+  h3 {
+    font-size: var(--typo-h3-med-size-desktop);
+    line-height: var(--typo-h3-med-line-desktop);
+  }
+
+  h4 {
+    font-size: var(--typo-h4-med-size-desktop);
+    line-height: var(--typo-h4-med-line-desktop);
+  }
+
+  h5 {
+    font-size: var(--typo-h5-size-desktop);
+    line-height: var(--typo-h5-line-desktop);
+  }
+
+  h6 {
+    font-size: var(--typo-h5-size-desktop);
+    line-height: var(--typo-h5-line-desktop);
   }
 }
 
@@ -201,17 +232,45 @@ h6 {
   margin-top: 0.8em;
   margin-bottom: 0.25em;
   font-family: var(--heading-font-family);
-  font-weight: 600;
-  line-height: 1.25;
   scroll-margin: 40px;
 }
 
-h1 { font-size: var(--heading-font-size-xxl); }
-h2 { font-size: var(--heading-font-size-xl); }
-h3 { font-size: var(--heading-font-size-l); }
-h4 { font-size: var(--heading-font-size-m); }
-h5 { font-size: var(--heading-font-size-s); }
-h6 { font-size: var(--heading-font-size-xs); }
+/* Default heading styles using new typography system (mobile-first) */
+h1 {
+  font-size: var(--typo-h1-size-mobile);
+  line-height: var(--typo-h1-line-mobile);
+  font-weight: var(--typo-h1-weight);
+}
+
+h2 {
+  font-size: var(--typo-h2-size-mobile);
+  line-height: var(--typo-h2-line-mobile);
+  font-weight: var(--typo-h2-weight);
+}
+
+h3 {
+  font-size: var(--typo-h3-med-size-mobile);
+  line-height: var(--typo-h3-med-line-mobile);
+  font-weight: var(--typo-h3-med-weight);
+}
+
+h4 {
+  font-size: var(--typo-h4-med-size-mobile);
+  line-height: var(--typo-h4-med-line-mobile);
+  font-weight: var(--typo-h4-med-weight);
+}
+
+h5 {
+  font-size: var(--typo-h5-size-mobile);
+  line-height: var(--typo-h5-line-mobile);
+  font-weight: var(--typo-h5-weight);
+}
+
+h6 {
+  font-size: var(--typo-h5-size-mobile);
+  line-height: var(--typo-h5-line-mobile);
+  font-weight: var(--typo-h5-weight);
+}
 
 p,
 dl,
