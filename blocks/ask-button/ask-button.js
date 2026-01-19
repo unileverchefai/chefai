@@ -1,4 +1,5 @@
 import openPersonalizedHub from '../personalized-hub/personalized-hub.js';
+import { createElement } from '../../scripts/common.js';
 
 /**
  * Ask Button Block
@@ -8,34 +9,36 @@ export default function decorate(block) {
   block.textContent = '';
 
   // Wrapper element that wraps all inner content
-  const wrapper = document.createElement('div');
-  wrapper.className = 'ask-button-wrapper';
+  const wrapper = createElement('div', { className: 'ask-button-wrapper' });
 
   // Gradient border effect container
-  const gradientBorder = document.createElement('div');
-  gradientBorder.className = 'border';
+  const gradientBorder = createElement('div', { className: 'border' });
 
   // Main button
-  const button = document.createElement('button');
-  button.className = 'btn';
-  button.setAttribute('aria-label', 'Ask me anything - Open personalized hub');
+  const button = createElement('button', {
+    className: 'btn',
+    properties: { 'aria-label': 'Ask me anything - Open personalized hub' },
+  });
 
   // Button content container
-  const buttonContent = document.createElement('div');
-  buttonContent.className = 'content';
+  const buttonContent = createElement('div', { className: 'content' });
 
   // Sparkles icon
-  const icon = document.createElement('img');
-  icon.src = '/icons/sparkles-icon.svg';
-  icon.alt = '';
-  icon.className = 'icon';
-  icon.width = 22;
-  icon.height = 22;
+  const icon = createElement('img', {
+    className: 'icon',
+    properties: {
+      src: '/icons/sparkles-icon.svg',
+      alt: '',
+      width: '22',
+      height: '22',
+    },
+  });
 
   // Button text
-  const text = document.createElement('span');
-  text.className = 'text';
-  text.textContent = 'Ask me anything';
+  const text = createElement('span', {
+    className: 'text',
+    textContent: 'Ask me anything',
+  });
 
   // Assemble button - text first, then icon (icon on the right per Figma)
   buttonContent.appendChild(text);
@@ -43,8 +46,7 @@ export default function decorate(block) {
   button.appendChild(buttonContent);
 
   // Add inset shadow overlay
-  const shadowOverlay = document.createElement('div');
-  shadowOverlay.className = 'shadow';
+  const shadowOverlay = createElement('div', { className: 'shadow' });
   button.appendChild(shadowOverlay);
 
   // Click handler
