@@ -1,5 +1,6 @@
 import { loadReact } from '../chatbot/utils.js';
 import { createElement } from '../../scripts/common.js';
+import { loadCSS } from '../../scripts/aem.js';
 
 const SCREENS = {
   COOKIE_CONSENT: 'cookie-consent',
@@ -9,14 +10,26 @@ const SCREENS = {
   COMPLETED: 'completed',
 };
 
-export default async function personalizedHub(block) {
-  block.textContent = '';
+/**
+ * Opens the personalized hub modal
+ * @returns {Promise<void>}
+ */
+export default async function openPersonalizedHub() {
+  // Load personalized hub CSS if not already loaded
+  await loadCSS(`${window.hlx.codeBasePath}/blocks/personalized-hub/personalized-hub.css`);
+
+  // Create modal overlay
+  const modalOverlay = createElement('div', {
+    className: 'ph-modal-overlay',
+  });
+
+  // Create container for React app
   const container = createElement('div', {
     className: 'personalized-hub-container',
-    properties: { id: 'personalized-hub-root' },
+    properties: { id: 'personalized-hub-modal-root' },
   });
-  block.appendChild(container);
 
+  // Create skeleton loading state
   const skeleton = createElement('div', {
     className: 'chatbot-skeleton',
     fragment: `
@@ -30,6 +43,35 @@ export default async function personalizedHub(block) {
   });
   container.appendChild(skeleton);
 
+  modalOverlay.appendChild(container);
+  document.body.appendChild(modalOverlay);
+  document.body.style.overflow = 'hidden';
+
+  // Function to close the modal
+  const closeModal = () => {
+    if (modalOverlay.reactRoot) {
+      modalOverlay.reactRoot.unmount();
+    }
+    document.body.removeChild(modalOverlay);
+    document.body.style.overflow = '';
+    document.removeEventListener('keydown', handleEscape);
+  };
+
+  // Handle escape key
+  const handleEscape = (e) => {
+    if (e.key === 'Escape') {
+      closeModal();
+    }
+  };
+  document.addEventListener('keydown', handleEscape);
+
+  // Handle click outside
+  modalOverlay.addEventListener('click', (e) => {
+    if (e.target === modalOverlay) {
+      closeModal();
+    }
+  });
+
   try {
     await loadReact();
 
@@ -41,7 +83,6 @@ export default async function personalizedHub(block) {
     const { default: PersonalizedChatWidget } = await import('./PersonalizedChatWidget.js');
     const { default: LoadingState } = await import('./LoadingState.js');
     const { default: BusinessConfirmation } = await import('./BusinessConfirmation.js');
-    // const { default: fetchBusinessInfo } = await import('./fetchBusinessInfo.js');
 
     const { useState, useEffect } = window.React;
     const { createElement: h } = window.React;
@@ -151,7 +192,7 @@ export default async function personalizedHub(block) {
         container.removeChild(skeleton);
       }
       root.render(h(PersonalizedHubApp));
-      block.reactRoot = root;
+      modalOverlay.reactRoot = root;
     });
   } catch (error) {
     console.error('Failed to load personalized hub:', error);
