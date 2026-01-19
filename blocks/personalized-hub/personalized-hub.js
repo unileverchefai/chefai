@@ -29,20 +29,6 @@ export default async function openPersonalizedHub() {
     properties: { id: 'personalized-hub-modal-root' },
   });
 
-  // Create skeleton loading state
-  const skeleton = createElement('div', {
-    className: 'chatbot-skeleton',
-    fragment: `
-      <div class="chatbot-skeleton-messages">
-        <div class="chatbot-skeleton-message">
-          <div class="chatbot-skeleton-bubble"></div>
-        </div>
-      </div>
-      <div class="chatbot-skeleton-form"></div>
-    `,
-  });
-  container.appendChild(skeleton);
-
   modalOverlay.appendChild(container);
   document.body.appendChild(modalOverlay);
   document.body.style.overflow = 'hidden';
@@ -58,11 +44,11 @@ export default async function openPersonalizedHub() {
   };
 
   // Handle escape key
-  const handleEscape = (e) => {
+  function handleEscape(e) {
     if (e.key === 'Escape') {
       closeModal();
     }
-  };
+  }
   document.addEventListener('keydown', handleEscape);
 
   // Handle click outside
@@ -188,17 +174,11 @@ export default async function openPersonalizedHub() {
     const root = window.ReactDOM.createRoot(container);
 
     requestAnimationFrame(() => {
-      if (skeleton && skeleton.parentNode === container) {
-        container.removeChild(skeleton);
-      }
       root.render(h(PersonalizedHubApp));
       modalOverlay.reactRoot = root;
     });
   } catch (error) {
     console.error('Failed to load personalized hub:', error);
-    if (skeleton && skeleton.parentNode === container) {
-      container.removeChild(skeleton);
-    }
     const errorDiv = createElement('div', {
       className: 'chatbot-error',
       textContent: `Failed to load personalized hub: ${error.message}. Please refresh the page.`,

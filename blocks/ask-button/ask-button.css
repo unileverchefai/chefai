@@ -13,7 +13,7 @@
 	display: flex;
 	justify-content: center;
 
-	&:before {
+	&::before {
 		content: '';
     background: linear-gradient(0deg, var(--squid-ink), var(--squid-ink) 30%, transparent);
     width: 100vw;
@@ -133,12 +133,11 @@
 
 	.ask-button .ask-button-wrapper {
 		border-radius: 50px;
-    border: 1px solid rgba(255, 255, 255, 0.50);
-    background: rgba(92, 54, 87, 0.20);
+    border: 1px solid rgb(255 255 255 / 50%);
+    background: rgb(92 54 87 / 20%);
     backdrop-filter: blur(10px);
     width: 400px;
     height: 90px;
-    pointer-events: none;
     z-index: -1;
 	}
 
@@ -150,8 +149,8 @@
     left: 288px;
     top: -10px;
     border-radius: 50px;
-    border: 1px solid rgba(255, 255, 255, 0.50);
-    background: rgba(92, 54, 87, 0.20);
+    border: 1px solid rgb(255 255 255 / 50%);
+    background: rgb(92 54 87 / 20%);
     backdrop-filter: blur(10px);
     width: 400px;
     height: 90px;
@@ -159,13 +158,8 @@
     z-index: -1;
   }
 
-  .ask-button:before {
+  .ask-button::before {
     display: none;
   }
-}
-
-/* Hide when modal is open */
-body:has(.ph-modal-overlay) .ask-button {
-  display: none;
 }
 
