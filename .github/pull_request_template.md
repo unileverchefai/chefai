@@ -3,5 +3,5 @@ Please always provide the [Jira ticket(s)](../issues) your PR is for, as well as
 Fix: <jira-ticket-id>
 
 Test URLs:
-- Before: https://main--chefai--unileverchefai.aem.live/
-- After: https://<branch>--chefai--unileverchefai.aem.live/
+- Before: https://main--chefai--unileverchefai.aem.page/
+- After: https://<branch>--chefai--unileverchefai.aem.page/
