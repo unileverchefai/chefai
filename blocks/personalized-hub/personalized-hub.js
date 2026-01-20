@@ -43,10 +43,19 @@ export default async function openPersonalizedHub() {
     document.removeEventListener('keydown', handleEscape);
   };
 
+  const ANIMATION_DURATION = 300;
+
+  const animateAndClose = () => {
+    container.classList.add('ph-modal-slide-out');
+    setTimeout(() => {
+      closeModal();
+    }, ANIMATION_DURATION);
+  };
+
   // Handle escape key
   function handleEscape(e) {
     if (e.key === 'Escape') {
-      closeModal();
+      animateAndClose();
     }
   }
   document.addEventListener('keydown', handleEscape);
@@ -54,7 +63,7 @@ export default async function openPersonalizedHub() {
   // Handle click outside
   modalOverlay.addEventListener('click', (e) => {
     if (e.target === modalOverlay) {
-      closeModal();
+      animateAndClose();
     }
   });
 
@@ -77,6 +86,7 @@ export default async function openPersonalizedHub() {
       const [currentScreen, setCurrentScreen] = useState(SCREENS.COOKIE_CONSENT);
       const [businessData, setBusinessData] = useState(null);
       const [error, setError] = useState(null);
+      const [chatMessages, setChatMessages] = useState([]);
 
       useEffect(() => {
         const hasConsent = sessionStorage.getItem('personalized-hub-consent');
@@ -149,15 +159,26 @@ export default async function openPersonalizedHub() {
       }
 
       if (currentScreen === SCREENS.COOKIE_CONSENT) {
-        return h(CookieAgreementModal, { onAgree: handleConsentAgree });
+        return h(CookieAgreementModal, {
+          onAgree: handleConsentAgree,
+          onClose: animateAndClose,
+        });
       }
 
       if (currentScreen === SCREENS.CHAT) {
-        return h(PersonalizedChatWidget, { onBusinessNameSubmit: handleBusinessNameSubmit });
+        return h(PersonalizedChatWidget, {
+          onBusinessNameSubmit: handleBusinessNameSubmit,
+          messages: chatMessages,
+          onMessagesChange: setChatMessages,
+          onClose: animateAndClose,
+        });
       }
 
       if (currentScreen === SCREENS.LOADING) {
-        return h(LoadingState, { businessData });
+        return h(LoadingState, {
+          businessData,
+          onClose: animateAndClose,
+        });
       }
 
       if (currentScreen === SCREENS.CONFIRMATION) {
@@ -165,6 +186,7 @@ export default async function openPersonalizedHub() {
           businessData,
           onConfirm: handleConfirm,
           onReject: handleReject,
+          onClose: animateAndClose,
         });
       }
 
