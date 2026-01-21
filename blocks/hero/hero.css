@@ -201,6 +201,21 @@
   .hero__countdown--media {
     order: 2;
     position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgb(92 54 87 / 0%) 42.85%, rgb(92 54 87 / 70%) 79.5%);
+      opacity: 0;
+      transition: opacity var(--transition-base);
+      z-index: var(--z-content);
+      pointer-events: none;
+    }
+
+    &:has(.video-play-button:hover)::before {
+      opacity: 1;
+    }
   }
 
   :is(.hero__countdown--media, .hero__live--media) img {
