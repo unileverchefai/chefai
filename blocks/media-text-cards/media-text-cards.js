@@ -24,7 +24,7 @@ function openVideoModal(videoUrl) {
 
     modalContent.appendChild(videoEmbed);
   } else {
-    console.warn('media-text-cards: Invalid video URL provided, modal will not display video content');
+    console.warn('media-text-cards: %cInvalid%c video URL provided, modal will %cnot%c display video content', 'color: red;', '', 'color: red;', '');
   }
 
   modalOverlay.appendChild(closeButton);
@@ -67,55 +67,60 @@ function validateRequiredElements(block) {
   const children = Array.from(block.children);
 
   if (children.length < 2) {
-    console.warn('media-text-cards: Block must have at least a media section and USP cards');
+    console.warn('media-text-cards: Block %cmust%c have at least a %cmedia section%c and %cUSP cards section%c', 'color: red;', '', 'color: red;', '', 'color: red;', '');
     return false;
   }
 
   const mediaSection = children[0];
   const mediaSectionContent = mediaSection.querySelector('div');
   if (!mediaSectionContent) {
-    console.warn('media-text-cards: Media section is missing content wrapper');
+    console.warn('media-text-cards: Media section is %cmissing%c content wrapper', 'color: red;', '');
     return false;
   }
 
   // Required: picture element
   if (!mediaSectionContent.querySelector('picture')) {
-    console.warn('media-text-cards: Media section is missing picture/image');
+    console.warn('media-text-cards: Media section is %cmissing%c picture/image', 'color: red;', '');
     return false;
   }
 
-  // Required: h2 with title text (not just picture/link)
-  const allH2s = mediaSectionContent.querySelectorAll('h2');
-  if (allH2s.length === 0) {
-    console.warn('media-text-cards: Media section is missing h2 title');
-    return false;
-  }
+  // Check if there's a video link to determine validation rules
+  const hasVideoLink = !!findVideoLink(mediaSectionContent);
 
-  let hasTitleText = false;
-  allH2s.forEach((h2) => {
-    const textNodes = Array.from(h2.childNodes)
-      .filter((node) => node.nodeType === Node.TEXT_NODE)
-      .map((node) => node.textContent.trim())
-      .join('');
-    const hasOnlyText = !h2.querySelector('picture, a') && h2.textContent.trim();
-    if (textNodes || hasOnlyText) hasTitleText = true;
-  });
-  if (!hasTitleText) {
-    console.warn('media-text-cards: Media section h2 must contain title text');
-    return false;
+  // H2 with title text is only required when there's a video
+  if (hasVideoLink) {
+    const allH2s = mediaSectionContent.querySelectorAll('h2');
+    if (allH2s.length === 0) {
+      console.warn('media-text-cards: Media section with %cvideo%c is %cmissing%c h2 title', 'color: red;', '', 'color: red;', '');
+      return false;
+    }
+
+    let hasTitleText = false;
+    allH2s.forEach((h2) => {
+      const textNodes = Array.from(h2.childNodes)
+        .filter((node) => node.nodeType === Node.TEXT_NODE)
+        .map((node) => node.textContent.trim())
+        .join('');
+      const hasOnlyText = !h2.querySelector('picture, a') && h2.textContent.trim();
+      if (textNodes || hasOnlyText) hasTitleText = true;
+    });
+    if (!hasTitleText) {
+      console.warn('media-text-cards: Media section h2 %cmust%c contain title text when %cvideo%c is present', 'color: red;', '', 'color: red;', '');
+      return false;
+    }
   }
 
   // Required: paragraph text
   const textContent = mediaSectionContent.querySelector('p');
   if (!textContent || !textContent.textContent.trim()) {
-    console.warn('media-text-cards: Media section is missing paragraph text');
+    console.warn('media-text-cards: Media section is %cmissing%c paragraph text', 'color: red;', '');
     return false;
   }
 
   // Required: 3 USP cards
   const cards = children.slice(1);
   if (cards.length !== 3) {
-    console.warn(`media-text-cards: Expected 3 USP cards, found ${cards.length}`);
+    console.warn(`media-text-cards: %cExpected%c 3 USP cards, %cfound%c ${cards.length}`, 'color: red;', '', 'color: red;', '');
     return false;
   }
 
@@ -123,7 +128,7 @@ function validateRequiredElements(block) {
   for (let i = 0; i < cards.length; i += 1) {
     const innerDiv = cards[i].querySelector('div');
     if (!innerDiv) {
-      console.warn(`media-text-cards: Card ${i + 1} is missing content wrapper`);
+      console.warn(`media-text-cards: %cCard ${i + 1}%c is %cmissing%c content wrapper`, 'color: red;', '', 'color: red;', '');
       return false;
     }
 
@@ -132,15 +137,15 @@ function validateRequiredElements(block) {
     const cardIcon = cardTitle?.querySelector('picture');
 
     if (!cardTitle || !cardTitle.textContent.trim()) {
-      console.warn(`media-text-cards: Card ${i + 1} is missing h4 title`);
+      console.warn(`media-text-cards: %cCard ${i + 1}%c is %cmissing%c h4 title`, 'color: red;', '', 'color: red;', '');
       return false;
     }
     if (!cardDescription || !cardDescription.textContent.trim()) {
-      console.warn(`media-text-cards: Card ${i + 1} is missing description text`);
+      console.warn(`media-text-cards: %cCard ${i + 1}%c is %cmissing%c description text`, 'color: red;', '', 'color: red;', '');
       return false;
     }
     if (!cardIcon) {
-      console.warn(`media-text-cards: Card ${i + 1} is missing icon in title`);
+      console.warn(`media-text-cards: %cCard ${i + 1}%c is %cmissing%c icon in title`, 'color: red;', '', 'color: red;', '');
       return false;
     }
   }
@@ -257,7 +262,7 @@ export default function decorate(block) {
           innerDiv.appendChild(h4Wrapper);
           innerDiv.appendChild(textWrapper);
         } else if (h4 && !picture) {
-          console.warn('media-text-cards: Card missing icon - display may be incorrect');
+          console.warn('media-text-cards: Card %cmissing%c icon - display may be %cincorrect%c', 'color: red;', '', 'color: red;', '');
         }
       }
 
