@@ -160,6 +160,10 @@
   line-height: 30px;
 }
 
+.hero:empty {
+  display: none;
+}
+
 @media (width >= 992px) {
   .hero .hero--logo-wrapper {
     top: 25%;

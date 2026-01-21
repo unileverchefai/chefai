@@ -12,6 +12,8 @@ const variantClasses = {
 const blockName = 'hero';
 
 const { live, countdown } = variantClasses;
+const MAX_TITLE_LENGTH = 80;
+const MAX_DESCRIPTION_LENGTH = 150;
 let hasLogo = false;
 let hasVideo = false;
 let videoElement = null;
@@ -105,6 +107,65 @@ function addElementsToArea(area, elements) {
 }
 
 /**
+ * Validate mandatory elements in hero content
+ * @param {HTMLElement} heroContent - The original hero content element.
+ * @return {boolean} - True if all mandatory elements are present and valid, false otherwise.
+ * @description
+ * _Mandatory elements:_
+ *
+ * - _Media area, title (max 80 chars), description text (max 150 chars), CTA_
+ *
+ * _Optional elements:_
+ *
+ * - _Logo, countdown timer, disclaimer text_
+*/
+function validateElements(heroContent) {
+  // Validate media elements
+  const pictureElement = heroContent.querySelector(':scope > div > p');
+  if (!pictureElement || !pictureElement.querySelector('picture')) {
+    console.warn('Hero block validation failed: Missing or invalid %cpicture%c element.', 'color: red', '');
+    return false;
+  }
+  if (hasVideo && !videoElement) {
+    console.warn('Hero block validation failed: Missing %cvideo link%c element.', 'color: red', '');
+    return false;
+  }
+  // Validate title
+  const titleElement = heroContent.querySelector(':scope > div > h1');
+  if (!titleElement) {
+    console.warn('Hero block validation failed: Missing %ch1 title%c element.', 'color: red', '');
+    return false;
+  }
+  if (titleElement.textContent.length > MAX_TITLE_LENGTH) {
+    console.warn('Hero block validation failed: %cTitle exceeds maximum length of 80 characters.%c', 'color: red', '');
+    return false;
+  }
+  // Validate description text
+  const descriptionElement = Array.from(
+    heroContent.querySelectorAll(':scope > div > p'),
+  ).find((p) => (
+    !p.classList.contains('button-container')
+    && !p.querySelector('picture')
+    && p.textContent.trim().length > 0
+  ));
+  if (!descriptionElement) {
+    console.warn('Hero block validation failed: Missing %cdescription text%c element.', 'color: red', '');
+    return false;
+  }
+  if (descriptionElement.textContent.length > MAX_DESCRIPTION_LENGTH) {
+    console.warn('Hero block validation failed: %cDescription text exceeds maximum length of 150 characters.%c', 'color: red', '');
+    return false;
+  }
+  // Validate CTA
+  const ctaElement = heroContent.querySelector(':scope > div > p.button-container');
+  if (!ctaElement) {
+    console.warn('Hero block validation failed: Missing %cCTA%c element.', 'color: red', '');
+    return false;
+  }
+  return true;
+}
+
+/**
  * Build hero block areas and populate with content
  * @param {Object} params - The parameters object.
  * @param {Object} params.heroClassList - The BEM class names for the hero block areas.
@@ -118,6 +179,7 @@ function buildHero({ heroClassList, heroContent, heroContainer }) {
   const disclaimerArea = heroContainer.querySelector(`.${heroClassList.disclaimer}`);
   const content = heroContent.querySelector(':scope > div');
   const mediaElement = content.querySelector(':scope > p');
+
   if (mediaElement) {
     addElementsToArea(mediaArea, [mediaElement]);
   }
@@ -204,6 +266,7 @@ async function buildVariant({
 function setupVideoLink(block) {
   const videolink = findVideoLink(block);
   if (!videolink) {
+    videoElement = null;
     return;
   }
   if (videolink.parentElement.localName === 'p') {
@@ -232,6 +295,13 @@ export default async function decorate(block) {
       console.error('Error loading %cmodal video%c CSS:', 'color: red', '', error);
     }
     setupVideoLink(block);
+  }
+
+  const isContentValid = validateElements(block.querySelector(':scope > div'));
+  if (!isContentValid) {
+    console.error('Hero block decoration aborted due to %cvalidation%c errors. The block will not be rendered.', 'color: red', '');
+    block.innerHTML = '';
+    return;
   }
 
   if (isLive) {
