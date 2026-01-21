@@ -142,7 +142,7 @@
 /* Cookie Agreement Modal - Mobile (Bottom Sheet) */
 @media (width < 900px) {
   .ph-modal-overlay {
-    align-items: flex-end;
+    align-items: center;
     padding: var(--spacing-md) var(--spacing-md) var(--spacing-2xl);
   }
 
@@ -541,5 +541,70 @@
 
   .ph-loading-title {
     font-size: var(--body-font-size-m);
+  }
+}
+
+/* Welcome Screen */
+.ph-welcome-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-2xl);
+  text-align: center;
+  height: 100%;
+  gap: var(--spacing-lg);
+}
+
+.ph-welcome-title {
+  font-family: var(--body-font-family);
+  font-size: var(--heading-font-size-xl);
+  font-weight: 700;
+  color: var(--text-color);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.ph-welcome-text {
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size);
+  color: var(--text-color);
+  margin: 0;
+  line-height: 1.6;
+  max-width: 600px;
+}
+
+.ph-welcome-highlight {
+  color: var(--ufs-orange);
+}
+
+.ph-welcome-button {
+  background: transparent;
+  border: none;
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size);
+  color: var(--text-color);
+  text-decoration: underline;
+  cursor: pointer;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  margin-top: var(--spacing-md);
+}
+
+.ph-welcome-button:hover {
+  opacity: 0.8;
+}
+
+@media (width < 900px) {
+  .ph-welcome-container {
+    padding: var(--spacing-xl);
+    gap: var(--spacing-md);
+  }
+
+  .ph-welcome-title {
+    font-size: var(--heading-font-size-l);
+  }
+
+  .ph-welcome-text {
+    font-size: var(--body-font-size-s);
   }
 }

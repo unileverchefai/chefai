@@ -1,12 +1,14 @@
 import { loadReact } from '../chatbot/utils.js';
 import { createElement } from '../../scripts/common.js';
 import { loadCSS } from '../../scripts/aem.js';
+import fetchBusinessInfo from './fetchBusinessInfo.js';
 
 const SCREENS = {
   COOKIE_CONSENT: 'cookie-consent',
   CHAT: 'chat',
   LOADING: 'loading',
   CONFIRMATION: 'confirmation',
+  WELCOME: 'welcome',
   COMPLETED: 'completed',
 };
 
@@ -78,6 +80,7 @@ export default async function openPersonalizedHub() {
     const { default: PersonalizedChatWidget } = await import('./PersonalizedChatWidget.js');
     const { default: LoadingState } = await import('./LoadingState.js');
     const { default: BusinessConfirmation } = await import('./BusinessConfirmation.js');
+    const { default: WelcomeScreen } = await import('./WelcomeScreen.js');
 
     const { useState, useEffect } = window.React;
     const { createElement: h } = window.React;
@@ -102,21 +105,24 @@ export default async function openPersonalizedHub() {
       const handleBusinessNameSubmit = async (businessName) => {
         setError(null);
 
-        // Mock data for testing
-        const mockData = {
-          business_name: businessName,
-          address: '7 Langton Street, Chelsea, London SW10 0JL',
-          image_url: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=400&h=300&fit=crop',
-          logo_url: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=100&h=100&fit=crop',
-        };
-
-        setBusinessData(mockData);
-        setCurrentScreen(SCREENS.CONFIRMATION);
+        try {
+          const data = await fetchBusinessInfo(businessName);
+          setBusinessData(data);
+          setCurrentScreen(SCREENS.CONFIRMATION);
+        } catch (err) {
+          setError(err.message ?? 'Failed to fetch business information. Please try again.');
+          setCurrentScreen(SCREENS.CHAT);
+        }
       };
 
       const handleConfirm = () => {
         sessionStorage.setItem('personalized-hub-business-data', JSON.stringify(businessData));
         setCurrentScreen(SCREENS.LOADING);
+
+        // Show loading for 3 seconds, then show welcome screen
+        setTimeout(() => {
+          setCurrentScreen(SCREENS.WELCOME);
+        }, 3000);
       };
 
       const handleReject = () => {
@@ -187,6 +193,12 @@ export default async function openPersonalizedHub() {
           onConfirm: handleConfirm,
           onReject: handleReject,
           onClose: animateAndClose,
+        });
+      }
+
+      if (currentScreen === SCREENS.WELCOME) {
+        return h(WelcomeScreen, {
+          onGotIt: animateAndClose,
         });
       }
 
