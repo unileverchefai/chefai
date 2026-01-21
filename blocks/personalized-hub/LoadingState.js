@@ -1,6 +1,6 @@
 const { createElement: h } = window.React;
 
-export default function LoadingState({ businessData }) {
+export default function LoadingState({ businessData, onClose }) {
   const logoUrl = businessData?.logo_url ?? businessData?.image_url ?? '';
 
   return h(
@@ -8,7 +8,21 @@ export default function LoadingState({ businessData }) {
     { className: 'ph-chat-container' },
     [
       h('div', { key: 'handle', className: 'ph-chat-handle' }),
-      h('div', { key: 'gradient', className: 'ph-chat-gradient' }),
+      h(
+        'button',
+        {
+          key: 'close',
+          className: 'ph-cookie-modal-close',
+          onClick: onClose,
+          'aria-label': 'Close',
+        },
+        h('img', {
+          src: '/icons/arrow-down.svg',
+          alt: 'Close',
+          width: '15',
+          height: '9',
+        }),
+      ),
       h(
         'div',
         { key: 'content', className: 'ph-loading-container' },

@@ -1,0 +1,8 @@
+/* Utility classes */
+.text-bold {
+  font-weight: 600;
+}
+
+.text-orange {
+  color: var(--ufs-orange);
+}

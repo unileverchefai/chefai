@@ -10,6 +10,8 @@
  * governing permissions and limitations under the License.
  */
 
+@import url('helpers.css');
+
 :root {
   /* colors */
   --c-white: #fff;
@@ -138,6 +140,7 @@
   --overlay-gradient: linear-gradient(180deg, rgb(34 29 55 / 0%) 42.857%, rgb(34 29 55 / 70%) 79.515%),
                       linear-gradient(90deg, rgb(0 0 0 / 30%) 0%, rgb(0 0 0 / 30%) 100%);
   --modal-backdrop: rgb(0 0 0 / 85%);
+  --modal-overlay-bg: rgb(34 29 55 / 70%);
   --backdrop-blur: blur(8px);
   --text-shadow-base: 0 2px 6px rgb(0 0 0 / 50%);
   --box-shadow-lg: 0 10px 40px rgb(0 0 0 / 50%);

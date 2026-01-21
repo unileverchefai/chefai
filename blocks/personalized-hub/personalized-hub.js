@@ -1,5 +1,6 @@
 import { loadReact } from '../chatbot/utils.js';
 import { createElement } from '../../scripts/common.js';
+import { loadCSS } from '../../scripts/aem.js';
 
 const SCREENS = {
   COOKIE_CONSENT: 'cookie-consent',
@@ -9,26 +10,62 @@ const SCREENS = {
   COMPLETED: 'completed',
 };
 
-export default async function personalizedHub(block) {
-  block.textContent = '';
+/**
+ * Opens the personalized hub modal
+ * @returns {Promise<void>}
+ */
+export default async function openPersonalizedHub() {
+  // Load personalized hub CSS if not already loaded
+  await loadCSS(`${window.hlx.codeBasePath}/blocks/personalized-hub/personalized-hub.css`);
+
+  // Create modal overlay
+  const modalOverlay = createElement('div', {
+    className: 'ph-modal-overlay',
+  });
+
+  // Create container for React app
   const container = createElement('div', {
     className: 'personalized-hub-container',
-    properties: { id: 'personalized-hub-root' },
+    properties: { id: 'personalized-hub-modal-root' },
   });
-  block.appendChild(container);
 
-  const skeleton = createElement('div', {
-    className: 'chatbot-skeleton',
-    fragment: `
-      <div class="chatbot-skeleton-messages">
-        <div class="chatbot-skeleton-message">
-          <div class="chatbot-skeleton-bubble"></div>
-        </div>
-      </div>
-      <div class="chatbot-skeleton-form"></div>
-    `,
+  modalOverlay.appendChild(container);
+  document.body.appendChild(modalOverlay);
+  document.body.style.overflow = 'hidden';
+
+  // Function to close the modal
+  const closeModal = () => {
+    if (modalOverlay.reactRoot) {
+      modalOverlay.reactRoot.unmount();
+    }
+    document.body.removeChild(modalOverlay);
+    document.body.style.overflow = '';
+    document.removeEventListener('keydown', handleEscape);
+  };
+
+  const ANIMATION_DURATION = 300;
+
+  const animateAndClose = () => {
+    container.classList.add('ph-modal-slide-out');
+    setTimeout(() => {
+      closeModal();
+    }, ANIMATION_DURATION);
+  };
+
+  // Handle escape key
+  function handleEscape(e) {
+    if (e.key === 'Escape') {
+      animateAndClose();
+    }
+  }
+  document.addEventListener('keydown', handleEscape);
+
+  // Handle click outside
+  modalOverlay.addEventListener('click', (e) => {
+    if (e.target === modalOverlay) {
+      animateAndClose();
+    }
   });
-  container.appendChild(skeleton);
 
   try {
     await loadReact();
@@ -41,7 +78,6 @@ export default async function personalizedHub(block) {
     const { default: PersonalizedChatWidget } = await import('./PersonalizedChatWidget.js');
     const { default: LoadingState } = await import('./LoadingState.js');
     const { default: BusinessConfirmation } = await import('./BusinessConfirmation.js');
-    // const { default: fetchBusinessInfo } = await import('./fetchBusinessInfo.js');
 
     const { useState, useEffect } = window.React;
     const { createElement: h } = window.React;
@@ -50,6 +86,7 @@ export default async function personalizedHub(block) {
       const [currentScreen, setCurrentScreen] = useState(SCREENS.COOKIE_CONSENT);
       const [businessData, setBusinessData] = useState(null);
       const [error, setError] = useState(null);
+      const [chatMessages, setChatMessages] = useState([]);
 
       useEffect(() => {
         const hasConsent = sessionStorage.getItem('personalized-hub-consent');
@@ -122,15 +159,26 @@ export default async function personalizedHub(block) {
       }
 
       if (currentScreen === SCREENS.COOKIE_CONSENT) {
-        return h(CookieAgreementModal, { onAgree: handleConsentAgree });
+        return h(CookieAgreementModal, {
+          onAgree: handleConsentAgree,
+          onClose: animateAndClose,
+        });
       }
 
       if (currentScreen === SCREENS.CHAT) {
-        return h(PersonalizedChatWidget, { onBusinessNameSubmit: handleBusinessNameSubmit });
+        return h(PersonalizedChatWidget, {
+          onBusinessNameSubmit: handleBusinessNameSubmit,
+          messages: chatMessages,
+          onMessagesChange: setChatMessages,
+          onClose: animateAndClose,
+        });
       }
 
       if (currentScreen === SCREENS.LOADING) {
-        return h(LoadingState, { businessData });
+        return h(LoadingState, {
+          businessData,
+          onClose: animateAndClose,
+        });
       }
 
       if (currentScreen === SCREENS.CONFIRMATION) {
@@ -138,6 +186,7 @@ export default async function personalizedHub(block) {
           businessData,
           onConfirm: handleConfirm,
           onReject: handleReject,
+          onClose: animateAndClose,
         });
       }
 
@@ -147,17 +196,11 @@ export default async function personalizedHub(block) {
     const root = window.ReactDOM.createRoot(container);
 
     requestAnimationFrame(() => {
-      if (skeleton && skeleton.parentNode === container) {
-        container.removeChild(skeleton);
-      }
       root.render(h(PersonalizedHubApp));
-      block.reactRoot = root;
+      modalOverlay.reactRoot = root;
     });
   } catch (error) {
     console.error('Failed to load personalized hub:', error);
-    if (skeleton && skeleton.parentNode === container) {
-      container.removeChild(skeleton);
-    }
     const errorDiv = createElement('div', {
       className: 'chatbot-error',
       textContent: `Failed to load personalized hub: ${error.message}. Please refresh the page.`,
