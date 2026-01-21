@@ -17,12 +17,21 @@ const PREDEFINED_QUESTIONS = [
   'What if I don\'t have any business information for this country?',
 ];
 
-export default function PersonalizedChatWidget({ onBusinessNameSubmit }) {
-  const [messages, setMessages] = useState([]);
+export default function PersonalizedChatWidget({
+  onBusinessNameSubmit,
+  messages: controlledMessages,
+  onMessagesChange,
+  onClose,
+}) {
+  const [uncontrolledMessages, setUncontrolledMessages] = useState([]);
   const [businessName, setBusinessName] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [visibleQuestions, setVisibleQuestions] = useState(PREDEFINED_QUESTIONS);
   const messagesEndRef = useRef(null);
+
+  const isControlled = Array.isArray(controlledMessages) && typeof onMessagesChange === 'function';
+  const messages = isControlled ? controlledMessages : uncontrolledMessages;
+  const setMessages = isControlled ? onMessagesChange : setUncontrolledMessages;
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -77,26 +86,38 @@ export default function PersonalizedChatWidget({ onBusinessNameSubmit }) {
     }
   }, [businessName, onBusinessNameSubmit]);
 
-  const showInitialPrompt = messages.length === 0;
-
   return h(
     'div',
     { className: 'ph-chat-container' },
     [
       h('div', { key: 'handle', className: 'ph-chat-handle' }),
-      h('div', { key: 'gradient', className: 'ph-chat-gradient' }),
+      h(
+        'button',
+        {
+          key: 'close',
+          className: 'ph-cookie-modal-close',
+          onClick: onClose,
+          'aria-label': 'Close',
+        },
+        h('img', {
+          src: '/icons/arrow-down.svg',
+          alt: 'Close',
+          width: '15',
+          height: '9',
+        }),
+      ),
       h(
         'div',
         { key: 'messages', className: 'ph-chat-messages' },
         [
-          showInitialPrompt && h(
+          h(
             'div',
             { key: 'initial-prompt', className: 'ph-system-message' },
             [
               h('p', { key: 'thanks' }, 'Thanks for agreeing!'),
-              h('p', { key: 'text' }, [
+              h('p', { key: 'text', className: 'text-bold' }, [
                 'Now please enter your ',
-                h('span', { key: 'highlight', className: 'highlight' }, 'business name'),
+                h('span', { key: 'highlight', className: 'text-orange' }, 'business name'),
                 ' to unlock personalised growth insights',
               ]),
             ],

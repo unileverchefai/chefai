@@ -1,6 +1,11 @@
 const { createElement: h } = window.React;
 
-export default function BusinessConfirmation({ businessData, onConfirm, onReject }) {
+export default function BusinessConfirmation({
+  businessData,
+  onConfirm,
+  onReject,
+  onClose,
+}) {
   const businessName = businessData?.business_name ?? 'Unknown Business';
   const address = businessData?.address ?? '';
   const imageUrl = businessData?.image_url ?? '';
@@ -11,7 +16,21 @@ export default function BusinessConfirmation({ businessData, onConfirm, onReject
     { className: 'ph-chat-container' },
     [
       h('div', { key: 'handle', className: 'ph-chat-handle' }),
-      h('div', { key: 'gradient', className: 'ph-chat-gradient' }),
+      h(
+        'button',
+        {
+          key: 'close',
+          className: 'ph-cookie-modal-close',
+          onClick: onClose,
+          'aria-label': 'Close',
+        },
+        h('img', {
+          src: '/icons/arrow-down.svg',
+          alt: 'Close',
+          width: '15',
+          height: '9',
+        }),
+      ),
       h(
         'div',
         { key: 'messages', className: 'ph-chat-messages' },

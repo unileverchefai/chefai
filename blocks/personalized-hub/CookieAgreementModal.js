@@ -1,6 +1,6 @@
 const { createElement: h } = window.React;
 
-export default function CookieAgreementModal({ onAgree }) {
+export default function CookieAgreementModal({ onAgree, onClose }) {
   const isMobile = window.innerWidth < 900;
 
   const handleAgree = () => {
@@ -9,17 +9,12 @@ export default function CookieAgreementModal({ onAgree }) {
   };
 
   const handleClose = () => {
-    if (onAgree) onAgree();
+    if (onClose) onClose();
   };
 
   return h(
     'div',
-    {
-      className: 'ph-modal-overlay',
-      onClick: (e) => {
-        if (e.target.className === 'ph-modal-overlay') handleClose();
-      },
-    },
+    null,
     h(
       'div',
       { className: 'ph-cookie-modal' },
