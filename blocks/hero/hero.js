@@ -65,6 +65,21 @@ const heroTemplate = ({ classes, isCountdown = false }) => `
 `;
 
 /**
+* Appends a logo element to the specified area (for media area mainly).
+* @param {HTMLElement} area - The target area to append the logo element to.
+*/
+function appendLogoElement(area) {
+  const logo = createElement('div', {
+    className: 'hero--logo-wrapper',
+    fragment: `
+      <div class="hero--logo-text"></div>
+      <div class="hero--logo-number"></div>
+    `,
+  });
+  area.appendChild(logo);
+}
+
+/**
 * Adds elements to a specified area, clearing existing content first.
 * @param {HTMLElement} area - The target area to add elements into the template.
 * @param {HTMLElement[]} elements - The elements to add to the area.
@@ -82,14 +97,7 @@ function addElementsToArea(area, elements) {
   }
 
   if (hasLogo && isMediaArea) {
-    const logo = createElement('div', {
-      className: 'hero--logo-wrapper',
-      fragment: `
-        <div class="hero--logo-text"></div>
-        <div class="hero--logo-number"></div>
-      `,
-    });
-    area.appendChild(logo);
+    appendLogoElement(area);
   }
   if (hasVideo && videoElement && isMediaArea) {
     const videoLink = videoElement.href;
@@ -120,19 +128,13 @@ function addElementsToArea(area, elements) {
  * @description
  * _Mandatory elements:_
  *
- * - _Media area, title (max 80 chars), description text (max 150 chars), CTA_
+ * - _Title (max 80 chars), description text (max 150 chars), CTA_
  *
  * _Optional elements:_
  *
  * - _Logo, countdown timer, disclaimer text_
 */
 function validateElements(heroContent) {
-  // Validate media elements
-  const pictureElement = heroContent.querySelector(':scope > div > p');
-  if (!pictureElement || !pictureElement.querySelector('picture')) {
-    console.warn('Hero block validation failed: Missing or invalid %cpicture%c element.', 'color: red', '');
-    return false;
-  }
   if (hasVideo && !videoElement) {
     console.warn('Hero block validation failed: Missing %cvideo link%c element.', 'color: red', '');
     return false;
@@ -173,6 +175,32 @@ function validateElements(heroContent) {
 }
 
 /**
+ * Validate media elements in hero content
+ * @param {NodeList} mediaElements - The media elements in the hero content.
+ * @return {boolean} - True if at least two media elements are present, false otherwise.
+ * @description
+ * _Mandatory elements:_
+ *
+ * - _At least two image elements_
+ *
+ * _Optional elements:_
+ *
+ * - _No image: show a background color as fallback_
+ * - _One image: show the provided image_
+*/
+function validateMediaElements(mediaElements) {
+  if (mediaElements.length < 1) {
+    console.warn('Hero block validation failed: No %cmedia%c elements found.', 'color: red', '');
+    return false;
+  }
+  if (mediaElements.length < 2) {
+    console.warn('Hero block validation failed: Less than %ctwo media%c elements found.', 'color: red', '');
+    return false;
+  }
+  return true;
+}
+
+/**
  * Build hero block areas and populate with content
  * @param {Object} params - The parameters object.
  * @param {Object} params.heroClassList - The BEM class names for the hero block areas.
@@ -185,10 +213,17 @@ function buildHero({ heroClassList, heroContent, heroContainer }) {
   const ctaArea = heroContainer.querySelector(`.${heroClassList.cta}`);
   const disclaimerArea = heroContainer.querySelector(`.${heroClassList.disclaimer}`);
   const content = heroContent.querySelector(':scope > div');
-  const mediaElement = content.querySelectorAll(':scope > p:has(picture)');
+  const mediaElements = content.querySelectorAll(':scope > p:has(picture)');
 
-  if (mediaElement) {
-    addElementsToArea(mediaArea, [...mediaElement]);
+  if (!mediaElements.length) {
+    mediaArea.classList.add('no-image');
+    mediaArea.innerHTML = '';
+    appendLogoElement(mediaArea);
+  }
+
+  // build media area
+  if (mediaElements.length > 0) {
+    addElementsToArea(mediaArea, [...mediaElements]);
   }
   // build text content area
   const textTitle = content.querySelector(':scope > h1');
@@ -309,6 +344,11 @@ export default async function decorate(block) {
     console.error('Hero block decoration aborted due to %cvalidation%c errors. The block will not be rendered.', 'color: red', '');
     block.innerHTML = '';
     return;
+  }
+
+  const has2Images = validateMediaElements(block.querySelectorAll(':scope > div > div > p:has(picture)'));
+  if (!has2Images) {
+    console.error('Hero block decoration: Rendering with available media or fallback background due to %cvalidation%c errors.', 'color: orange', '');
   }
 
   if (isLive) {

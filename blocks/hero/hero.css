@@ -116,6 +116,10 @@
   }
 }
 
+:is(.hero__countdown--media, .hero__live--media).no-image {
+  background-color: var(--smoke);
+}
+
 :is(.hero__countdown--media, .hero__live--media) img {
   aspect-ratio: 3 / 4;
   max-height: 520px;
@@ -202,7 +206,7 @@
     order: 2;
     position: relative;
 
-    &::before {
+    &:has(.video-play-button)::before {
       content: '';
       position: absolute;
       inset: 0;
