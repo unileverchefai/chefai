@@ -1,12 +1,15 @@
 import { SUBSCRIPTION_KEY, ENDPOINTS } from '../chatbot/constants/api.js';
 
+const TEMP_USER_ID = 'user123';
+
 export default async function fetchBusinessInfo(businessName) {
   if (!businessName || !businessName.trim()) {
     throw new Error('Business name is required');
   }
 
+  const trimmedName = businessName.trim();
   const endpoint = ENDPOINTS.businessInfo;
-  const url = `${endpoint}?business_name=${encodeURIComponent(businessName.trim())}`;
+  const url = `${endpoint}?user_id=${encodeURIComponent(TEMP_USER_ID)}&name=${encodeURIComponent(trimmedName)}`;
 
   const response = await fetch(url, {
     method: 'GET',
@@ -28,5 +31,26 @@ export default async function fetchBusinessInfo(businessName) {
     throw new Error('API returned empty response');
   }
 
-  return JSON.parse(responseText);
+  const json = JSON.parse(responseText);
+
+  if (!json.success) {
+    throw new Error(json.message ?? 'Business info API returned an error');
+  }
+
+  const data = json.data ?? {};
+
+  const addressParts = [
+    data.street,
+    data.house_number,
+    data.city,
+    data.postal_code,
+    data.country,
+  ].filter(Boolean);
+
+  return {
+    business_name: data.name ?? trimmedName,
+    address: addressParts.join(', '),
+    image_url: data.image_url ?? '',
+    logo_url: '',
+  };
 }
