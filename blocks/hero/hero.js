@@ -70,11 +70,18 @@ const heroTemplate = ({ classes, isCountdown = false }) => `
 * @param {HTMLElement[]} elements - The elements to add to the area.
 */
 function addElementsToArea(area, elements) {
-  area.textContent = '';
+  area.innerHTML = '';
   elements.forEach((el) => {
     area.appendChild(el);
   });
-  if (hasLogo && Array.from(area.classList).some((cls) => cls.endsWith('--media'))) {
+  const isMediaArea = Array.from(area.classList).some((cls) => cls.endsWith('--media'));
+  if (isMediaArea && elements.length === 2) {
+    const [mobileElement, desktopElement] = elements;
+    mobileElement.classList.add('hero--media-mobile');
+    desktopElement.classList.add('hero--media-desktop');
+  }
+
+  if (hasLogo && isMediaArea) {
     const logo = createElement('div', {
       className: 'hero--logo-wrapper',
       fragment: `
@@ -84,7 +91,7 @@ function addElementsToArea(area, elements) {
     });
     area.appendChild(logo);
   }
-  if (hasVideo && videoElement && Array.from(area.classList).some((cls) => cls.endsWith('--media'))) {
+  if (hasVideo && videoElement && isMediaArea) {
     const videoLink = videoElement.href;
     const videoWrapper = createElement('div', {
       className: 'hero--video-wrapper',
@@ -178,14 +185,14 @@ function buildHero({ heroClassList, heroContent, heroContainer }) {
   const ctaArea = heroContainer.querySelector(`.${heroClassList.cta}`);
   const disclaimerArea = heroContainer.querySelector(`.${heroClassList.disclaimer}`);
   const content = heroContent.querySelector(':scope > div');
-  const mediaElement = content.querySelector(':scope > p');
+  const mediaElement = content.querySelectorAll(':scope > p:has(picture)');
 
   if (mediaElement) {
-    addElementsToArea(mediaArea, [mediaElement]);
+    addElementsToArea(mediaArea, [...mediaElement]);
   }
   // build text content area
   const textTitle = content.querySelector(':scope > h1');
-  const textSubtitle = content.querySelector(':scope > p');
+  const textSubtitle = content.querySelector(':scope > p:not(.button-container):not(:has(picture)):first-of-type');
   if (textTitle && textSubtitle) {
     addElementsToArea(contentArea, [textTitle, textSubtitle]);
   }
@@ -197,7 +204,7 @@ function buildHero({ heroClassList, heroContent, heroContainer }) {
   }
 
   // build disclaimer area
-  const disclaimerElement = content.querySelector(':scope > p');
+  const disclaimerElement = content.querySelector(':scope > p:not(.button-container):not(:has(picture)):not(:first-of-type)');
   if (disclaimerElement) {
     addElementsToArea(disclaimerArea, [disclaimerElement]);
   }

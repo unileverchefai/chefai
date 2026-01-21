@@ -30,6 +30,14 @@
   height: 100%;
 }
 
+.hero .hero--media-desktop {
+  display: none;
+
+  @media (width >= 992px) {
+    display: block;
+  }
+}
+
 .hero .hero--video-wrapper,
 .hero .hero--logo-wrapper {
   position: absolute;
@@ -167,6 +175,10 @@
 @media (width >= 992px) {
   .hero .hero--logo-wrapper {
     top: 25%;
+  }
+
+  .hero .hero--media-mobile {
+    display: none;
   }
 
   .hero .hero--video-wrapper {
