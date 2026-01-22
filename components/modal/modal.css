@@ -1,0 +1,87 @@
+/* Generic Modal Component Styles */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--modal-backdrop);
+  backdrop-filter: var(--backdrop-blur);
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--transition-base);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.modal-overlay.visible {
+  opacity: 1;
+}
+
+.modal-content {
+  position: relative;
+  width: 100%;
+  max-width: 820px;
+  background: var(--background-color);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  box-shadow: var(--box-shadow-lg);
+  transform: scale(0.9);
+  transition: transform var(--transition-base);
+}
+
+.modal-overlay.visible .modal-content {
+  transform: scale(1);
+}
+
+.modal-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+  background: var(--background-color);
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  font-size: 32px;
+  line-height: 1;
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal-close);
+  transition: transform var(--transition-fast), background var(--transition-fast);
+  box-shadow: var(--box-shadow-md);
+  font-family: Arial, sans-serif;
+  padding: 0;
+}
+
+.modal-close:hover {
+  background: var(--background-hover);
+  transform: scale(1.1);
+}
+
+.modal-close:focus {
+  outline: 2px solid var(--focus-color);
+  outline-offset: 2px;
+}
+
+.modal-close:focus:hover {
+  transform: scale(1.1);
+}
+
+@media (width < 700px) {
+  .modal-overlay {
+    padding: var(--spacing-md);
+  }
+
+  .modal-close {
+    width: 40px;
+    height: 40px;
+    top: 10px;
+    right: 10px;
+    font-size: 28px;
+  }
+}

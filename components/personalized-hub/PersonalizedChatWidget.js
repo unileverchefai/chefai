@@ -1,6 +1,6 @@
 import sendMessage from '../chatbot/sendMessage.js';
 import renderMessage from '../chatbot/renderMessage.js';
-import ChatInput from '../../components/ChatInput.js';
+import ChatInput from '../chatInput/ChatInput.js';
 
 const {
   useState, useCallback, useRef, useEffect,
