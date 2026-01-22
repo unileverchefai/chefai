@@ -1,6 +1,7 @@
 import { loadReact } from '../chatbot/utils.js';
 import { createElement } from '../../scripts/common.js';
 import { loadCSS } from '../../scripts/aem.js';
+import createModal from '../modal/index.js';
 import fetchBusinessInfo from './fetchBusinessInfo.js';
 
 const SCREENS = {
@@ -18,12 +19,7 @@ const SCREENS = {
  */
 export default async function openPersonalizedHub() {
   // Load personalized hub CSS if not already loaded
-  await loadCSS(`${window.hlx.codeBasePath}/blocks/personalized-hub/personalized-hub.css`);
-
-  // Create modal overlay
-  const modalOverlay = createElement('div', {
-    className: 'ph-modal-overlay',
-  });
+  await loadCSS(`${window.hlx.codeBasePath}/components/personalized-hub/personalized-hub.css`);
 
   // Create container for React app
   const container = createElement('div', {
@@ -31,43 +27,34 @@ export default async function openPersonalizedHub() {
     properties: { id: 'personalized-hub-modal-root' },
   });
 
-  modalOverlay.appendChild(container);
-  document.body.appendChild(modalOverlay);
-  document.body.style.overflow = 'hidden';
-
-  // Function to close the modal
-  const closeModal = () => {
-    if (modalOverlay.reactRoot) {
-      modalOverlay.reactRoot.unmount();
-    }
-    document.body.removeChild(modalOverlay);
-    document.body.style.overflow = '';
-    document.removeEventListener('keydown', handleEscape);
-  };
-
   const ANIMATION_DURATION = 300;
+  let reactRoot = null;
+
+  // Create modal with personalized hub specific configuration
+  const modal = createModal({
+    content: container,
+    showCloseButton: false,
+    overlayClass: 'modal-overlay ph-modal-overlay',
+    contentClass: 'modal-content',
+    overlayBackground: 'var(--modal-overlay-bg)',
+    animationDuration: ANIMATION_DURATION,
+    onClose: () => {
+      if (reactRoot) {
+        reactRoot.unmount();
+        reactRoot = null;
+      }
+    },
+  });
 
   const animateAndClose = () => {
     container.classList.add('ph-modal-slide-out');
     setTimeout(() => {
-      closeModal();
+      modal.close();
     }, ANIMATION_DURATION);
   };
 
-  // Handle escape key
-  function handleEscape(e) {
-    if (e.key === 'Escape') {
-      animateAndClose();
-    }
-  }
-  document.addEventListener('keydown', handleEscape);
-
-  // Handle click outside
-  modalOverlay.addEventListener('click', (e) => {
-    if (e.target === modalOverlay) {
-      animateAndClose();
-    }
-  });
+  // Open the modal first so the container is in the DOM
+  modal.open();
 
   try {
     await loadReact();
@@ -205,11 +192,10 @@ export default async function openPersonalizedHub() {
       return null;
     };
 
-    const root = window.ReactDOM.createRoot(container);
+    reactRoot = window.ReactDOM.createRoot(container);
 
     requestAnimationFrame(() => {
-      root.render(h(PersonalizedHubApp));
-      modalOverlay.reactRoot = root;
+      reactRoot.render(h(PersonalizedHubApp));
     });
   } catch (error) {
     console.error('Failed to load personalized hub:', error);
@@ -218,5 +204,7 @@ export default async function openPersonalizedHub() {
       textContent: `Failed to load personalized hub: ${error.message}. Please refresh the page.`,
     });
     container.appendChild(errorDiv);
+    // Open the modal even if there's an error
+    modal.open();
   }
 }
