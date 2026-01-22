@@ -1,8 +1,6 @@
 const { createElement: h } = window.React;
 
 export default function CookieAgreementModal({ onAgree, onClose }) {
-  const isMobile = window.innerWidth < 900;
-
   const handleAgree = () => {
     sessionStorage.setItem('personalized-hub-consent', 'true');
     onAgree();
@@ -19,22 +17,6 @@ export default function CookieAgreementModal({ onAgree, onClose }) {
       'div',
       { className: 'ph-cookie-modal' },
       [
-        isMobile && h('div', { key: 'handle', className: 'ph-cookie-modal-handle' }),
-        !isMobile && h(
-          'button',
-          {
-            key: 'close',
-            className: 'ph-cookie-modal-close',
-            onClick: handleClose,
-            'aria-label': 'Close',
-          },
-          h('img', {
-            src: '/icons/arrow-down.svg',
-            alt: 'Close',
-            width: '15',
-            height: '9',
-          }),
-        ),
         h(
           'div',
           { key: 'content', className: 'ph-cookie-content' },

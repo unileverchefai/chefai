@@ -47,6 +47,7 @@ export default function createModal(options = {}) {
   let modalOverlay = null;
   let modalContent = null;
   let closeButton = null;
+  let modalHandle = null;
   let escapeHandler = null;
   let isOpen = false;
   let isAnimating = false;
@@ -82,6 +83,19 @@ export default function createModal(options = {}) {
   }
 
   /**
+   * Creates the modal handle (for mobile)
+   */
+  function createModalHandle() {
+    if (modalHandle) return modalHandle;
+
+    modalHandle = createElement('div', {
+      className: 'modal-handle',
+    });
+
+    return modalHandle;
+  }
+
+  /**
    * Creates the close button
    */
   function createCloseButton() {
@@ -89,15 +103,22 @@ export default function createModal(options = {}) {
 
     if (customCloseButton) {
       closeButton = customCloseButton;
-    } else if (showCloseButton) {
+    } else {
+      // Always create close button (CSS will handle desktop/mobile visibility)
       closeButton = createElement('button', {
         className: closeButtonClass,
         attributes: {
           'aria-label': closeButtonLabel,
           type: 'button',
         },
-        textContent: closeButtonText,
       });
+      closeButton.innerHTML = '<img src="/icons/arrow-down.svg" alt="Close" width="15" height="9">';
+      
+      // Add class to control visibility if showCloseButton is false
+      // CSS will still show it on desktop via media query
+      if (!showCloseButton) {
+        closeButton.classList.add('modal-close-hidden');
+      }
     }
 
     return closeButton;
@@ -212,11 +233,22 @@ export default function createModal(options = {}) {
       modalContent.appendChild(contentElement);
     }
 
-    // Create and add close button
-    if (showCloseButton || customCloseButton) {
+    // Create and add modal handle (always shown on mobile)
+    createModalHandle();
+    if (modalHandle) {
+      modalContent.appendChild(modalHandle);
+    }
+
+    // Create and add close button (always created, CSS handles desktop/mobile visibility)
+    createCloseButton();
+    if (closeButton) {
+      modalContent.appendChild(closeButton);
+    } else {
+      // Always create close button for desktop view, but hide it if showCloseButton is false
       createCloseButton();
       if (closeButton) {
-        modalOverlay.appendChild(closeButton);
+        closeButton.style.display = 'none';
+        modalContent.appendChild(closeButton);
       }
     }
 
@@ -268,6 +300,7 @@ export default function createModal(options = {}) {
     modalOverlay = null;
     modalContent = null;
     closeButton = null;
+    modalHandle = null;
     isOpen = false;
     isAnimating = false;
   }

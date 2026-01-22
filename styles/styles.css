@@ -11,6 +11,8 @@
  */
 
 @import url('helpers.css');
+@import url('inputs.css');
+@import url('buttons.css');
 
 :root {
   /* colors */
@@ -82,7 +84,7 @@
   /* body sizes - legacy support, use typography.css for new implementations */
   --body-font-size-m: 22px;
   --body-font-size-s: 19px;
-  --body-font-size-xs: 17px;
+  --body-font-size-xs: 16px;
 
   /* heading sizes - legacy support, use typography.css for new implementations */
   --heading-font-size-xxl: 55px;

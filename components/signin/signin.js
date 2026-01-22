@@ -17,12 +17,6 @@ export default function openSignInModal() {
     className: 'signin-modal',
   });
 
-  // Handle
-  const handle = createElement('div', {
-    className: 'signin-modal-handle',
-  });
-  content.appendChild(handle);
-
   // Top area
   const topArea = createElement('div', {
     className: 'signin-modal-top',
@@ -49,14 +43,14 @@ export default function openSignInModal() {
 
   // Email field
   const emailGroup = createElement('div', {
-    className: 'signin-form-group',
+    className: 'form-group',
   });
   const emailLabel = createElement('label', {
-    className: 'signin-form-label',
+    className: 'form-label',
     textContent: 'Email address',
   });
   const emailInput = createElement('input', {
-    className: 'signin-form-input',
+    className: 'form-input',
     properties: {
       type: 'email',
       placeholder: 'email@example.com',
@@ -68,17 +62,17 @@ export default function openSignInModal() {
 
   // Password field
   const passwordGroup = createElement('div', {
-    className: 'signin-form-group',
+    className: 'form-group',
   });
   const passwordLabel = createElement('label', {
-    className: 'signin-form-label',
+    className: 'form-label',
     textContent: 'Password',
   });
   const passwordInputWrapper = createElement('div', {
-    className: 'signin-form-input-wrapper',
+    className: 'form-input-wrapper',
   });
   const passwordInput = createElement('input', {
-    className: 'signin-form-input',
+    className: 'form-input',
     properties: {
       type: 'password',
       placeholder: '******',
@@ -125,7 +119,7 @@ export default function openSignInModal() {
 
   // Sign in button
   const signInButton = createElement('button', {
-    className: 'signin-form-button',
+    className: 'btn-primary',
     textContent: 'Sign in',
     properties: {
       type: 'button',
