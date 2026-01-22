@@ -128,8 +128,8 @@
   /* trend card sizes */
   --card-width-desktop: 295px;
   --card-height-desktop: 393px;
-  --card-width-mobile: 280px;
-  --card-height-mobile: 360px;
+  --card-width-mobile: 295px;
+  --card-height-mobile: 393px;
   --radius-card: 20px;
 
   /* stat font sizes */
