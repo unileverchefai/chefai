@@ -1,1 +1,3 @@
-export { default } from './signin.js';
+import openSignInModal from './signin.js';
+
+export default openSignInModal;

@@ -68,7 +68,7 @@
   display: none;
 }
 
-@media (width >= 700px) {
+@media (width >= 992px) {
   .modal-close {
     display: flex;
   }
@@ -91,7 +91,7 @@
   outline-offset: 2px;
 }
 
-@media (width < 700px) {
+@media (width < 992px) {
   .modal-overlay {
     padding: var(--spacing-md);
   }

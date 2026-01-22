@@ -21,7 +21,6 @@ export default function PersonalizedChatWidget({
   onBusinessNameSubmit,
   messages: controlledMessages,
   onMessagesChange,
-  onClose,
 }) {
   const [uncontrolledMessages, setUncontrolledMessages] = useState([]);
   const [businessName, setBusinessName] = useState('');

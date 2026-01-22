@@ -40,7 +40,6 @@ export default function createModal(options = {}) {
     onOpen,
     customCloseButton,
     closeButtonLabel = 'Close',
-    closeButtonText = '×',
     overlayBackground,
   } = options;
 
@@ -113,7 +112,7 @@ export default function createModal(options = {}) {
         },
       });
       closeButton.innerHTML = '<img src="/icons/arrow-down.svg" alt="Close" width="15" height="9">';
-      
+
       // Add class to control visibility if showCloseButton is false
       // CSS will still show it on desktop via media query
       if (!showCloseButton) {

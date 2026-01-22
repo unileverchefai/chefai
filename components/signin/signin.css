@@ -130,7 +130,7 @@
   text-decoration: none;
 }
 
-@media (width < 700px) {
+@media (width < 992px) {
   .signin-modal {
     max-width: 100%;
     border-radius: 28px 28px 0 0;

@@ -1,0 +1,114 @@
+/* Sign-up Modal Styles */
+
+/* Override modal overlay padding */
+.signup-modal-overlay {
+  padding: var(--spacing-md);
+}
+
+/* Signup-specific modal content overrides */
+.signup-modal-content {
+  max-width: 358px;
+  transform: none; /* Disable scale animation */
+}
+
+.signup-modal {
+  padding: 56px 8px 8px;
+  max-width: 358px;
+  min-height: 673px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto;
+  background: var(--c-white);
+  border-radius: 28px;
+}
+
+.signup-modal-top {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  flex: 1;
+  padding: 0 var(--spacing-xs);
+}
+
+.signup-modal-title {
+  font-family: var(--heading-font-family);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 22px;
+  color: var(--dark-grey);
+  margin: 0;
+}
+
+.signup-modal-description {
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-xs);
+  line-height: 22px;
+  color: var(--dark-grey);
+  margin: 0;
+}
+
+.signup-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  width: 100%;
+}
+
+/* Signup-specific form overrides */
+.signup-modal-form .form-group {
+  gap: 4px;
+}
+
+@media (width < 992px) {
+  .signup-modal-form .form-group {
+    width: 100%;
+  }
+
+  .signup-modal-form .form-row .form-group {
+    width: 100%;
+  }
+}
+
+@media (width >= 992px) {
+  .signup-modal-form .form-group {
+    width: 326px;
+  }
+
+  .signup-modal-form .form-row .form-group {
+    width: auto; /* Let flex handle the width */
+  }
+}
+
+.signup-modal-bottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: var(--spacing-lg) 0;
+  min-height: 174px;
+  width: 100%;
+}
+
+.signup-modal-bottom .btn-primary {
+  width: 100%;
+  max-width: 326px;
+}
+
+@media (width < 992px) {
+  .signup-modal {
+    max-width: 100%;
+    border-radius: 28px 28px 0 0;
+    margin-top: auto;
+  }
+
+  .signup-modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .signup-modal-form .form-group {
+    width: 100%;
+  }
+}

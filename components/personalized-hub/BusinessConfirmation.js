@@ -4,7 +4,6 @@ export default function BusinessConfirmation({
   businessData,
   onConfirm,
   onReject,
-  onClose,
 }) {
   const businessName = businessData?.business_name ?? 'Unknown Business';
   const address = businessData?.address ?? '';

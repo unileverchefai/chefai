@@ -108,8 +108,7 @@
   width: fit-content;
   margin: 0 auto;
   padding: var(--spacing-md) var(--spacing-xl);
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.00) 0%, rgba(0, 0, 0, 0.20) 100%), var(--ufs-orange);
-  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.80);
+  background: linear-gradient(180deg, rgb(0 0 0 / 0%) 0%, rgb(0 0 0 / 20%) 100%), var(--ufs-orange);
   border: none;
   border-radius: 99px;
   color: var(--c-white);
