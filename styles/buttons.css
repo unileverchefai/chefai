@@ -1,6 +1,6 @@
 /* teaser and live button styles */
 
-[class$="--cta"] {
+.orange-button {
   font-size: 14px;
 
   @media (width >= 992px) {
@@ -38,7 +38,7 @@
 
 /* live button styles */
 
-[class$="__live--cta"] .button-container a {
+.orange-button.glowy .button-container a {
   background: linear-gradient(
     180deg, #0000 0%, #0003 100%),
     radial-gradient(68.81% 47.63% at 50% 100%,

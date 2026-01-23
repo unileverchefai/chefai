@@ -1,8 +1,9 @@
 import { loadCSS } from '../../scripts/aem.js';
 import {
-  variantClassesToBEM, getBEMTemplateName, loadVariantScript, createElement, findVideoLink,
+  variantClassesToBEM, getBEMTemplateName, createElement, findVideoLink,
+  addVariantLogic,
 } from '../../scripts/common.js';
-import openVideoModal from '../../scripts/modal-video.js';
+import openVideoModal from '../../scripts/custom/modal-video.js';
 import setCountdownToHero from './variants/countdown.js';
 
 const variantClasses = {
@@ -54,7 +55,7 @@ const heroTemplate = ({ classes, isCountdown = false }) => `
       ${isCountdown ? `<div class="${classes.countdownTimer}" aria-live="polite" aria-atomic="true">
         <!-- Countdown timer goes here -->
       </div>` : ''}
-      <div class="${classes.cta}">
+      <div class="${classes.cta} orange-button">
         <!-- Call-to-action buttons go here -->
       </div>
       <div class="${classes.disclaimer}">
@@ -284,15 +285,9 @@ async function buildVariant({
   // Placeholder for future variant-specific build logic
   const variantName = variant;
   const variantClass = setVariantClass(variant);
-  if (hasScript) {
-    await loadVariantScript({ blockName, variantName });
-  }
-  if (hasStyle) {
-    await loadCSS(`${window.hlx.codeBasePath}/blocks/${blockName}/variants/${variantName}.css`);
-  }
-  if (useButtons) {
-    await loadCSS(`${window.hlx.codeBasePath}/styles/buttons.css`);
-  }
+  await addVariantLogic({
+    blockName, variantName, hasScript, hasStyle, useButtons,
+  });
 
   const heroContainer = buildHeroContainer({ variantClass, isCountdown });
   const heroContent = block.querySelector(':scope > div');
@@ -355,6 +350,8 @@ export default async function decorate(block) {
     await buildVariant({
       variant: live, block, useButtons: true,
     });
+    const ctaButton = block.querySelector('.orange-button');
+    ctaButton.classList.add('glowy');
   }
 
   if (isCountdown) {
