@@ -69,7 +69,6 @@
 /* Cookie Agreement Modal - Mobile (Bottom Sheet) */
 @media (width < 900px) {
   .cookie-agreement-modal {
-    max-width: 358px;
     border-radius: var(--spacing-xl);
     padding: var(--spacing-2xl) var(--spacing-xs) var(--spacing-xs);
   }

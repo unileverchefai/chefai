@@ -1,5 +1,8 @@
 import { getMetadata } from '../../scripts/aem.js';
 import { loadFragment } from '../fragment/fragment.js';
+import { createElement } from '../../scripts/common.js';
+import { hasToken } from '../../authentication/tokenManager.js';
+import openSignInModal from '../../components/signin/index.js';
 
 // media query match that indicates mobile/tablet width
 const isDesktop = window.matchMedia('(min-width: 900px)');
@@ -144,6 +147,59 @@ export default async function decorate(block) {
         }
       });
     });
+  }
+
+  // Replace nav-tools content with sign-in status
+  const navTools = nav.querySelector('.nav-tools');
+  if (navTools) {
+    navTools.textContent = '';
+    const isLoggedIn = hasToken();
+
+    if (isLoggedIn) {
+      // User is logged in - show user status
+      const signInText = createElement('span', {
+        className: 'nav-signin-text',
+        textContent: 'Signed in',
+      });
+      navTools.appendChild(signInText);
+    } else {
+      // User is not logged in - show sign-in link
+      // Mobile: "Sign in"
+      const signInLinkMobile = createElement('button', {
+        className: 'nav-signin-link nav-signin-link-mobile',
+        textContent: 'Sign in',
+        properties: {
+          type: 'button',
+        },
+      });
+
+      // Desktop: "Already registered? Sign in"
+      const signInLinkDesktop = createElement('button', {
+        className: 'nav-signin-link nav-signin-link-desktop',
+        properties: {
+          type: 'button',
+        },
+      });
+      const desktopText = document.createTextNode('Already registered? ');
+      const signInSpan = createElement('span', {
+        className: 'nav-signin-underline',
+        textContent: 'Sign in',
+      });
+      signInLinkDesktop.appendChild(desktopText);
+      signInLinkDesktop.appendChild(signInSpan);
+
+      // Add click handler to open sign-in modal
+      const openSignIn = (e) => {
+        e.preventDefault();
+        openSignInModal();
+      };
+
+      signInLinkMobile.addEventListener('click', openSignIn);
+      signInLinkDesktop.addEventListener('click', openSignIn);
+
+      navTools.appendChild(signInLinkMobile);
+      navTools.appendChild(signInLinkDesktop);
+    }
   }
 
   // hamburger for mobile

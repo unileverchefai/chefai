@@ -1,6 +1,7 @@
 import { createElement } from '../../scripts/common.js';
 import createModal from '../modal/index.js';
 import { loadCSS } from '../../scripts/aem.js';
+import { login, resetPassword } from '../../authentication/authService.js';
 
 /**
  * Opens the sign-in modal
@@ -8,7 +9,7 @@ import { loadCSS } from '../../scripts/aem.js';
  */
 export default function openSignInModal() {
   // Load sign-in CSS
-  loadCSS(`${window.hlx.codeBasePath}/components/signin/signin.css`).catch(() => {
+  loadCSS(`${window.hlx.codeBasePath}/blocks/sign-in/sign-in.css`).catch(() => {
     // CSS loading error handled silently
   });
 
@@ -117,6 +118,15 @@ export default function openSignInModal() {
   forgotPassword.appendChild(forgotLink);
   formContainer.appendChild(forgotPassword);
 
+  // Error message container
+  const errorMessage = createElement('div', {
+    className: 'signin-form-error',
+    properties: {
+      style: 'display: none; color: var(--ufs-orange); font-size: var(--body-font-size-xs); margin-top: 8px; text-align: center;',
+    },
+  });
+  formContainer.appendChild(errorMessage);
+
   // Sign in button
   const signInButton = createElement('button', {
     className: 'btn-primary',
@@ -166,6 +176,70 @@ export default function openSignInModal() {
     // Dynamically import and open signup modal
     const { default: openSignUpModal } = await import('../signup/index.js');
     openSignUpModal();
+  });
+
+  // Handle forgot password link click
+  forgotLink.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const email = emailInput.value.trim();
+
+    if (!email) {
+      errorMessage.textContent = 'Please enter your email address first';
+      errorMessage.style.display = 'block';
+      emailInput.focus();
+      return;
+    }
+
+    // Clear previous errors
+    errorMessage.style.display = 'none';
+    errorMessage.textContent = '';
+
+    try {
+      await resetPassword(email);
+      errorMessage.textContent = 'Password reset link sent to your email';
+      errorMessage.style.color = 'green';
+      errorMessage.style.display = 'block';
+    } catch (error) {
+      errorMessage.textContent = error.message ?? 'Failed to send reset link. Please try again.';
+      errorMessage.style.color = 'var(--ufs-orange)';
+      errorMessage.style.display = 'block';
+    }
+  });
+
+  // Handle sign in button click
+  signInButton.addEventListener('click', async () => {
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+
+    // Clear previous errors
+    errorMessage.style.display = 'none';
+    errorMessage.textContent = '';
+    errorMessage.style.color = 'var(--ufs-orange)';
+
+    // Validate fields
+    if (!email || !password) {
+      errorMessage.textContent = 'Please enter your email and password';
+      errorMessage.style.display = 'block';
+      return;
+    }
+
+    // Show loading state
+    signInButton.disabled = true;
+    signInButton.textContent = 'Signing in...';
+
+    try {
+      await login(email, password);
+      // Success - close modal and show success message
+      modal.close();
+      // Show success message (could be a toast notification)
+      // For now, we'll just close the modal
+    } catch (error) {
+      // Show error message
+      errorMessage.textContent = error.message ?? 'Invalid email or password. Please try again.';
+      errorMessage.style.display = 'block';
+      signInButton.disabled = false;
+      signInButton.textContent = 'Sign in';
+    }
   });
 
   modal.open();
