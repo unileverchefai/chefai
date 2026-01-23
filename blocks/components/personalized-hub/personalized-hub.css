@@ -1,5 +1,5 @@
 /* Personalized Hub Block Styles */
-@import url('../../components/chatInput/chat-input.css');
+@import url('../chatInput/chat-input.css');
 
 /* Personalized-hub specific chat input overrides */
 .personalized-hub .chat-input-form {

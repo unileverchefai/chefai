@@ -1,5 +1,5 @@
-import { createElement } from '../../scripts/common.js';
-import { loadCSS } from '../../scripts/aem.js';
+import { createElement } from '@scripts/common.js';
+import { loadCSS } from '@scripts/aem.js';
 
 /**
  * Creates a generic, reusable modal component
@@ -216,7 +216,7 @@ export default function createModal(options = {}) {
     if (isOpen || isAnimating) return;
 
     // Load modal CSS if not already loaded
-    loadCSS(`${window.hlx.codeBasePath}/components/modal/modal.css`).catch(() => {
+    loadCSS(`${window.hlx.codeBasePath}/blocks/components/modal/modal.css`).catch(() => {
       // CSS loading error handled silently
     });
 

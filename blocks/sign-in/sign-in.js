@@ -1,5 +1,5 @@
-import openSignInModal from '../../components/signin/index.js';
-import { createElement } from '../../scripts/common.js';
+import openSignInModal from '@components/signin/index.js';
+import { createElement } from '@scripts/common.js';
 
 /**
  * Sign In Block

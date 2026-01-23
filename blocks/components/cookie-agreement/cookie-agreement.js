@@ -1,6 +1,6 @@
-import { createElement } from '../../scripts/common.js';
-import { loadCSS } from '../../scripts/aem.js';
-import createModal from '../modal/index.js';
+import { createElement } from '@scripts/common.js';
+import { loadCSS } from '@scripts/aem.js';
+import createModal from '@components/modal/index.js';
 
 /**
  * Opens the cookie agreement modal
@@ -10,7 +10,7 @@ import createModal from '../modal/index.js';
  */
 export default function openCookieAgreementModal(onAgree, onClose) {
   // Load cookie agreement CSS
-  loadCSS(`${window.hlx.codeBasePath}/components/cookie-agreement/cookie-agreement.css`).catch(() => {
+  loadCSS(`${window.hlx.codeBasePath}/blocks/components/cookie-agreement/cookie-agreement.css`).catch(() => {
     // CSS loading error handled silently
   });
 

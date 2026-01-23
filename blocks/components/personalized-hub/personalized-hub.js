@@ -1,7 +1,7 @@
-import { loadReact } from '../chatbot/utils.js';
-import { createElement } from '../../scripts/common.js';
-import { loadCSS } from '../../scripts/aem.js';
-import createModal from '../modal/index.js';
+import { loadReact } from '@components/chatbot/utils.js';
+import { createElement } from '@scripts/common.js';
+import { loadCSS } from '@scripts/aem.js';
+import createModal from '@components/modal/index.js';
 import fetchBusinessInfo from './fetchBusinessInfo.js';
 
 const SCREENS = {
@@ -18,7 +18,7 @@ const SCREENS = {
  */
 export default async function openPersonalizedHub() {
   // Load personalized hub CSS if not already loaded
-  await loadCSS(`${window.hlx.codeBasePath}/components/personalized-hub/personalized-hub.css`);
+  await loadCSS(`${window.hlx.codeBasePath}/blocks/components/personalized-hub/personalized-hub.css`);
 
   // Create container for React app
   const container = createElement('div', {
@@ -60,7 +60,7 @@ export default async function openPersonalizedHub() {
     }
 
     // Load cookie agreement CSS and check for consent
-    await loadCSS(`${window.hlx.codeBasePath}/components/cookie-agreement/cookie-agreement.css`);
+    await loadCSS(`${window.hlx.codeBasePath}/blocks/components/cookie-agreement/cookie-agreement.css`);
     const { default: openCookieAgreementModal } = await import('../cookie-agreement/index.js');
     const { default: PersonalizedChatWidget } = await import('./PersonalizedChatWidget.js');
     const { default: LoadingState } = await import('./LoadingState.js');

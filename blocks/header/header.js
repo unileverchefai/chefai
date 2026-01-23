@@ -1,8 +1,8 @@
-import { getMetadata } from '../../scripts/aem.js';
-import { loadFragment } from '../fragment/fragment.js';
-import { createElement } from '../../scripts/common.js';
-import { hasToken } from '../../authentication/tokenManager.js';
-import openSignInModal from '../../components/signin/index.js';
+import { getMetadata } from '@scripts/aem.js';
+import { loadFragment } from '@blocks/fragment/fragment.js';
+import { createElement } from '@scripts/common.js';
+import { hasToken } from '@auth/tokenManager.js';
+import openSignInModal from '@components/signin/index.js';
 
 // media query match that indicates mobile/tablet width
 const isDesktop = window.matchMedia('(min-width: 900px)');

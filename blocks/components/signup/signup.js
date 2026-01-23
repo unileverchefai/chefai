@@ -1,8 +1,8 @@
-import { createElement } from '../../scripts/common.js';
-import createModal from '../modal/index.js';
-import { loadCSS } from '../../scripts/aem.js';
-import openCookieAgreementModal from '../cookie-agreement/cookie-agreement.js';
-import { register } from '../../authentication/authService.js';
+import { createElement } from '@scripts/common.js';
+import createModal from '@components/modal/index.js';
+import { loadCSS } from '@scripts/aem.js';
+import openCookieAgreementModal from '@components/cookie-agreement/index.js';
+import { register } from '@auth/authService.js';
 
 /**
  * Opens the sign-up modal
@@ -10,7 +10,7 @@ import { register } from '../../authentication/authService.js';
  */
 export default function openSignUpModal() {
   // Load sign-up CSS
-  loadCSS(`${window.hlx.codeBasePath}/components/signup/signup.css`).catch(() => {
+  loadCSS(`${window.hlx.codeBasePath}/blocks/components/signup/signup.css`).catch(() => {
     // CSS loading error handled silently
   });
 

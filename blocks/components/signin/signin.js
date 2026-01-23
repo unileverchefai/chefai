@@ -1,7 +1,7 @@
-import { createElement } from '../../scripts/common.js';
-import createModal from '../modal/index.js';
-import { loadCSS } from '../../scripts/aem.js';
-import { login, resetPassword } from '../../authentication/authService.js';
+import { createElement } from '@scripts/common.js';
+import createModal from '@components/modal/index.js';
+import { loadCSS } from '@scripts/aem.js';
+import { login, resetPassword } from '@auth/authService.js';
 
 /**
  * Opens the sign-in modal
@@ -229,10 +229,9 @@ export default function openSignInModal() {
 
     try {
       await login(email, password);
-      // Success - close modal and show success message
+      // Success - close modal and reload page
       modal.close();
-      // Show success message (could be a toast notification)
-      // For now, we'll just close the modal
+      window.location.reload();
     } catch (error) {
       // Show error message
       errorMessage.textContent = error.message ?? 'Invalid email or password. Please try again.';
