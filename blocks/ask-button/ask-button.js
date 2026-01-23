@@ -1,5 +1,5 @@
-import openPersonalizedHub from '../../components/personalized-hub/personalized-hub.js';
-import { createElement } from '../../scripts/common.js';
+import openPersonalizedHub from '@components/personalized-hub/personalized-hub.js';
+import { createElement } from '@scripts/common.js';
 
 /**
  * Ask Button Block

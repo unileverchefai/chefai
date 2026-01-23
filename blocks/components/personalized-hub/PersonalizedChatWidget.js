@@ -21,7 +21,6 @@ export default function PersonalizedChatWidget({
   onBusinessNameSubmit,
   messages: controlledMessages,
   onMessagesChange,
-  onClose,
 }) {
   const [uncontrolledMessages, setUncontrolledMessages] = useState([]);
   const [businessName, setBusinessName] = useState('');
@@ -90,22 +89,6 @@ export default function PersonalizedChatWidget({
     'div',
     { className: 'ph-chat-container' },
     [
-      h('div', { key: 'handle', className: 'ph-chat-handle' }),
-      h(
-        'button',
-        {
-          key: 'close',
-          className: 'ph-cookie-modal-close',
-          onClick: onClose,
-          'aria-label': 'Close',
-        },
-        h('img', {
-          src: '/icons/arrow-down.svg',
-          alt: 'Close',
-          width: '15',
-          height: '9',
-        }),
-      ),
       h(
         'div',
         { key: 'messages', className: 'ph-chat-messages' },

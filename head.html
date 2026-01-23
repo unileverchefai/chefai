@@ -4,6 +4,17 @@
   move-to-http-header="true"
 >
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
+<script type="importmap" nonce="aem">
+{
+  "imports": {
+    "@scripts/": "/scripts/",
+    "@blocks/": "/blocks/",
+    "@styles/": "/styles/",
+    "@components/": "/blocks/components/",
+    "@auth/": "/blocks/components/authentication/"
+  }
+}
+</script>
 <script nonce="aem" src="/scripts/aem.js" type="module"></script>
 <script nonce="aem" src="/scripts/scripts.js" type="module"></script>
 <link rel="preload" as="font" href="/fonts/ChefsHandv3-Regular.woff2" type="font/woff2" crossorigin="anonymous"/>

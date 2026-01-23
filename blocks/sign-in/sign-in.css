@@ -1,0 +1,144 @@
+/* Sign-in Modal Styles */
+
+/* Override modal overlay padding (already has align-items and justify-content from modal.css) */
+.signin-modal-overlay {
+  padding: var(--spacing-md);
+}
+
+/* Signin-specific modal content overrides */
+.signin-modal-content {
+  max-width: 358px;
+  transform: none; /* Disable scale animation */
+}
+
+.signin-modal {
+  padding: 56px 24px 24px;
+  max-width: 600px;
+  min-height: 528px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.signin-modal-top {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  flex: 1;
+}
+
+.signin-modal-title {
+  font-family: var(--heading-font-family);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--text-color);
+  margin: 0 0 4px;
+}
+
+.signin-modal-description {
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-xs);
+  line-height: 1.4;
+  color: var(--dark-color);
+  margin: 0;
+}
+
+.signin-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+/* Form styles are now in styles/inputs.css - using form-group, form-label, form-input, form-input-wrapper */
+
+/* Signin-specific form overrides */
+.signin-modal-form .form-group {
+  gap: 4px;
+}
+
+.signin-modal-form .form-input-wrapper .form-input {
+  padding-right: 50px;
+}
+
+.signin-form-reveal {
+  position: absolute;
+  right: 11px;
+  top: 25%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.signin-form-reveal:hover {
+  opacity: 0.7;
+}
+
+.signin-form-forgot {
+  text-align: right;
+  margin: 0;
+}
+
+.signin-form-forgot-link {
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-xs);
+  line-height: 22px;
+  color: var(--text-color);
+  text-decoration: none;
+}
+
+.signin-form-forgot-link:hover {
+  text-decoration: underline;
+}
+
+.signin-modal-bottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 24px 0 0;
+  width: 100%;
+  margin-top: auto;
+}
+
+.signin-modal-bottom-text {
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-xs);
+  line-height: normal;
+  color: var(--text-color);
+  text-align: center;
+  margin: 0;
+}
+
+.signin-modal-bottom-link {
+  text-decoration: underline;
+  color: var(--text-color);
+}
+
+.signin-modal-bottom-link:hover {
+  text-decoration: none;
+}
+
+@media (width < 992px) {
+  .signin-modal {
+    max-width: 100%;
+    border-radius: 28px 28px 0 0;
+    margin-top: auto;
+  }
+
+  .signin-modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+}

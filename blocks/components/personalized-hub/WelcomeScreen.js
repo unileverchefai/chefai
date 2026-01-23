@@ -5,7 +5,6 @@ export default function WelcomeScreen({ onGotIt }) {
     'div',
     { className: 'ph-chat-container' },
     [
-      h('div', { key: 'handle', className: 'ph-chat-handle' }),
       h(
         'div',
         { key: 'content', className: 'ph-welcome-container' },

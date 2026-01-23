@@ -11,6 +11,8 @@
  */
 
 @import url('helpers.css');
+@import url('inputs.css');
+@import url('buttons.css');
 
 :root {
   /* colors */
@@ -20,7 +22,7 @@
   --dark-color: #505050;
   --text-color: #131313;
   --link-color: #3b63fb;
-  --link-hover-color: #1d3ecf;
+  --link-hover-color: var(--ufs-orange);
 
    /* Unilever colors */
   --ufs-orange: #ff5a00;
@@ -82,7 +84,7 @@
   /* body sizes - legacy support, use typography.css for new implementations */
   --body-font-size-m: 22px;
   --body-font-size-s: 19px;
-  --body-font-size-xs: 17px;
+  --body-font-size-xs: 16px;
 
   /* heading sizes - legacy support, use typography.css for new implementations */
   --heading-font-size-xxl: 55px;
@@ -311,8 +313,7 @@ button {
 
 /* links */
 a:any-link {
-  color: var(--link-color);
-  text-decoration: none;
+  text-decoration: underline;
   overflow-wrap: break-word;
 }
 
@@ -349,7 +350,6 @@ a.button:hover,
 a.button:focus,
 button:hover,
 button:focus {
-  background-color: var(--link-hover-color);
   cursor: pointer;
 }
 

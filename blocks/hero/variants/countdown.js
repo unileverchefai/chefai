@@ -1,5 +1,5 @@
-import { getMetadata } from '../../../scripts/aem.js';
-import { getPlaceholderText, createElement, getBEMTemplateName } from '../../../scripts/common.js';
+import { getMetadata } from '@scripts/aem.js';
+import { getPlaceholderText, createElement, getBEMTemplateName } from '@scripts/common.js';
 
 let intervalId = null;
 
