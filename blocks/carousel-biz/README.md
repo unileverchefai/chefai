@@ -1,33 +1,51 @@
 # Carousel Biz Block
 
-A horizontal carousel showcasing business trends with vibrant gradient cards. Each card displays trend insights with statistics, descriptions, and call-to-action links.
+**API-driven carousel** displaying business insights from the ChefAI Chatbot API.
+
+## Architecture
+
+This block is **API-driven**, not content-driven:
+- ✅ DA document only triggers the block (no content parsed from DA)
+- ✅ All data fetched from ChefAI API endpoints
+- ✅ Dynamic filtering via business type dropdown
+- ✅ Mock data fallback for development when API unavailable
+
+## How It Works
+
+1. **Author adds block to DA:** Simply insert `| Carousel Biz |` table (no other content needed)
+2. **Block loads:** `decorate()` creates dropdown and carousel container from scratch
+3. **API call:** `fetchInsights()` retrieves recommendations from backend
+4. **Rendering:** Cards generated dynamically from API response data
+5. **Filtering:** Business type dropdown triggers new API calls
+
+## API Integration
+
+### Endpoints Used:
+- **Recommendations:** `/api/v1/recommendations/` - Returns trend insights
+- **Business Types:** `/utility/business-types` - Populates dropdown filter
+
+### Configuration:
+- API base URL and subscription key in `constants/api.js`
+- Mock fallback controlled by `USE_MOCK_FALLBACK` flag in `fetchInsights.js`
 
 ## Features
 
-- **Responsive carousel**: 3 cards on desktop, 1 on mobile
+- **Responsive carousel**: 4 cards on desktop, 1 on mobile
 - **Trend-specific styling**: Color-coded gradients for each trend type
 - **Touch/swipe support**: Native mobile interaction
 - **Keyboard accessible**: Arrow navigation
-- **Optional filter dropdown**: Business type filtering (ready for implementation)
-
-## Block Structure
-
-Each card requires:
-- `<h3>`: Trend name (appears in header badge)
-- `<p>` (first): Background image with `<picture>` element
-- `<h2>`: Statistic or insight (number or word)
-- `<p>` (second): Description text
-- `<p>` (third): CTA link with `<a>` tag
+- **Business type filtering**: Live dropdown connected to API
+- **Indicator dots**: Navigation (no arrow buttons per design)
 
 ## Trend Types
 
-The block automatically detects and styles these trends:
+Cards are styled based on API-provided trend IDs:
 
-- **Borderless Cuisine** → Orange gradient
-- **Street Food Couture** → Purple/Magenta gradient
-- **Diner Designed** → Green gradient
-- **Culinary Roots** → Blue gradient
-- **Cross-Trend** → White gradient
+- **Borderless Cuisine** (`2026_trend_borderless_cuisine`) → Orange gradient
+- **Street Food Couture** (`2026_trend_street_food_couture`) → Purple/Magenta gradient
+- **Diner Designed** (`2026_trend_diner_designed`) → Green gradient
+- **Culinary Roots** (`2026_trend_culinary_roots`) → Blue gradient
+- **Cross-Trend** (multiple trends) → White gradient with outline effect
 
 ## Styling
 
