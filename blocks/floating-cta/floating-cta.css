@@ -48,7 +48,7 @@ body {
     display: grid;
     column-gap: 24px;
     grid-template-areas: 'title cta' 'disclaimer cta';
-    justify-content: initial;
+    justify-content: center;
     padding-block-start: 0;
 
     &::after {
@@ -71,7 +71,7 @@ body {
 
   .floating-cta__disclaimer {
     grid-area: disclaimer;
-    place-self: baseline end;
+    align-self: baseline;
   }
 
 }
