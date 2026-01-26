@@ -1,4 +1,4 @@
-import { createCarousel, createElement } from '../../scripts/common.js';
+import { createCarousel, createElement } from '@scripts/common.js';
 
 export default function decorate(block) {
   // Parse the block content - each row is a card

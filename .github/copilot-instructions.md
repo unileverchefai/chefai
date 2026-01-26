@@ -54,8 +54,8 @@ export default async function decorate(block) {
 
 **From blocks to scripts** (most common):
 ```javascript
-import { getMetadata, createOptimizedPicture } from '../../scripts/aem.js';
-import { createVideoEmbed, findVideoLink } from '../../scripts/common.js';
+import { getMetadata, createOptimizedPicture } from '@scripts/aem.js';
+import { createVideoEmbed, findVideoLink } from '@scripts/common.js';
 ```
 
 **Relative imports within blocks**:
@@ -188,7 +188,7 @@ npm run lint:fix    # Auto-fix issues
 See [blocks/media-text-cards/media-text-cards.js](blocks/media-text-cards/media-text-cards.js#L1-L60) for modal pattern:
 
 ```javascript
-import { createVideoEmbed, findVideoLink } from '../../scripts/common.js';
+import { createVideoEmbed, findVideoLink } from '@scripts/common.js';
 
 const videoLink = findVideoLink(container);
 if (videoLink) {
@@ -220,7 +220,7 @@ This enables content reuse without manual block authoring.
 1. **Missing default export** - Always `export default function decorate(block)`
 2. **Hardcoded colors** - Use CSS variables from `:root`
 3. **Importing React** - Access via `window.React`, not npm imports (except in ChatWidget.js)
-4. **Block CSS paths** - Always relative: `../../scripts/aem.js`
+4. **Block CSS paths** - Always relative: `@scripts/aem.js`
 5. **Metadata access** - Use `getMetadata('key')` not manual DOM queries
 
 ## File References

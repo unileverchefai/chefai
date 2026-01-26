@@ -1,9 +1,9 @@
-import { loadCSS } from '../../scripts/aem.js';
+import { loadCSS } from '@scripts/aem.js';
 import {
   variantClassesToBEM, getBEMTemplateName, createElement, findVideoLink,
   addVariantLogic,
-} from '../../scripts/common.js';
-import openVideoModal from '../../scripts/custom/modal-video.js';
+} from '@scripts/common.js';
+import openVideoModal from '@scripts/custom/modal-video.js';
 import setCountdownToHero from './variants/countdown.js';
 
 const variantClasses = {

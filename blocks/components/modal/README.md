@@ -6,7 +6,7 @@ A reusable modal component for displaying content in an overlay.
 
 ```javascript
 import createModal from '../components/modal/index.js';
-import { createElement } from '../../scripts/common.js';
+import { createElement } from '@scripts/common.js';
 
 // Create content
 const content = createElement('div', {
@@ -23,7 +23,7 @@ modal.open();
 ### Simple Modal
 ```javascript
 import createModal from '../components/modal/index.js';
-import { createElement } from '../../scripts/common.js';
+import { createElement } from '@scripts/common.js';
 
 const content = createElement('div', {
   innerContent: 'Modal content here',
@@ -84,7 +84,7 @@ const modal = createModal({
 
 ### Video Modal
 ```javascript
-import { createElement, createVideoEmbed } from '../../scripts/common.js';
+import { createElement, createVideoEmbed } from '@scripts/common.js';
 
 const videoEmbed = createVideoEmbed('https://youtube.com/watch?v=...');
 if (videoEmbed) {
