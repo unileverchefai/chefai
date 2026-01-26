@@ -6,9 +6,10 @@ import createModal from '@components/modal/index.js';
  * Opens the cookie agreement modal
  * @param {Function} onAgree - Callback when user agrees
  * @param {Function} onClose - Callback when modal is closed
+ * @param {boolean} required - If true, modal cannot be closed until user accepts
  * @returns {Object} Modal instance
  */
-export default function openCookieAgreementModal(onAgree, onClose) {
+export default function openCookieAgreementModal(onAgree, onClose, required = false) {
   // Load cookie agreement CSS
   loadCSS(`${window.hlx.codeBasePath}/blocks/components/cookie-agreement/cookie-agreement.css`).catch(() => {
     // CSS loading error handled silently
@@ -96,6 +97,8 @@ export default function openCookieAgreementModal(onAgree, onClose) {
   const modal = createModal({
     content,
     showCloseButton: false,
+    closeOnClickOutside: !required,
+    closeOnEscape: !required,
     overlayClass: 'modal-overlay ph-modal-overlay',
     contentClass: 'modal-content',
     overlayBackground: 'var(--modal-overlay-bg)',

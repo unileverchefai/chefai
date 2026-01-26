@@ -11,19 +11,27 @@ function getCookies() {
   }
 
   const cookies = document.cookie.split(';');
-  const affinityCookie = cookies.find((c) => {
+  let affinityCookie = '';
+  let affinityCorsCookie = '';
+
+  cookies.forEach((c) => {
     const trimmed = c.trim();
-    return trimmed.startsWith('ApplicationGatewayAffinity=') && !trimmed.startsWith('ApplicationGatewayAffinityCORS=');
+    if (trimmed.startsWith('ApplicationGatewayAffinity=') && !trimmed.startsWith('ApplicationGatewayAffinityCORS=')) {
+      affinityCookie = trimmed;
+    } else if (trimmed.startsWith('ApplicationGatewayAffinityCORS=')) {
+      affinityCorsCookie = trimmed;
+    }
   });
 
+  const cookieParts = [];
   if (affinityCookie) {
-    const value = affinityCookie.trim().split('=')[1];
-    if (value) {
-      return `ApplicationGatewayAffinity=${value}`;
-    }
+    cookieParts.push(affinityCookie);
+  }
+  if (affinityCorsCookie) {
+    cookieParts.push(affinityCorsCookie);
   }
 
-  return '';
+  return cookieParts.join('; ');
 }
 
 function fetchWithTimeout(url, options, timeout = DEFAULT_TIMEOUT) {

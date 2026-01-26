@@ -14,9 +14,6 @@ export default function openSignUpModal() {
     // CSS loading error handled silently
   });
 
-  // Check if cookies were accepted
-  const cookiesAccepted = sessionStorage.getItem('personalized-hub-consent') === 'true';
-
   // Create modal content
   const content = createElement('div', {
     className: 'signup-modal',
@@ -345,10 +342,20 @@ export default function openSignUpModal() {
       };
 
       await register(formData);
-      // Success - close modal and show success message
       modal.close();
-      // Show success message (could be a toast notification)
-      // For now, we'll just close the modal
+
+      const cookiesAccepted = sessionStorage.getItem('personalized-hub-consent') === 'true';
+      if (!cookiesAccepted) {
+        openCookieAgreementModal(
+          () => {
+            window.location.reload();
+          },
+          () => {},
+          true,
+        );
+      } else {
+        window.location.reload();
+      }
     } catch (error) {
       // Show error message
       errorMessage.textContent = error.message ?? 'Registration failed. Please try again.';
@@ -358,21 +365,8 @@ export default function openSignUpModal() {
     }
   });
 
-  // If cookies not accepted, show cookie modal first
-  if (!cookiesAccepted) {
-    openCookieAgreementModal(
-      () => {
-        // On agree, show the signup form
-        modal.open();
-      },
-      () => {
-        // On close, do nothing (user cancelled)
-      },
-    );
-  } else {
-    // Cookies already accepted, show signup form directly
-    modal.open();
-  }
+  // Show signup form directly (cookie modal will show after successful sign-up if needed)
+  modal.open();
 
   return modal;
 }
