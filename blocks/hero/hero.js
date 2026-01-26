@@ -72,7 +72,7 @@ const heroTemplate = ({ classes, isCountdown = false }) => `
 function appendLogoElement(area) {
   const logo = createElement('div', {
     className: 'hero--logo-wrapper',
-    fragment: `
+    innerContent: `
       <div class="hero--logo-text"></div>
       <div class="hero--logo-number"></div>
     `,
@@ -104,7 +104,7 @@ function addElementsToArea(area, elements) {
     const videoLink = videoElement.href;
     const videoWrapper = createElement('div', {
       className: 'hero--video-wrapper',
-      fragment: `
+      innerContent: `
       <a href="${videoLink}" class="hero--play-button video-play-button" aria-label="Play Video"></a>
       `,
     });
@@ -256,7 +256,7 @@ function buildHero({ heroClassList, heroContent, heroContainer }) {
 function buildHeroContainer({ variantClass, isCountdown = false }) {
   return createElement('div', {
     className: variantClass,
-    fragment: heroTemplate({ classes: heroClasses(variantClass), isCountdown }),
+    innerContent: heroTemplate({ classes: heroClasses(variantClass), isCountdown }),
   });
 }
 

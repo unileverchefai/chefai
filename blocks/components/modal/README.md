@@ -10,7 +10,7 @@ import { createElement } from '../../scripts/common.js';
 
 // Create content
 const content = createElement('div', {
-  textContent: 'Hello, this is a modal!',
+  innerContent: 'Hello, this is a modal!',
 });
 
 // Create and open modal
@@ -26,7 +26,7 @@ import createModal from '../components/modal/index.js';
 import { createElement } from '../../scripts/common.js';
 
 const content = createElement('div', {
-  textContent: 'Modal content here',
+  innerContent: 'Modal content here',
 });
 
 const modal = createModal({ content });
@@ -36,7 +36,7 @@ modal.open();
 ### Modal with HTML Content
 ```javascript
 const content = createElement('div', {
-  fragment: '<h2>Title</h2><p>Content</p>',
+  innerContent: '<h2>Title</h2><p>Content</p>',
 });
 
 const modal = createModal({ content });
@@ -117,7 +117,7 @@ modal.open();
 ```javascript
 const container = createElement('div', {
   className: 'react-container',
-  properties: { id: 'react-root' },
+  attributes: { id: 'react-root' },
 });
 
 const modal = createModal({

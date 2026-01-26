@@ -11,8 +11,8 @@ export default function decorate(block) {
   // Create sign-in link
   const signInLink = createElement('a', {
     className: 'sign-in-link',
-    textContent: 'Sign in',
-    properties: {
+    innerContent: 'Sign in',
+    attributes: {
       href: '#',
       'aria-label': 'Sign in',
     },

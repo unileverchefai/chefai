@@ -69,8 +69,7 @@ export function getBEMTemplateName({
  * @param {string|string[]} [options.className=''] The class name(s) to add to the element.
  * Can be a single class, space-separated, comma-separated, or an array.
  * @param {Object} [options.properties={}] The properties to set on the element.
- * @param {string} [options.textContent=''] The text content of the element.
- * @param {string} [options.fragment=''] The HTML fragment to append to the element.
+ * @param {string} [options.innerContent=''] Can be plain text or an HTML fragment.
  * @return {Element} The created DOM element.
  * @example
  * // Single class
@@ -93,20 +92,20 @@ export function getBEMTemplateName({
  * const element = createElement('div', {
  *   className: 'container large',
  *   properties: { id: 'main' },
- *   textContent: 'Hello World'
+ *   innerContent: 'Hello World'
  * });
  * // Result: <div class="container large" id="main">Hello World</div>
  * @example
  * // With HTML fragment
  * const element = createElement('div', {
  *   className: 'container',
- *   fragment: '<p>Nested content</p>'
+ *   innerContent: '<p>Nested content</p>'
  * });
  * // Result: <div class="container"><p>Nested content</p></div>
 */
 export function createElement(tag, options = {}) {
   const {
-    className = '', properties = {}, textContent = '', fragment = '',
+    className = '', attributes = {}, innerContent = '',
   } = options;
   const element = document.createElement(tag);
   const isString = typeof className === 'string' || className instanceof String;
@@ -118,19 +117,15 @@ export function createElement(tag, options = {}) {
     element.removeAttribute('class');
   }
 
-  if (properties) {
-    Object.keys(properties).forEach((propName) => {
-      const value = propName === properties[propName] ? '' : properties[propName];
+  if (attributes) {
+    Object.keys(attributes).forEach((propName) => {
+      const value = propName === attributes[propName] ? '' : attributes[propName];
       element.setAttribute(propName, value);
     });
   }
 
-  if (textContent) {
-    element.textContent = textContent;
-  }
-
-  if (fragment) {
-    const fragmentNode = document.createRange().createContextualFragment(fragment);
+  if (innerContent) {
+    const fragmentNode = document.createRange().createContextualFragment(innerContent);
     element.appendChild(fragmentNode);
   }
 
@@ -305,7 +300,7 @@ export function createVideoEmbed(url) {
   if (videoId) {
     embedUrl = `https://www.youtube.com/embed/${videoId}`;
     const iframe = createElement('iframe', {
-      properties: {
+      attributes: {
         src: embedUrl,
         width: '560',
         height: '315',
@@ -324,7 +319,7 @@ export function createVideoEmbed(url) {
   if (videoId) {
     embedUrl = `https://player.vimeo.com/video/${videoId}`;
     const iframe = createElement('iframe', {
-      properties: {
+      attributes: {
         src: embedUrl,
         width: '560',
         height: '315',
@@ -449,7 +444,7 @@ export function createCarousel(options) {
   // Create ARIA live region for screen readers
   const liveRegion = createElement('div', {
     className: 'sr-only',
-    properties: {
+    attributes: {
       'aria-live': 'polite',
       'aria-atomic': 'true',
     },
@@ -463,8 +458,8 @@ export function createCarousel(options) {
 
   const prevArrow = createElement('button', {
     className: 'arrow prev',
-    properties: { 'aria-label': 'Previous slide' },
-    fragment: `
+    attributes: { 'aria-label': 'Previous slide' },
+    innerContent: `
       <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path d="M15.67 14.67L13.2 12.2L15.67 9.73L14.73 8.8L11.33 12.2L14.73 15.6L15.67 14.67Z"/>
       </svg>
@@ -473,8 +468,8 @@ export function createCarousel(options) {
 
   const nextArrow = createElement('button', {
     className: 'arrow next',
-    properties: { 'aria-label': 'Next slide' },
-    fragment: `
+    attributes: { 'aria-label': 'Next slide' },
+    innerContent: `
       <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path d="M8.33 14.67L10.8 12.2L8.33 9.73L9.27 8.8L12.67 12.2L9.27 15.6L8.33 14.67Z"/>
       </svg>
@@ -762,7 +757,7 @@ export function createCarousel(options) {
       for (let i = 0; i < totalSlides; i += 1) {
         const indicator = createElement('button', {
           className: `indicator${i === 0 ? ' active' : ''}`,
-          properties: {
+          attributes: {
             'aria-label': `Go to slide ${i + 1} of ${totalSlides}`,
             type: 'button',
           },
