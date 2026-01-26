@@ -1,5 +1,5 @@
 /* Personalized Hub Block Styles */
-@import url('../../components/chat-input.css');
+@import url('../chatInput/chat-input.css');
 
 /* Personalized-hub specific chat input overrides */
 .personalized-hub .chat-input-form {
@@ -44,142 +44,17 @@
   opacity: 0;
 }
 
-/* Modal Overlay */
+/* Personalized Hub Modal - extends generic modal */
 .ph-modal-overlay {
-  position: fixed;
-  inset: 0;
   background: var(--modal-overlay-bg);
-  z-index: var(--z-modal);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   padding: var(--spacing-md);
 }
 
-/* Cookie Agreement Modal - Desktop */
-.ph-cookie-modal {
-  background: var(--c-white);
-  border-radius: var(--radius-lg);
-  max-width: 820px;
-  width: 100%;
-  max-height: 680px;
-  min-height: 300px;
-  padding: 70px var(--spacing-sm) var(--spacing-sm);
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
+.ph-modal-overlay .modal-content {
+  transform: none;
 }
 
-.ph-cookie-modal-close {
-  position: absolute;
-  top: 13px;
-  right: 11px;
-  width: 38px;
-  height: 38px;
-  background: var(--light-mushroom);
-  border: none;
-  border-radius: var(--radius-full);
-  cursor: pointer;
-  z-index: var(--z-modal-close);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-}
-
-.ph-cookie-modal-close:hover {
-  background: var(--mid-mushroom);
-}
-
-.ph-cookie-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: var(--spacing-xs);
-}
-
-.ph-cookie-text {
-  font-family: var(--body-font-family);
-  font-size: var(--body-font-size-s);
-  line-height: 1.625;
-  color: var(--text-color);
-  padding: 0 var(--spacing-lg) 0 0;
-}
-
-.ph-cookie-text p {
-  margin-bottom: var(--spacing-xs);
-}
-
-.ph-cookie-text a {
-  text-decoration: underline;
-  color: inherit;
-}
-
-.ph-cookie-buttons {
-  display: flex;
-  gap: var(--spacing-lg);
-  justify-content: center;
-  padding: var(--spacing-lg) 0;
-}
-
-.ph-btn-agree {
-  border: 1px solid var(--ufs-orange);
-  background: linear-gradient(91.765deg, rgb(232 91 14 / 6%) 3.749%, rgb(255 90 0 / 6%) 28.36%, rgb(92 54 87 / 6%) 69.867%, rgb(134 36 121 / 6%) 103.17%);
-  border-radius: 77px;
-  padding: var(--spacing-md) var(--spacing-lg);
-  font-family: var(--body-font-family);
-  font-size: var(--body-font-size-s);
-  font-weight: 500;
-  color: var(--text-color);
-  cursor: pointer;
-  max-width: 330px;
-}
-
-.ph-btn-agree:hover {
-  background: linear-gradient(91.765deg, rgb(232 91 14 / 12%) 3.749%, rgb(255 90 0 / 12%) 28.36%, rgb(92 54 87 / 12%) 69.867%, rgb(134 36 121 / 12%) 103.17%);
-}
-
-/* Cookie Agreement Modal - Mobile (Bottom Sheet) */
-@media (width < 900px) {
-  .ph-modal-overlay {
-    align-items: center;
-    padding: var(--spacing-md) var(--spacing-md) var(--spacing-2xl);
-  }
-
-  .ph-cookie-modal {
-    max-width: 358px;
-    border-radius: var(--spacing-xl);
-    padding: var(--spacing-2xl) var(--spacing-xs) var(--spacing-xs);
-  }
-
-
-
-  .ph-cookie-modal-handle {
-    position: absolute;
-    top: var(--spacing-xs);
-    left: 50%;
-    transform: translateX(-50%);
-    width: 70px;
-    height: var(--spacing-xxs);
-    background: var(--mushroom);
-    border-radius: var(--radius-sm);
-  }
-
-  .ph-cookie-modal-close {
-    display: none;
-  }
-
-  .ph-cookie-text {
-    font-size: var(--body-font-size-xs);
-    line-height: 1.571;
-    padding: 0 var(--spacing-md) 0 0;
-  }
-
-  .ph-btn-agree {
-    padding: var(--spacing-sm) var(--spacing-md);
-    font-size: var(--body-font-size-xs);
-  }
-}
+/* Cookie Agreement Modal styles moved to components/cookie-agreement/cookie-agreement.css */
 
 /* Chat Widget Container */
 .ph-chat-container {
@@ -194,17 +69,6 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xs);
-}
-
-.ph-chat-handle {
-  position: absolute;
-  top: var(--spacing-xs);
-  left: 50%;
-  transform: translateX(-50%);
-  width: 70px;
-  height: var(--spacing-xxs);
-  background: var(--mushroom);
-  border-radius: var(--radius-sm);
 }
 
 .ph-chat-messages {
@@ -528,10 +392,6 @@
     max-width: 95%;
     border-radius: var(--radius-lg);
     padding: 70px var(--spacing-sm) var(--spacing-sm);
-  }
-
-  .ph-chat-handle {
-    display: none;
   }
 
   .ph-system-message {

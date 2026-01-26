@@ -266,3 +266,55 @@ header nav .nav-sections ul > li > ul > li {
 header nav .nav-tools {
   grid-area: tools;
 }
+
+/* Sign-in status in nav-tools */
+header nav .nav-signin-link {
+  background: none;
+  border: none;
+  font-family: var(--body-font-family);
+  font-size: 12px;
+  color: currentcolor;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+header nav .nav-signin-link-mobile {
+  text-decoration: underline;
+}
+
+header nav .nav-signin-link-desktop {
+  font-size: 14px;
+  display: none;
+}
+
+header nav .nav-signin-underline {
+  text-decoration: underline;
+  text-decoration-skip-ink: none;
+}
+
+header nav .nav-signin-link:hover {
+  opacity: 0.8;
+}
+
+header nav .nav-signin-text {
+  font-family: var(--body-font-family);
+  font-size: 12px;
+  color: currentcolor;
+}
+
+@media (width >= 900px) {
+  header nav .nav-signin-link-mobile {
+    display: none;
+  }
+
+  header nav .nav-signin-link-desktop {
+    display: block;
+  }
+
+  header nav .nav-signin-text {
+    font-size: 14px;
+  }
+}
