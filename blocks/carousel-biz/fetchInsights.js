@@ -1,12 +1,16 @@
 import { ENDPOINTS, SUBSCRIPTION_KEY, DEFAULT_PARAMS } from './constants/api.js';
-import mockData from './recommendation_response.json' with { type: 'json' };
-import trendMapData from './trends.json' with { type: 'json' };
 
-const MOCK_RECOMMENDATIONS = mockData.recommendations || [];
+const recommendationsData = await fetch('/blocks/carousel-biz/recommendation_response.json').then((r) => r.json());
+const trendMapData = await fetch('/blocks/carousel-biz/trends.json').then((r) => r.json());
+const businessTypesData = await fetch('/blocks/carousel-biz/business_types.json').then((r) => r.json());
+
+const MOCK_RECOMMENDATIONS = recommendationsData.recommendations || [];
+const MOCK_BUSINESS_TYPES = businessTypesData.business_types || [];
 const TREND_MAP = trendMapData;
 
-// Enable mock data fallback when API is unavailable
+// Enable mock data fallback when API is unavailable !!!
 const USE_MOCK_FALLBACK = true;
+const USE_MOCK_BUSINESS_TYPES = true;
 
 // Transform API response to carousel card format
 function transformRecommendation(recommendation) {
@@ -43,8 +47,8 @@ function transformRecommendation(recommendation) {
     stat: recommendation.stat || '',
     description: recommendation.title,
     link: {
-      // Generate placeholder CTA - update when real URLs are available
-      href: '#', // TODO: Update with real trend detail page URLs
+      // Generate placeholder CTA - update when real URLs are available!!
+      href: '#',
       text: 'Check the trend',
     },
     bgImage,
@@ -122,6 +126,11 @@ export default async function fetchInsights(options = {}) {
  * @returns {Promise<Array>} Array of business types
  */
 export async function fetchBusinessTypes(languageCode = 'en') {
+  // Use mock data when API is not ready
+  if (USE_MOCK_BUSINESS_TYPES) {
+    return MOCK_BUSINESS_TYPES;
+  }
+
   const params = new URLSearchParams({ language_code: languageCode });
   const headers = {
     'X-Subscription-Key': SUBSCRIPTION_KEY,

@@ -51,6 +51,22 @@
   --culinary-roots: #00102d;
   --culinary-roots-bright: #0090ba;
 
+  /* Trend card header colors (80% opacity) */
+  --borderless-cuisine-header: rgb(249 176 2 / 80%);
+  --street-food-header: rgb(220 77 139 / 80%);
+  --diner-designed-header: rgb(161 184 59 / 80%);
+  --culinary-roots-header: rgb(0 144 186 / 80%);
+  --cross-trend-header: rgb(234 231 235 / 80%);
+
+  /* Trend stat glow colors */
+  --borderless-glow: #ffab00;
+  --street-food-glow: #dc4d8b;
+  --diner-designed-glow: #a1b83b;
+  --culinary-roots-glow: #0090ba;
+
+  /* Cross-trend colors */
+  --cross-trend-shadow: rgb(176 43 159 / 20%);
+
   /* Future Menus */
   --fm-modernized-comfort-food: #ba65be;
   --fm-irresistible-vegetables: #ff7604;
@@ -167,6 +183,30 @@
   --box-shadow-card-trend: 0 0 24px rgb(0 0 0 / 25%);
   --gradient-highlight: linear-gradient(90deg, var(--orange-dark) 0%, var(--purple) 100%);
   --gradient-border: linear-gradient(135deg, var(--ufs-orange) 0%, var(--orange-dark) 50%, var(--purple) 100%);
+
+  /* Trend card gradients */
+  --trend-header-shine: linear-gradient(180deg, rgb(255 255 255 / 10%) 0%, rgb(255 255 255 / 3%) 100%);
+  --dropdown-bg: linear-gradient(180deg, rgb(255 255 255 / 90%) 0%, rgb(234 231 235 / 90%) 100%);
+
+  /* Trend overlay gradients */
+  --gradient-borderless-cuisine: linear-gradient(203.69deg, rgb(237 108 0 / 0%) 24.34%, rgb(237 108 0 / 100%) 50.162%);
+  --gradient-street-food-couture: linear-gradient(203.69deg, rgb(98 44 87 / 0%) 24.34%, rgb(98 44 87 / 100%) 50.162%);
+  --gradient-diner-designed: linear-gradient(203.69deg, rgb(103 150 65 / 0%) 24.34%, rgb(103 150 65 / 100%) 50.162%);
+  --gradient-culinary-roots: linear-gradient(203.69deg, rgb(0 16 45 / 0%) 24.34%, rgb(0 16 45 / 100%) 50.162%);
+  --gradient-cross-trend: linear-gradient(203.69deg, rgb(255 255 255 / 0%) 24.34%, rgb(255 255 255 / 100%) 50.162%);
+
+  /* Trend header gradients */
+  --header-gradient-borderless-cuisine: linear-gradient(0deg, var(--borderless-cuisine-header) 0%, var(--borderless-cuisine-header) 100%), var(--trend-header-shine);
+  --header-gradient-street-food-couture: linear-gradient(0deg, var(--street-food-header) 0%, var(--street-food-header) 100%), var(--trend-header-shine);
+  --header-gradient-diner-designed: linear-gradient(0deg, var(--diner-designed-header) 0%, var(--diner-designed-header) 100%), var(--trend-header-shine);
+  --header-gradient-culinary-roots: linear-gradient(0deg, var(--culinary-roots-header) 0%, var(--culinary-roots-header) 100%), var(--trend-header-shine);
+  --header-gradient-cross-trend: linear-gradient(0deg, var(--cross-trend-header) 0%, var(--cross-trend-header) 100%), var(--trend-header-shine);
+
+  /* Trend stat text-shadow (glow effects) */
+  --glow-borderless-cuisine: 0 0 3px rgb(255 171 0 / 25%), 0 0 8px rgb(255 171 0 / 80%), 0 0 8px rgb(255 171 0 / 80%), 0 0 3px var(--borderless-glow);
+  --glow-street-food-couture: 0 0 3px rgb(220 77 139 / 25%), 0 0 8px rgb(220 77 139 / 80%), 0 0 8px rgb(220 77 139 / 80%), 0 0 3px var(--street-food-glow);
+  --glow-diner-designed: 0 0 3px rgb(161 184 59 / 25%), 0 0 8px rgb(161 184 59 / 80%), 0 0 8px rgb(161 184 59 / 80%), 0 0 3px var(--diner-designed-glow);
+  --glow-culinary-roots: 0 0 3px rgb(0 144 186 / 25%), 0 0 8px rgb(0 144 186 / 80%), 0 0 8px rgb(0 144 186 / 80%), 0 0 3px var(--culinary-roots-glow);
 }
 
 @media (width >= 900px) {
