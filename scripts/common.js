@@ -69,8 +69,7 @@ export function getBEMTemplateName({
  * @param {string|string[]} [options.className=''] The class name(s) to add to the element.
  * Can be a single class, space-separated, comma-separated, or an array.
  * @param {Object} [options.properties={}] The properties to set on the element.
- * @param {string} [options.textContent=''] The text content of the element.
- * @param {string} [options.fragment=''] The HTML fragment to append to the element.
+ * @param {string} [options.innerContent=''] Can be plain text or an HTML fragment.
  * @return {Element} The created DOM element.
  * @example
  * // Single class
@@ -93,20 +92,20 @@ export function getBEMTemplateName({
  * const element = createElement('div', {
  *   className: 'container large',
  *   properties: { id: 'main' },
- *   textContent: 'Hello World'
+ *   innerContent: 'Hello World'
  * });
  * // Result: <div class="container large" id="main">Hello World</div>
  * @example
  * // With HTML fragment
  * const element = createElement('div', {
  *   className: 'container',
- *   fragment: '<p>Nested content</p>'
+ *   innerContent: '<p>Nested content</p>'
  * });
  * // Result: <div class="container"><p>Nested content</p></div>
 */
 export function createElement(tag, options = {}) {
   const {
-    className = '', properties = {}, textContent = '', fragment = '',
+    className = '', attributes = {}, innerContent = '',
   } = options;
   const element = document.createElement(tag);
   const isString = typeof className === 'string' || className instanceof String;
@@ -118,19 +117,15 @@ export function createElement(tag, options = {}) {
     element.removeAttribute('class');
   }
 
-  if (properties) {
-    Object.keys(properties).forEach((propName) => {
-      const value = propName === properties[propName] ? '' : properties[propName];
+  if (attributes) {
+    Object.keys(attributes).forEach((propName) => {
+      const value = propName === attributes[propName] ? '' : attributes[propName];
       element.setAttribute(propName, value);
     });
   }
 
-  if (textContent) {
-    element.textContent = textContent;
-  }
-
-  if (fragment) {
-    const fragmentNode = document.createRange().createContextualFragment(fragment);
+  if (innerContent) {
+    const fragmentNode = document.createRange().createContextualFragment(innerContent);
     element.appendChild(fragmentNode);
   }
 
