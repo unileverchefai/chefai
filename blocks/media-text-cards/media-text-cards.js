@@ -1,5 +1,4 @@
-import { createElement } from 'react';
-import { createVideoEmbed, findVideoLink } from '@scripts/common.js';
+import { createVideoEmbed, findVideoLink, createElement } from '@scripts/common.js';
 
 function openVideoModal(videoUrl) {
   const modalOverlay = createElement('div', { className: 'video-modal-overlay' });
