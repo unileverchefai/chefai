@@ -4,8 +4,16 @@ function injectScript(src, crossOrigin = '') {
   window.scriptsLoaded = window.scriptsLoaded || [];
 
   if (window.scriptsLoaded.indexOf(src)) {
-    const head = document.querySelector('head');
-    const script = createElement('script', { attributes: { src, async: 'true' } });
+    const head = document.head || document.querySelector('head');
+    const script = createElement('script', {
+      attributes: {
+        src,
+        async: 'true',
+        type: 'module',
+        charset: 'utf-8',
+        nonce: 'aem',
+      },
+    });
 
     if (['anonymous', 'use-credentials'].includes(crossOrigin)) {
       script.crossOrigin = crossOrigin;
