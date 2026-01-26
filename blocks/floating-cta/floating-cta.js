@@ -1,4 +1,4 @@
-import openPersonalizedHub from '../personalized-hub/personalized-hub.js';
+import openPersonalizedHub from '../components/personalized-hub/personalized-hub.js';
 import { createElement, addVariantLogic } from '../../scripts/common.js';
 
 const blockName = 'floating-cta';
