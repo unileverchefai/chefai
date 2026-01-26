@@ -41,3 +41,37 @@ body {
   font-size: 10px;
   color: var(--mid-smoke);
 }
+
+@media (width >= 992px) {
+  .floating-cta__container {
+    height: 90px;
+    display: grid;
+    column-gap: 24px;
+    grid-template-areas: 'title cta' 'disclaimer cta';
+    justify-content: initial;
+    padding-block-start: 0;
+
+    &::after {
+      background-color: var(--squid-ink);
+    }
+  }
+
+  .floating-cta__title {
+    grid-area: title;
+    place-self: end;
+  }
+
+  .floating-cta__cta {
+    grid-area: cta;
+
+    &.orange-button .button-container {
+      justify-content: initial;
+    }
+  }
+
+  .floating-cta__disclaimer {
+    grid-area: disclaimer;
+    place-self: baseline end;
+  }
+
+}

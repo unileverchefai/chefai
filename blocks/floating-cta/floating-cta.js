@@ -56,7 +56,7 @@ function validateElements(block) {
 function buildElement(block, isLivePhase = false) {
   const newBlockContainer = createElement('div', { className: blockClasses.newContainer });
   const button = block.querySelector('.button-container');
-  const buttonWrapper = createElement('div', { className: `${blockName}--cta orange-button${isLivePhase ? ' glowy' : ''}` });
+  const buttonWrapper = createElement('div', { className: `${blockName}__cta orange-button${isLivePhase ? ' glowy' : ''}` });
   const title = block.querySelector('p:first-of-type:not(.button-container)');
   const disclaimer = block.querySelector('p:last-of-type:not(.button-container)');
 
