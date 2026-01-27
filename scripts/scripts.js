@@ -120,6 +120,18 @@ async function loadEager(doc) {
   }
 }
 
+async function checkCookieConsent() {
+  const cookiesAccepted = sessionStorage.getItem('personalized-hub-consent') === 'true';
+  if (!cookiesAccepted) {
+    const { default: openCookieAgreementModal } = await import('../blocks/components/cookie-agreement/index.js');
+    openCookieAgreementModal(
+      () => {},
+      () => {},
+      true,
+    );
+  }
+}
+
 /**
  * Loads everything that doesn't need to be delayed.
  * @param {Element} doc The container element
@@ -137,6 +149,9 @@ async function loadLazy(doc) {
 
   loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
   loadFonts();
+
+  // Check cookie consent after page loads
+  checkCookieConsent();
 }
 
 /**

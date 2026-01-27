@@ -72,14 +72,6 @@ export default function formatResponse(apiResponse) {
     });
   }
 
-  // Handle suggested prompts
-  if (apiResponse.response?.suggested_prompts?.length > 0) {
-    messageText += '\n\nYou can also ask:\n';
-    apiResponse.response.suggested_prompts.forEach((prompt, index) => {
-      messageText += `\n${index + 1}. ${prompt}`;
-    });
-  }
-
   // Collect all images from response
   const images = [];
 

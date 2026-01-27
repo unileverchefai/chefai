@@ -1,52 +1,63 @@
 import { createElement } from '@scripts/common.js';
 import createModal from '@components/modal/index.js';
 import { loadCSS } from '@scripts/aem.js';
-import openCookieAgreementModal from '@components/cookie-agreement/index.js';
 import { register } from '@auth/authService.js';
 
-/**
- * Opens the sign-up modal
- * @returns {Object} Modal instance
- */
-export default function openSignUpModal() {
-  // Load sign-up CSS
-  loadCSS(`${window.hlx.codeBasePath}/blocks/components/signup/signup.css`).catch(() => {
-    // CSS loading error handled silently
-  });
+export default function openSignUpReportModal() {
+  loadCSS(`${window.hlx.codeBasePath}/blocks/components/signup/signup.css`).catch(() => {});
 
-  // Check if cookies were accepted
-  const cookiesAccepted = sessionStorage.getItem('personalized-hub-consent') === 'true';
-
-  // Create modal content
   const content = createElement('div', {
     className: 'signup-modal',
   });
 
-  // Top area
   const topArea = createElement('div', {
     className: 'signup-modal-top',
   });
 
-  // Title
   const title = createElement('h2', {
     className: 'signup-modal-title',
-    innerContent: 'Get the Global Report',
+    innerContent: 'Your report is ready!',
   });
   topArea.appendChild(title);
 
-  // Description
   const description = createElement('p', {
     className: 'signup-modal-description',
-    innerContent: 'Please provide the following information to get access to the report.',
+    innerContent: 'Please provide the details below to unlock your tailored report and receive recipes, trends and other valuable resources.',
   });
   topArea.appendChild(description);
 
-  // Form container
   const formContainer = createElement('div', {
     className: 'signup-modal-form',
   });
 
-  // Email field
+  const businessInfoWrapper = createElement('div', {
+    className: 'signup-business-info',
+  });
+  const businessInfoTitle = createElement('p', {
+    className: 'signup-business-info-title',
+    innerContent: 'Business information',
+  });
+  const businessInfoText = createElement('p', {
+    className: 'signup-business-info-text',
+    innerContent: '',
+  });
+
+  try {
+    const stored = sessionStorage.getItem('personalized-hub-business-data');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      const name = parsed?.business_name ?? '';
+      const type = parsed?.business_type ?? '';
+      businessInfoText.textContent = [name, type].filter(Boolean).join('. ');
+    }
+  } catch {
+    businessInfoText.textContent = '';
+  }
+
+  businessInfoWrapper.appendChild(businessInfoTitle);
+  businessInfoWrapper.appendChild(businessInfoText);
+  formContainer.appendChild(businessInfoWrapper);
+
   const emailGroup = createElement('div', {
     className: 'form-group',
   });
@@ -58,105 +69,17 @@ export default function openSignUpModal() {
     className: 'form-input',
     attributes: {
       type: 'email',
-      placeholder: 'restaurant_name@gmail.com',
+      placeholder: 'email@example.com',
     },
   });
   emailGroup.appendChild(emailLabel);
   emailGroup.appendChild(emailInput);
   formContainer.appendChild(emailGroup);
 
-  // Password field
-  const passwordGroup = createElement('div', {
-    className: 'form-group',
-  });
-  const passwordLabel = createElement('label', {
-    className: 'form-label',
-    innerContent: 'Password',
-  });
-  const passwordInputWrapper = createElement('div', {
-    className: 'form-input-wrapper',
-  });
-  const passwordInput = createElement('input', {
-    className: 'form-input',
-    attributes: {
-      type: 'password',
-      placeholder: '******',
-    },
-  });
-  const passwordRevealButton = createElement('button', {
-    className: 'signin-form-reveal',
-    attributes: {
-      type: 'button',
-      'aria-label': 'Toggle password visibility',
-    },
-  });
-  passwordRevealButton.innerHTML = `
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 4C7 4 2.73 7.11 1 11.5C2.73 15.89 7 19 12 19C17 19 21.27 15.89 23 11.5C21.27 7.11 17 4 12 4ZM12 16.5C9.24 16.5 7 14.26 7 11.5C7 8.74 9.24 6.5 12 6.5C14.76 6.5 17 8.74 17 11.5C17 14.26 14.76 16.5 12 16.5ZM12 8.5C10.34 8.5 9 9.84 9 11.5C9 13.16 10.34 14.5 12 14.5C13.66 14.5 15 13.16 15 11.5C15 9.84 13.66 8.5 12 8.5Z" fill="#333"/>
-    </svg>
-  `;
-
-  // Toggle password visibility
-  passwordRevealButton.addEventListener('click', () => {
-    const isPassword = passwordInput.type === 'password';
-    passwordInput.type = isPassword ? 'text' : 'password';
-  });
-
-  passwordInputWrapper.appendChild(passwordInput);
-  passwordInputWrapper.appendChild(passwordRevealButton);
-  passwordGroup.appendChild(passwordLabel);
-  passwordGroup.appendChild(passwordInputWrapper);
-  formContainer.appendChild(passwordGroup);
-
-  // Confirm password field
-  const confirmPasswordGroup = createElement('div', {
-    className: 'form-group',
-  });
-  const confirmPasswordLabel = createElement('label', {
-    className: 'form-label',
-    innerContent: 'Confirm password',
-  });
-  const confirmPasswordInputWrapper = createElement('div', {
-    className: 'form-input-wrapper',
-  });
-  const confirmPasswordInput = createElement('input', {
-    className: 'form-input',
-    attributes: {
-      type: 'password',
-      placeholder: '******',
-    },
-  });
-  const confirmPasswordRevealButton = createElement('button', {
-    className: 'signin-form-reveal',
-    attributes: {
-      type: 'button',
-      'aria-label': 'Toggle password visibility',
-    },
-  });
-  confirmPasswordRevealButton.innerHTML = `
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 4C7 4 2.73 7.11 1 11.5C2.73 15.89 7 19 12 19C17 19 21.27 15.89 23 11.5C21.27 7.11 17 4 12 4ZM12 16.5C9.24 16.5 7 14.26 7 11.5C7 8.74 9.24 6.5 12 6.5C14.76 6.5 17 8.74 17 11.5C17 14.26 14.76 16.5 12 16.5ZM12 8.5C10.34 8.5 9 9.84 9 11.5C9 13.16 10.34 14.5 12 14.5C13.66 14.5 15 13.16 15 11.5C15 9.84 13.66 8.5 12 8.5Z" fill="#333"/>
-    </svg>
-  `;
-
-  // Toggle confirm password visibility
-  confirmPasswordRevealButton.addEventListener('click', () => {
-    const isPassword = confirmPasswordInput.type === 'password';
-    confirmPasswordInput.type = isPassword ? 'text' : 'password';
-  });
-
-  confirmPasswordInputWrapper.appendChild(confirmPasswordInput);
-  confirmPasswordInputWrapper.appendChild(confirmPasswordRevealButton);
-  confirmPasswordGroup.appendChild(confirmPasswordLabel);
-  confirmPasswordGroup.appendChild(confirmPasswordInputWrapper);
-  formContainer.appendChild(confirmPasswordGroup);
-
-  // First name and Surname row (side-by-side on desktop)
   const nameRow = createElement('div', {
     className: 'form-row',
   });
 
-  // First name field
   const firstNameGroup = createElement('div', {
     className: 'form-group',
   });
@@ -175,7 +98,6 @@ export default function openSignUpModal() {
   firstNameGroup.appendChild(firstNameInput);
   nameRow.appendChild(firstNameGroup);
 
-  // Surname field
   const surnameGroup = createElement('div', {
     className: 'form-group',
   });
@@ -196,7 +118,6 @@ export default function openSignUpModal() {
 
   formContainer.appendChild(nameRow);
 
-  // Business type field (dropdown)
   const businessTypeGroup = createElement('div', {
     className: 'form-group',
   });
@@ -214,7 +135,6 @@ export default function openSignUpModal() {
     },
   });
 
-  // Business type options
   const businessTypes = [
     'Independent Restaurant',
     'Chain Restaurant',
@@ -238,13 +158,12 @@ export default function openSignUpModal() {
   businessTypeGroup.appendChild(businessTypeWrapper);
   formContainer.appendChild(businessTypeGroup);
 
-  // Marketing consent checkbox
   const consentGroup = createElement('div', {
     className: 'form-checkbox-group',
   });
   const consentCheckbox = createElement('input', {
     className: 'form-checkbox',
-    properties: {
+    attributes: {
       type: 'checkbox',
       id: 'marketing-consent',
       name: 'marketing-consent',
@@ -261,7 +180,6 @@ export default function openSignUpModal() {
   consentGroup.appendChild(consentLabel);
   formContainer.appendChild(consentGroup);
 
-  // Error message container
   const errorMessage = createElement('div', {
     className: 'signup-form-error',
     attributes: {
@@ -273,21 +191,19 @@ export default function openSignUpModal() {
   topArea.appendChild(formContainer);
   content.appendChild(topArea);
 
-  // Bottom area
   const bottomArea = createElement('div', {
     className: 'signup-modal-bottom',
   });
-  const signUpButton = createElement('button', {
+  const continueButton = createElement('button', {
     className: 'btn-primary',
-    innerContent: 'Sign up now',
+    innerContent: 'Continue',
     attributes: {
       type: 'button',
     },
   });
-  bottomArea.appendChild(signUpButton);
+  bottomArea.appendChild(continueButton);
   content.appendChild(bottomArea);
 
-  // Create modal
   const modal = createModal({
     content,
     showCloseButton: false,
@@ -296,83 +212,55 @@ export default function openSignUpModal() {
     overlayBackground: 'var(--modal-overlay-bg)',
   });
 
-  // Handle sign up button click
-  signUpButton.addEventListener('click', async () => {
-    // Collect form values
+  continueButton.addEventListener('click', async () => {
     const email = emailInput.value.trim();
-    const password = passwordInput.value;
-    const confirmPassword = confirmPasswordInput.value;
     const firstName = firstNameInput.value.trim();
     const lastName = surnameInput.value.trim();
     const businessType = businessTypeSelect.value;
-    const mobilePhone = ''; // Not in form currently, default to empty
     const marketingConsent = consentCheckbox.checked;
+    const mobilePhone = '';
 
-    // Clear previous errors
     errorMessage.style.display = 'none';
     errorMessage.textContent = '';
     errorMessage.style.color = 'var(--ufs-orange)';
 
-    // Validate required fields
-    if (!email || !password || !confirmPassword || !firstName || !lastName || !businessType) {
+    if (!email || !firstName || !lastName || !businessType) {
       errorMessage.textContent = 'Please fill in all required fields';
       errorMessage.style.display = 'block';
       return;
     }
 
-    // Validate password match
-    if (password !== confirmPassword) {
-      errorMessage.textContent = 'Passwords do not match';
-      errorMessage.style.display = 'block';
-      confirmPasswordInput.focus();
-      return;
-    }
+    const tempPassword = `Tmp!${Math.random().toString(36).slice(-8)}A1`;
 
-    // Show loading state
-    signUpButton.disabled = true;
-    signUpButton.textContent = 'Signing up...';
+    const formData = {
+      email,
+      password: tempPassword,
+      confirmPassword: tempPassword,
+      firstName,
+      lastName,
+      businessType,
+      mobilePhone,
+      marketingConsent,
+    };
+
+    continueButton.disabled = true;
+    continueButton.textContent = 'Creating account...';
 
     try {
-      const formData = {
-        email,
-        password,
-        confirmPassword,
-        firstName,
-        lastName,
-        businessType,
-        mobilePhone,
-        marketingConsent,
-      };
-
       await register(formData);
-      // Success - close modal and show success message
       modal.close();
-      // Show success message (could be a toast notification)
-      // For now, we'll just close the modal
+
+      const { default: openSignupPasswordModal } = await import('./signup-password.js');
+      openSignupPasswordModal(email);
     } catch (error) {
-      // Show error message
       errorMessage.textContent = error.message ?? 'Registration failed. Please try again.';
       errorMessage.style.display = 'block';
-      signUpButton.disabled = false;
-      signUpButton.textContent = 'Sign up now';
+      continueButton.disabled = false;
+      continueButton.textContent = 'Continue';
     }
   });
 
-  // If cookies not accepted, show cookie modal first
-  if (!cookiesAccepted) {
-    openCookieAgreementModal(
-      () => {
-        // On agree, show the signup form
-        modal.open();
-      },
-      () => {
-        // On close, do nothing (user cancelled)
-      },
-    );
-  } else {
-    // Cookies already accepted, show signup form directly
-    modal.open();
-  }
+  modal.open();
 
   return modal;
 }

@@ -3,6 +3,7 @@ import { loadFragment } from '@blocks/fragment/fragment.js';
 import { createElement } from '@scripts/common.js';
 import { hasToken } from '@auth/tokenManager.js';
 import openSignInModal from '@components/signin/index.js';
+import { logout } from '@auth/authService.js';
 
 // media query match that indicates mobile/tablet width
 const isDesktop = window.matchMedia('(min-width: 900px)');
@@ -149,22 +150,33 @@ export default async function decorate(block) {
     });
   }
 
-  // Replace nav-tools content with sign-in status
   const navTools = nav.querySelector('.nav-tools');
   if (navTools) {
     navTools.textContent = '';
     const isLoggedIn = hasToken();
 
     if (isLoggedIn) {
-      // User is logged in - show user status
       const signInText = createElement('span', {
         className: 'nav-signin-text',
-        textContent: 'Signed in',
+        innerContent: 'Signed in',
       });
       navTools.appendChild(signInText);
+
+      const logoutButton = createElement('button', {
+        className: 'nav-logout-button',
+        innerContent: 'Logout',
+        attributes: {
+          type: 'button',
+        },
+      });
+
+      logoutButton.addEventListener('click', async () => {
+        await logout();
+        window.location.reload();
+      });
+
+      navTools.appendChild(logoutButton);
     } else {
-      // User is not logged in - show sign-in link
-      // Mobile: "Sign in"
       const signInLinkMobile = createElement('button', {
         className: 'nav-signin-link nav-signin-link-mobile',
         innerContent: 'Sign in',
@@ -173,7 +185,6 @@ export default async function decorate(block) {
         },
       });
 
-      // Desktop: "Already registered? Sign in"
       const signInLinkDesktop = createElement('button', {
         className: 'nav-signin-link nav-signin-link-desktop',
         attributes: {
@@ -188,7 +199,6 @@ export default async function decorate(block) {
       signInLinkDesktop.appendChild(desktopText);
       signInLinkDesktop.appendChild(signInSpan);
 
-      // Add click handler to open sign-in modal
       const openSignIn = (e) => {
         e.preventDefault();
         openSignInModal();

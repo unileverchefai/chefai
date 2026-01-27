@@ -1,7 +1,8 @@
 import { createElement } from '@scripts/common.js';
 import createModal from '@components/modal/index.js';
 import { loadCSS } from '@scripts/aem.js';
-import { login, resetPassword } from '@auth/authService.js';
+import { login } from '@auth/authService.js';
+import openCookieAgreementModal from '@components/cookie-agreement/index.js';
 
 /**
  * Opens the sign-in modal
@@ -169,41 +170,18 @@ export default function openSignInModal() {
     overlayBackground: 'var(--modal-overlay-bg)',
   });
 
-  // Handle continue link click
   continueLink.addEventListener('click', async (e) => {
     e.preventDefault();
     modal.close();
-    // Dynamically import and open signup modal
-    const { default: openSignUpModal } = await import('../signup/index.js');
-    openSignUpModal();
+    const { default: openPersonalizedHub } = await import('../personalized-hub/personalized-hub.js');
+    openPersonalizedHub();
   });
 
-  // Handle forgot password link click
   forgotLink.addEventListener('click', async (e) => {
     e.preventDefault();
-    const email = emailInput.value.trim();
-
-    if (!email) {
-      errorMessage.textContent = 'Please enter your email address first';
-      errorMessage.style.display = 'block';
-      emailInput.focus();
-      return;
-    }
-
-    // Clear previous errors
-    errorMessage.style.display = 'none';
-    errorMessage.textContent = '';
-
-    try {
-      await resetPassword(email);
-      errorMessage.textContent = 'Password reset link sent to your email';
-      errorMessage.style.color = 'green';
-      errorMessage.style.display = 'block';
-    } catch (error) {
-      errorMessage.textContent = error.message ?? 'Failed to send reset link. Please try again.';
-      errorMessage.style.color = 'var(--ufs-orange)';
-      errorMessage.style.display = 'block';
-    }
+    modal.close();
+    const { default: openResetPasswordModal } = await import('../reset-password/index.js');
+    openResetPasswordModal();
   });
 
   // Handle sign in button click
@@ -229,9 +207,20 @@ export default function openSignInModal() {
 
     try {
       await login(email, password);
-      // Success - close modal and reload page
       modal.close();
-      window.location.reload();
+
+      const cookiesAccepted = sessionStorage.getItem('personalized-hub-consent') === 'true';
+      if (!cookiesAccepted) {
+        openCookieAgreementModal(
+          () => {
+            window.location.reload();
+          },
+          () => {},
+          true,
+        );
+      } else {
+        window.location.reload();
+      }
     } catch (error) {
       // Show error message
       errorMessage.textContent = error.message ?? 'Invalid email or password. Please try again.';

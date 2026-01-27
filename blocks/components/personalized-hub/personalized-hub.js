@@ -166,8 +166,19 @@ export default async function openPersonalizedHub() {
         }
 
         if (currentScreen === SCREENS.WELCOME) {
+          const handleGotIt = async () => {
+            modal.close();
+            try {
+              const { default: openSignUpReportModal } = await import('../signup/signup.js');
+              openSignUpReportModal();
+            } catch (e) {
+              // eslint-disable-next-line no-console
+              console.error('Failed to open sign-up report modal:', e);
+            }
+          };
+
           return h(WelcomeScreen, {
-            onGotIt: animateAndClose,
+            onGotIt: handleGotIt,
           });
         }
 

@@ -62,7 +62,7 @@ export async function register(formData) {
   }
 
   const typeOfBusiness = BUSINESS_TYPE_MAP[businessType.toLowerCase().replace(/\s+/g, '-')] ?? 'other';
-  const now = new Date().toISOString();
+  const now = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
 
   const payload = createRegistrationPayload({
     email,
@@ -117,6 +117,7 @@ export async function resetPassword(email, mobilePhone = '') {
         mobilePhone: mobilePhone ?? '',
         profileLoginType: 'EMAIL',
       },
+      isTextResponse: true,
     });
 
     return response;
