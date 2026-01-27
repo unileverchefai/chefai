@@ -16,7 +16,7 @@ export default function openVideoModal(videoUrl) {
     attributes: {
       'aria-label': 'Close video',
     },
-    textContent: '×',
+    innerContent: '×',
   });
 
   // video embed

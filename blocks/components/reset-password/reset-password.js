@@ -15,13 +15,13 @@ export default function openResetPasswordModal() {
 
   const title = createElement('h2', {
     className: 'reset-password-modal-title',
-    textContent: 'Forgot your password',
+    innerContent: 'Forgot your password',
   });
   topArea.appendChild(title);
 
   const description = createElement('p', {
     className: 'reset-password-modal-description',
-    textContent: 'Enter your email to receive the reset password link',
+    innerContent: 'Enter your email to receive the reset password link',
   });
   topArea.appendChild(description);
 
@@ -34,11 +34,11 @@ export default function openResetPasswordModal() {
   });
   const emailLabel = createElement('label', {
     className: 'form-label',
-    textContent: 'Email address',
+    innerContent: 'Email address',
   });
   const emailInput = createElement('input', {
     className: 'form-input',
-    properties: {
+    attributes: {
       type: 'email',
       placeholder: 'email@example.com',
     },
@@ -49,7 +49,7 @@ export default function openResetPasswordModal() {
 
   const errorMessage = createElement('div', {
     className: 'reset-password-form-error',
-    properties: {
+    attributes: {
       style: 'display: none; color: var(--ufs-orange); font-size: var(--body-font-size-xs); margin-top: 8px; text-align: center;',
     },
   });
@@ -57,8 +57,8 @@ export default function openResetPasswordModal() {
 
   const submitButton = createElement('button', {
     className: 'btn-primary',
-    textContent: 'Continue',
-    properties: {
+    innerContent: 'Continue',
+    attributes: {
       type: 'button',
     },
   });
@@ -72,8 +72,8 @@ export default function openResetPasswordModal() {
   });
   const cancelLink = createElement('button', {
     className: 'reset-password-modal-cancel',
-    textContent: 'Cancel',
-    properties: {
+    innerContent: 'Cancel',
+    attributes: {
       type: 'button',
     },
   });

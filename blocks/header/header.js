@@ -158,14 +158,14 @@ export default async function decorate(block) {
     if (isLoggedIn) {
       const signInText = createElement('span', {
         className: 'nav-signin-text',
-        textContent: 'Signed in',
+        innerContent: 'Signed in',
       });
       navTools.appendChild(signInText);
 
       const logoutButton = createElement('button', {
         className: 'nav-logout-button',
-        textContent: 'Logout',
-        properties: {
+        innerContent: 'Logout',
+        attributes: {
           type: 'button',
         },
       });

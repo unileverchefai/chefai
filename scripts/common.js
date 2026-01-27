@@ -91,7 +91,7 @@ export function getBEMTemplateName({
  * // With properties and text content
  * const element = createElement('div', {
  *   className: 'container large',
- *   properties: { id: 'main' },
+ *   attributes: { id: 'main' },
  *   innerContent: 'Hello World'
  * });
  * // Result: <div class="container large" id="main">Hello World</div>

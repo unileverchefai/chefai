@@ -18,7 +18,7 @@ function createPasswordRequirement(text) {
 
   const textElement = createElement('p', {
     className: 'password-requirement-text',
-    textContent: text,
+    innerContent: text,
   });
 
   requirement.appendChild(icon);
@@ -48,15 +48,14 @@ export default function openSignupPasswordModal(email) {
 
   const title = createElement('h2', {
     className: 'change-password-modal-title',
-    textContent: 'Thanks!',
   });
+  title.textContent = 'Thanks!';
   topArea.appendChild(title);
 
   const description = createElement('p', {
     className: 'change-password-modal-description',
-    textContent:
-      'Finalise account creation by creating a password – get access to your saved insights anytime, along with exclusive content and trainings.',
   });
+  description.textContent = 'Finalise account creation by creating a password – get access to your saved insights anytime, along with exclusive content and trainings.';
   topArea.appendChild(description);
 
   const formContainer = createElement('div', {
@@ -68,21 +67,21 @@ export default function openSignupPasswordModal(email) {
   });
   const passwordLabel = createElement('label', {
     className: 'form-label',
-    textContent: 'Password',
   });
+  passwordLabel.textContent = 'Password';
   const passwordInputWrapper = createElement('div', {
     className: 'form-input-wrapper',
   });
   const passwordInput = createElement('input', {
     className: 'form-input',
-    properties: {
+    attributes: {
       type: 'password',
       placeholder: '********',
     },
   });
   const revealButton = createElement('button', {
     className: 'signin-form-reveal',
-    properties: {
+    attributes: {
       type: 'button',
       'aria-label': 'Toggle password visibility',
     },
@@ -120,7 +119,7 @@ export default function openSignupPasswordModal(email) {
 
   const errorMessage = createElement('div', {
     className: 'change-password-form-error',
-    properties: {
+    attributes: {
       style:
         'display: none; color: var(--ufs-orange); font-size: var(--body-font-size-xs); margin-top: 8px; text-align: center;',
     },
@@ -129,8 +128,8 @@ export default function openSignupPasswordModal(email) {
 
   const submitButton = createElement('button', {
     className: 'btn-primary',
-    textContent: 'Create Account',
-    properties: {
+    innerContent: 'Create Account',
+    attributes: {
       type: 'button',
     },
   });
@@ -138,15 +137,15 @@ export default function openSignupPasswordModal(email) {
 
   const laterText = createElement('p', {
     className: 'change-password-later-text',
-    textContent: 'You can also do it later with the link in the email we’ve just sent you.',
+    innerContent: 'You can also do it later with the link in the email we’ve just sent you.',
   });
 
   const laterLink = createElement('button', {
     className: 'change-password-later-link',
-    textContent: "I'll do it later",
-    properties: {
+    attributes: {
       type: 'button',
     },
+    innerContent: "I'll do it later",
   });
 
   const laterContainer = createElement('div', {

@@ -17,7 +17,7 @@ function createPasswordRequirement(text, isValid) {
 
   const textElement = createElement('p', {
     className: `password-requirement-text ${isValid ? 'password-requirement-text-valid' : ''}`,
-    textContent: text,
+    innerContent: text,
   });
 
   requirement.appendChild(icon);
@@ -47,14 +47,14 @@ export default function openChangePasswordModal(email) {
 
   const title = createElement('h2', {
     className: 'change-password-modal-title',
-    textContent: 'Change your password',
   });
+  title.textContent = 'Change your password';
   topArea.appendChild(title);
 
   const description = createElement('p', {
     className: 'change-password-modal-description',
-    textContent: 'Please follow the indications to set your new password',
   });
+  description.textContent = 'Please follow the indications to set your new password';
   topArea.appendChild(description);
 
   const formContainer = createElement('div', {
@@ -66,21 +66,21 @@ export default function openChangePasswordModal(email) {
   });
   const passwordLabel = createElement('label', {
     className: 'form-label',
-    textContent: 'Password',
   });
+  passwordLabel.textContent = 'Password';
   const passwordInputWrapper = createElement('div', {
     className: 'form-input-wrapper',
   });
   const passwordInput = createElement('input', {
     className: 'form-input',
-    properties: {
+    attributes: {
       type: 'password',
       placeholder: '******',
     },
   });
   const revealButton = createElement('button', {
     className: 'signin-form-reveal',
-    properties: {
+    attributes: {
       type: 'button',
       'aria-label': 'Toggle password visibility',
     },
@@ -118,7 +118,7 @@ export default function openChangePasswordModal(email) {
 
   const errorMessage = createElement('div', {
     className: 'change-password-form-error',
-    properties: {
+    attributes: {
       style: 'display: none; color: var(--ufs-orange); font-size: var(--body-font-size-xs); margin-top: 8px; text-align: center;',
     },
   });
@@ -126,8 +126,8 @@ export default function openChangePasswordModal(email) {
 
   const submitButton = createElement('button', {
     className: 'btn-primary',
-    textContent: 'Update my Password',
-    properties: {
+    innerContent: 'Update my Password',
+    attributes: {
       type: 'button',
     },
   });

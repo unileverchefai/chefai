@@ -35,11 +35,11 @@ export default function openSignUpReportModal() {
   });
   const businessInfoTitle = createElement('p', {
     className: 'signup-business-info-title',
-    textContent: 'Business information',
+    innerContent: 'Business information',
   });
   const businessInfoText = createElement('p', {
     className: 'signup-business-info-text',
-    textContent: '',
+    innerContent: '',
   });
 
   try {
@@ -163,7 +163,7 @@ export default function openSignUpReportModal() {
   });
   const consentCheckbox = createElement('input', {
     className: 'form-checkbox',
-    properties: {
+    attributes: {
       type: 'checkbox',
       id: 'marketing-consent',
       name: 'marketing-consent',
