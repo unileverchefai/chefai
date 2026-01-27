@@ -1,4 +1,4 @@
-import { createElement } from '@scripts/common.js';
+import { createElement } from '../../scripts/common.js';
 
 function convertHeadingsToH2(block) {
   block.querySelectorAll('h1, h3, h4, h5, h6').forEach((heading) => {
