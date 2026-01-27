@@ -6,11 +6,11 @@ A reusable modal component for displaying content in an overlay.
 
 ```javascript
 import createModal from '../components/modal/index.js';
-import { createElement } from '../../scripts/common.js';
+import { createElement } from '@scripts/common.js';
 
 // Create content
 const content = createElement('div', {
-  textContent: 'Hello, this is a modal!',
+  innerContent: 'Hello, this is a modal!',
 });
 
 // Create and open modal
@@ -23,10 +23,10 @@ modal.open();
 ### Simple Modal
 ```javascript
 import createModal from '../components/modal/index.js';
-import { createElement } from '../../scripts/common.js';
+import { createElement } from '@scripts/common.js';
 
 const content = createElement('div', {
-  textContent: 'Modal content here',
+  innerContent: 'Modal content here',
 });
 
 const modal = createModal({ content });
@@ -36,7 +36,7 @@ modal.open();
 ### Modal with HTML Content
 ```javascript
 const content = createElement('div', {
-  fragment: '<h2>Title</h2><p>Content</p>',
+  innerContent: '<h2>Title</h2><p>Content</p>',
 });
 
 const modal = createModal({ content });
@@ -84,7 +84,7 @@ const modal = createModal({
 
 ### Video Modal
 ```javascript
-import { createElement, createVideoEmbed } from '../../scripts/common.js';
+import { createElement, createVideoEmbed } from '@scripts/common.js';
 
 const videoEmbed = createVideoEmbed('https://youtube.com/watch?v=...');
 if (videoEmbed) {
@@ -117,7 +117,7 @@ modal.open();
 ```javascript
 const container = createElement('div', {
   className: 'react-container',
-  properties: { id: 'react-root' },
+  attributes: { id: 'react-root' },
 });
 
 const modal = createModal({

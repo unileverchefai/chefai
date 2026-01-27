@@ -118,7 +118,7 @@ export default function setCountdownToHero({ countdownArea, countdownClass }) {
 
   const countdownFragment = createElement('div', {
     className: getBEMTemplateName({ variantClass: countdownClass, modifierName: 'container' }),
-    fragment: countdownTemplate,
+    innerContent: countdownTemplate,
   });
 
   countdownArea.textContent = '';

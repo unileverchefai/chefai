@@ -1,4 +1,4 @@
-import { createElement, createVideoEmbed } from './common.js';
+import { createElement, createVideoEmbed } from '../common.js';
 
 export default function openVideoModal(videoUrl) {
   const modalOverlay = createElement('div', {

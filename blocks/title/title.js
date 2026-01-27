@@ -1,7 +1,8 @@
+import { createElement } from '@scripts/common.js';
+
 function convertHeadingsToH2(block) {
   block.querySelectorAll('h1, h3, h4, h5, h6').forEach((heading) => {
-    const h2 = document.createElement('h2');
-    h2.id = heading.id;
+    const h2 = createElement('h2', { attributes: { id: heading.id } });
     while (heading.firstChild) {
       h2.appendChild(heading.firstChild);
     }
@@ -20,7 +21,7 @@ function mergeConsecutiveH2(block) {
       || (firstH2.parentElement.nextElementSibling?.querySelector('h2') === secondH2);
 
     if (areSiblings) {
-      firstH2.appendChild(document.createElement('br'));
+      firstH2.appendChild(createElement('br'));
 
       while (secondH2.firstChild) {
         firstH2.appendChild(secondH2.firstChild);
@@ -48,8 +49,7 @@ function wrapSubtitles(block) {
     }
 
     if (fragment.hasChildNodes()) {
-      const span = document.createElement('span');
-      span.className = 'subtitle';
+      const span = createElement('span', { className: 'subtitle' });
       span.appendChild(fragment);
       br.after(span);
     }

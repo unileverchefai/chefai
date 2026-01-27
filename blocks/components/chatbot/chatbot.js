@@ -1,4 +1,5 @@
 import { getMetadata } from '@scripts/aem.js';
+import { createElement } from '@scripts/common.js';
 import { setEndpoint } from './sendMessage.js';
 import { loadReact } from './utils.js';
 
@@ -7,21 +8,23 @@ export default async function chatbot(block) {
   setEndpoint(endpoint);
 
   block.textContent = '';
-  const chatContainer = document.createElement('div');
-  chatContainer.className = 'chatbot-root';
-  chatContainer.id = 'chatbot-root';
+  const chatContainer = createElement('div', {
+    className: 'chatbot-root',
+    attributes: { id: 'chatbot-root' },
+  });
   block.appendChild(chatContainer);
 
-  const skeleton = document.createElement('div');
-  skeleton.className = 'chatbot-skeleton';
-  skeleton.innerHTML = `
-    <div class="chatbot-skeleton-messages">
-      <div class="chatbot-skeleton-message">
-        <div class="chatbot-skeleton-bubble"></div>
+  const skeleton = createElement('div', {
+    className: 'chatbot-skeleton',
+    innerContent: `
+      <div class="chatbot-skeleton-messages">
+        <div class="chatbot-skeleton-message">
+          <div class="chatbot-skeleton-bubble"></div>
+        </div>
       </div>
-    </div>
-    <div class="chatbot-skeleton-form"></div>
-  `;
+      <div class="chatbot-skeleton-form"></div>
+    `,
+  });
   chatContainer.appendChild(skeleton);
 
   try {
@@ -48,9 +51,10 @@ export default async function chatbot(block) {
     if (skeleton && skeleton.parentNode === chatContainer) {
       chatContainer.removeChild(skeleton);
     }
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'chatbot-error';
-    errorDiv.textContent = `Failed to load chatbot: ${error.message}. Please refresh the page.`;
+    const errorDiv = createElement('div', {
+      className: 'chatbot-error',
+      innerContent: `Failed to load chatbot: ${error.message}. Please refresh the page.`,
+    });
     chatContainer.appendChild(errorDiv);
   }
 }
