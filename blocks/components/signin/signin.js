@@ -170,13 +170,11 @@ export default function openSignInModal() {
     overlayBackground: 'var(--modal-overlay-bg)',
   });
 
-  // Handle continue link click
   continueLink.addEventListener('click', async (e) => {
     e.preventDefault();
     modal.close();
-    // Dynamically import and open signup modal
-    const { default: openSignUpModal } = await import('../signup/index.js');
-    openSignUpModal();
+    const { default: openPersonalizedHub } = await import('../personalized-hub/personalized-hub.js');
+    openPersonalizedHub();
   });
 
   forgotLink.addEventListener('click', async (e) => {
