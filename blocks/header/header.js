@@ -179,22 +179,22 @@ export default async function decorate(block) {
     } else {
       const signInLinkMobile = createElement('button', {
         className: 'nav-signin-link nav-signin-link-mobile',
-        textContent: 'Sign in',
-        properties: {
+        innerContent: 'Sign in',
+        attributes: {
           type: 'button',
         },
       });
 
       const signInLinkDesktop = createElement('button', {
         className: 'nav-signin-link nav-signin-link-desktop',
-        properties: {
+        attributes: {
           type: 'button',
         },
       });
       const desktopText = document.createTextNode('Already registered? ');
       const signInSpan = createElement('span', {
         className: 'nav-signin-underline',
-        textContent: 'Sign in',
+        innerContent: 'Sign in',
       });
       signInLinkDesktop.appendChild(desktopText);
       signInLinkDesktop.appendChild(signInSpan);

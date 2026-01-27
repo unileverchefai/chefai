@@ -197,8 +197,7 @@ export default function createModal(options = {}) {
     }
 
     if (typeof contentParam === 'string') {
-      const temp = document.createElement('div');
-      temp.innerHTML = contentParam;
+      const temp = createElement('div', { innerContent: contentParam });
       return temp.firstElementChild || temp;
     }
 

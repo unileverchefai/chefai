@@ -1,4 +1,4 @@
-import { createCarousel } from '../../scripts/common.js';
+import { createCarousel, createElement } from '@scripts/common.js';
 
 export default function decorate(block) {
   // Parse the block content - each row is a card
@@ -37,17 +37,13 @@ export default function decorate(block) {
   block.innerHTML = '';
 
   // Carousel with cards is a list
-  const carouselContainer = document.createElement('ul');
-  carouselContainer.className = 'carousel-cards-container';
+  const carouselContainer = createElement('ul', { className: 'carousel-cards-container' });
 
   cards.forEach((cardData, index) => {
-    const card = document.createElement('li');
-    card.className = 'card';
-    card.setAttribute('data-node-id', `card-${index}`);
+    const card = createElement('li', { className: 'card', attributes: { 'data-node-id': `card-${index}` } });
 
     if (cardData.title) {
-      const title = document.createElement('div');
-      title.className = 'cards-card-title';
+      const title = createElement('div', { className: 'cards-card-title' });
 
       // Add small class for text titles (not percentage titles)
       const isPercentage = /^\d+%$/.test(cardData.title);
@@ -60,8 +56,7 @@ export default function decorate(block) {
     }
 
     if (cardData.textHTML) {
-      const text = document.createElement('div');
-      text.className = 'cards-card-body';
+      const text = createElement('div', { className: 'cards-card-body' });
 
       const htmlContent = cardData.textHTML.replace(/<u>(.*?)<\/u>/gi, '<span class="highlight">$1</span>');
 

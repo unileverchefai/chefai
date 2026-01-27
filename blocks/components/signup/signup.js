@@ -16,14 +16,13 @@ export default function openSignUpReportModal() {
 
   const title = createElement('h2', {
     className: 'signup-modal-title',
-    textContent: 'Your report is ready!',
+    innerContent: 'Your report is ready!',
   });
   topArea.appendChild(title);
 
   const description = createElement('p', {
     className: 'signup-modal-description',
-    textContent:
-      'Please provide the details below to unlock your tailored report and receive recipes, trends and other valuable resources.',
+    innerContent: 'Please provide the details below to unlock your tailored report and receive recipes, trends and other valuable resources.',
   });
   topArea.appendChild(description);
 
@@ -64,11 +63,11 @@ export default function openSignUpReportModal() {
   });
   const emailLabel = createElement('label', {
     className: 'form-label',
-    textContent: 'Email address',
+    innerContent: 'Email address',
   });
   const emailInput = createElement('input', {
     className: 'form-input',
-    properties: {
+    attributes: {
       type: 'email',
       placeholder: 'email@example.com',
     },
@@ -86,11 +85,11 @@ export default function openSignUpReportModal() {
   });
   const firstNameLabel = createElement('label', {
     className: 'form-label',
-    textContent: 'First name',
+    innerContent: 'First name',
   });
   const firstNameInput = createElement('input', {
     className: 'form-input',
-    properties: {
+    attributes: {
       type: 'text',
       placeholder: 'John',
     },
@@ -104,11 +103,11 @@ export default function openSignUpReportModal() {
   });
   const surnameLabel = createElement('label', {
     className: 'form-label',
-    textContent: 'Surname',
+    innerContent: 'Surname',
   });
   const surnameInput = createElement('input', {
     className: 'form-input',
-    properties: {
+    attributes: {
       type: 'text',
       placeholder: 'Smith',
     },
@@ -124,14 +123,14 @@ export default function openSignUpReportModal() {
   });
   const businessTypeLabel = createElement('label', {
     className: 'form-label',
-    textContent: 'Business type',
+    innerContent: 'Business type',
   });
   const businessTypeWrapper = createElement('div', {
     className: 'form-input-wrapper',
   });
   const businessTypeSelect = createElement('select', {
     className: 'form-input form-select',
-    properties: {
+    attributes: {
       name: 'business-type',
     },
   });
@@ -146,10 +145,10 @@ export default function openSignUpReportModal() {
 
   businessTypes.forEach((type) => {
     const option = createElement('option', {
-      properties: {
+      attributes: {
         value: type.toLowerCase().replace(/\s+/g, '-'),
       },
-      textContent: type,
+      innerContent: type,
     });
     businessTypeSelect.appendChild(option);
   });
@@ -172,11 +171,10 @@ export default function openSignUpReportModal() {
   });
   const consentLabel = createElement('label', {
     className: 'form-checkbox-label',
-    properties: {
+    attributes: {
       for: 'marketing-consent',
     },
-    textContent:
-      'I want to receive offers and updates from Unilever Food Solutions tailored to my interests and preferences',
+    innerContent: 'I want to receive offers and updates from Unilever Food Solutions tailored to my interests and preferences',
   });
   consentGroup.appendChild(consentCheckbox);
   consentGroup.appendChild(consentLabel);
@@ -184,9 +182,8 @@ export default function openSignUpReportModal() {
 
   const errorMessage = createElement('div', {
     className: 'signup-form-error',
-    properties: {
-      style:
-        'display: none; color: var(--ufs-orange); font-size: var(--body-font-size-xs); margin-top: 8px; text-align: center;',
+    attributes: {
+      style: 'display: none; color: var(--ufs-orange); font-size: var(--body-font-size-xs); margin-top: 8px; text-align: center;',
     },
   });
   formContainer.appendChild(errorMessage);
@@ -199,8 +196,8 @@ export default function openSignUpReportModal() {
   });
   const continueButton = createElement('button', {
     className: 'btn-primary',
-    textContent: 'Continue',
-    properties: {
+    innerContent: 'Continue',
+    attributes: {
       type: 'button',
     },
   });

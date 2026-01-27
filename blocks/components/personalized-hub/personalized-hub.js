@@ -23,7 +23,7 @@ export default async function openPersonalizedHub() {
   // Create container for React app
   const container = createElement('div', {
     className: 'personalized-hub-container',
-    properties: { id: 'personalized-hub-modal-root' },
+    attributes: { id: 'personalized-hub-modal-root' },
   });
 
   const ANIMATION_DURATION = 300;
@@ -228,7 +228,7 @@ export default async function openPersonalizedHub() {
     console.error('Failed to load personalized hub:', error);
     const errorDiv = createElement('div', {
       className: 'chatbot-error',
-      textContent: `Failed to load personalized hub: ${error.message}. Please refresh the page.`,
+      innerContent: `Failed to load personalized hub: ${error.message}. Please refresh the page.`,
     });
     container.appendChild(errorDiv);
     // Open the modal even if there's an error

@@ -1,6 +1,23 @@
 .hero-container .hero-wrapper {
   max-width: unset;
   padding: 0;
+
+  &:has(.no-image) {
+    position: relative;
+
+    &::before {
+      content: '';
+      display: block;
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background-color: var(--smoke);
+
+      @media (width >= 992px) {
+        content: none;
+      }
+    }
+  }
 }
 
 .hero {

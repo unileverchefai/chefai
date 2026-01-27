@@ -27,14 +27,14 @@ export default function openSignInModal() {
   // Title
   const title = createElement('h2', {
     className: 'signin-modal-title',
-    textContent: 'Welcome back!',
+    innerContent: 'Welcome back!',
   });
   topArea.appendChild(title);
 
   // Description
   const description = createElement('p', {
     className: 'signin-modal-description',
-    textContent: 'Login in with your UFS account to get access to your personalised hub',
+    innerContent: 'Login in with your UFS account to get access to your personalised hub',
   });
   topArea.appendChild(description);
 
@@ -49,11 +49,11 @@ export default function openSignInModal() {
   });
   const emailLabel = createElement('label', {
     className: 'form-label',
-    textContent: 'Email address',
+    innerContent: 'Email address',
   });
   const emailInput = createElement('input', {
     className: 'form-input',
-    properties: {
+    attributes: {
       type: 'email',
       placeholder: 'email@example.com',
     },
@@ -68,21 +68,21 @@ export default function openSignInModal() {
   });
   const passwordLabel = createElement('label', {
     className: 'form-label',
-    textContent: 'Password',
+    innerContent: 'Password',
   });
   const passwordInputWrapper = createElement('div', {
     className: 'form-input-wrapper',
   });
   const passwordInput = createElement('input', {
     className: 'form-input',
-    properties: {
+    attributes: {
       type: 'password',
       placeholder: '******',
     },
   });
   const revealButton = createElement('button', {
     className: 'signin-form-reveal',
-    properties: {
+    attributes: {
       type: 'button',
       'aria-label': 'Toggle password visibility',
     },
@@ -111,8 +111,8 @@ export default function openSignInModal() {
   });
   const forgotLink = createElement('a', {
     className: 'signin-form-forgot-link',
-    textContent: 'Forgot your password?',
-    properties: {
+    innerContent: 'Forgot your password?',
+    attributes: {
       href: '#',
     },
   });
@@ -122,7 +122,7 @@ export default function openSignInModal() {
   // Error message container
   const errorMessage = createElement('div', {
     className: 'signin-form-error',
-    properties: {
+    attributes: {
       style: 'display: none; color: var(--ufs-orange); font-size: var(--body-font-size-xs); margin-top: 8px; text-align: center;',
     },
   });
@@ -131,8 +131,8 @@ export default function openSignInModal() {
   // Sign in button
   const signInButton = createElement('button', {
     className: 'btn-primary',
-    textContent: 'Sign in',
-    properties: {
+    innerContent: 'Sign in',
+    attributes: {
       type: 'button',
     },
   });
@@ -150,14 +150,14 @@ export default function openSignInModal() {
   });
   const continueLink = createElement('a', {
     className: 'signin-modal-bottom-link',
-    textContent: 'Continue here',
-    properties: {
+    innerContent: 'Continue here',
+    attributes: {
       href: '#',
     },
   });
   bottomText.textContent = 'Don\'t have an account? ';
   bottomText.appendChild(continueLink);
-  bottomText.appendChild(document.createTextNode(' to get your personalised hub'));
+  bottomText.appendChild(document.createTextNode(' to get your personalized hub'));
   bottomArea.appendChild(bottomText);
   content.appendChild(bottomArea);
 

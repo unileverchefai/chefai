@@ -35,8 +35,8 @@ export default function openCookieAgreementModal(onAgree, onClose, required = fa
   paragraph1.appendChild(document.createTextNode('Before proceeding further, please read our '));
 
   const termsLink = createElement('a', {
-    textContent: 'AI Terms & Conditions',
-    properties: {
+    innerContent: 'AI Terms & Conditions',
+    attributes: {
       href: '#',
     },
   });
@@ -46,8 +46,8 @@ export default function openCookieAgreementModal(onAgree, onClose, required = fa
   paragraph1.appendChild(document.createTextNode(', '));
 
   const privacyLink = createElement('a', {
-    textContent: 'Privacy Notice',
-    properties: {
+    innerContent: 'Privacy Notice',
+    attributes: {
       href: '#',
     },
   });
@@ -57,8 +57,8 @@ export default function openCookieAgreementModal(onAgree, onClose, required = fa
   paragraph1.appendChild(document.createTextNode(', and '));
 
   const cookieLink = createElement('a', {
-    textContent: 'Cookie Statement',
-    properties: {
+    innerContent: 'Cookie Statement',
+    attributes: {
       href: '#',
     },
   });
@@ -70,7 +70,7 @@ export default function openCookieAgreementModal(onAgree, onClose, required = fa
 
   // Second paragraph
   const paragraph2 = createElement('p', {
-    textContent: 'I have read and agree to the terms and conditions and I am over 16 years old.',
+    innerContent: 'I have read and agree to the terms and conditions and I am over 16 years old.',
   });
   textArea.appendChild(paragraph2);
 
@@ -84,8 +84,8 @@ export default function openCookieAgreementModal(onAgree, onClose, required = fa
 
   const agreeButton = createElement('button', {
     className: 'cookie-agreement-btn',
-    textContent: 'I agree',
-    properties: {
+    innerContent: 'I agree',
+    attributes: {
       type: 'button',
     },
   });
