@@ -18,6 +18,8 @@ main > .section > .title-wrapper {
   font-family: var(--ff-unilever-shilling);
   font-size: var(--heading-font-size-s);
   font-style: normal;
+
+  /* If I apply font-weight 600, it's too bold. Keeping it 500 for now */
   font-weight: 500;
   line-height: 25px;
 }
@@ -41,7 +43,7 @@ main > .section > .title-wrapper {
   text-align: center;
   font-feature-settings: 'liga' off, 'clig' off;
   font-family: var(--ff-unilever-shilling);
-  font-size: var(--body-font-size-xs);
+  font-size: var(--body-font-size-xss);
   font-style: normal;
   font-weight: 400;
   line-height: 22px;
@@ -61,6 +63,8 @@ main > .section > .title-wrapper {
     font-family: var(--ff-unilever-shilling);
     font-size: 25px;
     font-style: normal;
+    
+      /* Same as on mobile: Keeping it 500 for now */
     font-weight: 500;
     line-height: 32px; 
   }
