@@ -1,18 +1,16 @@
-import { createVideoEmbed, findVideoLink } from '../../scripts/common.js';
+import { createVideoEmbed, findVideoLink, createElement } from '@scripts/common.js';
 
 function openVideoModal(videoUrl) {
-  const modalOverlay = document.createElement('div');
-  modalOverlay.classList.add('video-modal-overlay');
+  const modalOverlay = createElement('div', { className: 'video-modal-overlay' });
 
   // modal content container
-  const modalContent = document.createElement('div');
-  modalContent.classList.add('video-modal-content');
-
+  const modalContent = createElement('div', { className: 'video-modal-content' });
   // close button
-  const closeButton = document.createElement('button');
-  closeButton.classList.add('video-modal-close');
-  closeButton.setAttribute('aria-label', 'Close video');
-  closeButton.innerHTML = '×';
+  const closeButton = createElement('button', {
+    className: 'video-modal-close',
+    attributes: { 'aria-label': 'Close video' },
+    innerContent: '×',
+  });
 
   // video embed
   const videoEmbed = createVideoEmbed(videoUrl);
@@ -27,8 +25,7 @@ function openVideoModal(videoUrl) {
     console.warn('media-text-cards: %cInvalid%c video URL provided, modal will %cnot%c display video content', 'color: red;', '', 'color: red;', '');
   }
 
-  modalOverlay.appendChild(closeButton);
-  modalOverlay.appendChild(modalContent);
+  modalOverlay.append(closeButton, modalContent);
   document.body.appendChild(modalOverlay);
 
   document.body.style.overflow = 'hidden';
@@ -177,20 +174,20 @@ export default function decorate(block) {
       const picture = mediaSection.querySelector('picture');
 
       if (picture) {
-        const thumbnailWrapper = document.createElement('div');
-        thumbnailWrapper.classList.add('video-thumbnail-wrapper');
+        const thumbnailWrapper = createElement('div', { className: 'video-thumbnail-wrapper' });
 
         const pictureClone = picture.cloneNode(true);
         thumbnailWrapper.appendChild(pictureClone);
 
-        const playButton = document.createElement('button');
-        playButton.classList.add('video-play-button');
-        playButton.setAttribute('aria-label', 'Play video');
-        playButton.innerHTML = `
-          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="17" viewBox="0 0 15 17" fill="none">
-            <path d="M3.94065e-06 15.1908V1.60474C-0.000117323 1.02682 0.310579 0.493498 0.813367 0.208563C1.31616 -0.076373 1.93333 -0.0688865 2.42906 0.228161L13.7497 7.02118C14.2337 7.31095 14.53 7.83363 14.53 8.39776C14.53 8.96189 14.2337 9.48457 13.7497 9.77433L2.42906 16.5674C1.93284 16.8647 1.31497 16.8719 0.811969 16.5862C0.308965 16.3004 -0.00127526 15.7661 3.94065e-06 15.1876V15.1908Z" fill="white"/>
-          </svg>
-        `;
+        const playButton = createElement('button', {
+          className: 'video-play-button',
+          attributes: { 'aria-label': 'Play video' },
+          innerContent: `
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="17" viewBox="0 0 15 17" fill="none">
+              <path d="M3.94065e-06 15.1908V1.60474C-0.000117323 1.02682 0.310579 0.493498 0.813367 0.208563C1.31616 -0.076373 1.93333 -0.0688865 2.42906 0.228161L13.7497 7.02118C14.2337 7.31095 14.53 7.83363 14.53 8.39776C14.53 8.96189 14.2337 9.48457 13.7497 9.77433L2.42906 16.5674C1.93284 16.8647 1.31497 16.8719 0.811969 16.5862C0.308965 16.3004 -0.00127526 15.7661 3.94065e-06 15.1876V15.1908Z" fill="white"/>
+            </svg>
+          `,
+        });
 
         thumbnailWrapper.appendChild(playButton);
         mediaSection.insertBefore(thumbnailWrapper, mediaSection.firstChild);
@@ -234,8 +231,7 @@ export default function decorate(block) {
 
   if (textCards.length > 0) {
     // wrapper for text cards
-    const cardsTextSection = document.createElement('div');
-    cardsTextSection.classList.add('cards-text');
+    const cardsTextSection = createElement('div', { className: 'cards-text' });
 
     textCards.forEach((card) => {
       const innerDiv = card.querySelector('div');
@@ -245,7 +241,7 @@ export default function decorate(block) {
         const picture = h4?.querySelector('picture');
 
         if (h4 && picture) {
-          const textWrapper = document.createElement('div');
+          const textWrapper = createElement('div');
 
           picture.remove();
           textWrapper.appendChild(h4);
@@ -256,7 +252,7 @@ export default function decorate(block) {
 
           innerDiv.innerHTML = '';
 
-          const h4Wrapper = document.createElement('h4');
+          const h4Wrapper = createElement('h4');
           h4Wrapper.appendChild(picture);
 
           innerDiv.appendChild(h4Wrapper);

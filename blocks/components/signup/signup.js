@@ -30,14 +30,14 @@ export default function openSignUpModal() {
   // Title
   const title = createElement('h2', {
     className: 'signup-modal-title',
-    textContent: 'Get the Global Report',
+    innerContent: 'Get the Global Report',
   });
   topArea.appendChild(title);
 
   // Description
   const description = createElement('p', {
     className: 'signup-modal-description',
-    textContent: 'Please provide the following information to get access to the report.',
+    innerContent: 'Please provide the following information to get access to the report.',
   });
   topArea.appendChild(description);
 
@@ -52,11 +52,11 @@ export default function openSignUpModal() {
   });
   const emailLabel = createElement('label', {
     className: 'form-label',
-    textContent: 'Email address',
+    innerContent: 'Email address',
   });
   const emailInput = createElement('input', {
     className: 'form-input',
-    properties: {
+    attributes: {
       type: 'email',
       placeholder: 'restaurant_name@gmail.com',
     },
@@ -71,21 +71,21 @@ export default function openSignUpModal() {
   });
   const passwordLabel = createElement('label', {
     className: 'form-label',
-    textContent: 'Password',
+    innerContent: 'Password',
   });
   const passwordInputWrapper = createElement('div', {
     className: 'form-input-wrapper',
   });
   const passwordInput = createElement('input', {
     className: 'form-input',
-    properties: {
+    attributes: {
       type: 'password',
       placeholder: '******',
     },
   });
   const passwordRevealButton = createElement('button', {
     className: 'signin-form-reveal',
-    properties: {
+    attributes: {
       type: 'button',
       'aria-label': 'Toggle password visibility',
     },
@@ -114,21 +114,21 @@ export default function openSignUpModal() {
   });
   const confirmPasswordLabel = createElement('label', {
     className: 'form-label',
-    textContent: 'Confirm password',
+    innerContent: 'Confirm password',
   });
   const confirmPasswordInputWrapper = createElement('div', {
     className: 'form-input-wrapper',
   });
   const confirmPasswordInput = createElement('input', {
     className: 'form-input',
-    properties: {
+    attributes: {
       type: 'password',
       placeholder: '******',
     },
   });
   const confirmPasswordRevealButton = createElement('button', {
     className: 'signin-form-reveal',
-    properties: {
+    attributes: {
       type: 'button',
       'aria-label': 'Toggle password visibility',
     },
@@ -162,11 +162,11 @@ export default function openSignUpModal() {
   });
   const firstNameLabel = createElement('label', {
     className: 'form-label',
-    textContent: 'First name',
+    innerContent: 'First name',
   });
   const firstNameInput = createElement('input', {
     className: 'form-input',
-    properties: {
+    attributes: {
       type: 'text',
       placeholder: 'John',
     },
@@ -181,11 +181,11 @@ export default function openSignUpModal() {
   });
   const surnameLabel = createElement('label', {
     className: 'form-label',
-    textContent: 'Surname',
+    innerContent: 'Surname',
   });
   const surnameInput = createElement('input', {
     className: 'form-input',
-    properties: {
+    attributes: {
       type: 'text',
       placeholder: 'Smith',
     },
@@ -202,14 +202,14 @@ export default function openSignUpModal() {
   });
   const businessTypeLabel = createElement('label', {
     className: 'form-label',
-    textContent: 'Business type',
+    innerContent: 'Business type',
   });
   const businessTypeWrapper = createElement('div', {
     className: 'form-input-wrapper',
   });
   const businessTypeSelect = createElement('select', {
     className: 'form-input form-select',
-    properties: {
+    attributes: {
       name: 'business-type',
     },
   });
@@ -225,10 +225,10 @@ export default function openSignUpModal() {
 
   businessTypes.forEach((type) => {
     const option = createElement('option', {
-      properties: {
+      attributes: {
         value: type.toLowerCase().replace(/\s+/g, '-'),
       },
-      textContent: type,
+      innerContent: type,
     });
     businessTypeSelect.appendChild(option);
   });
@@ -252,10 +252,10 @@ export default function openSignUpModal() {
   });
   const consentLabel = createElement('label', {
     className: 'form-checkbox-label',
-    properties: {
+    attributes: {
       for: 'marketing-consent',
     },
-    textContent: 'I want to receive offers and updates from Unilever Food Solutions tailored to my interests and preferences',
+    innerContent: 'I want to receive offers and updates from Unilever Food Solutions tailored to my interests and preferences',
   });
   consentGroup.appendChild(consentCheckbox);
   consentGroup.appendChild(consentLabel);
@@ -264,7 +264,7 @@ export default function openSignUpModal() {
   // Error message container
   const errorMessage = createElement('div', {
     className: 'signup-form-error',
-    properties: {
+    attributes: {
       style: 'display: none; color: var(--ufs-orange); font-size: var(--body-font-size-xs); margin-top: 8px; text-align: center;',
     },
   });
@@ -279,8 +279,8 @@ export default function openSignUpModal() {
   });
   const signUpButton = createElement('button', {
     className: 'btn-primary',
-    textContent: 'Sign up now',
-    properties: {
+    innerContent: 'Sign up now',
+    attributes: {
       type: 'button',
     },
   });

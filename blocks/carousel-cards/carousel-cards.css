@@ -193,10 +193,6 @@ main > .section > .carousel-cards-wrapper {
   transition: fill var(--transition-base);
 }
 
-.carousel-cards .arrow.prev svg {
-  transform: rotate(180deg);
-}
-
 .carousel-cards .arrow:hover svg {
   fill: var(--ufs-orange);
 }

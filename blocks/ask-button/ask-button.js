@@ -17,7 +17,7 @@ export default function decorate(block) {
   // Main button
   const button = createElement('button', {
     className: 'btn',
-    properties: { 'aria-label': 'Ask me anything - Open personalized hub' },
+    attributes: { 'aria-label': 'Ask me anything - Open personalized hub' },
   });
 
   // Button content container
@@ -26,7 +26,7 @@ export default function decorate(block) {
   // Sparkles icon
   const icon = createElement('img', {
     className: 'icon',
-    properties: {
+    attributes: {
       src: '/icons/sparkles-icon.svg',
       alt: '',
       width: '22',
@@ -37,7 +37,7 @@ export default function decorate(block) {
   // Button text
   const text = createElement('span', {
     className: 'text',
-    textContent: 'Ask me anything',
+    innerContent: 'Ask me anything',
   });
 
   // Assemble button - text first, then icon (icon on the right per Figma)

@@ -1,4 +1,4 @@
-import { loadScript } from './aem.js';
+import { loadCSS, loadScript } from './aem.js';
 
 /**
  * Converts variant classes to BEM notation and updates the block's class list accordingly.
@@ -300,7 +300,7 @@ export function createVideoEmbed(url) {
   if (videoId) {
     embedUrl = `https://www.youtube.com/embed/${videoId}`;
     const iframe = createElement('iframe', {
-      properties: {
+      attributes: {
         src: embedUrl,
         width: '560',
         height: '315',
@@ -319,7 +319,7 @@ export function createVideoEmbed(url) {
   if (videoId) {
     embedUrl = `https://player.vimeo.com/video/${videoId}`;
     const iframe = createElement('iframe', {
-      properties: {
+      attributes: {
         src: embedUrl,
         width: '560',
         height: '315',
@@ -444,7 +444,7 @@ export function createCarousel(options) {
   // Create ARIA live region for screen readers
   const liveRegion = createElement('div', {
     className: 'sr-only',
-    properties: {
+    attributes: {
       'aria-live': 'polite',
       'aria-atomic': 'true',
     },
@@ -458,20 +458,20 @@ export function createCarousel(options) {
 
   const prevArrow = createElement('button', {
     className: 'arrow prev',
-    properties: { 'aria-label': 'Previous slide' },
-    fragment: `
+    attributes: { 'aria-label': 'Previous slide' },
+    innerContent: `
       <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M8.33 14.67L10.8 12.2L8.33 9.73L9.27 8.8L12.67 12.2L9.27 15.6L8.33 14.67Z"/>
+        <path d="M15.67 14.67L13.2 12.2L15.67 9.73L14.73 8.8L11.33 12.2L14.73 15.6L15.67 14.67Z"/>
       </svg>
     `,
   });
 
   const nextArrow = createElement('button', {
     className: 'arrow next',
-    properties: { 'aria-label': 'Next slide' },
-    fragment: `
+    attributes: { 'aria-label': 'Next slide' },
+    innerContent: `
       <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M15.67 14.67L13.2 12.2L15.67 9.73L14.73 8.8L11.33 12.2L14.73 15.6L15.67 14.67Z"/>
+        <path d="M8.33 14.67L10.8 12.2L8.33 9.73L9.27 8.8L12.67 12.2L9.27 15.6L8.33 14.67Z"/>
       </svg>
     `,
   });
@@ -757,7 +757,7 @@ export function createCarousel(options) {
       for (let i = 0; i < totalSlides; i += 1) {
         const indicator = createElement('button', {
           className: `indicator${i === 0 ? ' active' : ''}`,
-          properties: {
+          attributes: {
             'aria-label': `Go to slide ${i + 1} of ${totalSlides}`,
             type: 'button',
           },
@@ -818,4 +818,43 @@ export function createCarousel(options) {
     navigate,
     getCurrentSlide: () => currentSlide,
   };
+}
+
+/**
+ * Adds variant-specific logic by loading scripts and styles as needed.
+ * @param {Object} params The parameters object.
+ * @param {string} params.blockName The name of the block.
+ * @param {string} params.variantName The name of the variant.
+ * @param {boolean} [params.hasScript=false] Whether the variant has an associated script to load.
+ * @param {boolean} [params.hasStyle=false] Whether the variant has an associated style to load.
+ * @param {boolean} [params.useButtons=false] Whether to load button styles.
+ * @returns {Promise<void>} A promise that resolves when all resources are loaded.
+ * @example
+ * // Load variant logic for the countdown variant of the hero block
+ * await addVariantLogic({
+ *   blockName: 'hero',
+ *   variantName: 'countdown',
+ *   hasScript: true,
+ *   hasStyle: true,
+ *   useButtons: true
+ * });
+ */
+export async function addVariantLogic({
+  blockName, variantName, hasScript = false, hasStyle = false, useButtons = false,
+}) {
+  if (useButtons) {
+    await loadCSS(`${window.hlx.codeBasePath}/styles/buttons.css`);
+  }
+  if (!blockName || !variantName) {
+    if (!useButtons) {
+      console.error('Both %cblockName%c and %cvariantName%c are required to load a variant style.', 'color: red;', '', 'color: red;', '');
+    }
+    return;
+  }
+  if (hasScript) {
+    await loadVariantScript({ blockName, variantName });
+  }
+  if (hasStyle) {
+    await loadCSS(`${window.hlx.codeBasePath}/blocks/${blockName}/variants/${variantName}.css`);
+  }
 }
