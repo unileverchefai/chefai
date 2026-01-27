@@ -482,7 +482,7 @@ export function createCarousel(options) {
    * itemWidth, isMobile, gap, itemsPerSlide, slideWidth, totalSlides
   */
   function getCarouselMetrics() {
-    const firstItem = container.querySelector('.card, .carousel-item');
+    const firstItem = container.querySelector('.card, .carousel-item, .trend-card');
     const itemWidth = firstItem?.offsetWidth || 0;
     const isMobile = window.innerWidth < mobileBreakpoint;
     const gap = isMobile ? mobileGap : desktopGap;

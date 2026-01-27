@@ -1,0 +1,22 @@
+{
+  "2026_trend_borderless_cuisine": {
+    "name": "Borderless Cuisine",
+    "class": "borderless-cuisine",
+    "image": "/blocks/carousel-biz/mock-images/borderless-cuisine.jpg"
+  },
+  "2026_trend_street_food_couture": {
+    "name": "Street Food Couture",
+    "class": "street-food-couture",
+    "image": "/blocks/carousel-biz/mock-images/street-food-couture.jpg"
+  },
+  "2026_trend_diner_designed": {
+    "name": "Diner Designed",
+    "class": "diner-designed",
+    "image": "/blocks/carousel-biz/mock-images/diner-designed.jpg"
+  },
+  "2026_trend_culinary_roots": {
+    "name": "Culinary Roots",
+    "class": "culinary-roots",
+    "image": "/blocks/carousel-biz/mock-images/culinary-roots.jpg"
+  }
+}
