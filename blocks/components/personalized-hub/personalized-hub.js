@@ -169,7 +169,7 @@ export default async function openPersonalizedHub() {
           const handleGotIt = async () => {
             modal.close();
             try {
-              const { default: openSignUpReportModal } = await import('../signup/signup-report.js');
+              const { default: openSignUpReportModal } = await import('../signup/signup.js');
               openSignUpReportModal();
             } catch (e) {
               // eslint-disable-next-line no-console

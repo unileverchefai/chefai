@@ -1,3 +1,3 @@
-import openSignUpReportModal from './signup-report.js';
+import openSignUpReportModal from './signup.js';
 
 export default openSignUpReportModal;

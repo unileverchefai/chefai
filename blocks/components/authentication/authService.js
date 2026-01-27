@@ -117,6 +117,7 @@ export async function resetPassword(email, mobilePhone = '') {
         mobilePhone: mobilePhone ?? '',
         profileLoginType: 'EMAIL',
       },
+      isTextResponse: true,
     });
 
     return response;

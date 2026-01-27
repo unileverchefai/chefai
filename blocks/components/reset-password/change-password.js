@@ -225,6 +225,7 @@ export default function openChangePasswordModal(email) {
     try {
       await resetPassword(email, '');
       modal.close();
+      window.location.reload();
     } catch (error) {
       errorMessage.textContent = error.message ?? 'Failed to update password. Please try again.';
       errorMessage.style.color = 'var(--ufs-orange)';

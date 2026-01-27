@@ -1,8 +1,7 @@
 import { createElement } from '@scripts/common.js';
 import createModal from '@components/modal/index.js';
 import { loadCSS } from '@scripts/aem.js';
-import openCookieAgreementModal from '@components/cookie-agreement/index.js';
-import { register } from '@auth/authService.js';
+import { resetPassword } from '@auth/authService.js';
 
 function createPasswordRequirement(text) {
   const requirement = createElement('div', {
@@ -36,7 +35,7 @@ function validatePassword(password) {
   };
 }
 
-export default function openSignupPasswordModal(baseFormData) {
+export default function openSignupPasswordModal(email) {
   loadCSS(`${window.hlx.codeBasePath}/blocks/components/reset-password/reset-password.css`).catch(() => {});
 
   const content = createElement('div', {
@@ -170,7 +169,6 @@ export default function openSignupPasswordModal(baseFormData) {
 
   const updateRequirements = () => {
     const password = passwordInput.value;
-    const validation = validatePassword(password);
 
     const applyState = (requirementElement, isValid) => {
       const icon = requirementElement.querySelector('.password-requirement-icon');
@@ -215,32 +213,14 @@ export default function openSignupPasswordModal(baseFormData) {
     }
 
     submitButton.disabled = true;
-    submitButton.textContent = 'Creating account...';
+    submitButton.textContent = 'Sending email...';
 
     try {
-      const formData = {
-        ...baseFormData,
-        password,
-        confirmPassword: password,
-      };
-
-      await register(formData);
+      await resetPassword(email);
       modal.close();
-
-      const cookiesAccepted = sessionStorage.getItem('personalized-hub-consent') === 'true';
-      if (!cookiesAccepted) {
-        openCookieAgreementModal(
-          () => {
-            window.location.reload();
-          },
-          () => {},
-          true,
-        );
-      } else {
-        window.location.reload();
-      }
+      window.location.reload();
     } catch (error) {
-      errorMessage.textContent = error.message ?? 'Registration failed. Please try again.';
+      errorMessage.textContent = error.message ?? 'Failed to send reset email. Please try again.';
       errorMessage.style.display = 'block';
       submitButton.disabled = false;
       submitButton.textContent = 'Create Account';
@@ -255,4 +235,3 @@ export default function openSignupPasswordModal(baseFormData) {
 
   return modal;
 }
-
