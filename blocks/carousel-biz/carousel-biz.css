@@ -273,21 +273,25 @@ main > .section > .carousel-biz-wrapper {
 
 .trend-card.culinary-roots .trend-stat {
   -webkit-text-stroke: 1.5px #0090BA;
+  text-shadow: #0090BA 0px 0px 39px;
   color: transparent;
 }
 
 .trend-card.borderless-cuisine .trend-stat {
   -webkit-text-stroke: 1.5px #F9B000;
+  text-shadow: #F9B000 0px 0px 39px;
   color: transparent;
 }
 
 .trend-card.street-food-couture .trend-stat {
   -webkit-text-stroke: 1.5px #DC4D8B;
+  text-shadow: #DC4D8B 0px 0px 39px;
   color: transparent;
 }
 
 .trend-card.diner-designed .trend-stat {
   -webkit-text-stroke: 1.5px #A1B83B;
+  text-shadow: #A1B83B 0px 0px 39px;
   color: transparent;
 }
 

@@ -1,8 +1,8 @@
 import { ENDPOINTS, SUBSCRIPTION_KEY, DEFAULT_PARAMS } from './constants/api.js';
 
-const recommendationsData = await fetch('/blocks/carousel-biz/recommendation_response.json').then((r) => r.json());
-const trendMapData = await fetch('/blocks/carousel-biz/trends.json').then((r) => r.json());
-const businessTypesData = await fetch('/blocks/carousel-biz/business_types.json').then((r) => r.json());
+const recommendationsData = await fetch('/blocks/carousel-biz/mock-data/recommendation_response.json').then((r) => r.json());
+const trendMapData = await fetch('/blocks/carousel-biz/mock-data/trends.json').then((r) => r.json());
+const businessTypesData = await fetch('/blocks/carousel-biz/mock-data/business_types.json').then((r) => r.json());
 
 const MOCK_RECOMMENDATIONS = recommendationsData.recommendations || [];
 const MOCK_BUSINESS_TYPES = businessTypesData.business_types || [];
