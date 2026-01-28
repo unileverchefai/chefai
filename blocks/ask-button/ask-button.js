@@ -1,4 +1,6 @@
 import openPersonalizedHub from '@components/personalized-hub/personalized-hub.js';
+import hasSavedBusinessName from '@components/personalized-hub/hasSavedBusinessName.js';
+import openChatbotModal from '@components/chatbot/openChatbotModal.js';
 import { createElement } from '@scripts/common.js';
 
 /**
@@ -50,8 +52,19 @@ export default function decorate(block) {
   button.appendChild(shadowOverlay);
 
   // Click handler
-  button.addEventListener('click', () => {
-    openPersonalizedHub();
+  button.addEventListener('click', async () => {
+    try {
+      const hasBusiness = await hasSavedBusinessName();
+
+      if (hasBusiness) {
+        await openChatbotModal();
+      } else {
+        await openPersonalizedHub();
+      }
+    } catch {
+      // On any unexpected error, fall back to the original behavior.
+      openPersonalizedHub();
+    }
   });
 
   // Assemble structure - wrap all content in wrapper

@@ -1,5 +1,7 @@
 import { createElement, addVariantLogic } from '@scripts/common.js';
 import openPersonalizedHub from '@components/personalized-hub/personalized-hub.js';
+import hasSavedBusinessName from '@components/personalized-hub/hasSavedBusinessName.js';
+import openChatbotModal from '@components/chatbot/openChatbotModal.js';
 
 const blockName = 'floating-cta';
 const blockClasses = {
@@ -112,9 +114,21 @@ export default function decorate(block) {
   }
 
   if (isLivePhase) {
-    newBlockContainer.addEventListener('click', (e) => {
+    newBlockContainer.addEventListener('click', async (e) => {
       e.preventDefault();
-      openPersonalizedHub();
+
+      try {
+        const hasBusiness = await hasSavedBusinessName();
+
+        if (hasBusiness) {
+          await openChatbotModal();
+        } else {
+          await openPersonalizedHub();
+        }
+      } catch {
+        // On any unexpected error, fall back to the original behavior.
+        openPersonalizedHub();
+      }
     });
   }
 
