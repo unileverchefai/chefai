@@ -5,6 +5,7 @@ import {
 } from '@scripts/common.js';
 import openVideoModal from '@scripts/custom/modal-video.js';
 import setCountdownToHero from './variants/countdown.js';
+import linkPersonalizedHubCTA from './variants/live.js';
 
 const variantClasses = {
   live: 'live',
@@ -348,10 +349,11 @@ export default async function decorate(block) {
 
   if (isLive) {
     await buildVariant({
-      variant: live, block, useButtons: true,
+      variant: live, block, hasScript: true, useButtons: true,
     });
     const ctaButton = block.querySelector('.orange-button');
     ctaButton.classList.add('glowy');
+    linkPersonalizedHubCTA(ctaButton);
   }
 
   if (isCountdown) {
