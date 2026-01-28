@@ -4,6 +4,7 @@ export const API_BASE_URL = 'https://api-hub-we.azure-api.net/chefaibe/st/api/v1
 
 export const ENDPOINTS = {
   capgemini: `${API_BASE_URL}/chat/message`,
+  businessInfo: `${API_BASE_URL}/business/info`,
   businessDetails: `${API_BASE_URL}/business/details`,
   businessTypesUtility: 'https://api-hub-we.azure-api.net/chefaibe/st/utility/business-types',
 };

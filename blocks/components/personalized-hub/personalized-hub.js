@@ -2,6 +2,8 @@ import { loadReact } from '@components/chatbot/utils.js';
 import { createElement } from '@scripts/common.js';
 import { loadCSS } from '@scripts/aem.js';
 import createModal from '@components/modal/index.js';
+import { SUBSCRIPTION_KEY, ENDPOINTS } from '../chatbot/constants/api.js';
+import { getUserIdFromToken } from '../authentication/tokenManager.js';
 import saveBusinessDetails from './saveBusinessDetails.js';
 
 const SCREENS = {
@@ -17,6 +19,47 @@ const SCREENS = {
  * @returns {Promise<void>}
  */
 export default async function openPersonalizedHub() {
+  // Debug/logging: fetch saved business name for the current user and log it.
+  (async () => {
+    try {
+      const userId = getUserIdFromToken();
+      if (!userId || !ENDPOINTS.businessInfo) return;
+
+      const url = `${ENDPOINTS.businessInfo}?user_id=${encodeURIComponent(userId)}`;
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'X-Subscription-Key': SUBSCRIPTION_KEY,
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        // eslint-disable-next-line no-console
+        console.error('[Personalized Hub] Failed to fetch saved business info:', errorText);
+        return;
+      }
+
+      const responseText = await response.text();
+      if (!responseText) {
+        // eslint-disable-next-line no-console
+        console.log('[Personalized Hub] Business info API returned empty response.');
+        return;
+      }
+
+      const json = JSON.parse(responseText);
+      const data = json.data ?? {};
+      const businessName = data.name ?? '';
+
+      // eslint-disable-next-line no-console
+      console.log('[Personalized Hub] Saved business name from API:', businessName || '<none>');
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('[Personalized Hub] Error while fetching saved business info:', error);
+    }
+  })();
+
   // Load personalized hub CSS if not already loaded
   await loadCSS(`${window.hlx.codeBasePath}/blocks/components/personalized-hub/personalized-hub.css`);
 
