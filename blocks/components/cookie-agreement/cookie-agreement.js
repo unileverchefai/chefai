@@ -2,6 +2,17 @@ import { createElement } from '@scripts/common.js';
 import { loadCSS } from '@scripts/aem.js';
 import createModal from '@components/modal/index.js';
 
+function setCookie(name, value, days = 365) {
+  try {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    const expires = `; expires=${date.toUTCString()}`;
+    document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value || '')}${expires}; path=/`;
+  } catch {
+    // ignore cookie errors
+  }
+}
+
 /**
  * Opens the cookie agreement modal
  * @param {Function} onAgree - Callback when user agrees
@@ -109,7 +120,7 @@ export default function openCookieAgreementModal(onAgree, onClose, required = fa
 
   // Set up event listener after modal is created
   agreeButton.addEventListener('click', () => {
-    sessionStorage.setItem('personalized-hub-consent', 'true');
+    setCookie('personalized-hub-consent', 'true');
     // Close modal first, then call onAgree after animation completes
     modal.close();
     // Wait for modal close animation to complete before calling onAgree

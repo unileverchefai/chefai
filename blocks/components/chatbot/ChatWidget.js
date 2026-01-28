@@ -4,6 +4,7 @@ import {
   saveHistory,
 } from './utils.js';
 import renderChatUI from './renderChatUI.js';
+import openPersonalizedHub from '@components/personalized-hub/personalized-hub.js';
 
 const {
   useState,
@@ -24,7 +25,7 @@ const WELCOME_MESSAGE = {
   },
 };
 
-export default function ChatWidget() {
+export default function ChatWidget({ personalizedHubTrigger = '#chatbot' } = {}) {
   const history = getHistory();
   const [messages, setMessages] = useState(history.length > 0 ? history : [WELCOME_MESSAGE]);
   const [inputValue, setInputValue] = useState('');
@@ -49,6 +50,14 @@ export default function ChatWidget() {
     e.preventDefault();
     const messageText = inputValue.trim();
     if (!messageText) return;
+
+    if (personalizedHubTrigger && messageText.toLowerCase() === personalizedHubTrigger.toLowerCase()) {
+      setInputValue('');
+      setError(null);
+      setIsTyping(false);
+      openPersonalizedHub();
+      return;
+    }
 
     const userMessage = {
       _id: Date.now().toString(),
@@ -89,7 +98,7 @@ export default function ChatWidget() {
     } finally {
       setIsTyping(false);
     }
-  }, [inputValue, messages]);
+  }, [inputValue, messages, personalizedHubTrigger]);
 
   const disabled = !inputValue.trim() || isTyping;
 

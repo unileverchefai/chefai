@@ -1,0 +1,113 @@
+/* Subscription Step 2 - Benefits Wrapper */
+.subscription-benefits-wrapper {
+  background: var(--light-color);
+  border: 1px solid var(--mid-smoke);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  margin-top: 16px;
+  margin-top: 160px;
+}
+
+.subscription-benefits-title {
+  font-family: var(--heading-font-family);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 26px;
+  color: var(--text-color);
+  margin: 0 0 8px;
+}
+
+.subscription-benefits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.subscription-benefit-item {
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-xs);
+  line-height: 24px;
+  color: var(--text-color);
+  margin: 0;
+  padding-left: 20px;
+  position: relative;
+}
+
+.subscription-benefit-item::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--text-color);
+}
+
+.subscription-actions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  padding-top: 8px;
+  width: 100%;
+}
+
+.subscription-maybe-later {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-xs);
+  color: var(--text-color);
+  text-decoration: none;
+  cursor: pointer;
+  text-align: center;
+}
+
+.subscription-maybe-later:hover {
+  text-decoration: underline;
+}
+
+.subscription-step2-modal .signup-modal-bottom {
+  display: none;
+}
+
+/* Final subscription success modal */
+.subscription-final-modal {
+  padding: 56px 16px 32px;
+  max-width: 480px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.subscription-final-title {
+  font-family: var(--heading-font-family);
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--dark-grey);
+  margin: 0 0 16px;
+}
+
+.subscription-final-text {
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-sm);
+  line-height: 1.6;
+  color: var(--text-color);
+  margin: 0 0 32px;
+}
+
+.subscription-final-continue {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-sm);
+  color: var(--text-color);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.subscription-final-continue:hover {
+  text-decoration: none;
+}

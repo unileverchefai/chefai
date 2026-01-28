@@ -120,18 +120,6 @@ async function loadEager(doc) {
   }
 }
 
-async function checkCookieConsent() {
-  const cookiesAccepted = sessionStorage.getItem('personalized-hub-consent') === 'true';
-  if (!cookiesAccepted) {
-    const { default: openCookieAgreementModal } = await import('../blocks/components/cookie-agreement/index.js');
-    openCookieAgreementModal(
-      () => {},
-      () => {},
-      true,
-    );
-  }
-}
-
 /**
  * Loads everything that doesn't need to be delayed.
  * @param {Element} doc The container element
@@ -150,8 +138,16 @@ async function loadLazy(doc) {
   loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
   loadFonts();
 
-  // Check cookie consent after page loads
-  checkCookieConsent();
+  // Initialize subscription flow triggers (links with href="#subscription-flow")
+  try {
+    const { setupSubscriptionFlowTriggers } = await import('@components/subscription/index.js');
+    if (typeof setupSubscriptionFlowTriggers === 'function') {
+      setupSubscriptionFlowTriggers();
+    }
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error('Failed to initialize subscription flow triggers', e);
+  }
 }
 
 /**

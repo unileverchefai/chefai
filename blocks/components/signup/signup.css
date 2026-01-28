@@ -8,13 +8,13 @@
 /* Signup-specific modal content overrides */
 .signup-modal-content {
   max-width: 358px;
-  transform: none; /* Disable scale animation */
+  transform: none;
+  max-height: 95vh;
 }
 
 .signup-modal {
   padding: 56px 8px 8px;
-  max-width: 358px;
-  min-height: 673px;
+  /* min-height: 673px; */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -73,10 +73,6 @@
 }
 
 @media (width >= 992px) {
-  .signup-modal-form .form-group {
-    width: 326px;
-  }
-
   .signup-modal-form .form-row .form-group {
     width: auto; /* Let flex handle the width */
   }
@@ -87,7 +83,6 @@
   align-items: flex-end;
   justify-content: center;
   padding: var(--spacing-lg) 0;
-  min-height: 174px;
   width: 100%;
 }
 
@@ -104,7 +99,7 @@
   }
 
   .signup-modal-overlay {
-    align-items: flex-end;
+    align-items: center;
     padding: 0;
   }
 

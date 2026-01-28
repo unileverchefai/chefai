@@ -66,8 +66,9 @@ export default async function openPersonalizedHub() {
     const { default: LoadingState } = await import('./LoadingState.js');
     const { default: BusinessConfirmation } = await import('./BusinessConfirmation.js');
     const { default: WelcomeScreen } = await import('./WelcomeScreen.js');
+    const { default: openSignUpReportModal } = await import('../signup/signup.js');
 
-    const { useState } = window.React;
+    const { useState, useEffect } = window.React;
     const { createElement: h } = window.React;
 
     // Function to render the personalized hub app
@@ -77,6 +78,25 @@ export default async function openPersonalizedHub() {
         const [businessData, setBusinessData] = useState(null);
         const [error, setError] = useState(null);
         const [chatMessages, setChatMessages] = useState([]);
+
+        useEffect(() => {
+          if (currentScreen !== SCREENS.COMPLETED) return;
+
+          const startSignupFlow = async () => {
+            try {
+              // Open the main signup modal (which itself will open the password step).
+              openSignUpReportModal();
+              // After kicking off signup flow, prepare the hub to show the Welcome screen.
+              setCurrentScreen(SCREENS.WELCOME);
+            } catch (e) {
+              // eslint-disable-next-line no-console
+              console.error('Failed to start signup flow from personalized hub:', e);
+              setCurrentScreen(SCREENS.WELCOME);
+            }
+          };
+
+          startSignupFlow();
+        }, [currentScreen]);
 
         const handleBusinessNameSubmit = async (businessName) => {
           setError(null);
@@ -95,9 +115,9 @@ export default async function openPersonalizedHub() {
           sessionStorage.setItem('personalized-hub-business-data', JSON.stringify(businessData));
           setCurrentScreen(SCREENS.LOADING);
 
-          // Show loading for 3 seconds, then show welcome screen
+          // Show loading for 3 seconds, then launch signup flow
           setTimeout(() => {
-            setCurrentScreen(SCREENS.WELCOME);
+            setCurrentScreen(SCREENS.COMPLETED);
           }, 3000);
         };
 
@@ -166,19 +186,17 @@ export default async function openPersonalizedHub() {
         }
 
         if (currentScreen === SCREENS.WELCOME) {
-          const handleGotIt = async () => {
-            modal.close();
-            try {
-              const { default: openSignUpReportModal } = await import('../signup/signup.js');
-              openSignUpReportModal();
-            } catch (e) {
-              // eslint-disable-next-line no-console
-              console.error('Failed to open sign-up report modal:', e);
-            }
-          };
-
           return h(WelcomeScreen, {
-            onGotIt: handleGotIt,
+            onGotIt: animateAndClose,
+          });
+        }
+
+        if (currentScreen === SCREENS.COMPLETED) {
+          // While the signup flow runs in separate modals, keep showing LoadingState
+          // as a lightweight "processing" view in the background.
+          return h(LoadingState, {
+            businessData,
+            onClose: animateAndClose,
           });
         }
 
@@ -203,7 +221,7 @@ export default async function openPersonalizedHub() {
     };
 
     // Check if cookies were accepted
-    const hasConsent = sessionStorage.getItem('personalized-hub-consent') === 'true';
+    const hasConsent = document.cookie.split(';').some((c) => c.trim().startsWith('personalized-hub-consent=true'));
 
     // If no consent, show cookie modal first, then render the app
     if (!hasConsent) {

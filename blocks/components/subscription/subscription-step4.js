@@ -3,22 +3,23 @@ import createModal from '@components/modal/index.js';
 import { loadCSS } from '@scripts/aem.js';
 import { resetPassword } from '@auth/authService.js';
 
-function createPasswordRequirement(text, isValid) {
+function createPasswordRequirement(text) {
   const requirement = createElement('div', {
     className: 'password-requirement',
   });
 
   const icon = createElement('div', {
-    className: `password-requirement-icon ${isValid ? 'password-requirement-valid' : ''}`,
+    className: 'password-requirement-icon',
   });
+
   icon.innerHTML = `<svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M9 15L13 19L21 11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>`;
+    <path d="M9 15L13 19L21 11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
 
   const textElement = createElement('p', {
-    className: `password-requirement-text ${isValid ? 'password-requirement-text-valid' : ''}`,
-    innerContent: text,
+    className: 'password-requirement-text',
   });
+  textElement.textContent = text;
 
   requirement.appendChild(icon);
   requirement.appendChild(textElement);
@@ -34,9 +35,10 @@ function validatePassword(password) {
   };
 }
 
-export default function openChangePasswordModal(email) {
+export default function openSubscriptionStep4(email) {
+  loadCSS(`${window.hlx.codeBasePath}/blocks/sign-in/sign-in.css`).catch(() => {});
   loadCSS(`${window.hlx.codeBasePath}/blocks/components/reset-password/reset-password.css`).catch(() => {});
-  loadCSS(`${window.hlx.codeBasePath}/blocks/components/signup/signup.css`).catch(() => {});
+  loadCSS(`${window.hlx.codeBasePath}/blocks/components/subscription/subscription.css`).catch(() => {});
 
   const content = createElement('div', {
     className: 'change-password-modal',
@@ -49,13 +51,13 @@ export default function openChangePasswordModal(email) {
   const title = createElement('h2', {
     className: 'change-password-modal-title',
   });
-  title.textContent = 'Change your password';
+  title.textContent = 'One final step';
   topArea.appendChild(title);
 
   const description = createElement('p', {
     className: 'change-password-modal-description',
   });
-  description.textContent = 'Please follow the indications to set your new password';
+  description.textContent = 'Finalise account creation by creating a password - get access to your saved insights anytime, along with exclusive content and trainings.';
   topArea.appendChild(description);
 
   const formContainer = createElement('div', {
@@ -76,7 +78,7 @@ export default function openChangePasswordModal(email) {
     className: 'form-input',
     attributes: {
       type: 'password',
-      placeholder: '******',
+      placeholder: '********',
     },
   });
   const revealButton = createElement('button', {
@@ -107,9 +109,9 @@ export default function openChangePasswordModal(email) {
     className: 'password-requirements',
   });
 
-  const requirement1 = createPasswordRequirement('At least 8 characters', false);
-  const requirement2 = createPasswordRequirement('Contains a capital letter', false);
-  const requirement3 = createPasswordRequirement('Contains a number or symbol', false);
+  const requirement1 = createPasswordRequirement('At least 8 characters');
+  const requirement2 = createPasswordRequirement('Contains a capital letter');
+  const requirement3 = createPasswordRequirement('Contains a number or symbol');
 
   requirementsContainer.appendChild(requirement1);
   requirementsContainer.appendChild(requirement2);
@@ -127,67 +129,12 @@ export default function openChangePasswordModal(email) {
 
   const submitButton = createElement('button', {
     className: 'btn-primary',
-    innerContent: 'Update my Password',
+    innerContent: 'Create account',
     attributes: {
       type: 'button',
     },
   });
   formContainer.appendChild(submitButton);
-
-  const updateRequirements = () => {
-    const password = passwordInput.value;
-    const validation = validatePassword(password);
-
-    const req1 = requirement1.querySelector('.password-requirement-icon');
-    const req1Text = requirement1.querySelector('.password-requirement-text');
-    if (validation.minLength) {
-      req1.classList.add('password-requirement-valid');
-      req1Text.classList.add('password-requirement-text-valid');
-      req1.innerHTML = `<svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M9 15L13 19L21 11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>`;
-    } else {
-      req1.classList.remove('password-requirement-valid');
-      req1Text.classList.remove('password-requirement-text-valid');
-      req1.innerHTML = `<svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M9 15L13 19L21 11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>`;
-    }
-
-    const req2 = requirement2.querySelector('.password-requirement-icon');
-    const req2Text = requirement2.querySelector('.password-requirement-text');
-    if (validation.hasCapital) {
-      req2.classList.add('password-requirement-valid');
-      req2Text.classList.add('password-requirement-text-valid');
-      req2.innerHTML = `<svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M9 15L13 19L21 11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>`;
-    } else {
-      req2.classList.remove('password-requirement-valid');
-      req2Text.classList.remove('password-requirement-text-valid');
-      req2.innerHTML = `<svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M9 15L13 19L21 11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>`;
-    }
-
-    const req3 = requirement3.querySelector('.password-requirement-icon');
-    const req3Text = requirement3.querySelector('.password-requirement-text');
-    if (validation.hasNumberOrSymbol) {
-      req3.classList.add('password-requirement-valid');
-      req3Text.classList.add('password-requirement-text-valid');
-      req3.innerHTML = `<svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M9 15L13 19L21 11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>`;
-    } else {
-      req3.classList.remove('password-requirement-valid');
-      req3Text.classList.remove('password-requirement-text-valid');
-      req3.innerHTML = `<svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M9 15L13 19L21 11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>`;
-    }
-  };
-
-  passwordInput.addEventListener('input', updateRequirements);
 
   topArea.appendChild(formContainer);
   content.appendChild(topArea);
@@ -200,12 +147,37 @@ export default function openChangePasswordModal(email) {
     overlayBackground: 'var(--modal-overlay-bg)',
   });
 
+  const updateRequirements = () => {
+    const password = passwordInput.value;
+
+    const applyState = (requirementElement, isValid) => {
+      const icon = requirementElement.querySelector('.password-requirement-icon');
+      const textElement = requirementElement.querySelector('.password-requirement-text');
+
+      if (isValid) {
+        icon.classList.add('password-requirement-valid');
+        textElement.classList.add('password-requirement-text-valid');
+      } else {
+        icon.classList.remove('password-requirement-valid');
+        textElement.classList.remove('password-requirement-text-valid');
+      }
+    };
+
+    const validationResult = validatePassword(password);
+    applyState(requirement1, validationResult.minLength);
+    applyState(requirement2, validationResult.hasCapital);
+    applyState(requirement3, validationResult.hasNumberOrSymbol);
+  };
+
+  passwordInput.addEventListener('input', updateRequirements);
+
   submitButton.addEventListener('click', async () => {
     const password = passwordInput.value;
     const validation = validatePassword(password);
 
     errorMessage.style.display = 'none';
     errorMessage.textContent = '';
+    errorMessage.style.color = 'var(--ufs-orange)';
 
     if (!password) {
       errorMessage.textContent = 'Please enter a password';
@@ -221,18 +193,57 @@ export default function openChangePasswordModal(email) {
     }
 
     submitButton.disabled = true;
-    submitButton.textContent = 'Updating...';
+    submitButton.textContent = 'Sending email...';
 
     try {
-      await resetPassword(email, '');
+      await resetPassword(email);
       modal.close();
-      window.location.reload();
+
+      const successContent = createElement('div', {
+        className: 'subscription-final-modal',
+      });
+
+      const successTitle = createElement('h2', {
+        className: 'subscription-final-title',
+      });
+      successTitle.textContent = 'You\'re all set';
+
+      const successText = createElement('p', {
+        className: 'subscription-final-text',
+      });
+      successText.textContent = 'Your account has been created successfully.';
+
+      const continueButton = createElement('button', {
+        className: 'subscription-final-continue',
+        innerContent: 'Continue',
+        attributes: {
+          type: 'button',
+        },
+      });
+
+      successContent.appendChild(successTitle);
+      successContent.appendChild(successText);
+      successContent.appendChild(continueButton);
+
+      const successModal = createModal({
+        content: successContent,
+        showCloseButton: false,
+        overlayClass: 'modal-overlay subscription-final-overlay',
+        contentClass: 'modal-content subscription-final-content',
+        overlayBackground: 'var(--modal-overlay-bg)',
+      });
+
+      continueButton.addEventListener('click', () => {
+        successModal.close();
+        window.location.reload();
+      });
+
+      successModal.open();
     } catch (error) {
-      errorMessage.textContent = error.message ?? 'Failed to update password. Please try again.';
-      errorMessage.style.color = 'var(--ufs-orange)';
+      errorMessage.textContent = error.message ?? 'Failed to send reset email. Please try again.';
       errorMessage.style.display = 'block';
       submitButton.disabled = false;
-      submitButton.textContent = 'Update my Password';
+      submitButton.textContent = 'Create account';
     }
   });
 

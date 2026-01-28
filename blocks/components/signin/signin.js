@@ -209,7 +209,7 @@ export default function openSignInModal() {
       await login(email, password);
       modal.close();
 
-      const cookiesAccepted = sessionStorage.getItem('personalized-hub-consent') === 'true';
+      const cookiesAccepted = document.cookie.split(';').some((c) => c.trim().startsWith('personalized-hub-consent=true'));
       if (!cookiesAccepted) {
         openCookieAgreementModal(
           () => {

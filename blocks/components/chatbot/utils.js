@@ -2,11 +2,37 @@ import formatResponse from './responseHandler.js';
 
 export { formatResponse };
 
+function setCookie(name, value, days = 365) {
+  try {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    const expires = `; expires=${date.toUTCString()}`;
+    document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value || '')}${expires}; path=/`;
+  } catch {
+    // ignore cookie errors
+  }
+}
+
+function getCookie(name) {
+  try {
+    const nameEQ = `${encodeURIComponent(name)}=`;
+    const ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i += 1) {
+      let c = ca[i];
+      while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+      if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export function getThreadId() {
-  let threadId = sessionStorage.getItem('chef-ai-thread-id');
+  let threadId = getCookie('chef-ai-thread-id');
   if (!threadId) {
     threadId = `thread_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
-    sessionStorage.setItem('chef-ai-thread-id', threadId);
+    setCookie('chef-ai-thread-id', threadId);
   }
   return threadId;
 }
