@@ -1,10 +1,10 @@
+import openPersonalizedHub from '@components/personalized-hub/personalized-hub.js';
 import sendMessage from './sendMessage.js';
 import {
   getHistory,
   saveHistory,
 } from './utils.js';
 import renderChatUI from './renderChatUI.js';
-import openPersonalizedHub from '@components/personalized-hub/personalized-hub.js';
 
 const {
   useState,
@@ -51,7 +51,10 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot' } = {})
     const messageText = inputValue.trim();
     if (!messageText) return;
 
-    if (personalizedHubTrigger && messageText.toLowerCase() === personalizedHubTrigger.toLowerCase()) {
+    const isPersonalizedHubTrigger = personalizedHubTrigger
+      && messageText.toLowerCase() === personalizedHubTrigger.toLowerCase();
+
+    if (isPersonalizedHubTrigger) {
       setInputValue('');
       setError(null);
       setIsTyping(false);
