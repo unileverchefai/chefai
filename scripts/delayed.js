@@ -1,4 +1,5 @@
 import { createElement } from '@scripts/common.js';
+import addCustomAnalyticsEvents from '@scripts/custom/analytics.js';
 
 function injectScript(src, crossOrigin = '') {
   window.scriptsLoaded = window.scriptsLoaded || [];
@@ -35,3 +36,4 @@ function loadLaunch() {
 }
 
 loadLaunch();
+addCustomAnalyticsEvents();
