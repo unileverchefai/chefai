@@ -114,6 +114,7 @@ export default function formatResponse(apiResponse) {
       recipe_details: apiResponse.response?.recipe_details || [],
       product_details: apiResponse.response?.product_details || [],
       suggested_prompts: apiResponse.response?.suggested_prompts || [],
+      businesses: apiResponse.response?.businesses || [],
       images,
     },
   };

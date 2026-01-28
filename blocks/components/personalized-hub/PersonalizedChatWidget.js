@@ -76,14 +76,57 @@ export default function PersonalizedChatWidget({
     }
   }, [messages]);
 
-  const handleBusinessNameSubmit = useCallback(() => {
+  const handleBusinessNameSubmit = useCallback(async () => {
     const trimmedName = businessName.trim();
     if (!trimmedName) return;
 
-    if (onBusinessNameSubmit) {
-      onBusinessNameSubmit(trimmedName);
+    // Always send the business name through the regular chat message API
+    // so the backend can run its business search logic.
+    setIsTyping(true);
+    try {
+      const userMessage = {
+        _id: Date.now().toString(),
+        text: trimmedName,
+        createdAt: new Date(),
+        user: {
+          _id: USER_ID,
+          name: 'You',
+        },
+      };
+
+      setMessages((prev) => [...prev, userMessage]);
+
+      const response = await sendMessage(trimmedName, {
+        context: {
+          messageHistory: messages.slice(-5),
+        },
+      });
+
+      setMessages((prev) => [...prev, response]);
+
+      if (onBusinessNameSubmit && response.metadata?.businesses?.length) {
+        onBusinessNameSubmit(response.metadata.businesses);
+      } else if (onBusinessNameSubmit) {
+        onBusinessNameSubmit(trimmedName);
+      }
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to send business name message:', err);
+      setMessages((prev) => [...prev, {
+        _id: Date.now().toString(),
+        text: 'Sorry, I\'m having trouble connecting right now. Please try again in a moment.',
+        createdAt: new Date(),
+        user: {
+          _id: AI_ID,
+          name: 'Chef AI',
+        },
+        system: true,
+      }]);
+    } finally {
+      setIsTyping(false);
     }
-  }, [businessName, onBusinessNameSubmit]);
+
+  }, [businessName, onBusinessNameSubmit, messages, setMessages]);
 
   return h(
     'div',

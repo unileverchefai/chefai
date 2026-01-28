@@ -17,3 +17,24 @@ export function removeToken() {
 export function hasToken() {
   return !!getToken();
 }
+
+export function getUserIdFromToken() {
+  try {
+    const token = getToken();
+    if (!token) return null;
+
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+
+    const payload = JSON.parse(atob(parts[1]));
+
+    return (
+      payload.user_id
+      || payload.userId
+      || payload.sub
+      || null
+    );
+  } catch {
+    return null;
+  }
+}

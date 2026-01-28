@@ -1,5 +1,6 @@
 import { getThreadId, formatResponse } from './utils.js';
 import { SUBSCRIPTION_KEY, ENDPOINTS } from './constants/api.js';
+import { getUserIdFromToken } from '../authentication/tokenManager.js';
 
 let currentEndpoint = 'capgemini';
 
@@ -22,12 +23,15 @@ export default async function sendMessage(message, options = {}) {
   const endpoint = ENDPOINTS[currentEndpoint];
   const threadId = getThreadId();
 
+  const tokenUserId = getUserIdFromToken();
+  const userId = options.user_id ?? tokenUserId;
+
   const payload = {
+    ...options,
     message,
     thread_id: threadId,
-    user_id: options.user_id || 'user123',
+    user_id: userId,
     country: options.country || 'BE',
-    ...options,
   };
 
   const startTime = performance.now();

@@ -2,7 +2,7 @@ import { loadReact } from '@components/chatbot/utils.js';
 import { createElement } from '@scripts/common.js';
 import { loadCSS } from '@scripts/aem.js';
 import createModal from '@components/modal/index.js';
-import fetchBusinessInfo from './fetchBusinessInfo.js';
+import saveBusinessDetails from './saveBusinessDetails.js';
 
 const SCREENS = {
   CHAT: 'chat',
@@ -61,6 +61,8 @@ export default async function openPersonalizedHub() {
 
     // Load cookie agreement CSS and check for consent
     await loadCSS(`${window.hlx.codeBasePath}/blocks/components/cookie-agreement/cookie-agreement.css`);
+    // Load carousel-cards styles so business cards reuse the same visual system
+    await loadCSS(`${window.hlx.codeBasePath}/blocks/carousel-cards/carousel-cards.css`);
     const { default: openCookieAgreementModal } = await import('../cookie-agreement/index.js');
     const { default: PersonalizedChatWidget } = await import('./PersonalizedChatWidget.js');
     const { default: LoadingState } = await import('./LoadingState.js');
@@ -76,6 +78,7 @@ export default async function openPersonalizedHub() {
       const PersonalizedHubApp = () => {
         const [currentScreen, setCurrentScreen] = useState(SCREENS.CHAT);
         const [businessData, setBusinessData] = useState(null);
+        const [businessCandidates, setBusinessCandidates] = useState([]);
         const [error, setError] = useState(null);
         const [chatMessages, setChatMessages] = useState([]);
 
@@ -98,22 +101,55 @@ export default async function openPersonalizedHub() {
           startSignupFlow();
         }, [currentScreen]);
 
-        const handleBusinessNameSubmit = async (businessName) => {
+        const handleBusinessNameSubmit = (result) => {
           setError(null);
 
-          try {
-            const data = await fetchBusinessInfo(businessName);
-            setBusinessData(data);
+          // If we receive an array of businesses from the chat API, use it.
+          if (Array.isArray(result) && result.length > 0) {
+            const normalized = result.map((b) => ({
+              business_name: b.name ?? '',
+              address: b.address ?? '',
+              image_url: b.image_url ?? '',
+              logo_url: '',
+              place_id: b.place_id,
+              url: b.url,
+            }));
+
+            setBusinessCandidates(normalized);
+            setBusinessData(normalized[0]);
             setCurrentScreen(SCREENS.CONFIRMATION);
-          } catch (err) {
-            setError(err.message ?? 'Failed to fetch business information. Please try again.');
-            setCurrentScreen(SCREENS.CHAT);
+            return;
           }
+
+          const trimmedName = (result ?? '').trim();
+          if (!trimmedName) {
+            setError('Business name is required.');
+            return;
+          }
+
+          const singleBusiness = {
+            business_name: trimmedName,
+            address: '',
+            image_url: '',
+            logo_url: '',
+          };
+
+          setBusinessCandidates([singleBusiness]);
+          setBusinessData(singleBusiness);
+
+          setCurrentScreen(SCREENS.CONFIRMATION);
         };
 
-        const handleConfirm = () => {
+        const handleConfirm = async () => {
           sessionStorage.setItem('personalized-hub-business-data', JSON.stringify(businessData));
           setCurrentScreen(SCREENS.LOADING);
+
+          try {
+            await saveBusinessDetails(businessData);
+          } catch (e) {
+            // eslint-disable-next-line no-console
+            console.error('Failed to save business details:', e);
+          }
 
           // Show loading for 3 seconds, then launch signup flow
           setTimeout(() => {
@@ -123,6 +159,7 @@ export default async function openPersonalizedHub() {
 
         const handleReject = () => {
           setBusinessData(null);
+          setBusinessCandidates([]);
           setCurrentScreen(SCREENS.CHAT);
         };
 
@@ -179,6 +216,8 @@ export default async function openPersonalizedHub() {
         if (currentScreen === SCREENS.CONFIRMATION) {
           return h(BusinessConfirmation, {
             businessData,
+            businesses: businessCandidates,
+            onSelectBusiness: setBusinessData,
             onConfirm: handleConfirm,
             onReject: handleReject,
             onClose: animateAndClose,
