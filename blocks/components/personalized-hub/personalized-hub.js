@@ -1,9 +1,7 @@
-import { loadReact, getAnonymousUserId } from '@components/chatbot/utils.js';
+import { loadReact } from '@components/chatbot/utils.js';
 import { createElement } from '@scripts/common.js';
 import { loadCSS } from '@scripts/aem.js';
 import createModal from '@components/modal/index.js';
-import { SUBSCRIPTION_KEY, ENDPOINTS } from '../chatbot/constants/api.js';
-import { getUserIdFromToken } from '../authentication/tokenManager.js';
 import saveBusinessDetails from './saveBusinessDetails.js';
 
 const SCREENS = {
