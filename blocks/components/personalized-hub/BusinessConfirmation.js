@@ -2,13 +2,79 @@ const { createElement: h } = window.React;
 
 export default function BusinessConfirmation({
   businessData,
+  businesses,
+  onSelectBusiness,
   onConfirm,
   onReject,
 }) {
-  const businessName = businessData?.business_name ?? 'Unknown Business';
-  const address = businessData?.address ?? '';
-  const imageUrl = businessData?.image_url ?? '';
-  const logoUrl = businessData?.logo_url ?? '';
+  let candidates = [];
+  if (Array.isArray(businesses) && businesses.length > 0) {
+    candidates = businesses;
+  } else if (businessData) {
+    candidates = [businessData];
+  }
+
+  const selectedName = businessData?.business_name ?? 'Unknown Business';
+
+  const renderCard = (business, idx) => {
+    const name = business.business_name ?? 'Unknown Business';
+    const address = business.address ?? '';
+    const imageUrl = business.image_url ?? '';
+    const logoUrl = business.logo_url ?? '';
+    const isSelected = name === selectedName;
+
+    return h(
+      'li',
+      {
+        key: `business-${idx}`,
+        className: `card${isSelected ? ' ph-business-card--selected' : ''}`,
+        onClick: () => {
+          if (onSelectBusiness) {
+            onSelectBusiness(business);
+          }
+        },
+      },
+      [
+        imageUrl && h(
+          'div',
+          { key: 'image-container', className: 'ph-business-image-container' },
+          h('img', {
+            src: imageUrl,
+            alt: name,
+            className: 'ph-business-image',
+          }),
+        ),
+        h(
+          'div',
+          { key: 'info', className: 'ph-business-info' },
+          [
+            logoUrl && h('img', {
+              key: 'logo',
+              src: logoUrl,
+              alt: `${name} logo`,
+              className: 'ph-business-logo',
+            }),
+            h(
+              'div',
+              { key: 'details', className: 'ph-business-details' },
+              [
+                h(
+                  'div',
+                  { key: 'name', className: 'ph-business-name' },
+                  name,
+                ),
+                address && h(
+                  'div',
+                  { key: 'address', className: 'ph-business-address' },
+                  address,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
+    );
+  };
 
   return h(
     'div',
@@ -22,51 +88,18 @@ export default function BusinessConfirmation({
             'div',
             { key: 'confirmation-text', className: 'ph-system-message' },
             [
-              'Thanks! I\'ve found this business based on the business name ',
-              h('strong', { key: 'name' }, businessName),
-              '. Could you please confirm this is correct?',
+              'Thanks! I\'ve found these businesses based on the business name you entered. ',
+              'Could you please confirm which one is correct?',
             ],
           ),
           h(
             'div',
-            { key: 'business-card', className: 'ph-business-card' },
+            { key: 'carousel', className: 'carousel-cards' },
             [
-              imageUrl && h(
-                'div',
-                { key: 'image-container', className: 'ph-business-image-container' },
-                h('img', {
-                  src: imageUrl,
-                  alt: businessName,
-                  className: 'ph-business-image',
-                }),
-              ),
               h(
-                'div',
-                { key: 'info', className: 'ph-business-info' },
-                [
-                  logoUrl && h('img', {
-                    key: 'logo',
-                    src: logoUrl,
-                    alt: `${businessName} logo`,
-                    className: 'ph-business-logo',
-                  }),
-                  h(
-                    'div',
-                    { key: 'details', className: 'ph-business-details' },
-                    [
-                      h(
-                        'div',
-                        { key: 'name', className: 'ph-business-name' },
-                        businessName,
-                      ),
-                      address && h(
-                        'div',
-                        { key: 'address', className: 'ph-business-address' },
-                        address,
-                      ),
-                    ],
-                  ),
-                ],
+                'ul',
+                { className: 'carousel-cards-container' },
+                candidates.map(renderCard),
               ),
             ],
           ),
@@ -82,6 +115,7 @@ export default function BusinessConfirmation({
               key: 'confirm',
               className: 'ph-btn-primary',
               onClick: onConfirm,
+              disabled: !businessData,
             },
             'Yes, it\'s correct',
           ),

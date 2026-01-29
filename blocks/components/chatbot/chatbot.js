@@ -7,6 +7,8 @@ export default async function chatbot(block) {
   const endpoint = getMetadata('chatbot-endpoint') || 'capgemini';
   setEndpoint(endpoint);
 
+  const personalizedHubTrigger = getMetadata('personalized-hub-trigger') || '#chatbot';
+
   block.textContent = '';
   const chatContainer = createElement('div', {
     className: 'chatbot-root',
@@ -42,7 +44,7 @@ export default async function chatbot(block) {
       if (skeleton && skeleton.parentNode === chatContainer) {
         chatContainer.removeChild(skeleton);
       }
-      root.render(window.React.createElement(ChatWidget));
+      root.render(window.React.createElement(ChatWidget, { personalizedHubTrigger }));
       block.reactRoot = root;
     });
   } catch (error) {

@@ -60,7 +60,7 @@ function transformRecommendation(recommendation) {
  * Fetch insights from the recommendations API
  * @param {Object} options - Query parameters
  * @param {string} options.business_type_id - Optional business type filter
- * @param {string} options.user_id - User ID (default: 'user123')
+ * @param {string} options.user_id - User ID
  * @returns {Promise<Array>} Array of transformed insight cards
  */
 export default async function fetchInsights(options = {}) {
@@ -71,7 +71,7 @@ export default async function fetchInsights(options = {}) {
 
   const headers = {
     'X-Subscription-Key': SUBSCRIPTION_KEY,
-    'X-User-ID': options.user_id || 'user123',
+    'X-User-ID': options.user_id,
     'X-Source': 'chefai-ui',
   };
 

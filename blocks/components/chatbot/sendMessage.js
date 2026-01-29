@@ -1,5 +1,6 @@
-import { getThreadId, formatResponse } from './utils.js';
+import { getThreadId, formatResponse, getAnonymousUserId } from './utils.js';
 import { SUBSCRIPTION_KEY, ENDPOINTS } from './constants/api.js';
+import { getUserIdFromToken } from '../authentication/tokenManager.js';
 
 let currentEndpoint = 'capgemini';
 
@@ -22,17 +23,20 @@ export default async function sendMessage(message, options = {}) {
   const endpoint = ENDPOINTS[currentEndpoint];
   const threadId = getThreadId();
 
+  const tokenUserId = getUserIdFromToken();
+  let userId = options.user_id ?? tokenUserId;
+
+  if (!userId) {
+    userId = await getAnonymousUserId();
+  }
+
   const payload = {
+    ...options,
     message,
     thread_id: threadId,
-    user_id: options.user_id || 'user123',
+    user_id: userId,
     country: options.country || 'BE',
-    ...options,
   };
-
-  const startTime = performance.now();
-  // eslint-disable-next-line no-console
-  console.log('Sending message to API:', endpoint);
 
   try {
     const response = await fetchWithTimeout(
@@ -49,10 +53,6 @@ export default async function sendMessage(message, options = {}) {
       options.timeout || 30000,
     );
 
-    const requestTime = performance.now() - startTime;
-    // eslint-disable-next-line no-console
-    console.log(`API request completed in ${requestTime.toFixed(2)}ms`);
-
     if (!response.ok) {
       const errorText = await response.text();
       // eslint-disable-next-line no-console
@@ -65,9 +65,8 @@ export default async function sendMessage(message, options = {}) {
 
     return formatResponse(JSON.parse(responseText));
   } catch (error) {
-    const requestTime = performance.now() - startTime;
     // eslint-disable-next-line no-console
-    console.error(`API request failed after ${requestTime.toFixed(2)}ms:`, error);
+    console.error('API request failed:', error);
     throw error;
   }
 }

@@ -1,5 +1,7 @@
 import { apiRequest } from './api.js';
-import { setToken, removeToken, getToken } from './tokenManager.js';
+import {
+  setToken, removeToken, getToken, getUserIdFromToken,
+} from './tokenManager.js';
 import {
   ENDPOINTS,
   COUNTRY_CODE,
@@ -8,6 +10,10 @@ import {
   BUSINESS_TYPE_MAP,
   createRegistrationPayload,
 } from './constants.js';
+import {
+  getAnonymousUserIdFromCookie, clearAnonymousUserIdCookie, clearAllChatData, setCookie,
+} from '../chatbot/utils.js';
+import saveBusinessDetails from '../personalized-hub/saveBusinessDetails.js';
 
 export async function login(email, password) {
   if (!email || !password) {
@@ -63,6 +69,7 @@ export async function register(formData) {
 
   const typeOfBusiness = BUSINESS_TYPE_MAP[businessType.toLowerCase().replace(/\s+/g, '-')] ?? 'other';
   const now = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
+  const anonymousUserId = getAnonymousUserIdFromCookie();
 
   const payload = createRegistrationPayload({
     email,
@@ -77,6 +84,7 @@ export async function register(formData) {
     now,
     referrerUrl: window.location.href,
     fullName: `${firstName} ${lastName}`,
+    anonymousUserId,
   });
 
   try {
@@ -86,6 +94,60 @@ export async function register(formData) {
 
     if (response.successful && response.authToken) {
       setToken(response.authToken);
+      const registeredUserId = getUserIdFromToken();
+
+      if (registeredUserId) {
+        const userIdStr = registeredUserId.toString();
+        setCookie('chef-ai-anonymous-user-id', userIdStr);
+        try {
+          sessionStorage.setItem('registered-user-id', userIdStr);
+        } catch (e) {
+          // eslint-disable-next-line no-console
+          console.error('[Registration] Failed to store user_id in sessionStorage:', e);
+        }
+      } else {
+        clearAnonymousUserIdCookie();
+      }
+
+      let userIdForBusinessSave = registeredUserId;
+      if (!userIdForBusinessSave) {
+        await new Promise((resolve) => {
+          setTimeout(() => {
+            resolve();
+          }, 100);
+        });
+        userIdForBusinessSave = getUserIdFromToken();
+      }
+
+      if (userIdForBusinessSave) {
+        try {
+          const businessDataStr = sessionStorage.getItem('personalized-hub-business-data');
+          if (businessDataStr) {
+            const businessData = JSON.parse(businessDataStr);
+            if (businessData && businessData.business_name) {
+              try {
+                await saveBusinessDetails(businessData, userIdForBusinessSave);
+                sessionStorage.removeItem('personalized-hub-business-data');
+
+                try {
+                  const { default: fetchSavedBusinessInfoAndLog } = await import('../personalized-hub/fetchSavedBusinessInfo.js');
+                  await fetchSavedBusinessInfoAndLog();
+                } catch (fetchError) {
+                  // eslint-disable-next-line no-console
+                  console.error('[Registration] Failed to fetch user data after save:', fetchError);
+                }
+              } catch (businessError) {
+                // eslint-disable-next-line no-console
+                console.error('[Registration] Failed to save business details:', businessError);
+              }
+            }
+          }
+        } catch (error) {
+          // eslint-disable-next-line no-console
+          console.error('[Registration] Error checking for business data:', error);
+        }
+      }
+
       return response;
     }
 
@@ -134,6 +196,7 @@ export async function logout() {
 
   if (!token) {
     removeToken();
+    clearAllChatData();
     return;
   }
 
@@ -145,5 +208,6 @@ export async function logout() {
     // Ignore logout errors
   } finally {
     removeToken();
+    clearAllChatData();
   }
 }

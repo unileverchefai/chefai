@@ -80,7 +80,7 @@ export default function openSignupPasswordModal(email) {
     },
   });
   const revealButton = createElement('button', {
-    className: 'signin-form-reveal',
+    className: 'signup-form-reveal',
     attributes: {
       type: 'button',
       'aria-label': 'Toggle password visibility',

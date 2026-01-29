@@ -17,3 +17,17 @@ export function removeToken() {
 export function hasToken() {
   return !!getToken();
 }
+
+export function getUserIdFromToken() {
+  try {
+    const token = getToken();
+    if (!token) {
+      return null;
+    }
+    return token;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('[Token] Error getting token:', error);
+    return null;
+  }
+}

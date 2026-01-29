@@ -27,6 +27,7 @@ export default function PersonalizedChatWidget({
   const [isTyping, setIsTyping] = useState(false);
   const [visibleQuestions, setVisibleQuestions] = useState(PREDEFINED_QUESTIONS);
   const messagesEndRef = useRef(null);
+  const businessesProcessedRef = useRef(false);
 
   const isControlled = Array.isArray(controlledMessages) && typeof onMessagesChange === 'function';
   const messages = isControlled ? controlledMessages : uncontrolledMessages;
@@ -35,6 +36,21 @@ export default function PersonalizedChatWidget({
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  useEffect(() => {
+    if (!onBusinessNameSubmit || businessesProcessedRef.current) return;
+
+    for (let i = messages.length - 1; i >= 0; i -= 1) {
+      const msg = messages[i];
+      const businesses = msg.metadata?.businesses || msg.businesses;
+
+      if (businesses && Array.isArray(businesses) && businesses.length > 0) {
+        businessesProcessedRef.current = true;
+        onBusinessNameSubmit(businesses);
+        return;
+      }
+    }
+  }, [messages, onBusinessNameSubmit]);
 
   const handleQuestionClick = useCallback(async (question) => {
     const userMessage = {
@@ -76,14 +92,67 @@ export default function PersonalizedChatWidget({
     }
   }, [messages]);
 
-  const handleBusinessNameSubmit = useCallback(() => {
+  const handleBusinessNameSubmit = useCallback(async () => {
     const trimmedName = businessName.trim();
     if (!trimmedName) return;
 
-    if (onBusinessNameSubmit) {
-      onBusinessNameSubmit(trimmedName);
+    setIsTyping(true);
+    try {
+      const userMessage = {
+        _id: Date.now().toString(),
+        text: trimmedName,
+        createdAt: new Date(),
+        user: {
+          _id: USER_ID,
+          name: 'You',
+        },
+      };
+
+      setMessages((prev) => [...prev, userMessage]);
+
+      const response = await sendMessage(trimmedName, {
+        context: {
+          messageHistory: messages.slice(-5),
+        },
+      });
+
+      setMessages((prev) => [...prev, response]);
+
+      let businesses = null;
+
+      if (response.metadata?.businesses
+        && Array.isArray(response.metadata.businesses)
+        && response.metadata.businesses.length > 0) {
+        businesses = response.metadata.businesses;
+      } else if (response.businesses
+        && Array.isArray(response.businesses)
+        && response.businesses.length > 0) {
+        businesses = response.businesses;
+      }
+
+      if (onBusinessNameSubmit && businesses) {
+        businessesProcessedRef.current = true;
+        onBusinessNameSubmit(businesses);
+      } else if (onBusinessNameSubmit && !businessesProcessedRef.current) {
+        onBusinessNameSubmit(trimmedName);
+      }
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to send business name message:', err);
+      setMessages((prev) => [...prev, {
+        _id: Date.now().toString(),
+        text: 'Sorry, I\'m having trouble connecting right now. Please try again in a moment.',
+        createdAt: new Date(),
+        user: {
+          _id: AI_ID,
+          name: 'Chef AI',
+        },
+        system: true,
+      }]);
+    } finally {
+      setIsTyping(false);
     }
-  }, [businessName, onBusinessNameSubmit]);
+  }, [businessName, onBusinessNameSubmit, messages, setMessages]);
 
   return h(
     'div',
@@ -110,13 +179,7 @@ export default function PersonalizedChatWidget({
             'div',
             {
               key: 'typing',
-              style: {
-                padding: '12px 16px',
-                marginBottom: '16px',
-                color: 'var(--dark-color)',
-                fontStyle: 'italic',
-                fontSize: '14px',
-              },
+              className: 'ph-typing-indicator',
             },
             'Chef AI is typing...',
           ),

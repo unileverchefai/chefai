@@ -2,7 +2,7 @@ import { loadReact } from '@components/chatbot/utils.js';
 import { createElement } from '@scripts/common.js';
 import { loadCSS } from '@scripts/aem.js';
 import createModal from '@components/modal/index.js';
-import fetchBusinessInfo from './fetchBusinessInfo.js';
+import saveBusinessDetails from './saveBusinessDetails.js';
 
 const SCREENS = {
   CHAT: 'chat',
@@ -12,15 +12,9 @@ const SCREENS = {
   COMPLETED: 'completed',
 };
 
-/**
- * Opens the personalized hub modal
- * @returns {Promise<void>}
- */
 export default async function openPersonalizedHub() {
-  // Load personalized hub CSS if not already loaded
   await loadCSS(`${window.hlx.codeBasePath}/blocks/components/personalized-hub/personalized-hub.css`);
 
-  // Create container for React app
   const container = createElement('div', {
     className: 'personalized-hub-container',
     attributes: { id: 'personalized-hub-modal-root' },
@@ -29,7 +23,6 @@ export default async function openPersonalizedHub() {
   const ANIMATION_DURATION = 300;
   let reactRoot = null;
 
-  // Create modal with personalized hub specific configuration
   const modal = createModal({
     content: container,
     showCloseButton: false,
@@ -59,8 +52,8 @@ export default async function openPersonalizedHub() {
       throw new Error('React or ReactDOM not loaded');
     }
 
-    // Load cookie agreement CSS and check for consent
     await loadCSS(`${window.hlx.codeBasePath}/blocks/components/cookie-agreement/cookie-agreement.css`);
+    await loadCSS(`${window.hlx.codeBasePath}/blocks/carousel-cards/carousel-cards.css`);
     const { default: openCookieAgreementModal } = await import('../cookie-agreement/index.js');
     const { default: PersonalizedChatWidget } = await import('./PersonalizedChatWidget.js');
     const { default: LoadingState } = await import('./LoadingState.js');
@@ -75,34 +68,71 @@ export default async function openPersonalizedHub() {
       const PersonalizedHubApp = () => {
         const [currentScreen, setCurrentScreen] = useState(SCREENS.CHAT);
         const [businessData, setBusinessData] = useState(null);
+        const [businessCandidates, setBusinessCandidates] = useState([]);
         const [error, setError] = useState(null);
         const [chatMessages, setChatMessages] = useState([]);
 
-        const handleBusinessNameSubmit = async (businessName) => {
+        // Removed signup flow - now redirecting to /personalized-hub instead
+
+        const handleBusinessNameSubmit = (result) => {
           setError(null);
 
-          try {
-            const data = await fetchBusinessInfo(businessName);
-            setBusinessData(data);
+          // If we receive an array of businesses from the chat API, use it.
+          if (Array.isArray(result) && result.length > 0) {
+            const normalized = result.map((b) => ({
+              business_name: b.name ?? '',
+              address: b.address ?? '',
+              image_url: b.image_url ?? '',
+              logo_url: '',
+              place_id: b.place_id,
+              url: b.url,
+            }));
+
+            setBusinessCandidates(normalized);
+            setBusinessData(normalized[0]);
             setCurrentScreen(SCREENS.CONFIRMATION);
-          } catch (err) {
-            setError(err.message ?? 'Failed to fetch business information. Please try again.');
-            setCurrentScreen(SCREENS.CHAT);
+            return;
           }
+
+          const trimmedName = (result ?? '').trim();
+          if (!trimmedName) {
+            setError('Business name is required.');
+            return;
+          }
+
+          const singleBusiness = {
+            business_name: trimmedName,
+            address: '',
+            image_url: '',
+            logo_url: '',
+          };
+
+          setBusinessCandidates([singleBusiness]);
+          setBusinessData(singleBusiness);
+
+          setCurrentScreen(SCREENS.CONFIRMATION);
         };
 
-        const handleConfirm = () => {
+        const handleConfirm = async () => {
           sessionStorage.setItem('personalized-hub-business-data', JSON.stringify(businessData));
           setCurrentScreen(SCREENS.LOADING);
 
-          // Show loading for 3 seconds, then show welcome screen
+          try {
+            await saveBusinessDetails(businessData);
+          } catch (e) {
+            // eslint-disable-next-line no-console
+            console.error('Failed to save business details:', e);
+          }
+
+          // Show loading for 3 seconds, then redirect to personalized-hub page
           setTimeout(() => {
-            setCurrentScreen(SCREENS.WELCOME);
+            window.location.href = '/personalized-hub';
           }, 3000);
         };
 
         const handleReject = () => {
           setBusinessData(null);
+          setBusinessCandidates([]);
           setCurrentScreen(SCREENS.CHAT);
         };
 
@@ -110,29 +140,16 @@ export default async function openPersonalizedHub() {
           return h(
             'div',
             {
-              style: {
-                padding: '24px',
-                textAlign: 'center',
-                color: 'var(--error)',
-                fontFamily: 'var(--body-font-family)',
-              },
+              className: 'ph-error-container',
             },
             [
-              h('p', { key: 'error' }, `Error: ${error}`),
+              h('p', { key: 'error', className: 'ph-error-message' }, `Error: ${error}`),
               h(
                 'button',
                 {
                   key: 'retry',
+                  className: 'ph-error-retry-btn',
                   onClick: () => setError(null),
-                  style: {
-                    marginTop: '16px',
-                    padding: '8px 16px',
-                    borderRadius: '4px',
-                    border: 'none',
-                    background: 'var(--ufs-orange)',
-                    color: 'white',
-                    cursor: 'pointer',
-                  },
                 },
                 'Try Again',
               ),
@@ -159,6 +176,8 @@ export default async function openPersonalizedHub() {
         if (currentScreen === SCREENS.CONFIRMATION) {
           return h(BusinessConfirmation, {
             businessData,
+            businesses: businessCandidates,
+            onSelectBusiness: setBusinessData,
             onConfirm: handleConfirm,
             onReject: handleReject,
             onClose: animateAndClose,
@@ -166,19 +185,15 @@ export default async function openPersonalizedHub() {
         }
 
         if (currentScreen === SCREENS.WELCOME) {
-          const handleGotIt = async () => {
-            modal.close();
-            try {
-              const { default: openSignUpReportModal } = await import('../signup/signup.js');
-              openSignUpReportModal();
-            } catch (e) {
-              // eslint-disable-next-line no-console
-              console.error('Failed to open sign-up report modal:', e);
-            }
-          };
-
           return h(WelcomeScreen, {
-            onGotIt: handleGotIt,
+            onGotIt: animateAndClose,
+          });
+        }
+
+        if (currentScreen === SCREENS.COMPLETED) {
+          return h(LoadingState, {
+            businessData,
+            onClose: animateAndClose,
           });
         }
 
@@ -192,46 +207,38 @@ export default async function openPersonalizedHub() {
       });
     };
 
-    // Function to render and open the personalized hub app
     const renderAndOpenPersonalizedHub = () => {
-      // Open the modal first so the container is in the DOM
       modal.open();
-      // Small delay to ensure modal is fully rendered before React mounts
       requestAnimationFrame(() => {
         renderPersonalizedHubApp();
       });
     };
 
-    // Check if cookies were accepted
-    const hasConsent = sessionStorage.getItem('personalized-hub-consent') === 'true';
+    const hasConsent = document.cookie.split(';').some((c) => c.trim().startsWith('personalized-hub-consent=true'));
 
-    // If no consent, show cookie modal first, then render the app
     if (!hasConsent) {
       openCookieAgreementModal(
         () => {
-          // On agree, wait for cookie modal to fully close (300ms animation + 50ms buffer)
-          // then render and open the personalized hub app
           setTimeout(() => {
             renderAndOpenPersonalizedHub();
           }, 350);
         },
         () => {
-          // On close, do nothing (user cancelled)
+          // On close, do nothing
         },
       );
       return;
     }
 
-    // Render the personalized hub app (has consent, open immediately)
     renderAndOpenPersonalizedHub();
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('Failed to load personalized hub:', error);
     const errorDiv = createElement('div', {
       className: 'chatbot-error',
       innerContent: `Failed to load personalized hub: ${error.message}. Please refresh the page.`,
     });
     container.appendChild(errorDiv);
-    // Open the modal even if there's an error
     modal.open();
   }
 }

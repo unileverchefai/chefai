@@ -1,5 +1,7 @@
 import { createElement, addVariantLogic } from '@scripts/common.js';
 import openPersonalizedHub from '@components/personalized-hub/personalized-hub.js';
+import hasSavedBusinessName from '@components/personalized-hub/hasSavedBusinessName.js';
+import openChatbotModal from '@components/chatbot/openChatbotModal.js';
 
 const blockName = 'floating-cta';
 const blockClasses = {
@@ -96,6 +98,12 @@ export default function decorate(block) {
   const isLivePhase = block.classList.contains('live');
 
   if (!validateElements(block)) return;
+
+  // Check if button has #unlock-personalized-hub in href before building/cleaning
+  const button = block.querySelector('.button');
+  const buttonHref = button?.getAttribute('href') ?? '';
+  const shouldOpenRegistration = buttonHref.includes('#unlock-personalized-hub');
+
   const newBlockContainer = buildElement(block, isLivePhase);
   cleanCurrentBlock(block);
   if (heroCtaExists) {
@@ -112,9 +120,28 @@ export default function decorate(block) {
   }
 
   if (isLivePhase) {
-    newBlockContainer.addEventListener('click', (e) => {
+    newBlockContainer.addEventListener('click', async (e) => {
       e.preventDefault();
-      openPersonalizedHub();
+
+      // If button has #unlock-personalized-hub, open registration modal
+      if (shouldOpenRegistration) {
+        const { default: openSignUpReportModal } = await import('@components/signup/signup.js');
+        openSignUpReportModal();
+        return;
+      }
+
+      try {
+        const hasBusiness = await hasSavedBusinessName();
+
+        if (hasBusiness) {
+          await openChatbotModal();
+        } else {
+          await openPersonalizedHub();
+        }
+      } catch {
+        // On any unexpected error, fall back to the original behavior.
+        openPersonalizedHub();
+      }
     });
   }
 
