@@ -1,4 +1,4 @@
-const eventsSettingsUrl = './analytics.json';
+const eventsSettingsUrl = '/analytics.json';
 
 async function getEventsSettings(targetUrl = eventsSettingsUrl) {
   try {
