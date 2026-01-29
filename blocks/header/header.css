@@ -68,7 +68,7 @@ header nav .nav-hamburger button {
   border: 0;
   border-radius: 0;
   padding: 0;
-  background-color: var(--background-color);
+  background-color: transparent;
   color: inherit;
   overflow: initial;
   text-overflow: initial;
@@ -105,6 +105,13 @@ header nav[aria-expanded='false'] .nav-hamburger-icon::before {
 
 header nav[aria-expanded='false'] .nav-hamburger-icon::after {
   top: 6px;
+}
+
+@media (width < 900px) {
+  header nav[aria-expanded='true'] {
+    background-color: var(--background-color);
+    color: var(--text-color);
+  }
 }
 
 header nav[aria-expanded='true'] .nav-hamburger-icon {
