@@ -1,11 +1,9 @@
-import openPersonalizedHub from '@components/personalized-hub/personalized-hub.js';
-import hasSavedBusinessName from '@components/personalized-hub/hasSavedBusinessName.js';
 import openChatbotModal from '@components/chatbot/openChatbotModal.js';
 import { createElement } from '@scripts/common.js';
 
 /**
  * Ask Button Block
- * Fixed position button at the bottom of the page that opens the personalized hub modal
+ * Fixed position button at the bottom of the page that opens the chatbot modal
  */
 export default function decorate(block) {
   block.textContent = '';
@@ -19,7 +17,7 @@ export default function decorate(block) {
   // Main button
   const button = createElement('button', {
     className: 'btn',
-    attributes: { 'aria-label': 'Ask me anything - Open personalized hub' },
+    attributes: { 'aria-label': 'Ask me anything - Open chatbot' },
   });
 
   // Button content container
@@ -51,19 +49,13 @@ export default function decorate(block) {
   const shadowOverlay = createElement('div', { className: 'shadow' });
   button.appendChild(shadowOverlay);
 
-  // Click handler
+  // Click handler - always open chatbot
   button.addEventListener('click', async () => {
     try {
-      const hasBusiness = await hasSavedBusinessName();
-
-      if (hasBusiness) {
-        await openChatbotModal();
-      } else {
-        await openPersonalizedHub();
-      }
-    } catch {
-      // On any unexpected error, fall back to the original behavior.
-      openPersonalizedHub();
+      await openChatbotModal();
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to open chatbot:', error);
     }
   });
 

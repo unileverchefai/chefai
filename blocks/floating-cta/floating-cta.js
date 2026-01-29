@@ -95,17 +95,18 @@ export default async function decorate(block) {
   const isLoggedIn = hasToken();
 
   // If the user is logged in (and therefore has completed registration, including business type),
-  // replace the floating-cta block with the chatbot component.
+  // replace the floating-cta block with the ask-button component.
   if (isLoggedIn) {
-    // Ensure chatbot styles are loaded
-    await loadCSS(`${window.hlx.codeBasePath}/blocks/components/chatbot/chatbot.css`);
+    // Ensure ask-button styles are loaded
+    await loadCSS(`${window.hlx.codeBasePath}/blocks/ask-button/ask-button.css`);
 
-    // Transform this block into a chatbot block and delegate to the chatbot decorator
-    block.classList.add('chatbot');
+    // Transform this block into an ask-button block and delegate to its decorator
+    block.classList.remove('floating-cta');
+    block.classList.add('ask-button');
     block.textContent = '';
 
-    const { default: chatbot } = await import('@components/chatbot/chatbot.js');
-    await chatbot(block);
+    const { default: decorateAskButton } = await import('../ask-button/ask-button.js');
+    await decorateAskButton(block);
     return;
   }
 

@@ -1,7 +1,6 @@
 import { createCarousel, createElement } from '@scripts/common.js';
 
 export function initCarouselCards(block, carouselContainer, itemCount, options = {}) {
-  const STATIC_LAYOUT_COUNT = 3;
   const isStaticDesktop = typeof options.disableDesktopCarousel === 'boolean'
     ? options.disableDesktopCarousel
     : true;
