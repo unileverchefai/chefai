@@ -6,7 +6,7 @@ main > .section > .carousel-cards-wrapper {
 /* Mobile-first styles */
 .carousel-cards {
   position: relative;
-  padding: 0 0 var(--spacing-2xl);
+  padding: 0 0 32px;
   overflow: hidden;
   background-color: var(--background-color);
 }
@@ -117,7 +117,6 @@ main > .section > .carousel-cards-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: var(--spacing-md) 0 0;
 }
 
 .carousel-cards .indicators {
@@ -134,6 +133,7 @@ main > .section > .carousel-cards-wrapper {
   transition: all var(--transition-base);
   border: none;
   padding: 0;
+  margin: 0;
   cursor: pointer;
 }
 
@@ -188,8 +188,6 @@ main > .section > .carousel-cards-wrapper {
 }
 
 .carousel-cards .arrow svg {
-  width: 24px;
-  height: 24px;
   fill: var(--smoke);
   transition: fill var(--transition-base);
 }
@@ -219,7 +217,8 @@ main > .section > .carousel-cards-wrapper {
 
   .carousel-cards-container {
     gap: var(--spacing-lg);
-    padding: 0 100px;
+    padding: 0;
+    margin-inline: 100px;
   }
 
   .carousel-cards .card {
@@ -258,6 +257,7 @@ main > .section > .carousel-cards-wrapper {
     height: var(--spacing-xs);
     border: none;
     padding: 0;
+    margin: 0;
   }
 
   .carousel-cards .indicator.active {
