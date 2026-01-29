@@ -39,6 +39,14 @@
   align-items: center;
 }
 
+.personalized-hub-container .carousel-cards .carousel-cards-container {
+  gap: var(--spacing-md);
+}
+
+.personalized-hub-container .carousel-cards .cards {
+  width: 210px;;
+}
+
 .ph-modal-slide-out {
   transform: translateY(100%);
   opacity: 0;

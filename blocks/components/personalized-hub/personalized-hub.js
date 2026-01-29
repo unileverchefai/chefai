@@ -131,8 +131,12 @@ export default async function openPersonalizedHub() {
         };
 
         const handleReject = () => {
+          // Reset selected business and candidates
           setBusinessData(null);
           setBusinessCandidates([]);
+          // Clear chat messages so previous business suggestions don't immediately re-trigger confirmation
+          setChatMessages([]);
+          // Return user to the chat screen
           setCurrentScreen(SCREENS.CHAT);
         };
 

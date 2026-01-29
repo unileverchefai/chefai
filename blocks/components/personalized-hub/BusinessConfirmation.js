@@ -1,4 +1,10 @@
-const { createElement: h } = window.React;
+import { initCarouselCards } from '../../carousel-cards/carousel-cards.js';
+
+const {
+  createElement: h,
+  useEffect,
+  useRef,
+} = window.React;
 
 export default function BusinessConfirmation({
   businessData,
@@ -15,6 +21,36 @@ export default function BusinessConfirmation({
   }
 
   const selectedName = businessData?.business_name ?? 'Unknown Business';
+
+  const carouselBlockRef = useRef(null);
+  const carouselContainerRef = useRef(null);
+
+  useEffect(() => {
+    const blockEl = carouselBlockRef.current;
+    const containerEl = carouselContainerRef.current;
+
+    if (!blockEl || !containerEl || !Array.isArray(candidates) || candidates.length === 0) {
+      return undefined;
+    }
+
+    let carouselInstance;
+
+    try {
+      carouselInstance = initCarouselCards(blockEl, containerEl, candidates.length, {
+        disableDesktopCarousel: false,
+        hideArrows: true,
+      });
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to initialize business carousel:', error);
+    }
+
+    return () => {
+      if (carouselInstance && typeof carouselInstance.destroy === 'function') {
+        carouselInstance.destroy();
+      }
+    };
+  }, [candidates.length]);
 
   const renderCard = (business, idx) => {
     const name = business.business_name ?? 'Unknown Business';
@@ -94,11 +130,18 @@ export default function BusinessConfirmation({
           ),
           h(
             'div',
-            { key: 'carousel', className: 'carousel-cards' },
+            {
+              key: 'carousel',
+              className: 'carousel-cards',
+              ref: carouselBlockRef,
+            },
             [
               h(
                 'ul',
-                { className: 'carousel-cards-container' },
+                {
+                  className: 'carousel-cards-container',
+                  ref: carouselContainerRef,
+                },
                 candidates.map(renderCard),
               ),
             ],
