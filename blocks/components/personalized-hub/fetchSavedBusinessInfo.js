@@ -1,26 +1,16 @@
 import { SUBSCRIPTION_KEY, ENDPOINTS } from '../chatbot/constants/api.js';
 import { getUserIdFromToken } from '../authentication/tokenManager.js';
 
-/**
- * Fetches the saved business info for the current user and logs
- * the business name to the console. Intended for debugging/verification.
- */
 export default async function fetchSavedBusinessInfoAndLog() {
   try {
-    const rawUserId = getUserIdFromToken();
+    const userId = getUserIdFromToken();
 
-    if (!rawUserId) {
-      // eslint-disable-next-line no-console
-      console.warn('[User Data] No user_id found in token. Cannot fetch business info.');
+    if (!userId) {
       return;
     }
 
-    const userId = rawUserId;
     const endpoint = ENDPOINTS.businessInfo;
     const url = `${endpoint}?user_id=${encodeURIComponent(userId)}`;
-
-    // eslint-disable-next-line no-console
-    console.log('[User Data] Fetching business info for user_id:', userId);
 
     const response = await fetch(url, {
       method: 'GET',
@@ -39,15 +29,12 @@ export default async function fetchSavedBusinessInfoAndLog() {
 
     const responseText = await response.text();
     if (!responseText) {
-      // eslint-disable-next-line no-console
-      console.log('[Personalized Hub] Business info API returned empty response.');
       return;
     }
 
     const json = JSON.parse(responseText);
     const data = json.data ?? {};
 
-    // Log complete user business data
     // eslint-disable-next-line no-console
     console.log('[User Data] Complete business info from API:', {
       user_id: userId,

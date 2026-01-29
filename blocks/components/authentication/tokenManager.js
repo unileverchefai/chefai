@@ -22,14 +22,8 @@ export function getUserIdFromToken() {
   try {
     const token = getToken();
     if (!token) {
-      // eslint-disable-next-line no-console
-      console.log('[Token] No token found in sessionStorage');
       return null;
     }
-
-    // The user_id is the entire token value itself
-    // eslint-disable-next-line no-console
-    console.log('[Token] Using entire token as user_id');
     return token;
   } catch (error) {
     // eslint-disable-next-line no-console

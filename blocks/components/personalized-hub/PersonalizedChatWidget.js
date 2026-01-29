@@ -37,17 +37,14 @@ export default function PersonalizedChatWidget({
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Monitor messages for businesses - they might come in a follow-up response
   useEffect(() => {
     if (!onBusinessNameSubmit || businessesProcessedRef.current) return;
 
-    // Check all messages (most recent first) for businesses
     for (let i = messages.length - 1; i >= 0; i -= 1) {
       const msg = messages[i];
       const businesses = msg.metadata?.businesses || msg.businesses;
 
       if (businesses && Array.isArray(businesses) && businesses.length > 0) {
-        // Found businesses! Trigger callback and mark as processed
         businessesProcessedRef.current = true;
         onBusinessNameSubmit(businesses);
         return;
@@ -99,8 +96,6 @@ export default function PersonalizedChatWidget({
     const trimmedName = businessName.trim();
     if (!trimmedName) return;
 
-    // Always send the business name through the regular chat message API
-    // so the backend can run its business search logic.
     setIsTyping(true);
     try {
       const userMessage = {
@@ -123,8 +118,6 @@ export default function PersonalizedChatWidget({
 
       setMessages((prev) => [...prev, response]);
 
-      // Check for businesses in the response
-      // Businesses might be in response.metadata.businesses or response.businesses
       let businesses = null;
 
       if (response.metadata?.businesses
@@ -137,20 +130,10 @@ export default function PersonalizedChatWidget({
         businesses = response.businesses;
       }
 
-      // If businesses found, trigger the callback immediately
       if (onBusinessNameSubmit && businesses) {
         businessesProcessedRef.current = true;
         onBusinessNameSubmit(businesses);
       } else if (onBusinessNameSubmit && !businessesProcessedRef.current) {
-        // No businesses in this response - might come in a follow-up message
-        // Set up a listener to check subsequent messages for businesses
-        // For now, we'll wait a bit and check again, or submit the name as-is
-        // The backend might send businesses in a separate message
-
-        // Check if we should wait for businesses or submit name immediately
-        // If the response suggests waiting (e.g., asking for confirmation),
-        // we might get businesses in the next message
-        // For now, submit the business name and let the flow continue
         onBusinessNameSubmit(trimmedName);
       }
     } catch (err) {

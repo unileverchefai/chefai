@@ -2,12 +2,6 @@ import { SUBSCRIPTION_KEY, ENDPOINTS } from '../chatbot/constants/api.js';
 import { getUserIdFromToken } from '../authentication/tokenManager.js';
 import { getAnonymousUserId } from '../chatbot/utils.js';
 
-/**
- * Checks if the current authenticated user has a saved business name.
- * Returns true when the business info API responds with a non-empty name.
- *
- * @returns {Promise<boolean>}
- */
 export default async function hasSavedBusinessName() {
   try {
     const rawUserId = getUserIdFromToken();

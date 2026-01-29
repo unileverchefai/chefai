@@ -14,57 +14,9 @@ const SCREENS = {
   COMPLETED: 'completed',
 };
 
-/**
- * Opens the personalized hub modal
- * @returns {Promise<void>}
- */
 export default async function openPersonalizedHub() {
-  // Debug/logging: fetch saved business name for the current user and log it.
-  (async () => {
-    try {
-      const rawUserId = getUserIdFromToken();
-      const userId = rawUserId || await getAnonymousUserId();
-      if (!ENDPOINTS.businessInfo) return;
-
-      const url = `${ENDPOINTS.businessInfo}?user_id=${encodeURIComponent(userId)}`;
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'X-Subscription-Key': SUBSCRIPTION_KEY,
-        },
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        // eslint-disable-next-line no-console
-        console.error('[Personalized Hub] Failed to fetch saved business info:', errorText);
-        return;
-      }
-
-      const responseText = await response.text();
-      if (!responseText) {
-        // eslint-disable-next-line no-console
-        console.log('[Personalized Hub] Business info API returned empty response.');
-        return;
-      }
-
-      const json = JSON.parse(responseText);
-      const data = json.data ?? {};
-      const businessName = data.name ?? '';
-
-      // eslint-disable-next-line no-console
-      console.log('[Personalized Hub] Saved business name from API:', businessName || '<none>');
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('[Personalized Hub] Error while fetching saved business info:', error);
-    }
-  })();
-
-  // Load personalized hub CSS if not already loaded
   await loadCSS(`${window.hlx.codeBasePath}/blocks/components/personalized-hub/personalized-hub.css`);
 
-  // Create container for React app
   const container = createElement('div', {
     className: 'personalized-hub-container',
     attributes: { id: 'personalized-hub-modal-root' },
@@ -73,7 +25,6 @@ export default async function openPersonalizedHub() {
   const ANIMATION_DURATION = 300;
   let reactRoot = null;
 
-  // Create modal with personalized hub specific configuration
   const modal = createModal({
     content: container,
     showCloseButton: false,
@@ -103,9 +54,7 @@ export default async function openPersonalizedHub() {
       throw new Error('React or ReactDOM not loaded');
     }
 
-    // Load cookie agreement CSS and check for consent
     await loadCSS(`${window.hlx.codeBasePath}/blocks/components/cookie-agreement/cookie-agreement.css`);
-    // Load carousel-cards styles so business cards reuse the same visual system
     await loadCSS(`${window.hlx.codeBasePath}/blocks/carousel-cards/carousel-cards.css`);
     const { default: openCookieAgreementModal } = await import('../cookie-agreement/index.js');
     const { default: PersonalizedChatWidget } = await import('./PersonalizedChatWidget.js');
@@ -257,8 +206,6 @@ export default async function openPersonalizedHub() {
         }
 
         if (currentScreen === SCREENS.COMPLETED) {
-          // While the signup flow runs in separate modals, keep showing LoadingState
-          // as a lightweight "processing" view in the background.
           return h(LoadingState, {
             businessData,
             onClose: animateAndClose,
@@ -275,37 +222,29 @@ export default async function openPersonalizedHub() {
       });
     };
 
-    // Function to render and open the personalized hub app
     const renderAndOpenPersonalizedHub = () => {
-      // Open the modal first so the container is in the DOM
       modal.open();
-      // Small delay to ensure modal is fully rendered before React mounts
       requestAnimationFrame(() => {
         renderPersonalizedHubApp();
       });
     };
 
-    // Check if cookies were accepted
     const hasConsent = document.cookie.split(';').some((c) => c.trim().startsWith('personalized-hub-consent=true'));
 
-    // If no consent, show cookie modal first, then render the app
     if (!hasConsent) {
       openCookieAgreementModal(
         () => {
-          // On agree, wait for cookie modal to fully close (300ms animation + 50ms buffer)
-          // then render and open the personalized hub app
           setTimeout(() => {
             renderAndOpenPersonalizedHub();
           }, 350);
         },
         () => {
-          // On close, do nothing (user cancelled)
+          // On close, do nothing
         },
       );
       return;
     }
 
-    // Render the personalized hub app (has consent, open immediately)
     renderAndOpenPersonalizedHub();
   } catch (error) {
     // eslint-disable-next-line no-console
@@ -315,7 +254,6 @@ export default async function openPersonalizedHub() {
       innerContent: `Failed to load personalized hub: ${error.message}. Please refresh the page.`,
     });
     container.appendChild(errorDiv);
-    // Open the modal even if there's an error
     modal.open();
   }
 }

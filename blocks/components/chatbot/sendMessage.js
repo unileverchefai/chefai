@@ -26,7 +26,6 @@ export default async function sendMessage(message, options = {}) {
   const tokenUserId = getUserIdFromToken();
   let userId = options.user_id ?? tokenUserId;
 
-  // If no authenticated user, get/create anonymous user ID
   if (!userId) {
     userId = await getAnonymousUserId();
   }
@@ -38,10 +37,6 @@ export default async function sendMessage(message, options = {}) {
     user_id: userId,
     country: options.country || 'BE',
   };
-
-  const startTime = performance.now();
-  // eslint-disable-next-line no-console
-  console.log('Sending message to API:', endpoint);
 
   try {
     const response = await fetchWithTimeout(
@@ -58,10 +53,6 @@ export default async function sendMessage(message, options = {}) {
       options.timeout || 30000,
     );
 
-    const requestTime = performance.now() - startTime;
-    // eslint-disable-next-line no-console
-    console.log(`API request completed in ${requestTime.toFixed(2)}ms`);
-
     if (!response.ok) {
       const errorText = await response.text();
       // eslint-disable-next-line no-console
@@ -74,9 +65,8 @@ export default async function sendMessage(message, options = {}) {
 
     return formatResponse(JSON.parse(responseText));
   } catch (error) {
-    const requestTime = performance.now() - startTime;
     // eslint-disable-next-line no-console
-    console.error(`API request failed after ${requestTime.toFixed(2)}ms:`, error);
+    console.error('API request failed:', error);
     throw error;
   }
 }
