@@ -210,6 +210,10 @@
   --glow-culinary-roots: 0 0 3px rgb(0 144 186 / 25%), 0 0 8px rgb(0 144 186 / 80%), 0 0 8px rgb(0 144 186 / 80%), 0 0 3px var(--culinary-roots-glow);
 }
 
+* {
+  box-sizing: border-box;
+}
+
 @media (width >= 900px) {
   :root {
     /* body sizes - legacy support */

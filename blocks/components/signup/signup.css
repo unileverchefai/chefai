@@ -18,7 +18,7 @@
   flex-direction: column;
   justify-content: space-between;
   position: relative;
-  overflow: hidden;
+  overflow: auto;
   margin: 0 auto;
   background: var(--c-white);
   border-radius: 28px;

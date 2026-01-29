@@ -217,7 +217,8 @@ export default function openSignupPasswordModal(email) {
     try {
       await resetPassword(email);
       modal.close();
-      window.location.reload();
+      // Redirect to personalized-hub after registration is completed
+      window.location.href = '/personalized-hub';
     } catch (error) {
       errorMessage.textContent = error.message ?? 'Failed to send reset email. Please try again.';
       errorMessage.style.display = 'block';

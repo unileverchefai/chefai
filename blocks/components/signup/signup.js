@@ -30,34 +30,6 @@ export default function openSignUpReportModal() {
     className: 'signup-modal-form',
   });
 
-  const businessInfoWrapper = createElement('div', {
-    className: 'signup-business-info',
-  });
-  const businessInfoTitle = createElement('p', {
-    className: 'signup-business-info-title',
-    innerContent: 'Business information',
-  });
-  const businessInfoText = createElement('p', {
-    className: 'signup-business-info-text',
-    innerContent: '',
-  });
-
-  try {
-    const stored = sessionStorage.getItem('personalized-hub-business-data');
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      const name = parsed?.business_name ?? '';
-      const type = parsed?.business_type ?? '';
-      businessInfoText.textContent = [name, type].filter(Boolean).join('. ');
-    }
-  } catch {
-    businessInfoText.textContent = '';
-  }
-
-  businessInfoWrapper.appendChild(businessInfoTitle);
-  businessInfoWrapper.appendChild(businessInfoText);
-  formContainer.appendChild(businessInfoWrapper);
-
   const emailGroup = createElement('div', {
     className: 'form-group',
   });

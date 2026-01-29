@@ -1,4 +1,6 @@
 import { createElement, addVariantLogic } from '@scripts/common.js';
+import { loadCSS } from '@scripts/aem.js';
+import { hasToken } from '@auth/tokenManager.js';
 import openPersonalizedHub from '@components/personalized-hub/personalized-hub.js';
 import hasSavedBusinessName from '@components/personalized-hub/hasSavedBusinessName.js';
 import openChatbotModal from '@components/chatbot/openChatbotModal.js';
@@ -89,7 +91,25 @@ function cleanCurrentBlock(block) {
   }
 }
 
-export default function decorate(block) {
+export default async function decorate(block) {
+  const isLoggedIn = hasToken();
+
+  // If the user is logged in (and therefore has completed registration, including business type),
+  // replace the floating-cta block with the ask-button component.
+  if (isLoggedIn) {
+    // Ensure ask-button styles are loaded
+    await loadCSS(`${window.hlx.codeBasePath}/blocks/ask-button/ask-button.css`);
+
+    // Transform this block into an ask-button block and delegate to its decorator
+    block.classList.remove('floating-cta');
+    block.classList.add('ask-button');
+    block.textContent = '';
+
+    const { default: decorateAskButton } = await import('../ask-button/ask-button.js');
+    await decorateAskButton(block);
+    return;
+  }
+
   const heroBlock = block.closest('main').querySelector('.hero');
   const heroCta = !!heroBlock && heroBlock.querySelector('.button');
   // if true, then floating cta visibility depends on hero cta visibility

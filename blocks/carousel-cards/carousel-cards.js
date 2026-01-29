@@ -1,5 +1,32 @@
 import { createCarousel, createElement } from '@scripts/common.js';
 
+export function initCarouselCards(block, carouselContainer, itemCount, options = {}) {
+  const isStaticDesktop = typeof options.disableDesktopCarousel === 'boolean'
+    ? options.disableDesktopCarousel
+    : true;
+
+  if (isStaticDesktop) {
+    block.classList.add('carousel-cards-static');
+  }
+
+  if (options.hideArrows) {
+    block.classList.add('carousel-cards-no-arrows');
+  }
+
+  return createCarousel({
+    container: carouselContainer,
+    block,
+    itemCount,
+    mobileItemsPerSlide: 1,
+    desktopItemsPerSlide: 3,
+    mobileBreakpoint: 900,
+    mobileGap: 16,
+    desktopGap: 24,
+    disableDesktopCarousel: isStaticDesktop,
+    ...options,
+  });
+}
+
 export default function decorate(block) {
   // Parse the block content - each row is a card
   const cards = [...block.children].map((row) => {
@@ -69,27 +96,8 @@ export default function decorate(block) {
 
   block.appendChild(carouselContainer);
 
-  // If exactly 3 items, display as static layout (no carousel on desktop)
-  // Mobile always uses carousel :)
-  const STATIC_LAYOUT_COUNT = 3;
-  const isStaticDesktop = cards.length === STATIC_LAYOUT_COUNT;
-
-  if (isStaticDesktop) {
-    block.classList.add('carousel-cards-static');
-  }
-
   try {
-    const carousel = createCarousel({
-      container: carouselContainer,
-      block,
-      itemCount: cards.length,
-      mobileItemsPerSlide: 1,
-      desktopItemsPerSlide: 3,
-      mobileBreakpoint: 900,
-      mobileGap: 16,
-      desktopGap: 24,
-      disableDesktopCarousel: isStaticDesktop,
-    });
+    const carousel = initCarouselCards(block, carouselContainer, cards.length);
 
     // Store carousel instance for cleanup
     block.carouselInstance = carousel;

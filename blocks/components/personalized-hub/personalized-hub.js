@@ -124,15 +124,20 @@ export default async function openPersonalizedHub() {
             console.error('Failed to save business details:', e);
           }
 
-          // Show loading for 3 seconds, then redirect to personalized-hub page
+          // Show loading for 3 seconds, then redirect to sneak-peek page
           setTimeout(() => {
-            window.location.href = '/personalized-hub';
+            window.location.href = '/sneak-peek';
           }, 3000);
         };
 
         const handleReject = () => {
+          // Reset selected business and candidates
           setBusinessData(null);
           setBusinessCandidates([]);
+          // Clear chat messages so previous business suggestions
+          // don't immediately re-trigger confirmation
+          setChatMessages([]);
+          // Return user to the chat screen
           setCurrentScreen(SCREENS.CHAT);
         };
 

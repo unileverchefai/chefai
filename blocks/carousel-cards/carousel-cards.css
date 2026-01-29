@@ -280,3 +280,8 @@ main > .section > .carousel-cards-wrapper {
     display: none;
   }
 }
+
+/* Optional: hide arrows via class, regardless of breakpoint */
+.carousel-cards.carousel-cards-no-arrows .arrows {
+  display: none !important;
+}
