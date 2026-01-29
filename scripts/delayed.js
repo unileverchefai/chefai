@@ -30,7 +30,7 @@ function loadLaunch() {
   const isProd = window.location.host === 'www.ufs.com';
 
   const src = isProd
-    ? 'https://assets.adobedtm.com/e6bd1902389a/71b858983a5c/launch-19f5d7ed805e.min.js'
+    ? 'https://assets.adobedtm.com/e6bd1902389a/71b858983a5c/launch-dda2a02eb93c.min.js'
     : 'https://assets.adobedtm.com/e6bd1902389a/71b858983a5c/launch-19f5d7ed805e-staging.min.js';
   injectScript(src);
 }
