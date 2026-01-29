@@ -142,29 +142,16 @@ export default async function openPersonalizedHub() {
           return h(
             'div',
             {
-              style: {
-                padding: '24px',
-                textAlign: 'center',
-                color: 'var(--error)',
-                fontFamily: 'var(--body-font-family)',
-              },
+              className: 'ph-error-container',
             },
             [
-              h('p', { key: 'error' }, `Error: ${error}`),
+              h('p', { key: 'error', className: 'ph-error-message' }, `Error: ${error}`),
               h(
                 'button',
                 {
                   key: 'retry',
+                  className: 'ph-error-retry-btn',
                   onClick: () => setError(null),
-                  style: {
-                    marginTop: '16px',
-                    padding: '8px 16px',
-                    borderRadius: '4px',
-                    border: 'none',
-                    background: 'var(--ufs-orange)',
-                    color: 'white',
-                    cursor: 'pointer',
-                  },
                 },
                 'Try Again',
               ),

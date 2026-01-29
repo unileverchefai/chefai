@@ -23,35 +23,15 @@ export default function LoadingState({ businessData }) {
                 logoUrl ? h('img', {
                   src: logoUrl,
                   alt: businessData?.business_name ?? 'Business logo',
-                  style: {
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                  },
+                  className: 'ph-loading-logo-img',
                 }) : h(
                   'div',
                   {
-                    style: {
-                      width: '100%',
-                      height: '100%',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      padding: '8px',
-                      color: 'var(--c-white)',
-                      fontFamily: 'var(--body-font-family)',
-                      fontSize: '11px',
-                      textAlign: 'center',
-                      lineHeight: '1.2',
-                    },
+                    className: 'ph-loading-logo-placeholder',
                   },
                   [
                     h('div', {
-                      style: {
-                        fontStyle: 'italic',
-                        marginBottom: '2px',
-                      },
+                      className: 'ph-loading-logo-text',
                     }, businessData?.business_name ?? 'Business'),
                   ],
                 ),

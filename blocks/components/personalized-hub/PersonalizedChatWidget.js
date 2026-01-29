@@ -179,13 +179,7 @@ export default function PersonalizedChatWidget({
             'div',
             {
               key: 'typing',
-              style: {
-                padding: '12px 16px',
-                marginBottom: '16px',
-                color: 'var(--dark-color)',
-                fontStyle: 'italic',
-                fontSize: '14px',
-              },
+              className: 'ph-typing-indicator',
             },
             'Chef AI is typing...',
           ),
