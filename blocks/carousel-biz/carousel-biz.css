@@ -5,7 +5,8 @@ main > .section > .carousel-biz-wrapper {
 .carousel-biz {
   background: var(--background-color);
   padding: var(--spacing-lg) var(--spacing-md) 32px;
-  max-width: 1440px;
+  max-width: 100%;
+  overflow: hidden;
   margin: 0 auto;
 }
 
