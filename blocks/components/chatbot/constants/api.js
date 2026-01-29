@@ -7,4 +7,5 @@ export const ENDPOINTS = {
   businessInfo: `${API_BASE_URL}/business/info`,
   businessDetails: `${API_BASE_URL}/business/details`,
   businessTypesUtility: 'https://api-hub-we.azure-api.net/chefaibe/st/utility/business-types',
+  users: `${API_BASE_URL}/users`,
 };

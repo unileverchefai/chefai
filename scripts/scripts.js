@@ -148,6 +148,15 @@ async function loadLazy(doc) {
     // eslint-disable-next-line no-console
     console.error('Failed to initialize subscription flow triggers', e);
   }
+
+  // Fetch and log user business data on page load
+  try {
+    const { default: fetchSavedBusinessInfoAndLog } = await import('@components/personalized-hub/fetchSavedBusinessInfo.js');
+    await fetchSavedBusinessInfoAndLog();
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error('Failed to fetch user business data on page load', e);
+  }
 }
 
 /**

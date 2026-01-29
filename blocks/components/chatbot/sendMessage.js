@@ -1,4 +1,4 @@
-import { getThreadId, formatResponse } from './utils.js';
+import { getThreadId, formatResponse, getAnonymousUserId } from './utils.js';
 import { SUBSCRIPTION_KEY, ENDPOINTS } from './constants/api.js';
 import { getUserIdFromToken } from '../authentication/tokenManager.js';
 
@@ -24,7 +24,12 @@ export default async function sendMessage(message, options = {}) {
   const threadId = getThreadId();
 
   const tokenUserId = getUserIdFromToken();
-  const userId = options.user_id ?? tokenUserId;
+  let userId = options.user_id ?? tokenUserId;
+
+  // If no authenticated user, get/create anonymous user ID
+  if (!userId) {
+    userId = await getAnonymousUserId();
+  }
 
   const payload = {
     ...options,

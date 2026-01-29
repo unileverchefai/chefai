@@ -1,5 +1,6 @@
 import { SUBSCRIPTION_KEY, ENDPOINTS } from '../chatbot/constants/api.js';
 import { getUserIdFromToken } from '../authentication/tokenManager.js';
+import { getAnonymousUserId } from '../chatbot/utils.js';
 
 /**
  * Checks if the current authenticated user has a saved business name.
@@ -9,9 +10,10 @@ import { getUserIdFromToken } from '../authentication/tokenManager.js';
  */
 export default async function hasSavedBusinessName() {
   try {
-    const userId = getUserIdFromToken();
+    const rawUserId = getUserIdFromToken();
+    const userId = rawUserId || await getAnonymousUserId();
 
-    if (!userId || !ENDPOINTS.businessInfo) {
+    if (!ENDPOINTS.businessInfo) {
       return false;
     }
 
@@ -43,4 +45,3 @@ export default async function hasSavedBusinessName() {
     return false;
   }
 }
-

@@ -7,15 +7,20 @@ import { getUserIdFromToken } from '../authentication/tokenManager.js';
  */
 export default async function fetchSavedBusinessInfoAndLog() {
   try {
-    const userId = getUserIdFromToken();
-    if (!userId) {
+    const rawUserId = getUserIdFromToken();
+
+    if (!rawUserId) {
       // eslint-disable-next-line no-console
-      console.log('[Personalized Hub] No auth token found, skipping business info fetch.');
+      console.warn('[User Data] No user_id found in token. Cannot fetch business info.');
       return;
     }
 
+    const userId = rawUserId;
     const endpoint = ENDPOINTS.businessInfo;
     const url = `${endpoint}?user_id=${encodeURIComponent(userId)}`;
+
+    // eslint-disable-next-line no-console
+    console.log('[User Data] Fetching business info for user_id:', userId);
 
     const response = await fetch(url, {
       method: 'GET',
@@ -42,14 +47,28 @@ export default async function fetchSavedBusinessInfoAndLog() {
     const json = JSON.parse(responseText);
     const data = json.data ?? {};
 
-    const businessName = data.name ?? '';
-
-    // Final debug output requested: log business name on page reload.
+    // Log complete user business data
     // eslint-disable-next-line no-console
-    console.log('[Personalized Hub] Saved business name from API:', businessName || '<none>');
+    console.log('[User Data] Complete business info from API:', {
+      user_id: userId,
+      business_name: data.name ?? '<none>',
+      place_id: data.place_id ?? '<none>',
+      address: {
+        street: data.street ?? '<none>',
+        house_number: data.house_number ?? '<none>',
+        city: data.city ?? '<none>',
+        postal_code: data.postal_code ?? '<none>',
+        country: data.country ?? '<none>',
+      },
+      images: {
+        image_url: data.image_url ?? '<none>',
+        logo_url: data.logo_url ?? '<none>',
+      },
+      url: data.url ?? '<none>',
+      full_data: data,
+    });
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('[Personalized Hub] Error while fetching saved business info:', error);
   }
 }
-

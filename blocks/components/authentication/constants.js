@@ -32,10 +32,23 @@ export function createRegistrationPayload(data) {
     now,
     referrerUrl,
     fullName,
+    anonymousUserId,
   } = data;
 
-  return {
-    id: 0,
+  // If anonymousUserId exists, try to parse it as integer for id field
+  // Otherwise use 0 (new user)
+  let idValue = 0;
+  if (anonymousUserId) {
+    const parsedId = parseInt(anonymousUserId, 10);
+    // Only use parsed ID if it's a valid number, otherwise keep 0
+    if (!Number.isNaN(parsedId)) {
+      idValue = parsedId;
+    }
+  }
+
+  const payload = {
+    id: idValue,
+    ...(anonymousUserId ? { user_id: anonymousUserId } : {}),
     site: SITE_CODE,
     email,
     mobilePhone: mobilePhone ?? '',
@@ -168,4 +181,6 @@ export function createRegistrationPayload(data) {
     distributorEmailArray: [],
     termsANDAge: null,
   };
+
+  return payload;
 }

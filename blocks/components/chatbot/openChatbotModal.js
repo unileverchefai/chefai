@@ -76,4 +76,3 @@ export default async function openChatbotModal() {
     modal.open();
   }
 }
-

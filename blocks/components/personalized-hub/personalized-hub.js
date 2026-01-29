@@ -1,4 +1,4 @@
-import { loadReact } from '@components/chatbot/utils.js';
+import { loadReact, getAnonymousUserId } from '@components/chatbot/utils.js';
 import { createElement } from '@scripts/common.js';
 import { loadCSS } from '@scripts/aem.js';
 import createModal from '@components/modal/index.js';
@@ -22,8 +22,9 @@ export default async function openPersonalizedHub() {
   // Debug/logging: fetch saved business name for the current user and log it.
   (async () => {
     try {
-      const userId = getUserIdFromToken();
-      if (!userId || !ENDPOINTS.businessInfo) return;
+      const rawUserId = getUserIdFromToken();
+      const userId = rawUserId || await getAnonymousUserId();
+      if (!ENDPOINTS.businessInfo) return;
 
       const url = `${ENDPOINTS.businessInfo}?user_id=${encodeURIComponent(userId)}`;
       const response = await fetch(url, {
@@ -111,9 +112,8 @@ export default async function openPersonalizedHub() {
     const { default: LoadingState } = await import('./LoadingState.js');
     const { default: BusinessConfirmation } = await import('./BusinessConfirmation.js');
     const { default: WelcomeScreen } = await import('./WelcomeScreen.js');
-    const { default: openSignUpReportModal } = await import('../signup/signup.js');
 
-    const { useState, useEffect } = window.React;
+    const { useState } = window.React;
     const { createElement: h } = window.React;
 
     // Function to render the personalized hub app
@@ -125,24 +125,7 @@ export default async function openPersonalizedHub() {
         const [error, setError] = useState(null);
         const [chatMessages, setChatMessages] = useState([]);
 
-        useEffect(() => {
-          if (currentScreen !== SCREENS.COMPLETED) return;
-
-          const startSignupFlow = async () => {
-            try {
-              // Open the main signup modal (which itself will open the password step).
-              openSignUpReportModal();
-              // After kicking off signup flow, prepare the hub to show the Welcome screen.
-              setCurrentScreen(SCREENS.WELCOME);
-            } catch (e) {
-              // eslint-disable-next-line no-console
-              console.error('Failed to start signup flow from personalized hub:', e);
-              setCurrentScreen(SCREENS.WELCOME);
-            }
-          };
-
-          startSignupFlow();
-        }, [currentScreen]);
+        // Removed signup flow - now redirecting to /personalized-hub instead
 
         const handleBusinessNameSubmit = (result) => {
           setError(null);
@@ -194,9 +177,9 @@ export default async function openPersonalizedHub() {
             console.error('Failed to save business details:', e);
           }
 
-          // Show loading for 3 seconds, then launch signup flow
+          // Show loading for 3 seconds, then redirect to personalized-hub page
           setTimeout(() => {
-            setCurrentScreen(SCREENS.COMPLETED);
+            window.location.href = '/personalized-hub';
           }, 3000);
         };
 
@@ -325,6 +308,7 @@ export default async function openPersonalizedHub() {
     // Render the personalized hub app (has consent, open immediately)
     renderAndOpenPersonalizedHub();
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('Failed to load personalized hub:', error);
     const errorDiv = createElement('div', {
       className: 'chatbot-error',

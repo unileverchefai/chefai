@@ -27,6 +27,7 @@ export default function PersonalizedChatWidget({
   const [isTyping, setIsTyping] = useState(false);
   const [visibleQuestions, setVisibleQuestions] = useState(PREDEFINED_QUESTIONS);
   const messagesEndRef = useRef(null);
+  const businessesProcessedRef = useRef(false);
 
   const isControlled = Array.isArray(controlledMessages) && typeof onMessagesChange === 'function';
   const messages = isControlled ? controlledMessages : uncontrolledMessages;
@@ -35,6 +36,24 @@ export default function PersonalizedChatWidget({
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Monitor messages for businesses - they might come in a follow-up response
+  useEffect(() => {
+    if (!onBusinessNameSubmit || businessesProcessedRef.current) return;
+
+    // Check all messages (most recent first) for businesses
+    for (let i = messages.length - 1; i >= 0; i -= 1) {
+      const msg = messages[i];
+      const businesses = msg.metadata?.businesses || msg.businesses;
+
+      if (businesses && Array.isArray(businesses) && businesses.length > 0) {
+        // Found businesses! Trigger callback and mark as processed
+        businessesProcessedRef.current = true;
+        onBusinessNameSubmit(businesses);
+        return;
+      }
+    }
+  }, [messages, onBusinessNameSubmit]);
 
   const handleQuestionClick = useCallback(async (question) => {
     const userMessage = {
@@ -104,9 +123,34 @@ export default function PersonalizedChatWidget({
 
       setMessages((prev) => [...prev, response]);
 
-      if (onBusinessNameSubmit && response.metadata?.businesses?.length) {
-        onBusinessNameSubmit(response.metadata.businesses);
-      } else if (onBusinessNameSubmit) {
+      // Check for businesses in the response
+      // Businesses might be in response.metadata.businesses or response.businesses
+      let businesses = null;
+
+      if (response.metadata?.businesses
+        && Array.isArray(response.metadata.businesses)
+        && response.metadata.businesses.length > 0) {
+        businesses = response.metadata.businesses;
+      } else if (response.businesses
+        && Array.isArray(response.businesses)
+        && response.businesses.length > 0) {
+        businesses = response.businesses;
+      }
+
+      // If businesses found, trigger the callback immediately
+      if (onBusinessNameSubmit && businesses) {
+        businessesProcessedRef.current = true;
+        onBusinessNameSubmit(businesses);
+      } else if (onBusinessNameSubmit && !businessesProcessedRef.current) {
+        // No businesses in this response - might come in a follow-up message
+        // Set up a listener to check subsequent messages for businesses
+        // For now, we'll wait a bit and check again, or submit the name as-is
+        // The backend might send businesses in a separate message
+
+        // Check if we should wait for businesses or submit name immediately
+        // If the response suggests waiting (e.g., asking for confirmation),
+        // we might get businesses in the next message
+        // For now, submit the business name and let the flow continue
         onBusinessNameSubmit(trimmedName);
       }
     } catch (err) {
@@ -125,7 +169,6 @@ export default function PersonalizedChatWidget({
     } finally {
       setIsTyping(false);
     }
-
   }, [businessName, onBusinessNameSubmit, messages, setMessages]);
 
   return h(

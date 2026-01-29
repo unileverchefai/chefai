@@ -7,9 +7,12 @@ export default function BusinessConfirmation({
   onConfirm,
   onReject,
 }) {
-  const candidates = Array.isArray(businesses) && businesses.length > 0
-    ? businesses
-    : (businessData ? [businessData] : []);
+  let candidates = [];
+  if (Array.isArray(businesses) && businesses.length > 0) {
+    candidates = businesses;
+  } else if (businessData) {
+    candidates = [businessData];
+  }
 
   const selectedName = businessData?.business_name ?? 'Unknown Business';
 

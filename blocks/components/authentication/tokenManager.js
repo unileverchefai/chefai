@@ -21,20 +21,19 @@ export function hasToken() {
 export function getUserIdFromToken() {
   try {
     const token = getToken();
-    if (!token) return null;
+    if (!token) {
+      // eslint-disable-next-line no-console
+      console.log('[Token] No token found in sessionStorage');
+      return null;
+    }
 
-    const parts = token.split('.');
-    if (parts.length !== 3) return null;
-
-    const payload = JSON.parse(atob(parts[1]));
-
-    return (
-      payload.user_id
-      || payload.userId
-      || payload.sub
-      || null
-    );
-  } catch {
+    // The user_id is the entire token value itself
+    // eslint-disable-next-line no-console
+    console.log('[Token] Using entire token as user_id');
+    return token;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('[Token] Error getting token:', error);
     return null;
   }
 }

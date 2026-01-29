@@ -1,11 +1,12 @@
 import { SUBSCRIPTION_KEY, ENDPOINTS } from '../chatbot/constants/api.js';
 import { getUserIdFromToken } from '../authentication/tokenManager.js';
 
-export default async function saveBusinessDetails(businessData) {
-  const userId = getUserIdFromToken();
+export default async function saveBusinessDetails(businessData, providedUserId = null) {
+  // Use provided user_id if given, otherwise try to get from token
+  const userId = providedUserId ?? getUserIdFromToken();
 
   if (!userId) {
-    throw new Error('User not authenticated. Please sign in to continue.');
+    throw new Error('User ID is required to save business details.');
   }
 
   const endpoint = `${ENDPOINTS.businessDetails}`;
@@ -52,4 +53,3 @@ export default async function saveBusinessDetails(businessData) {
     return null;
   }
 }
-
