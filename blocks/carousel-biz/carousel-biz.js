@@ -1,11 +1,139 @@
 import { createCarousel } from '../../scripts/common.js';
 import { decorateIcons } from '../../scripts/aem.js';
-import fetchInsights, { fetchBusinessTypes } from './fetchInsights.js';
 
 /**
- * Render carousel cards from insights data
+ * Parse dropdown options from first row
+ * @param {HTMLElement} firstRow - First row containing dropdown data
+ * @returns {Object} Dropdown label and options array
+ */
+function parseDropdownData(firstRow) {
+  const cells = firstRow.children;
+  if (cells.length < 2) return null;
+
+  const label = cells[0].textContent.trim();
+  const optionsList = cells[1].querySelector('ul');
+
+  if (!optionsList) return null;
+
+  const options = [...optionsList.querySelectorAll('li')].map((li) => li.textContent.trim());
+
+  return { label, options };
+}
+
+/**
+ * Parse authored block content into card data with restaurant types
+ * @param {HTMLElement} block - The block element with authored content
+ * @returns {Array} Array of card data objects
+ */
+function parseAuthoredContent(block) {
+  const rows = [...block.children];
+  const cardRows = rows.slice(1);
+
+  const cards = cardRows.map((row) => {
+    const cells = row.children;
+    if (cells.length < 2) return null;
+
+    const contentCell = cells[0];
+    const metaCell = cells[1];
+
+    // trend name
+    const h3 = contentCell.querySelector('h3');
+    if (!h3) return null;
+
+    const trendName = h3.textContent.trim();
+    const paragraphs = contentCell.querySelectorAll('p');
+    let bgImage = null;
+    let description = '';
+    let link = null;
+
+    if (paragraphs.length > 0) {
+      const firstPicture = paragraphs[0].querySelector('picture img');
+      if (firstPicture) {
+        bgImage = firstPicture.getAttribute('src');
+      }
+    }
+
+    const h2 = contentCell.querySelector('h2');
+    const stat = h2 ? h2.textContent.trim() : '';
+
+    const linkParagraph = [...paragraphs].find((p) => p.querySelector('a'));
+    if (linkParagraph) {
+      const linkEl = linkParagraph.querySelector('a');
+      if (linkEl) {
+        link = {
+          href: linkEl.getAttribute('href'),
+          text: linkEl.textContent.trim(),
+        };
+      }
+    }
+
+    let descParagraph = [...paragraphs].find((p) => !p.querySelector('picture') && !p.querySelector('a'));
+
+    if (!descParagraph) {
+      // look for paragraph with text content, excluding the first one (bg image)
+      descParagraph = [...paragraphs].slice(1).find((p) => {
+        const textContent = p.textContent.trim();
+        return textContent && !p.querySelector('a');
+      });
+    }
+
+    if (descParagraph) {
+      // extract text before br or picture
+      const clone = descParagraph.cloneNode(true);
+      const br = clone.querySelector('br');
+      const pic = clone.querySelector('picture');
+
+      if (br) {
+        const textNode = [...clone.childNodes].find(
+          (node) => node.nodeType === Node.TEXT_NODE && node.textContent.trim(),
+        );
+        description = textNode ? textNode.textContent.trim() : '';
+      } else if (pic) {
+        pic.remove();
+        description = clone.textContent.trim();
+      } else {
+        description = clone.textContent.trim();
+      }
+    }
+
+    // extract assigned restaurant types from second column
+    const typesList = metaCell.querySelector('ul');
+    const restaurantTypes = typesList
+      ? [...typesList.querySelectorAll('li')].map((li) => li.textContent.trim())
+      : [];
+
+    let trendClass = '';
+    const trendLower = trendName.toLowerCase();
+    if (trendLower.includes('borderless')) {
+      trendClass = 'borderless-cuisine';
+    } else if (trendLower.includes('street')) {
+      trendClass = 'street-food-couture';
+    } else if (trendLower.includes('dinner') || trendLower.includes('designed')) {
+      trendClass = 'diner-designed';
+    } else if (trendLower.includes('culinary') || trendLower.includes('roots')) {
+      trendClass = 'culinary-roots';
+    } else if (trendLower.includes('cross')) {
+      trendClass = 'cross-trend';
+    }
+
+    return {
+      trendName,
+      trendClass,
+      stat,
+      description,
+      link,
+      bgImage,
+      restaurantTypes,
+    };
+  }).filter((cardData) => cardData !== null);
+
+  return cards;
+}
+
+/**
+ * Render carousel cards from card data
  * @param {HTMLElement} container - The carousel container element
- * @param {Array} cards - Array of insight card data
+ * @param {Array} cards - Array of card data objects
  */
 function renderCards(container, cards) {
   container.innerHTML = '';
@@ -13,31 +141,33 @@ function renderCards(container, cards) {
   cards.forEach((cardData) => {
     const card = document.createElement('li');
     card.className = 'trend-card';
-    card.setAttribute('data-trend', cardData.trendClass);
-    card.classList.add(cardData.trendClass);
+    card.setAttribute('data-trend', cardData.trendClass || cardData.trendName.toLowerCase().replace(/\s+/g, '-'));
 
-    // Set background image
+    if (cardData.trendClass) {
+      card.classList.add(cardData.trendClass);
+    }
+
+    if (cardData.restaurantTypes && cardData.restaurantTypes.length > 0) {
+      card.setAttribute('data-restaurant-types', cardData.restaurantTypes.join('||'));
+    }
+
     if (cardData.bgImage) {
       card.style.backgroundImage = `url('${cardData.bgImage}')`;
       card.style.backgroundSize = 'cover';
       card.style.backgroundPosition = 'center';
     }
 
-    // Determine if stat is a number or word
     const isNumberStat = /^\d/.test(cardData.stat);
     const statClass = isNumberStat ? 'stat-number' : 'stat-word';
 
-    // Card header (trend name)
     const header = document.createElement('div');
     header.className = 'trend-header';
     header.textContent = cardData.trendName.toUpperCase();
     card.appendChild(header);
 
-    // Card content wrapper
     const content = document.createElement('div');
     content.className = 'trend-content';
 
-    // Stat/insight
     if (cardData.stat) {
       const stat = document.createElement('div');
       stat.className = `trend-stat ${statClass}`;
@@ -45,7 +175,6 @@ function renderCards(container, cards) {
       content.appendChild(stat);
     }
 
-    // Description
     if (cardData.description) {
       const desc = document.createElement('p');
       desc.className = 'trend-description';
@@ -53,24 +182,28 @@ function renderCards(container, cards) {
       content.appendChild(desc);
     }
 
-    // CTA
+    // CTA is always rendered to mantain space (next phase of the project!)
     if (cardData.link) {
       const cta = document.createElement('a');
       cta.className = 'trend-cta';
       cta.href = cardData.link.href;
 
-      // Add text
       const ctaText = document.createElement('span');
       ctaText.className = 'cta-text';
       ctaText.textContent = cardData.link.text;
       cta.appendChild(ctaText);
 
-      // Add arrow icon from icons folder
       const iconSpan = document.createElement('span');
       iconSpan.className = 'icon icon-arrow_right cta-arrow';
       cta.appendChild(iconSpan);
       decorateIcons(cta);
 
+      content.appendChild(cta);
+    } else {
+    // CTA is always rendered to mantain space (next phase of the project!)
+      const cta = document.createElement('div');
+      cta.className = 'trend-cta trend-cta-spacer';
+      cta.setAttribute('aria-hidden', 'true');
       content.appendChild(cta);
     }
 
@@ -86,7 +219,6 @@ function renderCards(container, cards) {
  * @param {number} itemCount - Number of items
  */
 function initializeCarousel(block, container, itemCount) {
-  // Destroy existing carousel if any
   if (block.carouselInstance?.destroy) {
     block.carouselInstance.destroy();
   }
@@ -104,7 +236,6 @@ function initializeCarousel(block, container, itemCount) {
       disableDesktopCarousel: false,
     });
 
-    // Remove screen reader announcement
     const srAnnouncement = block.querySelector('[aria-live]');
     if (srAnnouncement) {
       srAnnouncement.remove();
@@ -117,26 +248,36 @@ function initializeCarousel(block, container, itemCount) {
   }
 }
 
-export default async function decorate(block) {
+export default function decorate(block) {
   const MIN_ITEMS = 3;
 
-  // Clear block content
+  const firstRow = block.children[0];
+  const dropdownData = parseDropdownData(firstRow);
+
+  const cards = parseAuthoredContent(block);
+
+  if (cards.length < MIN_ITEMS) {
+    block.remove();
+    return;
+  }
+
+  const allCards = cards;
   block.innerHTML = '';
 
-  // Create filter dropdown (custom dropdown)
+  // filter dropdown
   const filterContainer = document.createElement('div');
   filterContainer.className = 'carousel-biz-filter';
 
-  // Custom dropdown button
+  // dropdown button
   const dropdownButton = document.createElement('button');
   dropdownButton.className = 'biz-dropdown';
-  dropdownButton.setAttribute('aria-label', 'Filter by business type');
+  dropdownButton.setAttribute('aria-label', `Filter by ${dropdownData?.label || 'business type'}`);
   dropdownButton.setAttribute('aria-expanded', 'false');
   dropdownButton.setAttribute('aria-haspopup', 'listbox');
 
   const dropdownText = document.createElement('span');
   dropdownText.className = 'biz-dropdown-text';
-  dropdownText.textContent = 'All business types';
+  dropdownText.textContent = `${dropdownData?.label}`;
 
   const dropdownArrow = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   dropdownArrow.setAttribute('class', 'biz-dropdown-arrow');
@@ -156,59 +297,47 @@ export default async function decorate(block) {
   dropdownButton.appendChild(dropdownText);
   dropdownButton.appendChild(dropdownArrow);
 
-  // Custom dropdown menu
+  // dropdown menu
   const dropdownMenu = document.createElement('div');
   dropdownMenu.className = 'biz-dropdown-menu';
   dropdownMenu.setAttribute('role', 'listbox');
   dropdownMenu.setAttribute('aria-hidden', 'true');
 
-  filterContainer.appendChild(dropdownButton);
-  filterContainer.appendChild(dropdownMenu);
-  block.appendChild(filterContainer);
-
-  // Create carousel container
-  const carouselContainer = document.createElement('ul');
-  carouselContainer.className = 'carousel-biz-container';
-  block.appendChild(carouselContainer);
-
-  // Fetch business types for dropdown
-  const businessTypes = await fetchBusinessTypes();
-
-  // Add "All business types" option
+  // all dropdown options
   const allOption = document.createElement('div');
   allOption.className = 'biz-dropdown-option active';
   allOption.setAttribute('role', 'option');
   allOption.setAttribute('aria-selected', 'true');
-  allOption.dataset.value = '';
-  allOption.textContent = 'All business types';
+  allOption.dataset.value = 'all';
+  allOption.textContent = `${dropdownData?.label}`;
   dropdownMenu.appendChild(allOption);
 
-  // Add business type options
-  businessTypes.forEach((bt) => {
-    const option = document.createElement('div');
-    option.className = 'biz-dropdown-option';
-    option.setAttribute('role', 'option');
-    option.setAttribute('aria-selected', 'false');
-    option.dataset.value = bt.business_type_id;
-    option.textContent = bt.business_type_name;
-    dropdownMenu.appendChild(option);
-  });
-
-  // Fetch initial insights (all business types)
-  let cards = await fetchInsights();
-
-  // Validate minimum items
-  if (cards.length < MIN_ITEMS) {
-    // Show empty state or remove block
-    block.innerHTML = '<p>No insights available at the moment.</p>';
-    return;
+  if (dropdownData?.options) {
+    dropdownData.options.forEach((optionText) => {
+      const option = document.createElement('div');
+      option.className = 'biz-dropdown-option';
+      option.setAttribute('role', 'option');
+      option.setAttribute('aria-selected', 'false');
+      option.dataset.value = optionText;
+      option.textContent = optionText;
+      dropdownMenu.appendChild(option);
+    });
   }
 
-  // Render initial cards
-  renderCards(carouselContainer, cards);
-  initializeCarousel(block, carouselContainer, cards.length);
+  filterContainer.appendChild(dropdownButton);
+  filterContainer.appendChild(dropdownMenu);
+  block.appendChild(filterContainer);
 
-  // Custom dropdown interactions
+  const carouselContainer = document.createElement('ul');
+  carouselContainer.className = 'carousel-biz-container';
+  block.appendChild(carouselContainer);
+
+  renderCards(carouselContainer, allCards);
+
+  setTimeout(() => {
+    initializeCarousel(block, carouselContainer, allCards.length);
+  }, 0);
+
   let isOpen = false;
 
   const toggleDropdown = () => {
@@ -225,8 +354,41 @@ export default async function decorate(block) {
     filterContainer.classList.remove('open');
   };
 
-  const selectOption = async (option) => {
-    // Update active state
+  const filterCards = (restaurantType) => {
+    let filteredCards;
+
+    if (restaurantType === 'all') {
+      filteredCards = allCards;
+    } else {
+      filteredCards = allCards.filter((card) => card.restaurantTypes.includes(restaurantType));
+    }
+
+    if (filteredCards.length === 0) {
+      if (block.carouselInstance?.destroy) {
+        block.carouselInstance.destroy();
+      }
+
+      carouselContainer.innerHTML = '<li class="empty-state">No insights available for this selection.</li>';
+
+      // hide carousel controls
+      const controls = block.querySelector('.controls');
+      if (controls) {
+        controls.style.display = 'none';
+      }
+      return;
+    }
+
+    // show carousel controls
+    const controls = block.querySelector('.controls');
+    if (controls) {
+      controls.style.display = '';
+    }
+
+    renderCards(carouselContainer, filteredCards);
+    initializeCarousel(block, carouselContainer, filteredCards.length);
+  };
+
+  const selectOption = (option) => {
     dropdownMenu.querySelectorAll('.biz-dropdown-option').forEach((opt) => {
       opt.classList.remove('active');
       opt.setAttribute('aria-selected', 'false');
@@ -234,43 +396,22 @@ export default async function decorate(block) {
     option.classList.add('active');
     option.setAttribute('aria-selected', 'true');
 
-    // Update button text
     dropdownText.textContent = option.textContent;
 
-    // Close dropdown
     closeDropdown();
 
-    // Fetch filtered insights
-    const businessTypeId = option.dataset.value;
-    carouselContainer.classList.add('loading');
-
-    try {
-      const fetchOptions = businessTypeId ? { business_type_id: businessTypeId } : {};
-      cards = await fetchInsights(fetchOptions);
-
-      if (cards.length < MIN_ITEMS) {
-        carouselContainer.innerHTML = '<li class="empty-state">No insights available for this business type.</li>';
-        return;
-      }
-
-      renderCards(carouselContainer, cards);
-      initializeCarousel(block, carouselContainer, cards.length);
-    } finally {
-      carouselContainer.classList.remove('loading');
-    }
+    const selectedType = option.dataset.value;
+    filterCards(selectedType);
   };
 
-  // Toggle dropdown on button click
   dropdownButton.addEventListener('click', toggleDropdown);
 
-  // Close dropdown when clicking outside
   document.addEventListener('click', (e) => {
     if (!filterContainer.contains(e.target) && isOpen) {
       closeDropdown();
     }
   });
 
-  // Handle option selection
   dropdownMenu.addEventListener('click', (e) => {
     const option = e.target.closest('.biz-dropdown-option');
     if (option) {
@@ -278,7 +419,6 @@ export default async function decorate(block) {
     }
   });
 
-  // Keyboard navigation
   dropdownButton.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
