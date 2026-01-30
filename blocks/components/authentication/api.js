@@ -98,7 +98,6 @@ export async function apiRequest(endpoint, options = {}) {
           errorMessage = errorJson.message ?? errorJson.error ?? errorJson.code ?? errorMessage;
         }
       } catch {
-        // Use default error message
       }
       throw new Error(errorMessage);
     }

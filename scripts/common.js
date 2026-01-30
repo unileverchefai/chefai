@@ -387,6 +387,8 @@ function easeOutCubic(t) {
  * @property {number} [mobileGap=16] - Gap between items (mobile, px)
  * @property {number} [desktopGap=24] - Gap between items (desktop, px)
  * @property {boolean} [disableDesktopCarousel=false] - Disable on desktop
+ * @property {boolean} [swipeOnDesktop=false] - Enable mouse drag/swipe on desktop
+ * @property {boolean} [hideArrows=false] - Hide navigation arrows
  * @property {boolean} [enableMomentum=true] - Enable momentum scrolling
  * @property {number} [momentumMultiplier=2] - Momentum strength (1-5)
  * @property {number} [snapThreshold=0.3] - Swipe threshold to trigger slide change
@@ -414,6 +416,8 @@ export function createCarousel(options) {
     mobileGap = 16,
     desktopGap = 24,
     disableDesktopCarousel = false,
+    swipeOnDesktop = false,
+    hideArrows = false,
     enableMomentum = true,
     momentumMultiplier = 2,
     snapThreshold = 0.3,
@@ -453,28 +457,35 @@ export function createCarousel(options) {
 
   // Create indicators
   const indicators = createElement('div', { className: 'indicators' });
-  // Create arrows
-  const arrows = createElement('div', { className: 'arrows' });
+  
+  // Create arrows (only if not hidden)
+  let arrows = null;
+  let prevArrow = null;
+  let nextArrow = null;
+  
+  if (!hideArrows) {
+    arrows = createElement('div', { className: 'arrows' });
 
-  const prevArrow = createElement('button', {
-    className: 'arrow prev',
-    attributes: { 'aria-label': 'Previous slide' },
-    innerContent: `
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M15.67 14.67L13.2 12.2L15.67 9.73L14.73 8.8L11.33 12.2L14.73 15.6L15.67 14.67Z"/>
-      </svg>
-    `,
-  });
+    prevArrow = createElement('button', {
+      className: 'arrow prev',
+      attributes: { 'aria-label': 'Previous slide' },
+      innerContent: `
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15.67 14.67L13.2 12.2L15.67 9.73L14.73 8.8L11.33 12.2L14.73 15.6L15.67 14.67Z"/>
+        </svg>
+      `,
+    });
 
-  const nextArrow = createElement('button', {
-    className: 'arrow next',
-    attributes: { 'aria-label': 'Next slide' },
-    innerContent: `
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M8.33 14.67L10.8 12.2L8.33 9.73L9.27 8.8L12.67 12.2L9.27 15.6L8.33 14.67Z"/>
-      </svg>
-    `,
-  });
+    nextArrow = createElement('button', {
+      className: 'arrow next',
+      attributes: { 'aria-label': 'Next slide' },
+      innerContent: `
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8.33 14.67L10.8 12.2L8.33 9.73L9.27 8.8L12.67 12.2L9.27 15.6L8.33 14.67Z"/>
+        </svg>
+      `,
+    });
+  }
 
   /**
    * Calculates carousel metrics based on current viewport and settings
@@ -726,6 +737,35 @@ export function createCarousel(options) {
   }
 
   /**
+   * Handles the start of a mouse interaction
+   * @param {MouseEvent} e The mouse event
+   */
+  function handleMouseDown(e) {
+    if (e.button !== 0 || !swipeOnDesktop) return;
+    const { isMobile } = getCarouselMetrics();
+    if (isMobile) return;
+    e.preventDefault();
+    handleInteractionStart(e.clientX);
+  }
+
+  /**
+   * Handles the movement during a mouse interaction
+   * @param {MouseEvent} e The mouse event
+   */
+  function handleMouseMove(e) {
+    if (!swipeOnDesktop || !interactionState.isDragging) return;
+    handleInteractionMove(e.clientX);
+  }
+
+  /**
+   * Handles the end of a mouse interaction
+   */
+  function handleMouseUp() {
+    if (!swipeOnDesktop || !interactionState.isDragging) return;
+    handleInteractionEnd();
+  }
+
+  /**
    * Handles keyboard navigation for the carousel
    * @param {KeyboardEvent} e The keyboard event
    */
@@ -775,14 +815,23 @@ export function createCarousel(options) {
   }
 
   // Event listeners - arrows
-  prevArrow.addEventListener('click', () => navigate(-1));
-  nextArrow.addEventListener('click', () => navigate(1));
+  if (!hideArrows && prevArrow && nextArrow) {
+    prevArrow.addEventListener('click', () => navigate(-1));
+    nextArrow.addEventListener('click', () => navigate(1));
+  }
 
   // Touch events
   container.addEventListener('touchstart', handleTouchStart, { passive: true });
   container.addEventListener('touchmove', handleTouchMove, { passive: true });
   container.addEventListener('touchend', handleTouchEnd);
   container.addEventListener('touchcancel', handleTouchEnd);
+
+  // Mouse events for desktop dragging (only if enabled)
+  if (swipeOnDesktop) {
+    container.addEventListener('mousedown', handleMouseDown);
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  }
 
   // Keyboard navigation
   container.setAttribute('tabindex', '0');
@@ -792,8 +841,11 @@ export function createCarousel(options) {
   const debouncedResize = debounce(handleResize, 150);
 
   // Assemble controls
-  arrows.append(prevArrow, nextArrow);
-  controls.append(indicators, arrows);
+  controls.append(indicators);
+  if (!hideArrows && arrows && prevArrow && nextArrow) {
+    arrows.append(prevArrow, nextArrow);
+    controls.append(arrows);
+  }
   block.appendChild(controls);
 
   // Initial setup
@@ -807,6 +859,11 @@ export function createCarousel(options) {
       container.removeEventListener('touchmove', handleTouchMove);
       container.removeEventListener('touchend', handleTouchEnd);
       container.removeEventListener('touchcancel', handleTouchEnd);
+      if (swipeOnDesktop) {
+        container.removeEventListener('mousedown', handleMouseDown);
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      }
       container.removeEventListener('keydown', handleKeyDown);
       if (interactionState.animationId) {
         cancelAnimationFrame(interactionState.animationId);

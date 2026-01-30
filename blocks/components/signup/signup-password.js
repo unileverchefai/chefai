@@ -1,7 +1,7 @@
 import { createElement } from '@scripts/common.js';
 import createModal from '@components/modal/index.js';
 import { loadCSS } from '@scripts/aem.js';
-import { resetPassword } from '@auth/authService.js';
+import { register, resetPassword } from '@auth/authService.js';
 
 function createPasswordRequirement(text) {
   const requirement = createElement('div', {
@@ -35,7 +35,7 @@ function validatePassword(password) {
   };
 }
 
-export default function openSignupPasswordModal(email) {
+export default function openSignupPasswordModal(email, registrationData = null) {
   loadCSS(`${window.hlx.codeBasePath}/blocks/components/reset-password/reset-password.css`).catch(() => {});
 
   const content = createElement('div', {
@@ -135,27 +135,7 @@ export default function openSignupPasswordModal(email) {
   });
   formContainer.appendChild(submitButton);
 
-  const laterText = createElement('p', {
-    className: 'change-password-later-text',
-    innerContent: 'You can also do it later with the link in the email we’ve just sent you.',
-  });
-
-  const laterLink = createElement('button', {
-    className: 'change-password-later-link',
-    attributes: {
-      type: 'button',
-    },
-    innerContent: "I'll do it later",
-  });
-
-  const laterContainer = createElement('div', {
-    className: 'change-password-later-container',
-  });
-  laterContainer.appendChild(laterText);
-  laterContainer.appendChild(laterLink);
-
   topArea.appendChild(formContainer);
-  topArea.appendChild(laterContainer);
   content.appendChild(topArea);
 
   const modal = createModal({
@@ -212,23 +192,33 @@ export default function openSignupPasswordModal(email) {
     }
 
     submitButton.disabled = true;
-    submitButton.textContent = 'Sending email...';
+    submitButton.textContent = 'Creating account...';
 
     try {
-      await resetPassword(email);
-      modal.close();
-      // Redirect to personalized-hub after registration is completed
-      window.location.href = '/personalized-hub';
+      if (registrationData) {
+        // Register with the password
+        const formData = {
+          ...registrationData,
+          password,
+          confirmPassword: password,
+        };
+
+        await register(formData);
+        modal.close();
+        // Redirect to personalized-hub after registration is completed
+        window.location.href = '/personalized-hub';
+      } else {
+        // Fallback: user already registered, just send reset email
+        await resetPassword(email);
+        modal.close();
+        window.location.href = '/personalized-hub';
+      }
     } catch (error) {
-      errorMessage.textContent = error.message ?? 'Failed to send reset email. Please try again.';
+      errorMessage.textContent = error.message ?? 'Failed to create account. Please try again.';
       errorMessage.style.display = 'block';
       submitButton.disabled = false;
       submitButton.textContent = 'Create Account';
     }
-  });
-
-  laterLink.addEventListener('click', () => {
-    modal.close();
   });
 
   modal.open();

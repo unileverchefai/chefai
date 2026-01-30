@@ -38,7 +38,8 @@ export default function BusinessConfirmation({
     try {
       carouselInstance = initCarouselCards(blockEl, containerEl, candidates.length, {
         disableDesktopCarousel: false,
-        hideArrows: true,
+        swipeOnDesktop: true,
+        hideArrows: false,
       });
     } catch (error) {
       // eslint-disable-next-line no-console
