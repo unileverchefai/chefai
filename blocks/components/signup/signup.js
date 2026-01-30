@@ -1,7 +1,6 @@
 import { createElement } from '@scripts/common.js';
 import createModal from '@components/modal/index.js';
 import { loadCSS } from '@scripts/aem.js';
-import { register } from '@auth/authService.js';
 
 export default function openSignUpReportModal() {
   loadCSS(`${window.hlx.codeBasePath}/blocks/components/signup/signup.css`).catch(() => {});
@@ -202,12 +201,8 @@ export default function openSignUpReportModal() {
       return;
     }
 
-    const tempPassword = `Tmp!${Math.random().toString(36).slice(-8)}A1`;
-
     const formData = {
       email,
-      password: tempPassword,
-      confirmPassword: tempPassword,
       firstName,
       lastName,
       businessType,
@@ -215,21 +210,10 @@ export default function openSignUpReportModal() {
       marketingConsent,
     };
 
-    continueButton.disabled = true;
-    continueButton.textContent = 'Creating account...';
+    modal.close();
 
-    try {
-      await register(formData);
-      modal.close();
-
-      const { default: openSignupPasswordModal } = await import('./signup-password.js');
-      openSignupPasswordModal(email);
-    } catch (error) {
-      errorMessage.textContent = error.message ?? 'Registration failed. Please try again.';
-      errorMessage.style.display = 'block';
-      continueButton.disabled = false;
-      continueButton.textContent = 'Continue';
-    }
+    const { default: openSignupPasswordModal } = await import('./signup-password.js');
+    openSignupPasswordModal(email, formData);
   });
 
   modal.open();

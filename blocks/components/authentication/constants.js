@@ -35,12 +35,9 @@ export function createRegistrationPayload(data) {
     anonymousUserId,
   } = data;
 
-  // If anonymousUserId exists, try to parse it as integer for id field
-  // Otherwise use 0 (new user)
   let idValue = 0;
   if (anonymousUserId) {
     const parsedId = parseInt(anonymousUserId, 10);
-    // Only use parsed ID if it's a valid number, otherwise keep 0
     if (!Number.isNaN(parsedId)) {
       idValue = parsedId;
     }
