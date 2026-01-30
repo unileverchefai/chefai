@@ -24,6 +24,15 @@ function easeOutCubic(t) {
 }
 
 /**
+ * Easing function for deceleration (used in momentum)
+ * @param {number} t Progress value between 0 and 1
+ * @returns {number} Eased value
+ */
+function easeOutQuart(t) {
+  return 1 - ((1 - t) ** 4);
+}
+
+/**
  * Creates a carousel controller for a given container
  * @typedef {Object} CarouselOptions
  * @property {Element} container - Container with carousel items
@@ -88,6 +97,8 @@ export function createCarousel(options) {
     lastTime: 0,
     dragOffset: 0,
     animationId: null,
+    velocityHistory: [],
+    touchId: null,
   };
 
   // Create controls container
@@ -211,22 +222,41 @@ export function createCarousel(options) {
   }
 
   /**
-   * Calculates momentum for swipe gestures
+   * Calculates average velocity from velocity history for smoother momentum
+   * @returns {number} Average velocity
+   */
+  function getAverageVelocity() {
+    if (interactionState.velocityHistory.length === 0) return 0;
+    const recent = interactionState.velocityHistory.slice(-5);
+    return recent.reduce((sum, v) => sum + v, 0) / recent.length;
+  }
+
+  /**
+   * Calculates momentum for swipe gestures with improved physics
    * @param {number} velocity The swipe velocity
    * @param {number} dragDistance The distance dragged
    * @returns {Object} Contains slideOffset and duration for the momentum animation
    */
   function calculateMomentum(velocity, dragDistance) {
-    const { slideWidth } = getCarouselMetrics();
-    const duration = Math.min(
-      Math.abs(velocity) * momentumMultiplier * 100,
-      maxMomentumDuration,
-    );
+    const { slideWidth, totalSlides } = getCarouselMetrics();
+    const avgVelocity = getAverageVelocity();
+    const effectiveVelocity = Math.abs(avgVelocity) > 0.1 ? avgVelocity : velocity;
+    
+    const absVelocity = Math.abs(effectiveVelocity);
+    const minDuration = 200;
+    const maxDuration = maxMomentumDuration;
+    const duration = Math.max(minDuration, Math.min(absVelocity * momentumMultiplier * 80, maxDuration));
 
-    const finalPosition = dragDistance + ((velocity * duration) / 2);
+    const deceleration = 0.0015;
+    const distance = (effectiveVelocity * effectiveVelocity) / (2 * deceleration);
+    const finalPosition = dragDistance + (effectiveVelocity > 0 ? distance : -distance);
     const slideOffset = Math.round((-finalPosition) / slideWidth);
 
-    return { slideOffset, duration };
+    const maxOffset = totalSlides - 1 - currentSlide;
+    const minOffset = -currentSlide;
+    const clampedOffset = Math.max(minOffset, Math.min(maxOffset, slideOffset));
+
+    return { slideOffset: clampedOffset, duration };
   }
 
   /**
@@ -247,7 +277,7 @@ export function createCarousel(options) {
     function animate(time) {
       const elapsed = time - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      const eased = easeOutCubic(progress);
+      const eased = easeOutQuart(progress);
 
       const slideProgress = startSlide + (targetSlide - startSlide) * eased;
       const offset = -slideProgress * slideWidth + startOffset * (1 - eased);
@@ -289,8 +319,30 @@ export function createCarousel(options) {
     interactionState.lastTime = performance.now();
     interactionState.velocityX = 0;
     interactionState.dragOffset = 0;
+    interactionState.velocityHistory = [];
 
     container.classList.add('is-dragging');
+  }
+
+  /**
+   * Calculates resistance at edges (bounce effect)
+   * @param {number} offset The current offset
+   * @param {number} slideWidth Width of one slide
+   * @param {number} totalSlides Total number of slides
+   * @returns {number} Adjusted offset with resistance
+   */
+  function applyEdgeResistance(offset, slideWidth, totalSlides) {
+    const minOffset = 0;
+    const maxOffset = -(totalSlides - 1) * slideWidth;
+    const resistance = 0.3;
+
+    if (offset > minOffset) {
+      return minOffset + (offset - minOffset) * resistance;
+    }
+    if (offset < maxOffset) {
+      return maxOffset + (offset - maxOffset) * resistance;
+    }
+    return offset;
   }
 
   /**
@@ -305,7 +357,13 @@ export function createCarousel(options) {
     const deltaTime = currentTime - interactionState.lastTime;
 
     if (deltaTime > 0) {
-      interactionState.velocityX = deltaX / deltaTime;
+      const instantVelocity = deltaX / deltaTime;
+      interactionState.velocityX = instantVelocity;
+      
+      interactionState.velocityHistory.push(instantVelocity);
+      if (interactionState.velocityHistory.length > 10) {
+        interactionState.velocityHistory.shift();
+      }
     }
 
     interactionState.currentX = clientX;
@@ -315,11 +373,14 @@ export function createCarousel(options) {
     const dragDistance = clientX - interactionState.startX;
     interactionState.dragOffset = dragDistance;
 
-    const { slideWidth, isMobile } = getCarouselMetrics();
+    const { slideWidth, isMobile, totalSlides } = getCarouselMetrics();
 
     if (disableDesktopCarousel && !isMobile) return;
 
-    const offset = -currentSlide * slideWidth + dragDistance;
+    let offset = -currentSlide * slideWidth + dragDistance;
+    
+    offset = applyEdgeResistance(offset, slideWidth, totalSlides);
+    
     container.style.transition = 'none';
     container.style.transform = `translateX(${offset}px)`;
   }
@@ -337,28 +398,40 @@ export function createCarousel(options) {
     const dragDuration = performance.now() - interactionState.startTime;
     const { slideWidth, totalSlides } = getCarouselMetrics();
 
-    if (Math.abs(dragDistance) < minSwipeDistance && dragDuration < 200) {
+    if (Math.abs(dragDistance) < minSwipeDistance && dragDuration < 300) {
       updateCarousel();
       return;
     }
 
     let targetSlide = currentSlide;
+    const avgVelocity = getAverageVelocity();
+    const absVelocity = Math.abs(avgVelocity);
 
-    if (enableMomentum && Math.abs(interactionState.velocityX) > 0.5) {
+    if (enableMomentum && absVelocity > 0.3) {
       const { slideOffset, duration } = calculateMomentum(
-        interactionState.velocityX,
+        avgVelocity,
         dragDistance,
       );
       targetSlide = Math.max(0, Math.min(currentSlide + slideOffset, totalSlides - 1));
-      animateMomentum(targetSlide, duration);
+      
+      if (targetSlide !== currentSlide) {
+        animateMomentum(targetSlide, duration);
+      } else {
+        updateCarousel();
+      }
     } else {
       const threshold = slideWidth * snapThreshold;
-      if (Math.abs(dragDistance) > threshold) {
+      const absDistance = Math.abs(dragDistance);
+      
+      if (absDistance > threshold || (absDistance > minSwipeDistance && dragDuration < 200)) {
         targetSlide = dragDistance > 0 ? currentSlide - 1 : currentSlide + 1;
       }
+      
       targetSlide = Math.max(0, Math.min(targetSlide, totalSlides - 1));
       goToSlide(targetSlide);
     }
+    
+    interactionState.velocityHistory = [];
   }
 
   /**
@@ -366,7 +439,11 @@ export function createCarousel(options) {
    * @param {TouchEvent} e The touch event
    */
   function handleTouchStart(e) {
-    handleInteractionStart(e.touches[0].clientX);
+    if (e.touches.length > 1) return;
+    
+    const touch = e.touches[0];
+    interactionState.touchId = touch.identifier;
+    handleInteractionStart(touch.clientX);
   }
 
   /**
@@ -374,7 +451,18 @@ export function createCarousel(options) {
    * @param {TouchEvent} e The touch event
    */
   function handleTouchMove(e) {
-    handleInteractionMove(e.touches[0].clientX);
+    if (!interactionState.isDragging) return;
+    
+    if (e.touches.length > 1) {
+      handleInteractionEnd();
+      return;
+    }
+    
+    const touch = Array.from(e.touches).find((t) => t.identifier === interactionState.touchId);
+    if (touch) {
+      e.preventDefault();
+      handleInteractionMove(touch.clientX);
+    }
   }
 
   /**
@@ -470,7 +558,7 @@ export function createCarousel(options) {
 
   // Touch events
   container.addEventListener('touchstart', handleTouchStart, { passive: true });
-  container.addEventListener('touchmove', handleTouchMove, { passive: true });
+  container.addEventListener('touchmove', handleTouchMove, { passive: false });
   container.addEventListener('touchend', handleTouchEnd);
   container.addEventListener('touchcancel', handleTouchEnd);
 
