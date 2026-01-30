@@ -55,6 +55,11 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     align-items: baseline;
+    column-gap: 8px;
+  }
+
+  .hero__countdown--content {
+    padding: 0;
   }
 
   .hero__countdown--label-title {
@@ -101,6 +106,10 @@
 }
 
 @media (width >= 992px) and (width <= 1079px) {
+  .hero__countdown--content {
+    padding: 0 16px;
+  }
+
   .hero__countdown--number-value {
     font-size: 36px;
   }
