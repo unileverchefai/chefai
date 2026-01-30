@@ -205,6 +205,7 @@ export async function logout() {
       authorization: token,
     });
   } catch (error) {
+    // Ignore logout errors
   } finally {
     removeToken();
     clearAllChatData();

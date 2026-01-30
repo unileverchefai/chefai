@@ -1,4 +1,4 @@
-import { createCarousel } from '../components/carousel/carousel.js';
+import createCarousel from '../components/carousel/carousel.js';
 import { decorateIcons } from '../../scripts/aem.js';
 import fetchInsights, { fetchBusinessTypes } from './fetchInsights.js';
 

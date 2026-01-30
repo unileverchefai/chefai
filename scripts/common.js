@@ -348,7 +348,6 @@ export function findVideoLink(container) {
   return videoLink;
 }
 
-
 /**
  * Adds variant-specific logic by loading scripts and styles as needed.
  * @param {Object} params The parameters object.

@@ -1,7 +1,6 @@
 import { createElement } from '@scripts/common.js';
 import createModal from '@components/modal/index.js';
 import { loadCSS } from '@scripts/aem.js';
-import { register } from '@auth/authService.js';
 
 export default function openSignUpReportModal() {
   loadCSS(`${window.hlx.codeBasePath}/blocks/components/signup/signup.css`).catch(() => {});

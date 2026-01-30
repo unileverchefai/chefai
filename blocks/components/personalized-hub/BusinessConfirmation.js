@@ -40,6 +40,7 @@ export default function BusinessConfirmation({
         disableDesktopCarousel: false,
         swipeOnDesktop: true,
         hideArrows: false,
+        disableSnap: true,
       });
     } catch (error) {
       // eslint-disable-next-line no-console

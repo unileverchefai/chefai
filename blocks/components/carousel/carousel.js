@@ -15,15 +15,6 @@ function debounce(fn, delay) {
 }
 
 /**
- * Easing function for smooth momentum scrolling
- * @param {number} t Progress value between 0 and 1
- * @returns {number} Eased value
- */
-function easeOutCubic(t) {
-  return 1 - ((1 - t) ** 3);
-}
-
-/**
  * Easing function for deceleration (used in momentum)
  * @param {number} t Progress value between 0 and 1
  * @returns {number} Eased value
@@ -51,6 +42,7 @@ function easeOutQuart(t) {
  * @property {number} [snapThreshold=0.3] - Swipe threshold to trigger slide change
  * @property {number} [minSwipeDistance=50] - Minimum swipe distance (px)
  * @property {number} [maxMomentumDuration=800] - Max momentum animation duration (ms)
+ * @property {boolean} [disableSnap=false] - Disable snap to slide on drag end
  * @returns {Object} Carousel controller with destroy method
  * @example
  * const carousel = createCarousel({
@@ -62,7 +54,7 @@ function easeOutQuart(t) {
  * });
  * // Later, cleanup: carousel.destroy();
  */
-export function createCarousel(options) {
+export default function createCarousel(options) {
   const {
     container,
     block,
@@ -80,11 +72,13 @@ export function createCarousel(options) {
     snapThreshold = 0.3,
     minSwipeDistance = 50,
     maxMomentumDuration = 800,
+    disableSnap = false,
   } = options;
 
   // Carousel state
   let currentSlide = 0;
   let lastItemsPerSlide = null;
+  let freeScrollOffset = null; // Track actual pixel offset for free scrolling
 
   // Touch/drag interaction state
   const interactionState = {
@@ -116,12 +110,12 @@ export function createCarousel(options) {
 
   // Create indicators
   const indicators = createElement('div', { className: 'indicators' });
-  
+
   // Create arrows (only if not hidden)
   let arrows = null;
   let prevArrow = null;
   let nextArrow = null;
-  
+
   if (!hideArrows) {
     arrows = createElement('div', { className: 'arrows' });
 
@@ -170,15 +164,16 @@ export function createCarousel(options) {
   /**
    * Updates the carousel position and UI elements
    * @param {boolean} immediate If true, updates without animation
+   * @param {number} customOffset Optional custom offset to use instead of slide-based positioning
    */
-  function updateCarousel(immediate = false) {
+  function updateCarousel(immediate = false, customOffset = null) {
     const { isMobile, slideWidth, totalSlides } = getCarouselMetrics();
 
     // Disable carousel transform on desktop if disableDesktopCarousel is true
     if (disableDesktopCarousel && !isMobile) {
       container.style.transform = 'translateX(0)';
     } else {
-      const offset = -currentSlide * slideWidth;
+      const offset = customOffset !== null ? customOffset : -currentSlide * slideWidth;
       if (immediate) {
         container.style.transition = 'none';
         container.style.transform = `translateX(${offset}px)`;
@@ -207,6 +202,7 @@ export function createCarousel(options) {
   function navigate(direction) {
     const { totalSlides } = getCarouselMetrics();
     currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
+    freeScrollOffset = null; // Reset free scroll when navigating with arrows
     updateCarousel();
   }
 
@@ -218,6 +214,7 @@ export function createCarousel(options) {
   function goToSlide(index, immediate = false) {
     const { totalSlides } = getCarouselMetrics();
     currentSlide = Math.max(0, Math.min(index, totalSlides - 1));
+    freeScrollOffset = null; // Reset free scroll when programmatically navigating
     updateCarousel(immediate);
   }
 
@@ -241,11 +238,12 @@ export function createCarousel(options) {
     const { slideWidth, totalSlides } = getCarouselMetrics();
     const avgVelocity = getAverageVelocity();
     const effectiveVelocity = Math.abs(avgVelocity) > 0.1 ? avgVelocity : velocity;
-    
+
     const absVelocity = Math.abs(effectiveVelocity);
     const minDuration = 200;
     const maxDuration = maxMomentumDuration;
-    const duration = Math.max(minDuration, Math.min(absVelocity * momentumMultiplier * 80, maxDuration));
+    const calculatedDuration = absVelocity * momentumMultiplier * 80;
+    const duration = Math.max(minDuration, Math.min(calculatedDuration, maxDuration));
 
     const deceleration = 0.0015;
     const distance = (effectiveVelocity * effectiveVelocity) / (2 * deceleration);
@@ -359,7 +357,7 @@ export function createCarousel(options) {
     if (deltaTime > 0) {
       const instantVelocity = deltaX / deltaTime;
       interactionState.velocityX = instantVelocity;
-      
+
       interactionState.velocityHistory.push(instantVelocity);
       if (interactionState.velocityHistory.length > 10) {
         interactionState.velocityHistory.shift();
@@ -377,10 +375,14 @@ export function createCarousel(options) {
 
     if (disableDesktopCarousel && !isMobile) return;
 
-    let offset = -currentSlide * slideWidth + dragDistance;
-    
+    // Use freeScrollOffset as base if available, otherwise use slide-based positioning
+    const baseOffset = disableSnap && freeScrollOffset !== null
+      ? freeScrollOffset
+      : -currentSlide * slideWidth;
+    let offset = baseOffset + dragDistance;
+
     offset = applyEdgeResistance(offset, slideWidth, totalSlides);
-    
+
     container.style.transition = 'none';
     container.style.transform = `translateX(${offset}px)`;
   }
@@ -407,13 +409,43 @@ export function createCarousel(options) {
     const avgVelocity = getAverageVelocity();
     const absVelocity = Math.abs(avgVelocity);
 
-    if (enableMomentum && absVelocity > 0.3) {
+    if (disableSnap) {
+      // Free scroll: preserve the exact drag position without snapping
+      const baseOffset = freeScrollOffset !== null ? freeScrollOffset : -currentSlide * slideWidth;
+      const finalOffset = baseOffset + dragDistance;
+      const clampedOffset = Math.max(
+        -(totalSlides - 1) * slideWidth,
+        Math.min(0, finalOffset),
+      );
+      
+      // Store the actual pixel offset for next drag
+      freeScrollOffset = clampedOffset;
+      
+      // Update currentSlide approximately for indicators, but don't snap
+      const approximateSlide = Math.round(-clampedOffset / slideWidth);
+      currentSlide = Math.max(0, Math.min(approximateSlide, totalSlides - 1));
+      
+      // Keep the carousel at the exact dragged position
+      container.style.transition = 'none';
+      container.style.transform = `translateX(${clampedOffset}px)`;
+      
+      // Update indicators based on approximate position
+      indicators.querySelectorAll('.indicator').forEach((ind, idx) => {
+        ind.classList.toggle('active', idx === currentSlide);
+      });
+      
+      interactionState.dragOffset = 0;
+    } else {
+      // Reset free scroll offset when snap is enabled
+      freeScrollOffset = null;
+      
+      if (enableMomentum && absVelocity > 0.3) {
       const { slideOffset, duration } = calculateMomentum(
         avgVelocity,
         dragDistance,
       );
       targetSlide = Math.max(0, Math.min(currentSlide + slideOffset, totalSlides - 1));
-      
+
       if (targetSlide !== currentSlide) {
         animateMomentum(targetSlide, duration);
       } else {
@@ -422,15 +454,16 @@ export function createCarousel(options) {
     } else {
       const threshold = slideWidth * snapThreshold;
       const absDistance = Math.abs(dragDistance);
-      
+
       if (absDistance > threshold || (absDistance > minSwipeDistance && dragDuration < 200)) {
         targetSlide = dragDistance > 0 ? currentSlide - 1 : currentSlide + 1;
       }
-      
+
       targetSlide = Math.max(0, Math.min(targetSlide, totalSlides - 1));
       goToSlide(targetSlide);
+      }
     }
-    
+
     interactionState.velocityHistory = [];
   }
 
@@ -440,7 +473,7 @@ export function createCarousel(options) {
    */
   function handleTouchStart(e) {
     if (e.touches.length > 1) return;
-    
+
     const touch = e.touches[0];
     interactionState.touchId = touch.identifier;
     handleInteractionStart(touch.clientX);
@@ -452,12 +485,12 @@ export function createCarousel(options) {
    */
   function handleTouchMove(e) {
     if (!interactionState.isDragging) return;
-    
+
     if (e.touches.length > 1) {
       handleInteractionEnd();
       return;
     }
-    
+
     const touch = Array.from(e.touches).find((t) => t.identifier === interactionState.touchId);
     if (touch) {
       e.preventDefault();
