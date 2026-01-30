@@ -417,50 +417,50 @@ export default function createCarousel(options) {
         -(totalSlides - 1) * slideWidth,
         Math.min(0, finalOffset),
       );
-      
+
       // Store the actual pixel offset for next drag
       freeScrollOffset = clampedOffset;
-      
+
       // Update currentSlide approximately for indicators, but don't snap
       const approximateSlide = Math.round(-clampedOffset / slideWidth);
       currentSlide = Math.max(0, Math.min(approximateSlide, totalSlides - 1));
-      
+
       // Keep the carousel at the exact dragged position
       container.style.transition = 'none';
       container.style.transform = `translateX(${clampedOffset}px)`;
-      
+
       // Update indicators based on approximate position
       indicators.querySelectorAll('.indicator').forEach((ind, idx) => {
         ind.classList.toggle('active', idx === currentSlide);
       });
-      
+
       interactionState.dragOffset = 0;
     } else {
       // Reset free scroll offset when snap is enabled
       freeScrollOffset = null;
-      
+
       if (enableMomentum && absVelocity > 0.3) {
-      const { slideOffset, duration } = calculateMomentum(
-        avgVelocity,
-        dragDistance,
-      );
-      targetSlide = Math.max(0, Math.min(currentSlide + slideOffset, totalSlides - 1));
+        const { slideOffset, duration } = calculateMomentum(
+          avgVelocity,
+          dragDistance,
+        );
+        targetSlide = Math.max(0, Math.min(currentSlide + slideOffset, totalSlides - 1));
 
-      if (targetSlide !== currentSlide) {
-        animateMomentum(targetSlide, duration);
+        if (targetSlide !== currentSlide) {
+          animateMomentum(targetSlide, duration);
+        } else {
+          updateCarousel();
+        }
       } else {
-        updateCarousel();
-      }
-    } else {
-      const threshold = slideWidth * snapThreshold;
-      const absDistance = Math.abs(dragDistance);
+        const threshold = slideWidth * snapThreshold;
+        const absDistance = Math.abs(dragDistance);
 
-      if (absDistance > threshold || (absDistance > minSwipeDistance && dragDuration < 200)) {
-        targetSlide = dragDistance > 0 ? currentSlide - 1 : currentSlide + 1;
-      }
+        if (absDistance > threshold || (absDistance > minSwipeDistance && dragDuration < 200)) {
+          targetSlide = dragDistance > 0 ? currentSlide - 1 : currentSlide + 1;
+        }
 
-      targetSlide = Math.max(0, Math.min(targetSlide, totalSlides - 1));
-      goToSlide(targetSlide);
+        targetSlide = Math.max(0, Math.min(targetSlide, totalSlides - 1));
+        goToSlide(targetSlide);
       }
     }
 
