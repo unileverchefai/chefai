@@ -1,6 +1,5 @@
-import { getThreadId, formatResponse, getAnonymousUserId } from './utils.js';
+import { getThreadId, formatResponse, getAnonymousUserId, getUserIdFromCookie } from './utils.js';
 import { SUBSCRIPTION_KEY, ENDPOINTS } from './constants/api.js';
-import { getUserIdFromToken } from '../authentication/tokenManager.js';
 
 let currentEndpoint = 'capgemini';
 
@@ -23,8 +22,8 @@ export default async function sendMessage(message, options = {}) {
   const endpoint = ENDPOINTS[currentEndpoint];
   const threadId = getThreadId();
 
-  const tokenUserId = getUserIdFromToken();
-  let userId = options.user_id ?? tokenUserId;
+  const cookieUserId = getUserIdFromCookie();
+  let userId = options.user_id ?? cookieUserId;
 
   if (!userId) {
     userId = await getAnonymousUserId();

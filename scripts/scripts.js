@@ -149,7 +149,7 @@ async function loadLazy(doc) {
     console.error('Failed to initialize subscription flow triggers', e);
   }
 
-  // Fetch and log user business data from API on page load
+  // Fetch and log user business data on page load
   try {
     const { default: fetchSavedBusinessInfoAndLog } = await import('@components/personalized-hub/fetchSavedBusinessInfo.js');
     await fetchSavedBusinessInfoAndLog();
