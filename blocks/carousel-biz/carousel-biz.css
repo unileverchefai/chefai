@@ -1,12 +1,16 @@
 main > .section > .carousel-biz-wrapper {
   padding: 0;
+  overflow: visible;
+}
+
+main > .section:has(.carousel-biz-wrapper) {
+  overflow: visible;
 }
 
 .carousel-biz {
   background: var(--background-color);
   padding: var(--spacing-lg) var(--spacing-md) 32px;
   max-width: 100%;
-  overflow: hidden;
   margin: 0 auto;
 }
 
@@ -109,6 +113,10 @@ main > .section > .carousel-biz-wrapper {
 .biz-dropdown-option:focus {
   outline: 2px solid var(--ufs-orange);
   outline-offset: 2px;
+}
+
+.carousel-biz-carousel-wrapper {
+  overflow: hidden;
 }
 
 .carousel-biz-container {

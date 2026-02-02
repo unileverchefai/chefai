@@ -328,9 +328,14 @@ export default function decorate(block) {
   filterContainer.appendChild(dropdownMenu);
   block.appendChild(filterContainer);
 
+  const carouselWrapper = document.createElement('div');
+  carouselWrapper.className = 'carousel-biz-carousel-wrapper';
+
   const carouselContainer = document.createElement('ul');
   carouselContainer.className = 'carousel-biz-container';
-  block.appendChild(carouselContainer);
+
+  carouselWrapper.appendChild(carouselContainer);
+  block.appendChild(carouselWrapper);
 
   renderCards(carouselContainer, allCards);
 
