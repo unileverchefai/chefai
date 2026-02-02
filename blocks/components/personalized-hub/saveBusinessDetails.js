@@ -1,8 +1,8 @@
 import { SUBSCRIPTION_KEY, ENDPOINTS } from '../chatbot/constants/api.js';
-import { getUserIdFromToken } from '../authentication/tokenManager.js';
+import { getUserIdFromCookie } from '../chatbot/utils.js';
 
 export default async function saveBusinessDetails(businessData, providedUserId = null) {
-  const userId = providedUserId ?? getUserIdFromToken();
+  const userId = providedUserId ?? getUserIdFromCookie();
 
   if (!userId) {
     throw new Error('User ID is required to save business details.');

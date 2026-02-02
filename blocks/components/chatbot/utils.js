@@ -43,6 +43,10 @@ export function getAnonymousUserIdFromCookie() {
   return getCookie(cookieName);
 }
 
+export function getUserIdFromCookie() {
+  return getCookie('user_id');
+}
+
 export function clearAnonymousUserIdCookie() {
   const cookieName = 'chef-ai-anonymous-user-id';
   setCookie(cookieName, '', -1);
@@ -52,10 +56,13 @@ export function clearAllChatData() {
   setCookie('chef-ai-thread-id', '', -1);
   setCookie('chef-ai-anonymous-user-id', '', -1);
   setCookie('personalized-hub-consent', '', -1);
+  setCookie('user_id', '', -1);
+  setCookie('cookie_id', '', -1);
 
   try {
     sessionStorage.removeItem('chef-ai-history');
     sessionStorage.removeItem('personalized-hub-business-data');
+    sessionStorage.removeItem('registered-user-id');
   } catch (err) {
     // eslint-disable-next-line no-console
     console.error('Failed to clear session storage:', err);

@@ -1,10 +1,9 @@
 import { SUBSCRIPTION_KEY, ENDPOINTS } from '../chatbot/constants/api.js';
-import { getUserIdFromToken } from '../authentication/tokenManager.js';
-import { getAnonymousUserId } from '../chatbot/utils.js';
+import { getUserIdFromCookie, getAnonymousUserId } from '../chatbot/utils.js';
 
 export default async function hasSavedBusinessName() {
   try {
-    const rawUserId = getUserIdFromToken();
+    const rawUserId = getUserIdFromCookie();
     const userId = rawUserId || await getAnonymousUserId();
 
     if (!ENDPOINTS.businessInfo) {

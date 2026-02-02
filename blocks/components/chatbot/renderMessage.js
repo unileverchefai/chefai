@@ -85,7 +85,7 @@ export default function renderMessage(message) {
         key: 'text',
         style: {
           fontFamily: 'var(--body-font-family)',
-          fontSize: 'var(--body-font-size-s)',
+          fontSize: 'var(--body-font-size-xs)',
           lineHeight: '1.5',
           whiteSpace: 'pre-wrap',
         },

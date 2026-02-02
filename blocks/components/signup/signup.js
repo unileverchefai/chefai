@@ -89,46 +89,6 @@ export default function openSignUpReportModal() {
 
   formContainer.appendChild(nameRow);
 
-  const businessTypeGroup = createElement('div', {
-    className: 'form-group',
-  });
-  const businessTypeLabel = createElement('label', {
-    className: 'form-label',
-    innerContent: 'Business type',
-  });
-  const businessTypeWrapper = createElement('div', {
-    className: 'form-input-wrapper',
-  });
-  const businessTypeSelect = createElement('select', {
-    className: 'form-input form-select',
-    attributes: {
-      name: 'business-type',
-    },
-  });
-
-  const businessTypes = [
-    'Independent Restaurant',
-    'Chain Restaurant',
-    'Hotel',
-    'Catering',
-    'Other',
-  ];
-
-  businessTypes.forEach((type) => {
-    const option = createElement('option', {
-      attributes: {
-        value: type.toLowerCase().replace(/\s+/g, '-'),
-      },
-      innerContent: type,
-    });
-    businessTypeSelect.appendChild(option);
-  });
-
-  businessTypeWrapper.appendChild(businessTypeSelect);
-  businessTypeGroup.appendChild(businessTypeLabel);
-  businessTypeGroup.appendChild(businessTypeWrapper);
-  formContainer.appendChild(businessTypeGroup);
-
   const consentGroup = createElement('div', {
     className: 'form-checkbox-group',
   });
@@ -187,7 +147,6 @@ export default function openSignUpReportModal() {
     const email = emailInput.value.trim();
     const firstName = firstNameInput.value.trim();
     const lastName = surnameInput.value.trim();
-    const businessType = businessTypeSelect.value;
     const marketingConsent = consentCheckbox.checked;
     const mobilePhone = '';
 
@@ -195,7 +154,7 @@ export default function openSignUpReportModal() {
     errorMessage.textContent = '';
     errorMessage.style.color = 'var(--ufs-orange)';
 
-    if (!email || !firstName || !lastName || !businessType) {
+    if (!email || !firstName || !lastName) {
       errorMessage.textContent = 'Please fill in all required fields';
       errorMessage.style.display = 'block';
       return;
@@ -205,7 +164,6 @@ export default function openSignUpReportModal() {
       email,
       firstName,
       lastName,
-      businessType,
       mobilePhone,
       marketingConsent,
     };

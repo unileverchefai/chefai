@@ -1,6 +1,6 @@
 import { apiRequest } from './api.js';
 import {
-  setToken, removeToken, getToken, getUserIdFromToken,
+  setToken, removeToken, getToken,
 } from './tokenManager.js';
 import {
   ENDPOINTS,
@@ -11,9 +11,10 @@ import {
   createRegistrationPayload,
 } from './constants.js';
 import {
-  getAnonymousUserIdFromCookie, clearAnonymousUserIdCookie, clearAllChatData, setCookie,
+  getAnonymousUserIdFromCookie, clearAllChatData, setCookie,
 } from '../chatbot/utils.js';
 import saveBusinessDetails from '../personalized-hub/saveBusinessDetails.js';
+import createChefAIUser from '../chatbot/createChefAIUser.js';
 
 export async function login(email, password) {
   if (!email || !password) {
@@ -38,6 +39,7 @@ export async function login(email, password) {
     }
 
     setToken(token);
+    setCookie('user_id', email);
     return token;
   } catch (error) {
     if (error.message.includes('401') || error.message.includes('Unauthorized')) {
@@ -59,7 +61,7 @@ export async function register(formData) {
     marketingConsent = false,
   } = formData;
 
-  if (!email || !password || !confirmPassword || !firstName || !lastName || !businessType) {
+  if (!email || !password || !confirmPassword || !firstName || !lastName) {
     throw new Error('Please fill in all required fields');
   }
 
@@ -67,7 +69,9 @@ export async function register(formData) {
     throw new Error('Passwords do not match');
   }
 
-  const typeOfBusiness = BUSINESS_TYPE_MAP[businessType.toLowerCase().replace(/\s+/g, '-')] ?? 'other';
+  const typeOfBusiness = businessType
+    ? (BUSINESS_TYPE_MAP[businessType.toLowerCase().replace(/\s+/g, '-')] ?? 'other')
+    : 'other';
   const now = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
   const anonymousUserId = getAnonymousUserIdFromCookie();
 
@@ -77,7 +81,7 @@ export async function register(formData) {
     confirmPassword,
     firstName,
     lastName,
-    businessType,
+    businessType: businessType ?? 'other',
     mobilePhone,
     marketingConsent,
     typeOfBusiness,
@@ -92,60 +96,50 @@ export async function register(formData) {
       body: payload,
     });
 
-    if (response.successful && response.authToken) {
+    if (response.authToken) {
       setToken(response.authToken);
-      const registeredUserId = getUserIdFromToken();
+      setCookie('user_id', email);
 
-      if (registeredUserId) {
-        const userIdStr = registeredUserId.toString();
-        setCookie('chef-ai-anonymous-user-id', userIdStr);
-        try {
-          sessionStorage.setItem('registered-user-id', userIdStr);
-        } catch (e) {
-          // eslint-disable-next-line no-console
-          console.error('[Registration] Failed to store user_id in sessionStorage:', e);
-        }
-      } else {
-        clearAnonymousUserIdCookie();
-      }
-
-      let userIdForBusinessSave = registeredUserId;
-      if (!userIdForBusinessSave) {
-        await new Promise((resolve) => {
-          setTimeout(() => {
-            resolve();
-          }, 100);
-        });
-        userIdForBusinessSave = getUserIdFromToken();
-      }
-
-      if (userIdForBusinessSave) {
-        try {
-          const businessDataStr = sessionStorage.getItem('personalized-hub-business-data');
-          if (businessDataStr) {
-            const businessData = JSON.parse(businessDataStr);
-            if (businessData && businessData.business_name) {
-              try {
-                await saveBusinessDetails(businessData, userIdForBusinessSave);
-                sessionStorage.removeItem('personalized-hub-business-data');
-
-                try {
-                  const { default: fetchSavedBusinessInfoAndLog } = await import('../personalized-hub/fetchSavedBusinessInfo.js');
-                  await fetchSavedBusinessInfoAndLog();
-                } catch (fetchError) {
-                  // eslint-disable-next-line no-console
-                  console.error('[Registration] Failed to fetch user data after save:', fetchError);
-                }
-              } catch (businessError) {
-                // eslint-disable-next-line no-console
-                console.error('[Registration] Failed to save business details:', businessError);
-              }
-            }
+      try {
+        const businessDataStr = sessionStorage.getItem('personalized-hub-business-data');
+        let businessData = null;
+        if (businessDataStr) {
+          try {
+            businessData = JSON.parse(businessDataStr);
+          } catch (parseError) {
+            // eslint-disable-next-line no-console
+            console.error('[Registration] Failed to parse business data:', parseError);
           }
-        } catch (error) {
-          // eslint-disable-next-line no-console
-          console.error('[Registration] Error checking for business data:', error);
         }
+
+        try {
+          const userName = `${firstName} ${lastName}`;
+          await createChefAIUser(email, userName, businessData);
+        } catch (chefAIError) {
+          // eslint-disable-next-line no-console
+          console.error('[Registration] Failed to create ChefAI user:', chefAIError);
+        }
+
+        if (businessData && businessData.business_name) {
+          try {
+            await saveBusinessDetails(businessData, email);
+            sessionStorage.removeItem('personalized-hub-business-data');
+
+            try {
+              const { default: fetchSavedBusinessInfoAndLog } = await import('../personalized-hub/fetchSavedBusinessInfo.js');
+              await fetchSavedBusinessInfoAndLog();
+            } catch (fetchError) {
+              // eslint-disable-next-line no-console
+              console.error('[Registration] Failed to fetch user data after save:', fetchError);
+            }
+          } catch (businessError) {
+            // eslint-disable-next-line no-console
+            console.error('[Registration] Failed to save business details:', businessError);
+          }
+        }
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('[Registration] Error checking for business data:', error);
       }
 
       return response;
