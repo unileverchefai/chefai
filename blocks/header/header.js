@@ -33,10 +33,9 @@ function toggleAllNavSections(sections, expanded = false) {
 /**
  * Toggles the entire nav
  * @param {Element} nav The container element
- * @param {*} forceExpanded Optional param to force nav expand behavior when not null
  */
-function toggleMenu(nav, forceExpanded = null) {
-  const expanded = forceExpanded !== null ? !forceExpanded : nav.getAttribute('aria-expanded') === 'true';
+function toggleMenu(nav) {
+  const expanded = nav.getAttribute('aria-expanded') === 'true';
   const button = nav.querySelector('.nav-hamburger button');
   const navSections = nav.querySelector('.nav-sections');
 
@@ -263,10 +262,6 @@ export default async function decorate(block) {
   // Add elements wrapper to nav (before nav sections)
   nav.insertBefore(elements, navSections);
   nav.setAttribute('aria-expanded', 'false');
-
-  // Prevent mobile nav behavior on window resize
-  toggleMenu(nav, isDesktop.matches);
-  isDesktop.addEventListener('change', () => toggleMenu(nav, isDesktop.matches));
 
   const navWrapper = createElement('div', { className: 'nav-wrapper' });
   navWrapper.appendChild(nav);

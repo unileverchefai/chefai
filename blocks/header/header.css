@@ -156,6 +156,7 @@ header .nav-profile-button {
   cursor: pointer;
   padding: 0;
   font-family: var(--ff-unilever-shilling);
+  border-radius: unset;
 
   &:hover {
     opacity: 0.8;
