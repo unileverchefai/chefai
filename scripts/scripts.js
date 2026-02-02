@@ -149,8 +149,33 @@ async function loadLazy(doc) {
     console.error('Failed to initialize subscription flow triggers', e);
   }
 
-  // Fetch and log user business data on page load
+  // Debug: Log all user-related data on page load
   try {
+    // eslint-disable-next-line no-console
+    console.log('[Page Load] Debug - User data check:', {
+      sessionStorage_keys: Object.keys(sessionStorage),
+      businessData_in_sessionStorage: sessionStorage.getItem('personalized-hub-business-data'),
+      registered_user_id: sessionStorage.getItem('registered-user-id'),
+      cookies: document.cookie,
+    });
+
+    // Parse and log business data if it exists
+    const businessDataStr = sessionStorage.getItem('personalized-hub-business-data');
+    if (businessDataStr) {
+      try {
+        const businessData = JSON.parse(businessDataStr);
+        // eslint-disable-next-line no-console
+        console.log('[Page Load] Business data from sessionStorage:', businessData);
+      } catch (parseError) {
+        // eslint-disable-next-line no-console
+        console.error('[Page Load] Failed to parse business data:', parseError);
+      }
+    } else {
+      // eslint-disable-next-line no-console
+      console.log('[Page Load] No business data found in sessionStorage');
+    }
+
+    // Fetch and log user business data from API
     const { default: fetchSavedBusinessInfoAndLog } = await import('@components/personalized-hub/fetchSavedBusinessInfo.js');
     await fetchSavedBusinessInfoAndLog();
   } catch (e) {
