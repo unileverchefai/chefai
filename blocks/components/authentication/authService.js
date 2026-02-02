@@ -60,7 +60,7 @@ export async function register(formData) {
     marketingConsent = false,
   } = formData;
 
-  if (!email || !password || !confirmPassword || !firstName || !lastName || !businessType) {
+  if (!email || !password || !confirmPassword || !firstName || !lastName) {
     throw new Error('Please fill in all required fields');
   }
 
@@ -68,7 +68,9 @@ export async function register(formData) {
     throw new Error('Passwords do not match');
   }
 
-  const typeOfBusiness = BUSINESS_TYPE_MAP[businessType.toLowerCase().replace(/\s+/g, '-')] ?? 'other';
+  const typeOfBusiness = businessType
+    ? (BUSINESS_TYPE_MAP[businessType.toLowerCase().replace(/\s+/g, '-')] ?? 'other')
+    : 'other';
   const now = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
   const anonymousUserId = getAnonymousUserIdFromCookie();
 
@@ -78,7 +80,7 @@ export async function register(formData) {
     confirmPassword,
     firstName,
     lastName,
-    businessType,
+    businessType: businessType ?? 'other',
     mobilePhone,
     marketingConsent,
     typeOfBusiness,

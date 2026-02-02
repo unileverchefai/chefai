@@ -1,13 +1,6 @@
 import { SUBSCRIPTION_KEY, ENDPOINTS } from './constants/api.js';
 import { COUNTRY_CODE, LANGUAGE_CODE } from '../authentication/constants.js';
 
-/**
- * Creates a ChefAI user after registration
- * @param {string} userId - The user_id from the registration token
- * @param {string} userName - The user's full name
- * @param {Object} businessData - Business data from sessionStorage
- * @returns {Promise<Object>} The created user data
- */
 export default async function createChefAIUser(userId, userName, businessData = null) {
   if (!userId) {
     throw new Error('User ID is required to create ChefAI user');
@@ -16,7 +9,6 @@ export default async function createChefAIUser(userId, userName, businessData = 
   // Build metadata with business_verified if business data exists
   const metadata = {};
   if (businessData && businessData.business_name) {
-    // Construct address - prefer full address string, otherwise build from parts
     let addressStr = businessData.address ?? '';
     if (!addressStr && (businessData.street || businessData.city || businessData.country)) {
       addressStr = [
@@ -63,9 +55,6 @@ export default async function createChefAIUser(userId, userName, businessData = 
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      // eslint-disable-next-line no-console
-      console.error('[ChefAI User] Failed to create user:', errorText);
       throw new Error(`Failed to create ChefAI user: ${response.status} ${response.statusText}`);
     }
 
@@ -76,15 +65,11 @@ export default async function createChefAIUser(userId, userName, businessData = 
 
     try {
       const json = JSON.parse(responseText);
-      // eslint-disable-next-line no-console
-      console.log('[ChefAI User] User created successfully:', json);
       return json;
     } catch {
       return null;
     }
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('[ChefAI User] Error creating user:', error);
     throw error;
   }
 }
