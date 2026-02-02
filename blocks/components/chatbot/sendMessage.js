@@ -1,4 +1,6 @@
-import { getThreadId, formatResponse, getAnonymousUserId, getUserIdFromCookie } from './utils.js';
+import {
+  getThreadId, formatResponse, getAnonymousUserId, getUserIdFromCookie,
+} from './utils.js';
 import { SUBSCRIPTION_KEY, ENDPOINTS } from './constants/api.js';
 
 let currentEndpoint = 'capgemini';
