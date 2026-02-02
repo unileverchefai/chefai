@@ -43,33 +43,30 @@ export default async function createChefAIUser(userId, userName, businessData = 
     tc_agreed: true,
   };
 
-  try {
-    const response = await fetch(ENDPOINTS.users, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: '*/*',
-        'X-Subscription-Key': SUBSCRIPTION_KEY,
-      },
-      body: JSON.stringify(payload),
-    });
+  const response = await fetch(ENDPOINTS.users, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: '*/*',
+      'X-Subscription-Key': SUBSCRIPTION_KEY,
+    },
+    body: JSON.stringify(payload),
+  });
 
-    if (!response.ok) {
-      throw new Error(`Failed to create ChefAI user: ${response.status} ${response.statusText}`);
-    }
-
-    const responseText = await response.text();
-    if (!responseText) {
-      return null;
-    }
-
-    try {
-      const json = JSON.parse(responseText);
-      return json;
-    } catch {
-      return null;
-    }
-  } catch (error) {
-    throw error;
+  if (!response.ok) {
+    const errorText = await response.text();
+    // eslint-disable-next-line no-console
+    console.error('[ChefAI User] Failed to create user:', errorText);
+    throw new Error(`Failed to create ChefAI user: ${response.status} ${response.statusText}`);
   }
+
+  const responseText = await response.text();
+  if (!responseText) {
+    return null;
+  }
+
+  const json = JSON.parse(responseText);
+  // eslint-disable-next-line no-console
+  console.log('[ChefAI User] User created successfully:', json);
+  return json;
 }

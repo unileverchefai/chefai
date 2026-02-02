@@ -1,9 +1,9 @@
 import { SUBSCRIPTION_KEY, ENDPOINTS } from '../chatbot/constants/api.js';
-import { getUserIdFromToken } from '../authentication/tokenManager.js';
+import { getUserIdFromCookie } from '../chatbot/utils.js';
 
 export default async function fetchSavedBusinessInfoAndLog() {
   try {
-    const userId = getUserIdFromToken();
+    const userId = getUserIdFromCookie();
 
     if (!userId) {
       return;

@@ -1,6 +1,6 @@
 import { apiRequest } from './api.js';
 import {
-  setToken, removeToken, getToken, getUserIdFromToken,
+  setToken, removeToken, getToken,
 } from './tokenManager.js';
 import {
   ENDPOINTS,
@@ -11,7 +11,7 @@ import {
   createRegistrationPayload,
 } from './constants.js';
 import {
-  getAnonymousUserIdFromCookie, clearAnonymousUserIdCookie, clearAllChatData, setCookie,
+  getAnonymousUserIdFromCookie, clearAllChatData, setCookie,
 } from '../chatbot/utils.js';
 import saveBusinessDetails from '../personalized-hub/saveBusinessDetails.js';
 import createChefAIUser from '../chatbot/createChefAIUser.js';
@@ -39,6 +39,7 @@ export async function login(email, password) {
     }
 
     setToken(token);
+    setCookie('user_id', email);
     return token;
   } catch (error) {
     if (error.message.includes('401') || error.message.includes('Unauthorized')) {
@@ -95,91 +96,50 @@ export async function register(formData) {
       body: payload,
     });
 
-    if (response.successful && response.authToken) {
+    if (response.authToken) {
       setToken(response.authToken);
-      const registeredUserId = getUserIdFromToken();
+      setCookie('user_id', email);
 
-      if (registeredUserId) {
-        const userIdStr = registeredUserId.toString();
-        setCookie('user_id', userIdStr);
-        try {
-          sessionStorage.setItem('registered-user-id', userIdStr);
-        } catch (e) {
-          // eslint-disable-next-line no-console
-          console.error('[Registration] Failed to store user_id in sessionStorage:', e);
-        }
-      } else {
-        clearAnonymousUserIdCookie();
-      }
-
-      let userIdForBusinessSave = registeredUserId;
-      if (!userIdForBusinessSave) {
-        await new Promise((resolve) => {
-          setTimeout(() => {
-            resolve();
-          }, 100);
-        });
-        userIdForBusinessSave = getUserIdFromToken();
-      }
-
-      if (userIdForBusinessSave) {
-        try {
-          // Debug: Log sessionStorage and cookies
-          // eslint-disable-next-line no-console
-          console.log('[Registration] Debug - Checking for business data:', {
-            sessionStorage_keys: Object.keys(sessionStorage),
-            businessData_in_sessionStorage: sessionStorage.getItem('personalized-hub-business-data'),
-            cookies: document.cookie,
-            user_id_cookie: document.cookie.includes('user_id') ? 'present' : 'not found',
-          });
-
-          const businessDataStr = sessionStorage.getItem('personalized-hub-business-data');
-          // eslint-disable-next-line no-console
-          console.log('[Registration] Business data from sessionStorage:', businessDataStr);
-
-          let businessData = null;
-          if (businessDataStr) {
-            try {
-              businessData = JSON.parse(businessDataStr);
-              // eslint-disable-next-line no-console
-              console.log('[Registration] Parsed business data:', businessData);
-            } catch (parseError) {
-              // eslint-disable-next-line no-console
-              console.error('[Registration] Failed to parse business data:', parseError);
-            }
-          }
-
-          // Create ChefAI user with business data
+      try {
+        const businessDataStr = sessionStorage.getItem('personalized-hub-business-data');
+        let businessData = null;
+        if (businessDataStr) {
           try {
-            const userName = `${firstName} ${lastName}`;
-            await createChefAIUser(userIdForBusinessSave, userName, businessData);
-          } catch (chefAIError) {
+            businessData = JSON.parse(businessDataStr);
+          } catch (parseError) {
             // eslint-disable-next-line no-console
-            console.error('[Registration] Failed to create ChefAI user:', chefAIError);
+            console.error('[Registration] Failed to parse business data:', parseError);
           }
-
-          // Save business details to business API if business data exists
-          if (businessData && businessData.business_name) {
-            try {
-              await saveBusinessDetails(businessData, userIdForBusinessSave);
-              sessionStorage.removeItem('personalized-hub-business-data');
-
-              try {
-                const { default: fetchSavedBusinessInfoAndLog } = await import('../personalized-hub/fetchSavedBusinessInfo.js');
-                await fetchSavedBusinessInfoAndLog();
-              } catch (fetchError) {
-                // eslint-disable-next-line no-console
-                console.error('[Registration] Failed to fetch user data after save:', fetchError);
-              }
-            } catch (businessError) {
-              // eslint-disable-next-line no-console
-              console.error('[Registration] Failed to save business details:', businessError);
-            }
-          }
-        } catch (error) {
-          // eslint-disable-next-line no-console
-          console.error('[Registration] Error checking for business data:', error);
         }
+
+        try {
+          const userName = `${firstName} ${lastName}`;
+          await createChefAIUser(email, userName, businessData);
+        } catch (chefAIError) {
+          // eslint-disable-next-line no-console
+          console.error('[Registration] Failed to create ChefAI user:', chefAIError);
+        }
+
+        if (businessData && businessData.business_name) {
+          try {
+            await saveBusinessDetails(businessData, email);
+            sessionStorage.removeItem('personalized-hub-business-data');
+
+            try {
+              const { default: fetchSavedBusinessInfoAndLog } = await import('../personalized-hub/fetchSavedBusinessInfo.js');
+              await fetchSavedBusinessInfoAndLog();
+            } catch (fetchError) {
+              // eslint-disable-next-line no-console
+              console.error('[Registration] Failed to fetch user data after save:', fetchError);
+            }
+          } catch (businessError) {
+            // eslint-disable-next-line no-console
+            console.error('[Registration] Failed to save business details:', businessError);
+          }
+        }
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('[Registration] Error checking for business data:', error);
       }
 
       return response;
