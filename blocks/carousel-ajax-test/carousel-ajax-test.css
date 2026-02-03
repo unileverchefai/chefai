@@ -1,0 +1,175 @@
+/* Import carousel-cards styles for consistency */
+@import url('../carousel-cards/carousel-cards.css');
+
+/* Mobile-first styles */
+.ajax-carousel-test {
+  position: relative;
+  padding: 0 0 32px;
+  overflow: hidden;
+  background-color: var(--background-color);
+}
+
+/* Fix touch-action to allow horizontal swiping */
+.ajax-carousel-test .carousel-cards-container {
+  touch-action: pan-x pan-y pinch-zoom;
+}
+
+/* SSR Support: Style server-rendered content before JS enhancement */
+.ajax-carousel-test > div:not(.carousel-cards-container):not(.ajax-carousel-container):not(.ajax-carousel-loading):not(.ajax-carousel-empty):not(.ajax-carousel-error) {
+  display: none; /* Hide raw server content, will be converted to cards */
+}
+
+.ajax-carousel-test:not([data-block-status="loaded"]) > div[data-thread-id] {
+  display: block;
+  background: rgb(234 231 235 / 95%);
+  backdrop-filter: var(--backdrop-blur);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg) var(--spacing-md);
+  margin: var(--spacing-md);
+  box-shadow: var(--box-shadow-card);
+}
+
+.ajax-carousel-test:not([data-block-status="loaded"]) > div[data-thread-id] h2,
+.ajax-carousel-test:not([data-block-status="loaded"]) > div[data-thread-id] h3 {
+  font-family: var(--ff-unilever-shilling);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--aubergine);
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+.ajax-carousel-loading {
+  text-align: center;
+  padding: var(--spacing-md);
+  color: var(--squid-ink);
+  font-family: var(--ff-unilever-shilling);
+  font-size: 14px;
+}
+
+.ajax-carousel-empty,
+.ajax-carousel-error {
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: var(--squid-ink);
+  font-family: var(--ff-unilever-shilling);
+  font-size: 16px;
+}
+
+.ajax-carousel-error {
+  color: var(--ufs-orange);
+}
+
+/* Indicator styles - same as carousel-cards */
+.ajax-carousel-test .controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ajax-carousel-test .indicators {
+  display: flex;
+  gap: var(--spacing-xxs);
+  align-items: center;
+}
+
+.ajax-carousel-test .indicator {
+  width: var(--spacing-xxs);
+  height: var(--spacing-xxs);
+  border-radius: 50px;
+  background-color: var(--smoke);
+  transition: all var(--transition-base);
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.ajax-carousel-test .indicator.active {
+  width: 20px;
+  background-color: var(--ufs-orange);
+}
+
+.ajax-carousel-test .indicator:focus {
+  outline: 2px solid var(--ufs-orange);
+  outline-offset: 2px;
+}
+
+.ajax-carousel-test .arrows {
+  display: none;
+}
+
+.ajax-carousel-test .arrow {
+  width: 50px;
+  height: 50px;
+  border: 1px solid var(--smoke);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  position: relative;
+  padding: 0;
+}
+
+.ajax-carousel-test .arrow:hover {
+  border-color: var(--ufs-orange);
+}
+
+.ajax-carousel-test .arrow:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ajax-carousel-test .arrow:focus {
+  outline: 2px solid var(--ufs-orange);
+  outline-offset: 2px;
+}
+
+.ajax-carousel-test .arrow.prev {
+  border-radius: 15px 5px 5px;
+}
+
+.ajax-carousel-test .arrow.next {
+  border-radius: 5px 15px 5px 5px;
+}
+
+.ajax-carousel-test .arrow svg {
+  fill: var(--smoke);
+  transition: fill var(--transition-base);
+}
+
+.ajax-carousel-test .arrow:hover svg {
+  fill: var(--ufs-orange);
+}
+
+/* Desktop styles */
+@media (width >= 900px) {
+  .ajax-carousel-test {
+    padding: 76px 0 48px;
+  }
+
+  .ajax-carousel-test .controls {
+    justify-content: space-between;
+    padding: var(--spacing-lg) 100px 0;
+  }
+
+  .ajax-carousel-test .indicators {
+    gap: var(--spacing-xs);
+  }
+
+  .ajax-carousel-test .indicator {
+    width: var(--spacing-xs);
+    height: var(--spacing-xs);
+  }
+
+  .ajax-carousel-test .indicator.active {
+    width: 30px;
+  }
+
+  .ajax-carousel-test .arrows {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: center;
+  }
+}
