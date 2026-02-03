@@ -28,7 +28,7 @@ export function createRegistrationPayload(data) {
     lastName,
     mobilePhone = '',
     marketingConsent = false,
-    typeOfBusiness,
+    typeOfBusiness = 'other',
     now,
     referrerUrl,
     fullName,

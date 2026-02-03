@@ -121,6 +121,11 @@ export default function openCookieAgreementModal(onAgree, onClose, required = fa
   // Set up event listener after modal is created
   agreeButton.addEventListener('click', () => {
     setCookie('personalized-hub-consent', 'true');
+
+    // Create cookie_id (will later be replaced with OneTrust cookie ID)
+    const cookieId = `cookie_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+    setCookie('cookie_id', cookieId);
+
     // Close modal first, then call onAgree after animation completes
     modal.close();
     // Wait for modal close animation to complete before calling onAgree
