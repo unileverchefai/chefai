@@ -50,7 +50,7 @@ export default async function openChatbotModal() {
       throw new Error('React or ReactDOM not loaded');
     }
 
-    const { default: ChatWidget } = await import('./chatWidget.js');
+    const { default: ChatWidget } = await import('./ChatWidget.js');
     const { createElement: h } = window.React;
 
     reactRoot = window.ReactDOM.createRoot(container);
