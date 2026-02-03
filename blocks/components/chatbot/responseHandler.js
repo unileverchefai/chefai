@@ -1,3 +1,25 @@
+/**
+ * Parse streaming event and extract text chunk.
+ *
+ * @param {Object} event - SSE event object
+ * @returns {string|null} - Text chunk if available, null otherwise
+ */
+export function parseStreamingEvent(event) {
+  const text = event.message || event.description || event.step || event.text || null;
+
+  if (text && typeof text === 'string' && text.trim()) {
+    const phase = event.type || event.phase;
+
+    if (phase && ['run_completed', 'completed', 'failed', 'error'].includes(phase)) {
+      return null;
+    }
+
+    return text;
+  }
+
+  return null;
+}
+
 export default function formatResponse(apiResponse) {
   // Build message text from response
   let messageText = apiResponse.response?.message
@@ -105,7 +127,6 @@ export default function formatResponse(apiResponse) {
     user: {
       _id: 2,
       name: 'Chef AI',
-      avatar: '/icons/chef-ai-avatar.svg',
     },
     metadata: {
       run_id: apiResponse.run_id,

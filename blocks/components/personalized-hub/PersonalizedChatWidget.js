@@ -197,7 +197,7 @@ export default function PersonalizedChatWidget({
               'button',
               {
                 key: `q${idx}`,
-                className: 'ph-question-btn',
+                className: 'chatbot-question-btn',
                 onClick: () => handleQuestionClick(question),
                 disabled: isTyping,
               },

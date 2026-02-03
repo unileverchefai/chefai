@@ -6,7 +6,6 @@ body {
   --gradient-color-start: #221d3700;
 
   width: 100%;
-  height: 304px;
   padding: 32px 20px;
   position: sticky;
   bottom: 0;
@@ -45,7 +44,6 @@ body {
 
 @media (width >= 992px) {
   .floating-cta__container {
-    height: 90px;
     display: grid;
     column-gap: 24px;
     grid-template-areas: 'title cta' 'disclaimer cta';

@@ -1,6 +1,39 @@
 /* Chatbot Block Styles */
 @import url('../chatInput/chat-input.css');
 
+.ph-predefined-questions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.chatbot-question-btn {
+  border: 1px solid var(--neon-fm-2);
+  background: linear-gradient(102.365deg, rgb(241 90 34 / 5%) 0.432%, rgb(235 34 99 / 5%) 49.756%, rgb(176 43 159 / 5%) 99.941%);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-xss);
+  font-weight: 500;
+  color: var(--text-color);
+  text-align: left;
+  cursor: pointer;
+  width: fit-content;
+  max-width: unset;
+  margin: 0;
+  white-space: pre-wrap;
+  transition: background 0.2s ease;
+}
+
+.chatbot-question-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.chatbot-question-btn:hover:not(:disabled) {
+  background: linear-gradient(102.365deg, rgb(241 90 34 / 10%) 0.432%, rgb(235 34 99 / 10%) 49.756%, rgb(176 43 159 / 10%) 99.941%);
+}
+
 .chatbot {
     width: 100%;
     max-width: 100%;
@@ -39,7 +72,7 @@
 .chat-widget {
     height: 100%;
     min-height: 600px;
-    max-height: 600px;
+    max-height: 85vh;
     display: flex;
     flex-direction: column;
     contain: layout style;
@@ -162,7 +195,7 @@
 
     .chat-widget {
         min-height: 500px;
-        max-height: 500px;
+        max-height: 97vh;
     }
 
     .chatbot-skeleton {

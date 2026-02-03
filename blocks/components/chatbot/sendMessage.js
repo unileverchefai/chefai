@@ -1,5 +1,5 @@
 import {
-  getThreadId, formatResponse, getAnonymousUserId, getUserIdFromCookie,
+  getOrCreateThreadId, formatResponse, getAnonymousUserId, getUserIdFromCookie,
 } from './utils.js';
 import { SUBSCRIPTION_KEY, ENDPOINTS } from './constants/api.js';
 
@@ -22,7 +22,6 @@ function fetchWithTimeout(url, options, timeout = 30000) {
 
 export default async function sendMessage(message, options = {}) {
   const endpoint = ENDPOINTS[currentEndpoint];
-  const threadId = getThreadId();
 
   const cookieUserId = getUserIdFromCookie();
   let userId = options.user_id ?? cookieUserId;
@@ -30,6 +29,9 @@ export default async function sendMessage(message, options = {}) {
   if (!userId) {
     userId = await getAnonymousUserId();
   }
+
+  // Get or create thread ID using API
+  const threadId = await getOrCreateThreadId(userId);
 
   const payload = {
     ...options,
