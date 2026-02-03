@@ -233,7 +233,7 @@ function initializeCarousel(block, container, itemCount) {
       mobileBreakpoint: 900,
       mobileGap: 20,
       desktopGap: 20,
-      disableDesktopCarousel: false,
+      disableDesktopCarousel: true,
     });
 
     const srAnnouncement = block.querySelector('[aria-live]');

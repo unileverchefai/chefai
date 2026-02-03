@@ -466,9 +466,22 @@ a.trend-cta {
     line-height: 24px;
   }
 
+  .carousel-biz-container {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
   .trend-card {
     width: var(--card-width-desktop);
     height: var(--card-height-desktop);
+  }
+
+  .trend-card:nth-child(n + 5) {
+    display: none;
+  }
+
+  .carousel-biz .controls {
+    display: none;
   }
 
   .trend-stat.stat-number {
