@@ -1,9 +1,11 @@
-import { getMetadata } from '@scripts/aem.js';
+import { getMetadata, loadCSS } from '@scripts/aem.js';
 import { createElement } from '@scripts/common.js';
 import { setEndpoint } from './sendMessage.js';
 import { loadReact } from './utils.js';
 
 export default async function chatbot(block) {
+  await loadCSS(`${window.hlx.codeBasePath}/blocks/components/chatbot/chatbot.css`);
+
   const endpoint = getMetadata('chatbot-endpoint') || 'capgemini';
   setEndpoint(endpoint);
 

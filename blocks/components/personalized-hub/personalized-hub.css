@@ -1,5 +1,6 @@
 /* Personalized Hub Block Styles */
 @import url('../chatInput/chat-input.css');
+@import url('../chatbot/chatbot.css');
 
 /* Personalized-hub specific chat input overrides */
 .personalized-hub .chat-input-form {
@@ -134,33 +135,12 @@
   gap: var(--spacing-xs);
 }
 
-.ph-question-btn {
-  border: 1px solid var(--neon-fm-2);
-  background: linear-gradient(102.365deg, rgb(241 90 34 / 5%) 0.432%, rgb(235 34 99 / 5%) 49.756%, rgb(176 43 159 / 5%) 99.941%);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-xs) var(--spacing-sm);
-  font-family: var(--body-font-family);
-  font-size: var(--body-font-size-xss);
-  font-weight: 500;
-  color: var(--text-color);
-  text-align: left;
-  cursor: pointer;
-  width: fit-content;
-  max-width: unset;
-  margin: 0;
-  white-space: pre-wrap;
-}
-
 .ph-btn-gradient {
   background: linear-gradient(91.765deg, rgb(232 91 14 / 6%) 3.749%, rgb(255 90 0 / 6%) 28.36%, rgb(92 54 87 / 6%) 69.867%, rgb(134 36 121 / 6%) 103.17%);
 }
 
 .ph-btn-gradient:hover {
   background: linear-gradient(91.765deg, rgb(232 91 14 / 12%) 3.749%, rgb(255 90 0 / 12%) 28.36%, rgb(92 54 87 / 12%) 69.867%, rgb(134 36 121 / 12%) 103.17%);
-}
-
-.ph-question-btn:hover {
-  background: linear-gradient(102.365deg, rgb(241 90 34 / 10%) 0.432%, rgb(235 34 99 / 10%) 49.756%, rgb(176 43 159 / 10%) 99.941%);
 }
 
 /* Input Container for personalized-hub specific layout */

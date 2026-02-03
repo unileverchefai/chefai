@@ -59,8 +59,6 @@ export default async function openChatbotModal() {
     modal.open();
 
     requestAnimationFrame(() => {
-      // In the modal we do not need the special "#chatbot" trigger,
-      // so the personalizedHubTrigger is disabled.
       reactRoot.render(h(ChatWidget, { personalizedHubTrigger: null }));
     });
   } catch (error) {

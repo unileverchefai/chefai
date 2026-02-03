@@ -12,6 +12,7 @@ export default function renderChatUI({
   setInputValue,
   handleSend,
   disabled,
+  onPromptClick,
 }) {
   return h(
     'div',
@@ -55,21 +56,7 @@ export default function renderChatUI({
           },
         },
         [
-          ...messages.map(renderMessage),
-          isTyping && h(
-            'div',
-            {
-              key: 'typing',
-              className: 'typing-indicator',
-              style: {
-                padding: '12px 16px',
-                marginBottom: '16px',
-                color: 'var(--dark-color)',
-                fontStyle: 'italic',
-              },
-            },
-            'Chef AI is typing...',
-          ),
+          ...messages.map((msg) => renderMessage(msg, { onPromptClick })),
           h('div', {
             key: 'scroll-anchor',
             ref: messagesEndRef,
