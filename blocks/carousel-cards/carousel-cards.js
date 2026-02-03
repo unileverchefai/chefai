@@ -4,7 +4,7 @@ import createCarousel from '../components/carousel/carousel.js';
 export function initCarouselCards(block, carouselContainer, itemCount, options = {}) {
   const isStaticDesktop = typeof options.disableDesktopCarousel === 'boolean'
     ? options.disableDesktopCarousel
-    : true;
+    : false; // Default to false - enable carousel on desktop
 
   if (isStaticDesktop) {
     block.classList.add('carousel-cards-static');
@@ -97,8 +97,15 @@ export default function decorate(block) {
 
   block.appendChild(carouselContainer);
 
+  // If exactly 3 items, display as static layout (no carousel on desktop)
+  // Mobile always uses carousel :)
+  const STATIC_LAYOUT_COUNT = 3;
+  const isStaticDesktop = cards.length === STATIC_LAYOUT_COUNT;
+
   try {
-    const carousel = initCarouselCards(block, carouselContainer, cards.length);
+    const carousel = initCarouselCards(block, carouselContainer, cards.length, {
+      disableDesktopCarousel: isStaticDesktop,
+    });
 
     // Store carousel instance for cleanup
     block.carouselInstance = carousel;
