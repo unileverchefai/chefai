@@ -29,8 +29,174 @@ function getCookie(name) {
   }
 }
 
+/**
+ * Get stored thread ID from cookie
+ * @returns {string|null} Thread ID or null if not found
+ */
+export function getStoredThreadId() {
+  return getCookie('chef-ai-thread-id');
+}
+
+/**
+ * Create a new thread via API
+ * @param {string} userId - User ID
+ * @returns {Promise<string>} Thread ID
+ */
+export async function createThread(userId) {
+  try {
+    if (!ENDPOINTS.createThread) {
+      throw new Error('Create thread endpoint is not configured');
+    }
+
+    const response = await fetch(ENDPOINTS.createThread, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'X-Subscription-Key': SUBSCRIPTION_KEY,
+      },
+      body: JSON.stringify({ user_id: userId }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to create thread: ${response.status} ${response.statusText}`);
+    }
+
+    const responseText = await response.text();
+    if (!responseText) {
+      throw new Error('Create thread API returned empty response');
+    }
+
+    const json = JSON.parse(responseText);
+    const threadId = (json.thread_id ?? json.data?.thread_id ?? '').toString().trim();
+
+    if (!threadId) {
+      throw new Error('Create thread API response did not contain a thread_id');
+    }
+
+    setCookie('chef-ai-thread-id', threadId);
+    return threadId;
+  } catch (error) {
+    throw new Error(`Failed to create thread: ${error.message}`);
+  }
+}
+
+/**
+ * Validate if a thread exists
+ * @param {string} threadId - Thread ID to validate
+ * @returns {Promise<boolean>} True if thread exists, false otherwise
+ */
+export async function validateThread(threadId) {
+  try {
+    if (!ENDPOINTS.getThreadInfo) {
+      return false;
+    }
+
+    const url = `${ENDPOINTS.getThreadInfo}?thread_id=${encodeURIComponent(threadId)}`;
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'X-Subscription-Key': SUBSCRIPTION_KEY,
+      },
+    });
+
+    return response.ok;
+  } catch (error) {
+    return false;
+  }
+}
+
+/**
+ * Get user threads and return the most recent one
+ * @param {string} userId - User ID
+ * @returns {Promise<string|null>} Most recent thread ID or null
+ */
+export async function getUserThreads(userId) {
+  try {
+    if (!ENDPOINTS.getUserThreads) {
+      return null;
+    }
+
+    const url = `${ENDPOINTS.getUserThreads}?user_id=${encodeURIComponent(userId)}`;
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'X-Subscription-Key': SUBSCRIPTION_KEY,
+      },
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const responseText = await response.text();
+    if (!responseText) {
+      return null;
+    }
+
+    const json = JSON.parse(responseText);
+    const threads = json.threads || json.data?.threads || json || [];
+
+    if (!Array.isArray(threads) || threads.length === 0) {
+      return null;
+    }
+
+    const sortedThreads = threads.sort((a, b) => {
+      const timeA = a.created_at || a.timestamp || a.createdAt || 0;
+      const timeB = b.created_at || b.timestamp || b.createdAt || 0;
+      return new Date(timeB) - new Date(timeA);
+    });
+
+    const mostRecentThread = sortedThreads[0];
+    const threadId = (mostRecentThread.thread_id ?? mostRecentThread.id ?? '').toString().trim();
+
+    if (threadId) {
+      setCookie('chef-ai-thread-id', threadId);
+      return threadId;
+    }
+
+    return null;
+  } catch (error) {
+    return null;
+  }
+}
+
+/**
+ * Get or create thread ID using API-based flow
+ * @param {string} userId - User ID
+ * @param {boolean} validateOnInit - Whether to validate thread on initialization (default: false)
+ * @returns {Promise<string>} Thread ID
+ */
+export async function getOrCreateThreadId(userId, validateOnInit = false) {
+  let threadId = getStoredThreadId();
+
+  if (threadId && validateOnInit) {
+    const isValid = await validateThread(threadId);
+    if (!isValid) {
+      threadId = await createThread(userId);
+      return threadId;
+    }
+    return threadId;
+  }
+
+  if (threadId) {
+    return threadId;
+  }
+
+  threadId = await getUserThreads(userId);
+  if (threadId) {
+    return threadId;
+  }
+
+  threadId = await createThread(userId);
+  return threadId;
+}
+
+// Deprecated: Use getOrCreateThreadId(userId) instead
 export function getThreadId() {
-  let threadId = getCookie('chef-ai-thread-id');
+  let threadId = getStoredThreadId();
   if (!threadId) {
     threadId = `thread_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
     setCookie('chef-ai-thread-id', threadId);
@@ -122,18 +288,284 @@ export async function getAnonymousUserId() {
   }
 }
 
-export function getHistory() {
+/**
+ * Transform API messages to ChatWidget message format
+ * Handles both simple message format and full API response format
+ * @param {Array} apiMessages - Messages from API
+ * @returns {Array} Transformed messages
+ */
+export function transformApiMessagesToChatFormat(apiMessages) {
+  if (!Array.isArray(apiMessages)) {
+    return [];
+  }
+
+  const USER_ID = 1;
+  const AI_ID = 2;
+
+  return apiMessages.map((msg) => {
+    const isUser = msg.role === 'user' || msg.user_id || msg.sender === 'user' || msg.user?._id === USER_ID;
+
+    if (isUser) {
+      const messageId = msg.message_id || msg.id || msg._id || `msg_${Date.now()}_${Math.random()}`;
+      let text = msg.message || msg.text || msg.content || '';
+
+      if (typeof text === 'string' && text.trim().startsWith('{')) {
+        try {
+          const parsed = JSON.parse(text);
+          text = parsed.message || parsed.text || text;
+        } catch {
+          // Use as-is if parsing fails
+        }
+      }
+
+      const timestamp = msg.timestamp || msg.created_at || msg.createdAt
+        || (msg.createdAt instanceof Date ? msg.createdAt.getTime() : Date.now());
+
+      return {
+        _id: messageId,
+        text,
+        createdAt: new Date(timestamp),
+        user: {
+          _id: USER_ID,
+          name: 'You',
+        },
+        metadata: {
+          thread_id: msg.thread_id,
+          message_id: messageId,
+          ...(msg.metadata || {}),
+        },
+      };
+    }
+
+    let parsedContent = null;
+    let messageContent = msg.message || msg.text || msg.content || '';
+
+    if (typeof messageContent === 'string' && messageContent.trim().startsWith('{')) {
+      try {
+        parsedContent = JSON.parse(messageContent);
+        if (parsedContent && typeof parsedContent === 'object') {
+          messageContent = parsedContent.message || messageContent;
+        }
+      } catch {
+        parsedContent = null;
+      }
+    }
+
+    const hasParsedContent = parsedContent && typeof parsedContent === 'object';
+    const hasResponseObject = msg.response && typeof msg.response === 'object';
+    const hasRecipeDataAtRoot = msg.recipes || msg.suggested_prompts
+      || msg.recipe_details || msg.product_details;
+    const hasRecipeDataInParsed = parsedContent?.recipes || parsedContent?.suggested_prompts
+      || parsedContent?.recipe_details || parsedContent?.product_details;
+    const hasRecipeDataInResponse = msg.response?.recipes || msg.response?.suggested_prompts
+      || msg.response?.recipe_details || msg.response?.product_details;
+    const hasMessageId = msg.message_id;
+
+    const shouldFormat = hasParsedContent || hasResponseObject || hasRecipeDataInResponse
+      || hasRecipeDataInParsed || (hasMessageId && hasRecipeDataAtRoot);
+
+    if (shouldFormat) {
+      try {
+        let responseData;
+
+        if (hasParsedContent) {
+          responseData = {
+            message: parsedContent.message || messageContent,
+            recipes: parsedContent.recipes || [],
+            recipe_details: parsedContent.recipe_details || [],
+            product_details: parsedContent.product_details || [],
+            suggested_prompts: parsedContent.suggested_prompts || [],
+            businesses: parsedContent.businesses || [],
+          };
+        } else if (hasResponseObject) {
+          responseData = msg.response;
+        } else {
+          responseData = {
+            message: messageContent,
+            recipes: msg.recipes || [],
+            recipe_details: msg.recipe_details || [],
+            product_details: msg.product_details || [],
+            suggested_prompts: msg.suggested_prompts || [],
+            businesses: msg.businesses || [],
+          };
+        }
+
+        const apiResponseFormat = {
+          message_id: msg.message_id || msg.id || msg._id,
+          timestamp: msg.timestamp || msg.created_at || msg.createdAt,
+          thread_id: msg.thread_id,
+          run_id: msg.run_id,
+          response: responseData,
+        };
+
+        return formatResponse(apiResponseFormat);
+      } catch (error) {
+        // Fallback to simple format
+      }
+    }
+    const messageId = msg.message_id || msg.id || msg._id || `msg_${Date.now()}_${Math.random()}`;
+    const text = msg.message || msg.text || msg.content || '';
+    const timestamp = msg.timestamp || msg.created_at || msg.createdAt
+      || (msg.createdAt instanceof Date ? msg.createdAt.getTime() : Date.now());
+
+    const images = [];
+    if (msg.images && Array.isArray(msg.images)) {
+      images.push(...msg.images);
+    } else if (msg.image_url || msg.image) {
+      images.push({
+        url: msg.image_url || msg.image,
+        alt: msg.title || msg.name || 'Image',
+      });
+    }
+
+    return {
+      _id: messageId,
+      text,
+      createdAt: new Date(timestamp),
+      user: {
+        _id: AI_ID,
+        name: 'Chef AI',
+        avatar: '/icons/chef-ai-avatar.svg',
+      },
+      metadata: {
+        thread_id: msg.thread_id,
+        message_id: messageId,
+        recipes: msg.recipes || [],
+        recipe_details: msg.recipe_details || [],
+        product_details: msg.product_details || [],
+        suggested_prompts: msg.suggested_prompts || [],
+        businesses: msg.businesses || [],
+        images: images.length > 0 ? images : undefined,
+        ...(msg.metadata || {}),
+      },
+    };
+  });
+}
+
+/**
+ * Load thread messages from API
+ * @param {string} threadId - Thread ID
+ * @returns {Promise<Array>} Array of messages
+ */
+export async function loadThreadMessages(threadId) {
   try {
-    const history = sessionStorage.getItem('chef-ai-history');
-    return history ? JSON.parse(history) : [];
-  } catch {
+    if (!ENDPOINTS.getThreadMessages) {
+      return [];
+    }
+
+    const url = `${ENDPOINTS.getThreadMessages}?thread_id=${encodeURIComponent(threadId)}`;
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'X-Subscription-Key': SUBSCRIPTION_KEY,
+      },
+    });
+
+    if (!response.ok) {
+      return [];
+    }
+
+    const responseText = await response.text();
+    if (!responseText) {
+      return [];
+    }
+
+    const json = JSON.parse(responseText);
+    let messages = json.messages || json.data?.messages || json || [];
+
+    if (!Array.isArray(messages)) {
+      if (messages && typeof messages === 'object') {
+        messages = [messages];
+      } else {
+        messages = [];
+      }
+    }
+
+    return transformApiMessagesToChatFormat(messages);
+  } catch (error) {
     return [];
   }
 }
 
-export function saveHistory(messages) {
+/**
+ * Get cached history with thread ID validation
+ * @param {string} threadId - Current thread ID
+ * @returns {Array|null} Cached history or null if not found/invalid
+ */
+function getCachedHistory(threadId) {
   try {
-    sessionStorage.setItem('chef-ai-history', JSON.stringify(messages));
+    const cachedData = sessionStorage.getItem('chef-ai-history');
+    if (!cachedData) {
+      return null;
+    }
+
+    const parsed = JSON.parse(cachedData);
+    const cachedThreadId = parsed.threadId;
+    const messages = parsed.messages || parsed;
+
+    if (cachedThreadId === threadId && Array.isArray(messages)) {
+      return messages;
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Get history with fallback: cache first, then API
+ * @param {string} threadId - Thread ID
+ * @param {string} userId - User ID (optional, for logging)
+ * @returns {Promise<Array>} Array of messages
+ */
+export async function getHistoryWithFallback(threadId) {
+  const cachedHistory = getCachedHistory(threadId);
+  if (cachedHistory && cachedHistory.length > 0) {
+    loadThreadMessages(threadId).then((apiMessages) => {
+      if (apiMessages && apiMessages.length > 0) {
+        saveHistory(apiMessages, threadId);
+      }
+    }).catch(() => {});
+    return cachedHistory;
+  }
+
+  const apiMessages = await loadThreadMessages(threadId);
+  if (apiMessages && apiMessages.length > 0) {
+    saveHistory(apiMessages, threadId);
+  }
+  return apiMessages || [];
+}
+
+/**
+ * Get history from cache only (synchronous, for immediate display)
+ * @param {string} threadId - Thread ID to validate cache
+ * @returns {Array} Cached messages or empty array
+ */
+export function getHistory(threadId = null) {
+  if (threadId) {
+    const cached = getCachedHistory(threadId);
+    return cached || [];
+  }
+
+  return [];
+}
+
+/**
+ * Save history with thread ID for cache validation
+ * @param {Array} messages - Messages to save
+ * @param {string} threadId - Thread ID (optional, will try to get from cookie if not provided)
+ */
+export function saveHistory(messages, threadId = null) {
+  try {
+    const currentThreadId = threadId || getStoredThreadId();
+    const dataToStore = {
+      threadId: currentThreadId,
+      messages: Array.isArray(messages) ? messages : [],
+      timestamp: Date.now(),
+    };
+    sessionStorage.setItem('chef-ai-history', JSON.stringify(dataToStore));
   } catch (err) {
     // eslint-disable-next-line no-console
     console.error('Failed to save history:', err);

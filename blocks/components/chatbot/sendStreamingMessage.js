@@ -1,6 +1,6 @@
 import { generateRunId, connectToAgentRunStream } from './sseStream.js';
 import { SUBSCRIPTION_KEY, ENDPOINTS } from './constants/api.js';
-import { getThreadId, getAnonymousUserId, getUserIdFromCookie } from './utils.js';
+import { getOrCreateThreadId, getAnonymousUserId, getUserIdFromCookie } from './utils.js';
 import sendMessage from './sendMessage.js';
 import formatResponse, { parseStreamingEvent } from './responseHandler.js';
 
@@ -24,7 +24,7 @@ function fetchWithTimeout(url, options, timeout = 30000) {
 /**
  * Send a chat message with SSE streaming support.
  * Falls back to non-streaming mode if SSE fails.
- * 
+ *
  * @param {string} message - The user's message
  * @param {Object} options - Configuration options
  * @param {Function} options.onChunk - Callback when new text chunks arrive (text: string)
@@ -41,13 +41,15 @@ export default async function sendStreamingMessage(message, options = {}) {
     onMetadata = () => {},
   } = options;
 
-  const threadId = getThreadId();
   const cookieUserId = getUserIdFromCookie();
   let userId = options.user_id || cookieUserId;
 
   if (!userId) {
     userId = await getAnonymousUserId();
   }
+
+  // Get or create thread ID using API
+  const threadId = await getOrCreateThreadId(userId);
 
   // Accumulate streaming text and metadata
   let accumulatedText = '';
@@ -82,8 +84,14 @@ export default async function sendStreamingMessage(message, options = {}) {
         },
         onEvent: (event) => {
           const textChunk = parseStreamingEvent(event);
-          
+
           if (textChunk) {
+            // Ensure space between chunks if needed
+            if (accumulatedText
+                && !/\s$/.test(accumulatedText)
+                && !/^\s/.test(textChunk)) {
+              accumulatedText += ' ';
+            }
             accumulatedText += textChunk;
             onChunk(accumulatedText);
           }
@@ -102,7 +110,7 @@ export default async function sendStreamingMessage(message, options = {}) {
             }
           }
         },
-        onDone: (event) => {
+        onDone: () => {
           // Don't call onComplete here - wait for API response
           // The API response handler will call onComplete with the formatted message
         },
@@ -115,7 +123,9 @@ export default async function sendStreamingMessage(message, options = {}) {
       });
 
       // Give SSE a moment to establish connection
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => {
+        setTimeout(() => resolve(), 100);
+      });
 
       // If SSE connection failed, fallback immediately
       if (sseError && !sseConnected) {
@@ -149,7 +159,6 @@ export default async function sendStreamingMessage(message, options = {}) {
       );
 
       if (!apiResponse.ok) {
-        const errorText = await apiResponse.text();
         throw new Error(`API error: ${apiResponse.status} ${apiResponse.statusText}`);
       }
 
@@ -171,24 +180,30 @@ export default async function sendStreamingMessage(message, options = {}) {
 
       if (fullMessageText) {
         const startText = accumulatedText || '';
-        const remainingText = fullMessageText.startsWith(startText) 
+        const remainingText = fullMessageText.startsWith(startText)
           ? fullMessageText.substring(startText.length)
           : fullMessageText;
-        
+
         const words = remainingText.split(/(\s+)/);
         let currentText = startText;
         const chunkSize = 3;
-        
-        for (let i = 0; i < words.length; i += chunkSize) {
-          const chunk = words.slice(i, i + chunkSize).join('');
-          currentText += chunk;
-          accumulatedText = currentText;
-          
-          onChunk(currentText);
-          
-          await new Promise((resolve) => setTimeout(resolve, 20));
-        }
-        
+
+        const streamChunks = async () => {
+          for (let i = 0; i < words.length; i += chunkSize) {
+            const chunk = words.slice(i, i + chunkSize).join('');
+            currentText += chunk;
+            accumulatedText = currentText;
+
+            onChunk(currentText);
+
+            // eslint-disable-next-line no-await-in-loop
+            await new Promise((resolve) => {
+              setTimeout(() => resolve(), 20);
+            });
+          }
+        };
+        await streamChunks();
+
         accumulatedText = fullMessageText;
       }
 
@@ -206,19 +221,18 @@ export default async function sendStreamingMessage(message, options = {}) {
         hasCompleted = true;
         onComplete(finalMessage);
       }
-
     } catch (error) {
       if (sseConnection) {
         sseConnection.disconnect();
       }
-      
+
       try {
         const response = await sendMessage(message, {
           ...options,
           user_id: userId,
           country: options.country || 'BE',
         });
-        
+
         onComplete(response);
       } catch (fallbackError) {
         onError(fallbackError);
@@ -226,6 +240,5 @@ export default async function sendStreamingMessage(message, options = {}) {
     }
   })();
 
-  // Return control object immediately
   return controlObject;
 }

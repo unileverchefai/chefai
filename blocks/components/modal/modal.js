@@ -241,9 +241,8 @@ export default function createModal(options = {}) {
       if (e.shiftKey && document.activeElement === firstElement) {
         e.preventDefault();
         lastElement.focus();
-      }
-      // If Tab on last element, move to first
-      else if (!e.shiftKey && document.activeElement === lastElement) {
+      } else if (!e.shiftKey && document.activeElement === lastElement) {
+        // If Tab on last element, move to first
         e.preventDefault();
         firstElement.focus();
       }

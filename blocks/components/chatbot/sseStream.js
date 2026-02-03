@@ -3,7 +3,7 @@ import { API_BASE_URL, SUBSCRIPTION_KEY } from './constants/api.js';
 /**
  * Generate a unique run_id for each chat message.
  * Format: "run-{timestamp}-{random}"
- * 
+ *
  * IMPORTANT: Generate this BEFORE connecting to SSE and sending API request!
  */
 export function generateRunId() {
@@ -14,7 +14,7 @@ export function generateRunId() {
 
 /**
  * Establish SSE connection to receive real-time agent events.
- * 
+ *
  * @param {string} runId - The run ID to listen to
  * @param {Object} options - Configuration options
  * @param {Function} options.onEvent - Callback for each event received
@@ -37,7 +37,7 @@ export function connectToAgentRunStream(runId, options = {}) {
 
   // Track seen event IDs to prevent duplicates
   const seenEventIds = new Set();
-  
+
   // Use fetch with streaming for better control and header support
   const abortController = new AbortController();
   let isConnected = false;
@@ -70,7 +70,9 @@ export function connectToAgentRunStream(runId, options = {}) {
       let currentEventType = 'message';
 
       try {
+        // eslint-disable-next-line no-constant-condition
         while (true) {
+          // eslint-disable-next-line no-await-in-loop
           const { done, value } = await reader.read();
 
           if (done) {
@@ -81,45 +83,48 @@ export function connectToAgentRunStream(runId, options = {}) {
           const lines = buffer.split('\n');
           buffer = lines.pop() || '';
 
+          // eslint-disable-next-line no-restricted-syntax
           for (const line of lines) {
-            // Handle event type line
             if (line.startsWith('event: ')) {
               currentEventType = line.slice(7).trim();
+              // eslint-disable-next-line no-continue
               continue;
             }
 
-            // Handle data line
             if (line.startsWith('data: ')) {
               const data = line.slice(6).trim();
 
               if (data === '[DONE]') {
                 onDone();
                 currentEventType = 'message';
+                // eslint-disable-next-line no-continue
                 continue;
               }
 
               if (!data) {
+                // eslint-disable-next-line no-continue
                 continue;
               }
 
               try {
                 const parsed = JSON.parse(data);
 
-                // Extract fields (compatible with backend event structure)
                 const phase = parsed.phase || parsed.step_type || parsed.type;
                 const status = parsed.status || parsed.state;
-                const message = parsed.message || parsed.human_message || parsed.description || parsed.step || phase;
+                const message = parsed.message || parsed.human_message
+                  || parsed.description || parsed.step || phase;
                 const sequence = parsed.sequence || parsed.order || parsed.seq || 0;
-                const createdAt = parsed.created_at || parsed.timestamp || parsed.time || new Date().toISOString();
+                const createdAt = parsed.created_at || parsed.timestamp || parsed.time
+                  || new Date().toISOString();
                 const eventRunId = parsed.run_id || runId;
 
                 // Generate event ID
-                const eventId = parsed.event_id || parsed.id || 
-                  `${currentEventType}-${phase}-${sequence}-${Date.now()}`;
+                const eventId = parsed.event_id || parsed.id
+                  || `${currentEventType}-${phase}-${sequence}-${Date.now()}`;
 
-                // Skip duplicates
                 if (seenEventIds.has(eventId)) {
                   currentEventType = 'message';
+                  // eslint-disable-next-line no-continue
                   continue;
                 }
                 seenEventIds.add(eventId);

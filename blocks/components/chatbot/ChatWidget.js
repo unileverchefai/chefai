@@ -1,9 +1,13 @@
 import openPersonalizedHub from '@components/personalized-hub/personalized-hub.js';
-import sendMessage from './sendMessage.js';
 import sendStreamingMessage from './sendStreamingMessage.js';
 import {
   getHistory,
+  getHistoryWithFallback,
   saveHistory,
+  getStoredThreadId,
+  getOrCreateThreadId,
+  getAnonymousUserId,
+  getUserIdFromCookie,
 } from './utils.js';
 import renderChatUI from './renderChatUI.js';
 
@@ -18,8 +22,10 @@ const USER_ID = 1;
 const AI_ID = 2;
 
 export default function ChatWidget({ personalizedHubTrigger = '#chatbot' } = {}) {
-  const history = getHistory();
-  const [messages, setMessages] = useState(history.length > 0 ? history : []);
+  // Load cached history immediately for fast display
+  const storedThreadId = getStoredThreadId();
+  const cachedHistory = getHistory(storedThreadId);
+  const [messages, setMessages] = useState(cachedHistory.length > 0 ? cachedHistory : []);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [error, setError] = useState(null);
@@ -28,6 +34,8 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot' } = {})
   const initialScrollDone = useRef(false);
   const streamingConnectionRef = useRef(null);
   const streamingMessageIdRef = useRef(null);
+  const historyLoadedRef = useRef(false);
+  const inputFocusedRef = useRef(false);
 
   // Helper function to scroll to end of messages
   const scrollToEnd = useCallback((useSmooth = false) => {
@@ -59,17 +67,80 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot' } = {})
     }
   }, [messages, scrollToEnd]);
 
+  // Load history from API in background on mount
   useEffect(() => {
-    if (messages.length > 0) saveHistory(messages);
+    if (historyLoadedRef.current) return;
+    historyLoadedRef.current = true;
+
+    (async () => {
+      try {
+        const cookieUserId = getUserIdFromCookie();
+        let userId = cookieUserId;
+        if (!userId) {
+          userId = await getAnonymousUserId();
+        }
+
+        // Get or create thread ID (validates on init)
+        const threadId = await getOrCreateThreadId(userId, true);
+
+        // Load history with fallback (uses cache first, then API)
+        const apiHistory = await getHistoryWithFallback(threadId, userId);
+
+        // Only update if we got new messages from API
+        if (apiHistory && apiHistory.length > 0) {
+          setMessages((prev) => {
+            // Merge with existing messages, avoiding duplicates
+            const existingIds = new Set(prev.map((m) => m._id));
+            const newMessages = apiHistory.filter((m) => !existingIds.has(m._id));
+            if (newMessages.length > 0) {
+              return [...prev, ...newMessages].sort((a, b) => {
+                const timeA = a.createdAt instanceof Date
+                  ? a.createdAt.getTime()
+                  : new Date(a.createdAt).getTime();
+                const timeB = b.createdAt instanceof Date
+                  ? b.createdAt.getTime()
+                  : new Date(b.createdAt).getTime();
+                return timeA - timeB;
+              });
+            }
+            return prev;
+          });
+        }
+      } catch (err) {
+        // Silently fail - cached history is already displayed
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      const threadId = getStoredThreadId();
+      saveHistory(messages, threadId);
+    }
   }, [messages]);
 
-  // Cleanup SSE connection on unmount
+  // Focus input field when chatbot opens
   useEffect(() => {
-    return () => {
-      if (streamingConnectionRef.current) {
-        streamingConnectionRef.current.disconnect();
-      }
-    };
+    if (!inputFocusedRef.current) {
+      // Wait for modal animation and React render to complete
+      const focusInput = () => {
+        const input = document.querySelector('.chat-input');
+        if (input && typeof input.focus === 'function') {
+          input.focus();
+          inputFocusedRef.current = true;
+        }
+      };
+
+      // Try to focus after a short delay to ensure input is rendered
+      setTimeout(focusInput, 350);
+    }
+  }, []);
+
+  // Cleanup SSE connection on unmount
+  useEffect(() => () => {
+    if (streamingConnectionRef.current) {
+      streamingConnectionRef.current.disconnect();
+    }
   }, []);
 
   const handleSend = useCallback(async (e, messageOverride = null) => {
@@ -162,7 +233,7 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot' } = {})
           streamingMessageIdRef.current = null;
           setIsTyping(false);
         },
-        onError: (err) => {
+        onError: () => {
           // Error handling is done in sendStreamingMessage fallback
           // Just update the placeholder with error message if needed
           setMessages((prev) => prev.map((msg) => {
@@ -198,7 +269,7 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot' } = {})
       streamingConnectionRef.current = connection;
     } catch (err) {
       setError('Sorry, I\'m having trouble connecting. Please try again.');
-      
+
       // Remove placeholder and add error message
       setMessages((prev) => {
         const filtered = prev.filter((msg) => msg._id !== placeholderMessageId);
@@ -213,7 +284,7 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot' } = {})
           system: true,
         }];
       });
-      
+
       streamingMessageIdRef.current = null;
       setIsTyping(false);
     }

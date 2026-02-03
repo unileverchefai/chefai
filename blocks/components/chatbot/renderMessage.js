@@ -1,5 +1,6 @@
-const { createElement: h } = window.React;
 import SuggestedPrompts from './SuggestedPrompts.js';
+
+const { createElement: h } = window.React;
 
 const USER_ID = 1;
 
@@ -45,22 +46,26 @@ function convertLinksToClickable(text) {
 export default function renderMessage(message, options = {}) {
   const { onPromptClick } = options;
   const isUser = message.user._id === USER_ID;
-  
+
   const suggestedPrompts = message.metadata?.suggested_prompts || [];
-  
-  const hasRecipes = (message.metadata?.recipes?.length > 0) || 
-                     (message.metadata?.recipe_details?.length > 0) ||
-                     (message.text && (message.text.includes('Recipes:') || message.text.includes('Recipe Details:')));
-  
+
+  const hasRecipes = (message.metadata?.recipes?.length > 0)
+                     || (message.metadata?.recipe_details?.length > 0)
+                     || (message.text && (message.text.includes('Recipes:') || message.text.includes('Recipe Details:')));
+
   let textBeforeRecipes = message.text;
   let textWithRecipes = '';
-  
+
   if (hasRecipes && message.text) {
     const recipesIndex = message.text.indexOf('Recipes:');
     const recipeDetailsIndex = message.text.indexOf('Recipe Details:');
-    const splitIndex = recipesIndex !== -1 ? recipesIndex : 
-                      (recipeDetailsIndex !== -1 ? recipeDetailsIndex : -1);
-    
+    let splitIndex = -1;
+    if (recipesIndex !== -1) {
+      splitIndex = recipesIndex;
+    } else if (recipeDetailsIndex !== -1) {
+      splitIndex = recipeDetailsIndex;
+    }
+
     if (splitIndex !== -1) {
       textBeforeRecipes = message.text.substring(0, splitIndex).trim();
       textWithRecipes = message.text.substring(splitIndex);
@@ -93,7 +98,10 @@ export default function renderMessage(message, options = {}) {
               flexWrap: 'wrap',
               gap: '8px',
               marginTop: textBeforeRecipes ? '12px' : '0',
-              marginBottom: textWithRecipes ? '12px' : (textBeforeRecipes ? '12px' : '0'),
+              marginBottom: (() => {
+                if (textWithRecipes) return '12px';
+                return textBeforeRecipes ? '12px' : '0';
+              })(),
             },
           },
           message.metadata.images.map((img, idx) => h(
@@ -166,7 +174,7 @@ export default function renderMessage(message, options = {}) {
         {
           className: 'message-bubble',
           style: {
-            maxWidth: '70%',
+            maxWidth: '95%',
             padding: '12px 16px',
             borderRadius: '20px',
             backgroundColor: isUser ? 'var(--light-mushroom)' : 'transparent',

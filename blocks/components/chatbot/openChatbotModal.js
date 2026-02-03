@@ -50,7 +50,7 @@ export default async function openChatbotModal() {
       throw new Error('React or ReactDOM not loaded');
     }
 
-    const { default: ChatWidget } = await import('./ChatWidget.js');
+    const { default: ChatWidget } = await import('./chatWidget.js');
     const { createElement: h } = window.React;
 
     reactRoot = window.ReactDOM.createRoot(container);
@@ -60,6 +60,14 @@ export default async function openChatbotModal() {
 
     requestAnimationFrame(() => {
       reactRoot.render(h(ChatWidget, { personalizedHubTrigger: null }));
+
+      // Focus input after React renders and modal animation completes
+      setTimeout(() => {
+        const input = container.querySelector('.chat-input');
+        if (input && typeof input.focus === 'function') {
+          input.focus();
+        }
+      }, ANIMATION_DURATION + 50);
     });
   } catch (error) {
     // eslint-disable-next-line no-console

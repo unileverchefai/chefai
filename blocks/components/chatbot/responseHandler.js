@@ -1,22 +1,22 @@
 /**
  * Parse streaming event and extract text chunk.
- * 
+ *
  * @param {Object} event - SSE event object
  * @returns {string|null} - Text chunk if available, null otherwise
  */
 export function parseStreamingEvent(event) {
   const text = event.message || event.description || event.step || event.text || null;
-  
+
   if (text && typeof text === 'string' && text.trim()) {
     const phase = event.type || event.phase;
-    
+
     if (phase && ['run_completed', 'completed', 'failed', 'error'].includes(phase)) {
       return null;
     }
-    
+
     return text;
   }
-  
+
   return null;
 }
 

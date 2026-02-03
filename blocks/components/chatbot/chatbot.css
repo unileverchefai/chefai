@@ -25,13 +25,13 @@
   transition: background 0.2s ease;
 }
 
-.chatbot-question-btn:hover:not(:disabled) {
-  background: linear-gradient(102.365deg, rgb(241 90 34 / 10%) 0.432%, rgb(235 34 99 / 10%) 49.756%, rgb(176 43 159 / 10%) 99.941%);
+.chatbot-question-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
-.chatbot-question-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.chatbot-question-btn:hover:not(:disabled) {
+  background: linear-gradient(102.365deg, rgb(241 90 34 / 10%) 0.432%, rgb(235 34 99 / 10%) 49.756%, rgb(176 43 159 / 10%) 99.941%);
 }
 
 .chatbot {
@@ -195,7 +195,7 @@
 
     .chat-widget {
         min-height: 500px;
-        max-height: 500px;
+        max-height: 97vh;
     }
 
     .chatbot-skeleton {
