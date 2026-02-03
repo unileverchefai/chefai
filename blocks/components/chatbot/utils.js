@@ -1,5 +1,6 @@
 import formatResponse from './responseHandler.js';
 import { SUBSCRIPTION_KEY, ENDPOINTS } from './constants/api.js';
+import { COUNTRY_CODE, LANGUAGE_CODE } from '../authentication/constants.js';
 
 export { formatResponse };
 
@@ -40,9 +41,10 @@ export function getStoredThreadId() {
 /**
  * Create a new thread via API
  * @param {string} userId - User ID
+ * @param {boolean} skipCache - If true, don't store thread_id in cookie (default: false)
  * @returns {Promise<string>} Thread ID
  */
-export async function createThread(userId) {
+export async function createThread(userId, skipCache = false) {
   try {
     if (!ENDPOINTS.createThread) {
       throw new Error('Create thread endpoint is not configured');
@@ -74,7 +76,11 @@ export async function createThread(userId) {
       throw new Error('Create thread API response did not contain a thread_id');
     }
 
-    setCookie('chef-ai-thread-id', threadId);
+    // Only cache thread_id if skipCache is false
+    if (!skipCache) {
+      setCookie('chef-ai-thread-id', threadId);
+    }
+
     return threadId;
   } catch (error) {
     throw new Error(`Failed to create thread: ${error.message}`);
@@ -110,9 +116,10 @@ export async function validateThread(threadId) {
 /**
  * Get user threads and return the most recent one
  * @param {string} userId - User ID
+ * @param {boolean} skipCache - If true, don't store thread_id in cookie (default: false)
  * @returns {Promise<string|null>} Most recent thread ID or null
  */
-export async function getUserThreads(userId) {
+export async function getUserThreads(userId, skipCache = false) {
   try {
     if (!ENDPOINTS.getUserThreads) {
       return null;
@@ -153,7 +160,10 @@ export async function getUserThreads(userId) {
     const threadId = (mostRecentThread.thread_id ?? mostRecentThread.id ?? '').toString().trim();
 
     if (threadId) {
-      setCookie('chef-ai-thread-id', threadId);
+      // Only cache thread_id if skipCache is false
+      if (!skipCache) {
+        setCookie('chef-ai-thread-id', threadId);
+      }
       return threadId;
     }
 
@@ -167,15 +177,17 @@ export async function getUserThreads(userId) {
  * Get or create thread ID using API-based flow
  * @param {string} userId - User ID
  * @param {boolean} validateOnInit - Whether to validate thread on initialization (default: false)
+ * @param {boolean} skipCache - If true, don't store thread_id in cookie (default: false)
  * @returns {Promise<string>} Thread ID
  */
-export async function getOrCreateThreadId(userId, validateOnInit = false) {
-  let threadId = getStoredThreadId();
+export async function getOrCreateThreadId(userId, validateOnInit = false, skipCache = false) {
+  // If skipCache is true, don't use stored thread_id (for business registration flow)
+  let threadId = skipCache ? null : getStoredThreadId();
 
   if (threadId && validateOnInit) {
     const isValid = await validateThread(threadId);
     if (!isValid) {
-      threadId = await createThread(userId);
+      threadId = await createThread(userId, skipCache);
       return threadId;
     }
     return threadId;
@@ -185,23 +197,25 @@ export async function getOrCreateThreadId(userId, validateOnInit = false) {
     return threadId;
   }
 
-  threadId = await getUserThreads(userId);
+  threadId = await getUserThreads(userId, skipCache);
   if (threadId) {
     return threadId;
   }
 
-  threadId = await createThread(userId);
-  return threadId;
-}
-
-// Deprecated: Use getOrCreateThreadId(userId) instead
-export function getThreadId() {
-  let threadId = getStoredThreadId();
-  if (!threadId) {
-    threadId = `thread_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
-    setCookie('chef-ai-thread-id', threadId);
+  try {
+    threadId = await createThread(userId, skipCache);
+    return threadId;
+  } catch (error) {
+    // If thread creation fails because user doesn't exist, clear invalid user IDs and throw
+    // This allows the caller to create a new user and retry
+    if (error.message && error.message.includes('does not exist')) {
+      // Clear potentially invalid user ID cookies
+      setCookie('user_id', '', -1);
+      setCookie('chef-ai-anonymous-user-id', '', -1);
+      setCookie('chef-ai-thread-id', '', -1);
+    }
+    throw error;
   }
-  return threadId;
 }
 
 export function getAnonymousUserIdFromCookie() {
@@ -243,49 +257,91 @@ export async function getAnonymousUserId() {
     return userId;
   }
 
-  try {
-    if (!ENDPOINTS.users) {
-      throw new Error('Users endpoint is not configured');
-    }
-
-    const response = await fetch(ENDPOINTS.users, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        'X-Subscription-Key': SUBSCRIPTION_KEY,
-      },
-      body: JSON.stringify({}),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      // eslint-disable-next-line no-console
-      console.error('Failed to create anonymous user:', errorText);
-      throw new Error(`Failed to create anonymous user: ${response.status} ${response.statusText}`);
-    }
-
-    const responseText = await response.text();
-    if (!responseText) {
-      throw new Error('Users API returned empty response');
-    }
-
-    const json = JSON.parse(responseText);
-    userId = (json.user_id ?? json.data?.user_id ?? '').toString().trim();
-
-    if (!userId) {
-      throw new Error('Users API response did not contain a user_id');
-    }
-
-    setCookie(cookieName, userId);
-    return userId;
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('Failed to create anonymous user, falling back to generated ID:', error);
-    userId = `user_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
-    setCookie(cookieName, userId);
-    return userId;
+  if (!ENDPOINTS.users) {
+    throw new Error('Users endpoint is not configured');
   }
+
+  // Generate a user_id client-side (API requires it)
+  userId = `user_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+
+  const response = await fetch(ENDPOINTS.users, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      'X-Subscription-Key': SUBSCRIPTION_KEY,
+    },
+    body: JSON.stringify({
+      user_id: userId,
+      country: COUNTRY_CODE,
+      content_language_code: LANGUAGE_CODE.toUpperCase(),
+    }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    // eslint-disable-next-line no-console
+    console.error('Failed to create anonymous user:', errorText);
+    throw new Error(`Failed to create anonymous user: ${response.status} ${response.statusText}`);
+  }
+
+  const responseText = await response.text();
+  if (!responseText) {
+    throw new Error('Users API returned empty response');
+  }
+
+  const json = JSON.parse(responseText);
+  // Use the user_id from response if provided, otherwise use the one we generated
+  const returnedUserId = (json.user_id ?? json.data?.user_id ?? userId).toString().trim();
+
+  setCookie(cookieName, returnedUserId);
+  return returnedUserId;
+}
+
+/**
+ * Create a new user via API
+ * @returns {Promise<string>} User ID
+ */
+export async function createUser() {
+  if (!ENDPOINTS.users) {
+    throw new Error('Users endpoint is not configured');
+  }
+
+  // Generate a user_id client-side (API requires it)
+  const userId = `user_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+
+  const response = await fetch(ENDPOINTS.users, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      'X-Subscription-Key': SUBSCRIPTION_KEY,
+    },
+    body: JSON.stringify({
+      user_id: userId,
+      country: COUNTRY_CODE,
+      content_language_code: LANGUAGE_CODE.toUpperCase(),
+    }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Failed to create user: ${response.status} ${response.statusText} - ${errorText}`);
+  }
+
+  const responseText = await response.text();
+  if (!responseText) {
+    throw new Error('Users API returned empty response');
+  }
+
+  const json = JSON.parse(responseText);
+  // Use the user_id from response if provided, otherwise use the one we generated
+  const returnedUserId = (json.user_id ?? json.data?.user_id ?? userId).toString().trim();
+
+  // Store in both cookies for compatibility
+  setCookie('user_id', returnedUserId);
+  setCookie('chef-ai-anonymous-user-id', returnedUserId);
+  return returnedUserId;
 }
 
 /**
