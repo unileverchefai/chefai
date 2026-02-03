@@ -72,6 +72,7 @@ export default function PersonalizedChatWidget({
         context: {
           messageHistory: messages.slice(-5),
         },
+        skipCache: true, // Don't cache thread_id during business registration
       });
       setMessages((prev) => [...prev, response]);
     } catch (err) {
@@ -114,6 +115,7 @@ export default function PersonalizedChatWidget({
         context: {
           messageHistory: messages.slice(-5),
         },
+        skipCache: true, // Don't cache thread_id during business registration
       });
 
       setMessages((prev) => [...prev, response]);

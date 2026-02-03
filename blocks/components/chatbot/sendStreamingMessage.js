@@ -1,6 +1,8 @@
 import { generateRunId, connectToAgentRunStream } from './sseStream.js';
 import { SUBSCRIPTION_KEY, ENDPOINTS } from './constants/api.js';
-import { getOrCreateThreadId, getAnonymousUserId, getUserIdFromCookie } from './utils.js';
+import {
+  getOrCreateThreadId, getAnonymousUserId, getUserIdFromCookie, getAnonymousUserIdFromCookie, createUser,
+} from './utils.js';
 import sendMessage from './sendMessage.js';
 import formatResponse, { parseStreamingEvent } from './responseHandler.js';
 
@@ -42,14 +44,29 @@ export default async function sendStreamingMessage(message, options = {}) {
   } = options;
 
   const cookieUserId = getUserIdFromCookie();
-  let userId = options.user_id || cookieUserId;
+  const anonymousUserId = getAnonymousUserIdFromCookie();
+  let userId = options.user_id ?? cookieUserId ?? anonymousUserId;
 
   if (!userId) {
     userId = await getAnonymousUserId();
   }
 
   // Get or create thread ID using API
-  const threadId = await getOrCreateThreadId(userId);
+  // If it fails because user doesn't exist, create a new user and retry
+  // skipCache option prevents storing thread_id during business registration flow
+  const skipCache = options.skipCache ?? false;
+  let threadId;
+  try {
+    threadId = await getOrCreateThreadId(userId, false, skipCache);
+  } catch (error) {
+    if (error.message && error.message.includes('does not exist')) {
+      // User doesn't exist, create a new one and retry
+      userId = await createUser();
+      threadId = await getOrCreateThreadId(userId, false, skipCache);
+    } else {
+      throw error;
+    }
+  }
 
   // Accumulate streaming text and metadata
   let accumulatedText = '';
