@@ -1,0 +1,12 @@
+.sneak-peek p {
+    font-family: var(--body-font-family);
+    font-size: var(--heading-font-size-s);
+    padding: 100px;
+    background: linear-gradient(90deg, #FF3878 12.12%, #FF5C1F 88.27%);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 22px;
+    letter-spacing: -0.5px;
+}
