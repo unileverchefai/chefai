@@ -1,5 +1,6 @@
-import createCarousel from '../components/carousel/carousel.js';
-import { decorateIcons } from '../../scripts/aem.js';
+import createCarousel from '@components/carousel/carousel.js';
+import { decorateIcons } from '@scripts/aem.js';
+import { createElement } from '@scripts/common.js';
 
 /**
  * Parse dropdown options from first row
@@ -104,17 +105,17 @@ function parseAuthoredContent(block) {
 
     let trendClass = '';
     const trendLower = trendName.toLowerCase();
-    if (trendLower.includes('borderless')) {
-      trendClass = 'borderless-cuisine';
-    } else if (trendLower.includes('street')) {
-      trendClass = 'street-food-couture';
-    } else if (trendLower.includes('dinner') || trendLower.includes('designed')) {
-      trendClass = 'diner-designed';
-    } else if (trendLower.includes('culinary') || trendLower.includes('roots')) {
-      trendClass = 'culinary-roots';
-    } else if (trendLower.includes('cross')) {
-      trendClass = 'cross-trend';
-    }
+    const trendClasses = {
+      borderless: 'borderless-cuisine',
+      street: 'street-food-couture',
+      dinner: 'diner-designed',
+      designed: 'diner-designed',
+      culinary: 'culinary-roots',
+      roots: 'culinary-roots',
+      cross: 'cross-trend',
+    };
+    const trendFound = Object.keys(trendClasses).find((key) => trendLower.includes(key));
+    trendClass = trendClasses[trendFound] || '';
 
     return {
       trendName,
@@ -139,20 +140,27 @@ function renderCards(container, cards) {
   container.innerHTML = '';
 
   cards.forEach((cardData) => {
-    const card = document.createElement('li');
-    card.className = 'trend-card';
-    card.setAttribute('data-trend', cardData.trendClass || cardData.trendName.toLowerCase().replace(/\s+/g, '-'));
+    const {
+      trendClass = false,
+      trendName,
+      restaurantTypes = false,
+      bgImage = false,
+      description = false,
+      link = false,
+    } = cardData;
+    const card = createElement('li', {
+      className: `trend-card${trendClass ? ` ${trendClass}` : ''}`,
+      attributes: {
+        'data-trend': trendClass || trendName.toLowerCase().replace(/\s+/g, '-'),
+      },
+    });
 
-    if (cardData.trendClass) {
-      card.classList.add(cardData.trendClass);
+    if (restaurantTypes && restaurantTypes.length > 0) {
+      card.setAttribute('data-restaurant-types', restaurantTypes.join('||'));
     }
 
-    if (cardData.restaurantTypes && cardData.restaurantTypes.length > 0) {
-      card.setAttribute('data-restaurant-types', cardData.restaurantTypes.join('||'));
-    }
-
-    if (cardData.bgImage) {
-      card.style.backgroundImage = `url('${cardData.bgImage}')`;
+    if (bgImage) {
+      card.style.backgroundImage = `url('${bgImage}')`;
       card.style.backgroundSize = 'cover';
       card.style.backgroundPosition = 'center';
     }
@@ -160,54 +168,52 @@ function renderCards(container, cards) {
     const isNumberStat = /^\d/.test(cardData.stat);
     const statClass = isNumberStat ? 'stat-number' : 'stat-word';
 
-    const header = document.createElement('div');
-    header.className = 'trend-header';
-    header.textContent = cardData.trendName.toUpperCase();
+    const header = createElement('div', {
+      className: 'trend-header',
+      innerContent: cardData.trendName.toUpperCase(),
+    });
     card.appendChild(header);
 
-    const content = document.createElement('div');
-    content.className = 'trend-content';
+    const content = createElement('div', {
+      className: 'trend-content',
+    });
 
     if (cardData.stat) {
-      const stat = document.createElement('div');
-      stat.className = `trend-stat ${statClass}`;
-
-      const statSpan = document.createElement('span');
-      statSpan.textContent = cardData.stat;
-      stat.appendChild(statSpan);
+      const stat = createElement('div', {
+        className: `trend-stat ${statClass}`,
+        innerContent: `<span>${cardData.stat}</span>`,
+      });
 
       content.appendChild(stat);
     }
 
-    if (cardData.description) {
-      const desc = document.createElement('p');
-      desc.className = 'trend-description';
-      desc.textContent = cardData.description;
+    if (description) {
+      const desc = createElement('p', {
+        className: 'trend-description',
+        innerContent: description,
+      });
       content.appendChild(desc);
     }
 
-    // CTA is always rendered to mantain space (next phase of the project!)
-    if (cardData.link) {
-      const cta = document.createElement('a');
-      cta.className = 'trend-cta';
-      cta.href = cardData.link.href;
-
-      const ctaText = document.createElement('span');
-      ctaText.className = 'cta-text';
-      ctaText.textContent = cardData.link.text;
-      cta.appendChild(ctaText);
-
-      const iconSpan = document.createElement('span');
-      iconSpan.className = 'icon icon-arrow_right cta-arrow';
-      cta.appendChild(iconSpan);
+    // TODO: CTA is always rendered to maintain space (next phase of the project!)
+    if (link) {
+      const cta = createElement('a', {
+        className: 'trend-cta',
+        attributes: { href: link.href },
+        innerContent: `
+          <span class="cta-text">${link.text}</span>
+          <span class="icon icon-arrow_right cta-arrow"></span>
+        `,
+      });
       decorateIcons(cta);
 
       content.appendChild(cta);
     } else {
-    // CTA is always rendered to mantain space (next phase of the project!)
-      const cta = document.createElement('div');
-      cta.className = 'trend-cta trend-cta-spacer';
-      cta.setAttribute('aria-hidden', 'true');
+   // TODO: CTA is always rendered to maintain space (next phase of the project!)
+      const cta = createElement('div', {
+        className: 'trend-cta trend-cta-spacer',
+        attributes: { 'aria-hidden': 'true' },
+      });
       content.appendChild(cta);
     }
 
@@ -269,61 +275,52 @@ export default function decorate(block) {
   block.innerHTML = '';
 
   // filter dropdown
-  const filterContainer = document.createElement('div');
-  filterContainer.className = 'carousel-biz-filter';
+  const filterContainer = createElement('div', {
+    className: 'carousel-biz-filter',
+  });
 
   // dropdown button
-  const dropdownButton = document.createElement('button');
-  dropdownButton.className = 'biz-dropdown';
-  dropdownButton.setAttribute('aria-label', `Filter by ${dropdownData?.label || 'business type'}`);
-  dropdownButton.setAttribute('aria-expanded', 'false');
-  dropdownButton.setAttribute('aria-haspopup', 'listbox');
-
-  const dropdownText = document.createElement('span');
-  dropdownText.className = 'biz-dropdown-text';
-  dropdownText.textContent = `${dropdownData?.label}`;
-
-  const dropdownArrow = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  dropdownArrow.setAttribute('class', 'biz-dropdown-arrow');
-  dropdownArrow.setAttribute('width', '12');
-  dropdownArrow.setAttribute('height', '6');
-  dropdownArrow.setAttribute('viewBox', '0 0 12 6');
-  dropdownArrow.setAttribute('fill', 'none');
-
-  const arrowPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  arrowPath.setAttribute('d', 'M1 1L6 5L11 1');
-  arrowPath.setAttribute('stroke', '#131313');
-  arrowPath.setAttribute('stroke-width', '1.5');
-  arrowPath.setAttribute('stroke-linecap', 'round');
-  arrowPath.setAttribute('stroke-linejoin', 'round');
-
-  dropdownArrow.appendChild(arrowPath);
-  dropdownButton.appendChild(dropdownText);
-  dropdownButton.appendChild(dropdownArrow);
+  const dropdownButton = createElement('button', {
+    className: 'biz-dropdown',
+    attributes: {
+      'aria-label': `Filter by ${dropdownData?.label || 'business type'}`,
+      'aria-expanded': 'false',
+      'aria-haspopup': 'listbox',
+    },
+    innerContent: `
+      <span class="biz-dropdown-text">${dropdownData?.label}</span>
+      <svg class="biz-dropdown-arrow" width="12" height="6" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 1L6 5L11 1" stroke="#131313" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    `,
+  });
+  const dropdownText = dropdownButton.querySelector('.biz-dropdown-text');
 
   // dropdown menu
-  const dropdownMenu = document.createElement('div');
-  dropdownMenu.className = 'biz-dropdown-menu';
-  dropdownMenu.setAttribute('role', 'listbox');
-  dropdownMenu.setAttribute('aria-hidden', 'true');
-
-  // all dropdown options
-  const allOption = document.createElement('div');
-  allOption.className = 'biz-dropdown-option active';
-  allOption.setAttribute('role', 'option');
-  allOption.setAttribute('aria-selected', 'true');
-  allOption.dataset.value = 'all';
-  allOption.textContent = `${dropdownData?.label}`;
-  dropdownMenu.appendChild(allOption);
+  const dropdownMenu = createElement('div', {
+    className: 'biz-dropdown-menu',
+    attributes: {
+      role: 'listbox',
+      'aria-hidden': 'true',
+    },
+    innerContent: `
+      <div class="biz-dropdown-option active" role="option" aria-selected="true" data-value="all">
+        ${dropdownData?.label}
+      </div>
+    `,
+  });
 
   if (dropdownData?.options) {
     dropdownData.options.forEach((optionText) => {
-      const option = document.createElement('div');
-      option.className = 'biz-dropdown-option';
-      option.setAttribute('role', 'option');
-      option.setAttribute('aria-selected', 'false');
-      option.dataset.value = optionText;
-      option.textContent = optionText;
+      const option = createElement('div', {
+        className: 'biz-dropdown-option',
+        attributes: {
+          role: 'option',
+          'aria-selected': 'false',
+          'data-value': optionText,
+        },
+        innerContent: optionText,
+      });
       dropdownMenu.appendChild(option);
     });
   }
@@ -332,11 +329,13 @@ export default function decorate(block) {
   filterContainer.appendChild(dropdownMenu);
   block.appendChild(filterContainer);
 
-  const carouselWrapper = document.createElement('div');
-  carouselWrapper.className = 'carousel-biz-carousel-wrapper';
+  const carouselWrapper = createElement('div', {
+    className: 'carousel-biz-carousel-wrapper',
+  });
 
-  const carouselContainer = document.createElement('ul');
-  carouselContainer.className = 'carousel-biz-container';
+  const carouselContainer = createElement('ul', {
+    className: 'carousel-biz-container',
+  });
 
   carouselWrapper.appendChild(carouselContainer);
   block.appendChild(carouselWrapper);
@@ -364,13 +363,9 @@ export default function decorate(block) {
   };
 
   const filterCards = (restaurantType) => {
-    let filteredCards;
-
-    if (restaurantType === 'all') {
-      filteredCards = allCards;
-    } else {
-      filteredCards = allCards.filter((card) => card.restaurantTypes.includes(restaurantType));
-    }
+    const filteredCards = restaurantType === 'all'
+      ? allCards
+      : allCards.filter((card) => card.restaurantTypes.includes(restaurantType));
 
     if (filteredCards.length === 0) {
       if (block.carouselInstance?.destroy) {
