@@ -1,5 +1,10 @@
 import {
-  getOrCreateThreadId, formatResponse, getAnonymousUserId, getUserIdFromCookie,
+  getOrCreateThreadId,
+  formatResponse,
+  getAnonymousUserId,
+  getUserIdFromCookie,
+  getAnonymousUserIdFromCookie,
+  createUser,
 } from './utils.js';
 import { SUBSCRIPTION_KEY, ENDPOINTS } from './constants/api.js';
 
@@ -24,14 +29,29 @@ export default async function sendMessage(message, options = {}) {
   const endpoint = ENDPOINTS[currentEndpoint];
 
   const cookieUserId = getUserIdFromCookie();
-  let userId = options.user_id ?? cookieUserId;
+  const anonymousUserId = getAnonymousUserIdFromCookie();
+  let userId = options.user_id ?? cookieUserId ?? anonymousUserId;
 
   if (!userId) {
     userId = await getAnonymousUserId();
   }
 
   // Get or create thread ID using API
-  const threadId = await getOrCreateThreadId(userId);
+  // If it fails because user doesn't exist, create a new user and retry
+  // skipCache option prevents storing thread_id during business registration flow
+  const skipCache = options.skipCache ?? false;
+  let threadId;
+  try {
+    threadId = await getOrCreateThreadId(userId, false, skipCache);
+  } catch (error) {
+    if (error.message && error.message.includes('does not exist')) {
+      // User doesn't exist, create a new one and retry
+      userId = await createUser();
+      threadId = await getOrCreateThreadId(userId, false, skipCache);
+    } else {
+      throw error;
+    }
+  }
 
   const payload = {
     ...options,
