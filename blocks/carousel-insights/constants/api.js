@@ -20,8 +20,8 @@ export async function fetchPaginatedData(options = {}) {
   };
 
   try {
-    const response = await fetch(ENDPOINTS.getUserThreads, {
-      method: 'GET',
+    const response = await fetch(ENDPOINTS.recommendations, {
+      method: 'POST',
       headers: {
         Accept: 'application/json',
         'X-Subscription-Key': SUBSCRIPTION_KEY,
