@@ -209,7 +209,7 @@ function renderCards(container, cards) {
 
       content.appendChild(cta);
     } else {
-   // TODO: CTA is always rendered to maintain space (next phase of the project!)
+      // TODO: CTA is always rendered to maintain space (next phase of the project!)
       const cta = createElement('div', {
         className: 'trend-cta trend-cta-spacer',
         attributes: { 'aria-hidden': 'true' },

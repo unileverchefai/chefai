@@ -152,66 +152,6 @@ main > .section:has(.carousel-biz-wrapper) {
   z-index: 1;
 }
 
-.trend-card.borderless-cuisine {
-  --trend-gradient: var(--gradient-borderless-cuisine);
-  --trend-header-gradient: var(--header-gradient-borderless-cuisine);
-  --trend-glow: var(--glow-borderless-cuisine);
-
-  background-color: var(--borderless-cuisine);
-}
-
-.trend-card.borderless-cuisine::after {
-  background: var(--trend-gradient);
-}
-
-.trend-card.street-food-couture {
-  --trend-gradient: var(--gradient-street-food-couture);
-  --trend-header-gradient: var(--header-gradient-street-food-couture);
-  --trend-glow: var(--glow-street-food-couture);
-
-  background-color: var(--street-food-couture);
-}
-
-.trend-card.street-food-couture::after {
-  background: var(--trend-gradient);
-}
-
-.trend-card.diner-designed {
-  --trend-gradient: var(--gradient-diner-designed);
-  --trend-header-gradient: var(--header-gradient-diner-designed);
-  --trend-glow: var(--glow-diner-designed);
-
-  background-color: var(--diner-designed);
-}
-
-.trend-card.diner-designed::after {
-  background: var(--trend-gradient);
-}
-
-.trend-card.culinary-roots {
-  --trend-gradient: var(--gradient-culinary-roots);
-  --trend-header-gradient: var(--header-gradient-culinary-roots);
-  --trend-glow: var(--glow-culinary-roots);
-
-  background-color: var(--culinary-roots);
-}
-
-.trend-card.culinary-roots::after {
-  background: var(--trend-gradient);
-}
-
-.trend-card.cross-trend {
-  --trend-gradient: var(--gradient-cross-trend);
-  --trend-header-gradient: var(--header-gradient-cross-trend);
-
-  background-color: var(--c-white);
-  box-shadow: var(--box-shadow-card-trend), inset 0 0 14px var(--cross-trend-shadow);
-}
-
-.trend-card.cross-trend::after {
-  background: var(--trend-gradient);
-}
-
 .trend-header {
   position: absolute;
   top: 0;
@@ -235,14 +175,10 @@ main > .section:has(.carousel-biz-wrapper) {
   background: var(--trend-header-gradient);
 }
 
-.trend-card.cross-trend .trend-header {
-  color: var(--squid-ink);
-  text-shadow: none;
-}
-
 .trend-content {
   position: relative;
   z-index: var(--z-overlay);
+  
   /* padding: 0 var(--spacing-lg) var(--spacing-lg); */
   display: flex;
   flex-direction: column;
@@ -270,54 +206,16 @@ main > .section:has(.carousel-biz-wrapper) {
   color: var(--c-white);
 }
 
-.trend-stat span {
-  display: inline-block;
-}
-
 .trend-stat.stat-number {
   font-size: var(--stat-size-number-mobile);
   letter-spacing: -2px;
   padding: 0 var(--spacing-lg);
-  background: linear-gradient(
-  191.69deg,
-  rgb(237 108 0 / 0%) 26.34%,
-  rgb(237 108 0 / 100%) 44.162%
-);
 }
 
 .trend-stat.stat-word {
   font-size: var(--stat-size-word-mobile);
   letter-spacing: -1.5px;
-}
-
-.trend-card.cross-trend .trend-stat span {
-  color: transparent;
-  -webkit-text-stroke: 2px var(--squid-ink);
-}
-
-.trend-card.culinary-roots .trend-stat span {
-  -webkit-text-stroke: 1.5px #0090BA;
-  text-shadow: #0090BA 0 0 39px;
-  color: transparent;
-}
-
-.trend-card.borderless-cuisine .trend-stat span {
-    color: rgb(0 0 0 / 0.4);
-    -webkit-text-stroke: 1.5px white;
-    mix-blend-mode: overlay;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.65), 0 0 30px rgba(255, 255, 255, 0.35);
-}
-
-.trend-card.street-food-couture .trend-stat span {
-  -webkit-text-stroke: 1.5px #DC4D8B;
-  text-shadow: #DC4D8B 0 0 39px;
-  color: transparent;
-}
-
-.trend-card.diner-designed .trend-stat span {
-  -webkit-text-stroke: 1.5px #A1B83B;
-  text-shadow: #A1B83B 0 0 39px;
-  color: transparent;
+  padding: 0 var(--spacing-lg);
 }
 
 .trend-description {
@@ -332,9 +230,143 @@ main > .section:has(.carousel-biz-wrapper) {
   padding: 0 var(--spacing-lg) var(--spacing-lg);
 }
 
+/* ----> Borderless Cuisine <---- */
+.trend-card.borderless-cuisine {
+  --trend-gradient: var(--gradient-borderless-cuisine);
+  --trend-header-gradient: var(--header-gradient-borderless-cuisine);
+  --trend-glow: var(--glow-borderless-cuisine);
+
+  background-color: var(--borderless-cuisine);
+}
+
+.trend-card.borderless-cuisine::after {
+  background: var(--trend-gradient);
+}
+
+.trend-card.borderless-cuisine .trend-stat {
+  background: linear-gradient(
+    191.69deg,
+    rgb(237 108 0 / 0%) 26.34%,
+    rgb(237 108 0 / 100%) 44.162%
+  );
+}
+
+.trend-card.borderless-cuisine .trend-stat span {
+  color: rgb(0 0 0 / 40%);
+  -webkit-text-stroke: 1.5px white;
+  mix-blend-mode: overlay;
+  text-shadow: 0 0 10px rgb(255 255 255 / 65%), 0 0 30px rgb(255 255 255 / 35%);
+}
+
+/* ----> Street Food Couture <---- */
+.trend-card.street-food-couture {
+  --trend-gradient: var(--gradient-street-food-couture);
+  --trend-header-gradient: var(--header-gradient-street-food-couture);
+  --trend-glow: var(--glow-street-food-couture);
+
+  background-color: var(--street-food-couture);
+}
+
+.trend-card.street-food-couture::after {
+  background: var(--trend-gradient);
+}
+
+/* .trend-card.street-food-couture .trend-stat { -----> TO DO
+  background: 
+    
+} */
+
+.trend-card.street-food-couture .trend-stat span {
+  -webkit-text-stroke: 1.5px #DC4D8B;
+  text-shadow: #DC4D8B 0 0 39px;
+  color: transparent;
+}
+
+/* ----> Diner Designed <---- */
+.trend-card.diner-designed {
+  --trend-gradient: var(--gradient-diner-designed);
+  --trend-header-gradient: var(--header-gradient-diner-designed);
+  --trend-glow: var(--glow-diner-designed);
+
+  background-color: var(--diner-designed);
+}
+
+.trend-card.diner-designed::after {
+  background: var(--trend-gradient);
+}
+
+/* .trend-card.diner-designed .trend-stat { -----> TO DO
+  background: 
+    
+} */
+
+.trend-card.diner-designed .trend-stat span {
+  -webkit-text-stroke: 1.5px #A1B83B;
+  text-shadow: #A1B83B 0 0 39px;
+  color: transparent;
+}
+
+/* ----> Culinary Roots <---- */
+.trend-card.culinary-roots {
+  --trend-gradient: var(--gradient-culinary-roots);
+  --trend-header-gradient: var(--header-gradient-culinary-roots);
+  --trend-glow: var(--glow-culinary-roots);
+
+  background-color: var(--culinary-roots);
+}
+
+.trend-card.culinary-roots::after {
+  background: var(--trend-gradient);
+}
+
+ /* .trend-card.culinary-roots .trend-stat { -----> TO DO
+  background: 
+    
+} */
+
+.trend-card.culinary-roots .trend-stat span {
+  -webkit-text-stroke: 1.5px #0090BA;
+  text-shadow: #0090BA 0 0 39px;
+  color: transparent;
+}
+
+/* ----> Cross Trend <---- */
+.trend-card.cross-trend {
+  --trend-gradient: var(--gradient-cross-trend);
+  --trend-header-gradient: var(--header-gradient-cross-trend);
+
+  background-color: var(--c-white);
+  box-shadow: var(--box-shadow-card-trend), inset 0 0 14px var(--cross-trend-shadow);
+}
+
+.trend-card.cross-trend::after {
+  background: var(--trend-gradient);
+}
+
+ /* .trend-card.cross-trend .trend-stat { -----> TO DO
+  background: 
+    
+} */
+
+.trend-card.cross-trend .trend-stat span {
+  color: transparent;
+  -webkit-text-stroke: 2px var(--squid-ink);
+}
+
+.trend-card.cross-trend .trend-header {
+  color: var(--squid-ink);
+  text-shadow: none;
+}
+
 .trend-card.cross-trend .trend-description {
   color: var(--squid-ink);
   text-shadow: none;
+}
+
+.trend-cta-spacer {
+  height: 21px;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .trend-cta {
