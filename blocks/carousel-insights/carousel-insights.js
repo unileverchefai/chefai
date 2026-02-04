@@ -18,12 +18,6 @@ function renderCard(item, index) {
   title.textContent = item.display_text ?? item.title ?? `Conversation ${index + 1}`;
   card.appendChild(title);
 
-  if (item.description) {
-    const desc = createElement('p', { className: 'carousel-insights-description' });
-    desc.textContent = item.description;
-    card.appendChild(desc);
-  }
-
   const buttonText = item.button_text ?? item.cta_label ?? 'Show me the details';
   const button = createElement('button', {
     className: 'btn carousel-insights-btn',
@@ -49,8 +43,8 @@ export default function decorate(block) {
   });
   block.appendChild(list);
 
-  // Fetch a single page of recommendations
-  fetchPaginatedData({ user_id: userId, limit })
+  // Fetch recommendations from mock data (returns all items)
+  fetchPaginatedData({ limit })
     .then((items) => {
       if (!items || items.length === 0) {
         const empty = createElement('div', { className: 'carousel-insights-empty' });
