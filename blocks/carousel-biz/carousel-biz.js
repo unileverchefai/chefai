@@ -171,7 +171,11 @@ function renderCards(container, cards) {
     if (cardData.stat) {
       const stat = document.createElement('div');
       stat.className = `trend-stat ${statClass}`;
-      stat.textContent = cardData.stat;
+
+      const statSpan = document.createElement('span');
+      statSpan.textContent = cardData.stat;
+      stat.appendChild(statSpan);
+
       content.appendChild(stat);
     }
 
