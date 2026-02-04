@@ -1,0 +1,125 @@
+/* Base carousel styles shared across blocks using createCarousel */
+
+.carousel-base {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Generic container layout for horizontal carousels */
+.carousel-base .carousel-container,
+.carousel-base .carousel-cards-container {
+  display: flex;
+  gap: var(--spacing-xl);
+  transition: transform var(--transition-base);
+  padding: var(--spacing-md);
+  margin: 0;
+  list-style: none;
+  align-items: flex-start;
+  will-change: transform;
+  touch-action: pan-x pan-y pinch-zoom;
+}
+
+.carousel-base .carousel-container.is-dragging,
+.carousel-base .carousel-cards-container.is-dragging {
+  transition: none;
+  user-select: none;
+}
+
+/* Controls and indicators */
+.carousel-base .controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.carousel-base .indicators {
+  display: flex;
+  gap: var(--spacing-xxs);
+  align-items: center;
+}
+
+.carousel-base .indicator {
+  width: var(--spacing-xxs);
+  height: var(--spacing-xxs);
+  border-radius: 50px;
+  background-color: var(--smoke);
+  transition: all var(--transition-base);
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.carousel-base .indicator.active {
+  width: 20px;
+  background-color: var(--ufs-orange);
+}
+
+.carousel-base .indicator:focus {
+  outline: 2px solid var(--ufs-orange);
+  outline-offset: 2px;
+}
+
+/* Arrows */
+.carousel-base .arrows {
+  display: none;
+}
+
+.carousel-base .arrow {
+  width: 50px;
+  height: 50px;
+  border: 1px solid var(--smoke);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  position: relative;
+  padding: 0;
+}
+
+.carousel-base .arrow:hover {
+  border-color: var(--ufs-orange);
+}
+
+.carousel-base .arrow:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.carousel-base .arrow:focus {
+  outline: 2px solid var(--ufs-orange);
+  outline-offset: 2px;
+}
+
+.carousel-base .arrow.prev {
+  border-radius: 15px 5px 5px;
+}
+
+.carousel-base .arrow.next {
+  border-radius: 5px 15px 5px 5px;
+}
+
+.carousel-base .arrow svg {
+  fill: var(--smoke);
+  transition: fill var(--transition-base);
+}
+
+.carousel-base .arrow:hover svg {
+  fill: var(--ufs-orange);
+}
+
+/* Screen reader only utility */
+.carousel-base .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border-width: 0;
+}
+

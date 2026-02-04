@@ -13,4 +13,5 @@ export const ENDPOINTS = {
   getThreadInfo: `${API_BASE_URL}/chat/threads/info`,
   getUserThreads: `${API_BASE_URL}/chat/users/threads`,
   getThreadMessages: `${API_BASE_URL}/chat/threads/messages`,
+  recommendations: `${API_BASE_URL}/recommendations`,
 };
