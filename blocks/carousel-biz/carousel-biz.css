@@ -302,11 +302,10 @@ main > .section:has(.carousel-biz-wrapper) {
 }
 
 .trend-card.borderless-cuisine .trend-stat span {
-    color: rgba(0, 0, 0.4);
+    color: rgb(0 0 0 / 0.4);
     -webkit-text-stroke: 1.5px white;
     mix-blend-mode: overlay;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.65), 0 0 30px rgba(255, 255, 255, 0.35);
-    color: transparent;
 }
 
 .trend-card.street-food-couture .trend-stat span {
