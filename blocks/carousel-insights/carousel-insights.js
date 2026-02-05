@@ -1,6 +1,6 @@
 import { createElement } from '@scripts/common.js';
 import createCarousel from '@components/carousel/carousel.js';
-import { fetchPaginatedData } from './constants/api.js';
+import { fetchInsights } from './constants/api.js';
 
 /**
  * Render a thread card using the insights styling (title + CTA).
@@ -43,8 +43,8 @@ export default function decorate(block) {
   });
   block.appendChild(list);
 
-  // Fetch recommendations from mock data (returns all items)
-  fetchPaginatedData({ limit })
+  // Fetch insights on load
+  fetchInsights({ user_id: userId, limit })
     .then((items) => {
       if (!items || items.length === 0) {
         const empty = createElement('div', { className: 'carousel-insights-empty' });

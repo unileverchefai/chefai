@@ -2,37 +2,36 @@ import { SUBSCRIPTION_KEY, ENDPOINTS } from '@components/chatbot/constants/api.j
 
 export { SUBSCRIPTION_KEY };
 
-/**
- * Load recommendations from mock data file
- * @param {Object} options - Request options (for future API compatibility)
- * @param {number} options.limit - Number of items to return (ignored for mock data - returns all)
- * @param {number} options.offset - Offset for pagination (ignored for mock data - returns all)
- * @returns {Promise<Array>} Array of recommendation items
- */
-export async function fetchPaginatedData(options = {}) {
+export async function fetchInsights(options = {}) {
+  const {
+    userId = 'staging-user',
+  } = options;
+
+  const payload = {
+    user_id: userId,
+  };
+
   try {
-    // Load mock data from JSON file
-    const response = await fetch('/blocks/carousel-insights/mock-data/recommendations.json');
-    
+    const response = await fetch(`${ENDPOINTS.recommendations}/time-based`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'X-Subscription-Key': SUBSCRIPTION_KEY,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
     if (!response.ok) {
       throw new Error(`Failed to load mock data: ${response.status}`);
     }
 
     const data = await response.json();
-    const recommendations = data.recommendations ?? [];
-
-    // For mock data, return all items (no pagination)
-    // When switching to real API, uncomment pagination logic below
-    return recommendations;
-
-    // Pagination logic (for future API integration):
-    // const { limit = 3, offset = 0 } = options;
-    // const startIndex = offset;
-    // const endIndex = startIndex + limit;
-    // return recommendations.slice(startIndex, endIndex);
+    // Expected shape: { recommendations: [...] }
+    return data.recommendations ?? data.data?.recommendations ?? [];
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.error('Failed to fetch paginated data:', error);
+    console.error('Failed to fetch time-based recommendations:', error);
     throw error;
   }
 }

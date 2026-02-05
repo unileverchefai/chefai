@@ -142,6 +142,11 @@
 
 .carousel-insights .carousel-insights-description {
   margin-bottom: var(--spacing-lg);
+  display: -webkit-box;
+  line-clamp: 3;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .carousel-insights .carousel-insights-btn {
