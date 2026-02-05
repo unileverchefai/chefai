@@ -64,7 +64,7 @@ export default async function decorate(block) {
         card.innerHTML = `
             <div class="insight-card-content">
                 <h3>Title</h3>
-                <p>Lorum ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                <p>Lorum ipsum dolor sit amet, consectetur adipiscing elit Lorum ipsum dolor sit amet, consectetur adipiscing elit.</p>
             </div>
         `;
         insightBlock.appendChild(card);
