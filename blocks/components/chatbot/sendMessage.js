@@ -1,3 +1,4 @@
+import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
 import {
   getOrCreateThreadId,
   formatResponse,
@@ -6,7 +7,6 @@ import {
   getAnonymousUserIdFromCookie,
   createUser,
 } from './utils.js';
-import { SUBSCRIPTION_KEY, ENDPOINTS } from './constants/api.js';
 
 let currentEndpoint = 'capgemini';
 

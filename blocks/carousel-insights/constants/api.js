@@ -1,26 +1,18 @@
-import { SUBSCRIPTION_KEY, ENDPOINTS } from '@components/chatbot/constants/api.js';
+import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
 
 export { SUBSCRIPTION_KEY };
 
-export async function fetchPaginatedData(options = {}) {
+export async function fetchInsights(options = {}) {
   const {
-    isSneakpeek = false,
-    limit = 3,
-    refresh = false,
-    type = 'main',
     userId = 'staging-user',
   } = options;
 
   const payload = {
-    is_sneakpeek: isSneakpeek,
-    limit,
-    refresh,
-    type,
     user_id: userId,
   };
 
   try {
-    const response = await fetch(ENDPOINTS.recommendations, {
+    const response = await fetch(`${ENDPOINTS.recommendations}/time-based`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -31,15 +23,15 @@ export async function fetchPaginatedData(options = {}) {
     });
 
     if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
+      throw new Error(`Failed to load mock data: ${response.status}`);
     }
 
     const data = await response.json();
     // Expected shape: { recommendations: [...] }
-    return data.threads ?? data.data?.threads ?? [];
+    return data.recommendations ?? data.data?.recommendations ?? [];
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.error('Failed to fetch paginated data:', error);
+    console.error('Failed to fetch time-based recommendations:', error);
     throw error;
   }
 }

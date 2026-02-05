@@ -1,4 +1,4 @@
-import { API_BASE_URL, SUBSCRIPTION_KEY } from './constants/api.js';
+import { API_BASE_URL, SUBSCRIPTION_KEY } from '@api/endpoints.js';
 
 /**
  * Generate a unique run_id for each chat message.

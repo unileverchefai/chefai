@@ -1,6 +1,6 @@
+import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
+import { COUNTRY_CODE, LANGUAGE_CODE } from '@api/authentication/constants.js';
 import formatResponse from './responseHandler.js';
-import { SUBSCRIPTION_KEY, ENDPOINTS } from './constants/api.js';
-import { COUNTRY_CODE, LANGUAGE_CODE } from '../authentication/constants.js';
 
 export { formatResponse };
 

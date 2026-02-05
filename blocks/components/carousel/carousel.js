@@ -186,10 +186,20 @@ export default function createCarousel(options) {
       }
     }
 
-    // Update indicators
-    indicators.querySelectorAll('.indicator').forEach((ind, idx) => {
+    // Update indicators (only when we have at least 3 slides)
+    const indicatorButtons = indicators.querySelectorAll('.indicator');
+    indicatorButtons.forEach((ind, idx) => {
       ind.classList.toggle('active', idx === currentSlide);
     });
+
+    // Enable/disable arrows based on number of slides
+    if (!hideArrows && arrows && prevArrow && nextArrow) {
+      const disableArrows = totalSlides <= 1;
+      [prevArrow, nextArrow].forEach((arrowButton) => {
+        arrowButton.disabled = disableArrows;
+        arrowButton.classList.toggle('disabled', disableArrows);
+      });
+    }
 
     // Announce slide change to screen readers
     liveRegion.textContent = `Slide ${currentSlide + 1} of ${totalSlides}`;
@@ -563,20 +573,31 @@ export default function createCarousel(options) {
       lastItemsPerSlide = itemsPerSlide;
 
       indicators.textContent = '';
-      for (let i = 0; i < totalSlides; i += 1) {
-        const indicator = createElement('button', {
-          className: `indicator${i === 0 ? ' active' : ''}`,
-          attributes: {
-            'aria-label': `Go to slide ${i + 1} of ${totalSlides}`,
-            type: 'button',
-          },
-        });
-        indicator.addEventListener('click', () => goToSlide(i));
-        indicators.appendChild(indicator);
-      }
 
-      if (currentSlide >= totalSlides) {
-        currentSlide = totalSlides - 1;
+      // Only render bullets when there are at least 3 items AND more than 1 slide
+      if (itemCount >= 3 && totalSlides > 1) {
+        indicators.style.display = '';
+        for (let i = 0; i < totalSlides; i += 1) {
+          const indicator = createElement('button', {
+            className: `indicator${i === 0 ? ' active' : ''}`,
+            attributes: {
+              'aria-label': `Go to slide ${i + 1} of ${totalSlides}`,
+              type: 'button',
+            },
+          });
+          indicator.addEventListener('click', () => goToSlide(i));
+          indicators.appendChild(indicator);
+        }
+
+        if (currentSlide >= totalSlides) {
+          currentSlide = totalSlides - 1;
+        }
+      } else {
+        // Hide indicators when there are fewer than 3 slides
+        indicators.style.display = 'none';
+        if (currentSlide >= totalSlides) {
+          currentSlide = totalSlides - 1;
+        }
       }
     }
 

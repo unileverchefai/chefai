@@ -1,5 +1,5 @@
+import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
 import { generateRunId, connectToAgentRunStream } from './sseStream.js';
-import { SUBSCRIPTION_KEY, ENDPOINTS } from './constants/api.js';
 import {
   getOrCreateThreadId,
   getAnonymousUserId,

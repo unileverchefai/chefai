@@ -1,6 +1,6 @@
 import { createElement } from '@scripts/common.js';
 import createCarousel from '@components/carousel/carousel.js';
-import { fetchPaginatedData } from './constants/api.js';
+import { fetchInsights } from './constants/api.js';
 
 /**
  * Render a thread card using the insights styling (title + CTA).
@@ -17,12 +17,6 @@ function renderCard(item, index) {
   const title = createElement('div', { className: 'cards-card-title' });
   title.textContent = item.display_text ?? item.title ?? `Conversation ${index + 1}`;
   card.appendChild(title);
-
-  if (item.description) {
-    const desc = createElement('p', { className: 'carousel-insights-description' });
-    desc.textContent = item.description;
-    card.appendChild(desc);
-  }
 
   const buttonText = item.button_text ?? item.cta_label ?? 'Show me the details';
   const button = createElement('button', {
@@ -49,8 +43,8 @@ export default function decorate(block) {
   });
   block.appendChild(list);
 
-  // Fetch a single page of recommendations
-  fetchPaginatedData({ user_id: userId, limit })
+  // Fetch insights on load
+  fetchInsights({ user_id: userId, limit })
     .then((items) => {
       if (!items || items.length === 0) {
         const empty = createElement('div', { className: 'carousel-insights-empty' });
