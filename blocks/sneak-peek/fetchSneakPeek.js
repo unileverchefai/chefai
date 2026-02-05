@@ -55,9 +55,7 @@ export async function fetchSneakPeek(options = {}) {
     }
 
     // Transform and filter out invalid entries
-    return recommendations
-      .map(transformRecommendation)
-      .filter(Boolean);
+    return recommendations;
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Failed to fetch insights:', error);
@@ -72,7 +70,6 @@ export async function fetchSneakPeek(options = {}) {
     return [];
   }
 }
-
 
 /**
  * Fetch insights from the recommendations API
@@ -120,9 +117,7 @@ export async function fetchBusinessInfo(options = {}) {
     }
 
     // Transform and filter out invalid entries
-    return recommendations
-      .map(transformRecommendation)
-      .filter(Boolean);
+    return recommendations;
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Failed to fetch insights:', error);

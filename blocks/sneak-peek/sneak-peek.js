@@ -1,7 +1,7 @@
 import openSignInModal from '@components/signin/index.js';
 import { createElement } from '@scripts/common.js';
 import { loadCSS } from '@scripts/aem.js';
-import { fetchBusinessInfo, fetchSneakPeek } from './fetchSneakPeek.js';
+import { fetchBusinessInfo } from './fetchSneakPeek.js';
 
 // create customHeader for sneak peek page.
 // TODO: This should be a variant of the main header (future improvements)
@@ -37,8 +37,8 @@ export default async function decorate(block) {
 
   const recommendationP = root.querySelector('div > p:first-of-type');
 
-  // Fetch sneak peek insightData api
-  const insightData = await fetchSneakPeek();
+  // TODO: Fetch sneak peek insightData api
+  // const insightData = await fetchSneakPeek();
   const businessInfo = await fetchBusinessInfo();
 
   // Navbar
