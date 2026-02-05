@@ -3,6 +3,31 @@ import { decorateIcons } from '@scripts/aem.js';
 import { createElement } from '@scripts/common.js';
 
 /**
+ * Trend code to CSS class and display name mapping
+ * Authors use simple codes (T1, T2, etc.) in Document Authoring
+ */
+const TREND_CODE_MAP = {
+  T1: { class: 'borderless-cuisine', name: 'Borderless Cuisine' },
+  T2: { class: 'street-food-couture', name: 'Street Food Couture' },
+  T3: { class: 'diner-designed', name: 'Diner Designed' },
+  T4: { class: 'culinary-roots', name: 'Culinary Roots' },
+  TX: { class: 'cross-trend', name: 'Cross-Trend' },
+};
+
+/**
+ * Normalize trend code input from authors
+ * Handles case insensitivity and whitespace
+ * @param {string} input - Raw input from author (e.g., "t1", "T 1", " T1 ")
+ * @returns {string} Normalized code (e.g., "T1")
+ */
+function normalizeTrendCode(input) {
+  return input
+    .trim()
+    .toUpperCase()
+    .replace(/\s+/g, '');
+}
+
+/**
  * Parse dropdown options from first row
  * @param {HTMLElement} firstRow - First row containing dropdown data
  * @returns {Object} Dropdown label and options array
@@ -103,22 +128,14 @@ function parseAuthoredContent(block) {
       ? [...typesList.querySelectorAll('li')].map((li) => li.textContent.trim())
       : [];
 
-    let trendClass = '';
-    const trendLower = trendName.toLowerCase();
-    const trendClasses = {
-      borderless: 'borderless-cuisine',
-      street: 'street-food-couture',
-      dinner: 'diner-designed',
-      designed: 'diner-designed',
-      culinary: 'culinary-roots',
-      roots: 'culinary-roots',
-      cross: 'cross-trend',
-    };
-    const trendFound = Object.keys(trendClasses).find((key) => trendLower.includes(key));
-    trendClass = trendClasses[trendFound] || '';
+    // map trend code to CSS class and display name
+    const normalizedCode = normalizeTrendCode(trendName);
+    const trendMapping = TREND_CODE_MAP[normalizedCode];
+    const trendClass = trendMapping?.class || '';
+    const trendDisplayName = trendMapping?.name || trendName;
 
     return {
-      trendName,
+      trendName: trendDisplayName,
       trendClass,
       stat,
       description,

@@ -115,9 +115,9 @@ main > .section:has(.carousel-biz-wrapper) {
   outline-offset: 2px;
 }
 
-.carousel-biz-carousel-wrapper {
+/* .carousel-biz-carousel-wrapper {
   overflow: hidden;
-}
+} */
 
 .carousel-biz-container {
   display: flex;
