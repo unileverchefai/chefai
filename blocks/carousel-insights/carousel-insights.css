@@ -12,6 +12,8 @@
 /* Fix touch-action to allow horizontal swiping */
 .carousel-insights .carousel-cards-container {
   touch-action: pan-x pan-y pinch-zoom;
+  align-items: stretch;
+  gap: var(--spacing-lg);
 }
 
 .carousel-insights .card {
@@ -19,20 +21,15 @@
   border: 1px solid #EE4A3E;
   background: radial-gradient(85.1% 62.92% at 74.5% 69.63%, rgb(252 176 22 / 40%) 0%, rgb(252 176 22 / 0%) 100%), linear-gradient(122deg, rgb(235 34 99 / 90%) -40.01%, rgb(239 93 44 / 90%) 94.12%), #5C3657;
   box-shadow: 0 4px 7px 0 rgb(255 255 255 / 25%) inset;
-  padding: var(--spacing-lg) var(--spacing-md);
+  padding: var(--spacing-md);
   gap: var(--spacing-sm);
   color: white;
-  text-shadow: 0 1px 2px rgb(0 0 0 / 25%);
   font-family: var(--ff-unilever-shilling);
   font-size: var(--fs-md);
-  line-height: var(--lh-md); 
-}
-
-.carousel-insights .btn {
-  border-radius: 38px;
-  border: 1px solid #FFF;
-  background: rgb(255 255 255 / 10%);
-  backdrop-filter: blur(0.5px);
+  line-height: var(--lh-md);
+  display: flex;
+  flex-direction: column;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 25%);
 }
   
 .carousel-insights .carousel-insights-loading {
@@ -150,7 +147,15 @@
 }
 
 .carousel-insights .carousel-insights-btn {
-  margin-top: var(--spacing-sm);
+  margin-top: auto;
+  margin-bottom: 0;
+  align-self: baseline;
+  font-size: var(--body-font-size-s);
+  background: rgb(255 255 255 / 10%);
+  backdrop-filter: blur(0.5px); 
+  border-radius: 38px;
+  border: 1px solid #FFF;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 25%);
 }
 
 /* Desktop styles */
@@ -177,16 +182,8 @@
     width: 30px;
   }
 
-  .carousel-insights .arrows {
-    display: flex;
-    gap: var(--spacing-md);
-    align-items: center;
-  }
-
-  /* For insights we want exactly 3 cards per slide on desktop.
-     Make card width responsive to the container width and gap. */
   .carousel-insights .carousel-cards-container .card {
-    flex: 0 0 calc((100% - (2 * var(--spacing-xl))) / 3);
-    max-width: none;
+    flex: 1;
+    max-width: 50%;
   }
 }
