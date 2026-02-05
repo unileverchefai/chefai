@@ -1,8 +1,8 @@
 import { createElement } from '@scripts/common.js';
-import createModal from '@components/modal/index.js';
+import createModal from '@helpers/modal/index.js';
 import { loadCSS } from '@scripts/aem.js';
 import { login } from '@auth/authService.js';
-import openCookieAgreementModal from '@components/cookie-agreement/index.js';
+import openCookieAgreementModal from '@helpers/cookie-agreement/index.js';
 
 /**
  * Opens the sign-in modal

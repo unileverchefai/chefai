@@ -1,5 +1,5 @@
 /* Import base carousel styles from components plugin */
-@import url('../components/carousel/carousel.css');
+@import url('../../helpers/carousel/carousel.css');
 
 /* Mobile-first styles */
 .carousel-insights {

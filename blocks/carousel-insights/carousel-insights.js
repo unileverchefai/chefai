@@ -1,5 +1,5 @@
 import { createElement } from '@scripts/common.js';
-import createCarousel from '@components/carousel/carousel.js';
+import createCarousel from '@helpers/carousel/carousel.js';
 import { fetchInsights } from './constants/api.js';
 
 /**

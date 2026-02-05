@@ -1,3 +1,8 @@
+import {
+  getAnonymousUserIdFromCookie, clearAllChatData, setCookie,
+} from '@helpers/chatbot/utils.js';
+import saveBusinessDetails from '@helpers/personalized-hub/saveBusinessDetails.js';
+import createChefAIUser from '@helpers/chatbot/createChefAIUser.js';
 import { apiRequest } from './endpoints.js';
 import {
   setToken, removeToken, getToken,
@@ -10,11 +15,6 @@ import {
   BUSINESS_TYPE_MAP,
   createRegistrationPayload,
 } from './constants.js';
-import {
-  getAnonymousUserIdFromCookie, clearAllChatData, setCookie,
-} from '../../components/chatbot/utils.js';
-import saveBusinessDetails from '../../components/personalized-hub/saveBusinessDetails.js';
-import createChefAIUser from '../../components/chatbot/createChefAIUser.js';
 
 export async function login(email, password) {
   if (!email || !password) {
@@ -126,7 +126,7 @@ export async function register(formData) {
             sessionStorage.removeItem('personalized-hub-business-data');
 
             try {
-              const { default: fetchSavedBusinessInfoAndLog } = await import('../../components/personalized-hub/fetchSavedBusinessInfo.js');
+              const { default: fetchSavedBusinessInfoAndLog } = await import('@helpers/personalized-hub/fetchSavedBusinessInfo.js');
               await fetchSavedBusinessInfoAndLog();
             } catch (fetchError) {
               // eslint-disable-next-line no-console

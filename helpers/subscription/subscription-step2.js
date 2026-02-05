@@ -1,10 +1,10 @@
 import { createElement } from '@scripts/common.js';
-import createModal from '@components/modal/index.js';
+import createModal from '@helpers/modal/index.js';
 import { loadCSS } from '@scripts/aem.js';
 
 export default function openSubscriptionStep2(onCreateAccount, onMaybeLater) {
-  loadCSS(`${window.hlx.codeBasePath}/blocks/components/signup/signup.css`).catch(() => {});
-  loadCSS(`${window.hlx.codeBasePath}/blocks/components/subscription/subscription.css`).catch(() => {});
+  loadCSS(`${window.hlx.codeBasePath}/helpers/signup/signup.css`).catch(() => {});
+  loadCSS(`${window.hlx.codeBasePath}/helpers/subscription/subscription.css`).catch(() => {});
 
   const content = createElement('div', {
     className: 'signup-modal subscription-step2-modal',

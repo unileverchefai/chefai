@@ -1,6 +1,6 @@
 import { getMetadata, loadCSS } from '@scripts/aem.js';
 import { createElement } from '@scripts/common.js';
-import createModal from '@components/modal/index.js';
+import createModal from '@helpers/modal/index.js';
 import { loadReact } from './utils.js';
 import { setEndpoint } from './sendMessage.js';
 
@@ -38,7 +38,7 @@ export default async function openChatbotModal() {
 
   try {
     // Ensure chatbot styles are loaded
-    await loadCSS(`${window.hlx.codeBasePath}/blocks/components/chatbot/chatbot.css`);
+    await loadCSS(`${window.hlx.codeBasePath}/helpers/chatbot/chatbot.css`);
 
     // Configure API endpoint the same way as the inline chatbot block
     const endpoint = getMetadata('chatbot-endpoint') || 'capgemini';

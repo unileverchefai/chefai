@@ -5,7 +5,7 @@ A reusable modal component for displaying content in an overlay.
 ## Quick Start
 
 ```javascript
-import createModal from '../components/modal/index.js';
+import createModal from '@helpers/modal/index.js';
 import { createElement } from '@scripts/common.js';
 
 // Create content
@@ -22,7 +22,7 @@ modal.open();
 
 ### Simple Modal
 ```javascript
-import createModal from '../components/modal/index.js';
+import createModal from '@helpers/modal/index.js';
 import { createElement } from '@scripts/common.js';
 
 const content = createElement('div', {

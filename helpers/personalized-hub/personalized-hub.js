@@ -1,7 +1,7 @@
-import { loadReact, createUser } from '@components/chatbot/utils.js';
+import { loadReact, createUser } from '@helpers/chatbot/utils.js';
 import { createElement } from '@scripts/common.js';
 import { loadCSS } from '@scripts/aem.js';
-import createModal from '@components/modal/index.js';
+import createModal from '@helpers/modal/index.js';
 import saveBusinessDetails from './saveBusinessDetails.js';
 
 const SCREENS = {
@@ -13,7 +13,7 @@ const SCREENS = {
 };
 
 export default async function openPersonalizedHub() {
-  await loadCSS(`${window.hlx.codeBasePath}/blocks/components/personalized-hub/personalized-hub.css`);
+  await loadCSS(`${window.hlx.codeBasePath}/helpers/personalized-hub/personalized-hub.css`);
 
   const container = createElement('div', {
     className: 'personalized-hub-container',
@@ -52,7 +52,7 @@ export default async function openPersonalizedHub() {
       throw new Error('React or ReactDOM not loaded');
     }
 
-    await loadCSS(`${window.hlx.codeBasePath}/blocks/components/cookie-agreement/cookie-agreement.css`);
+    await loadCSS(`${window.hlx.codeBasePath}/helpers/cookie-agreement/cookie-agreement.css`);
     await loadCSS(`${window.hlx.codeBasePath}/blocks/carousel-cards/carousel-cards.css`);
     const { default: openCookieAgreementModal } = await import('../cookie-agreement/index.js');
     const { default: PersonalizedChatWidget } = await import('./PersonalizedChatWidget.js');

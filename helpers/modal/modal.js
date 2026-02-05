@@ -304,7 +304,7 @@ export default function createModal(options = {}) {
     if (isOpen || isAnimating) return;
 
     // Load modal CSS if not already loaded
-    loadCSS(`${window.hlx.codeBasePath}/blocks/components/modal/modal.css`).catch(() => {
+    loadCSS(`${window.hlx.codeBasePath}/helpers/modal/modal.css`).catch(() => {
       // CSS loading error handled silently
     });
 

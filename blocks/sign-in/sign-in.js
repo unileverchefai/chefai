@@ -1,4 +1,4 @@
-import openSignInModal from '@components/signin/index.js';
+import openSignInModal from '@helpers/signin/index.js';
 import { createElement } from '@scripts/common.js';
 
 /**

@@ -1,9 +1,9 @@
 import { createElement } from '@scripts/common.js';
-import createModal from '@components/modal/index.js';
+import createModal from '@helpers/modal/index.js';
 import { loadCSS } from '@scripts/aem.js';
 
 export default function openResetPasswordModal() {
-  loadCSS(`${window.hlx.codeBasePath}/blocks/components/reset-password/reset-password.css`).catch(() => {});
+  loadCSS(`${window.hlx.codeBasePath}/helpers/reset-password/reset-password.css`).catch(() => {});
 
   const content = createElement('div', {
     className: 'reset-password-modal',

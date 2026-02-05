@@ -1,5 +1,5 @@
-import createCarousel from '../components/carousel/carousel.js';
-import { decorateIcons } from '../../scripts/aem.js';
+import createCarousel from '@helpers/carousel/carousel.js';
+import { decorateIcons } from '@scripts/aem.js';
 
 /**
  * Parse dropdown options from first row

@@ -63,8 +63,6 @@
   transform: none;
 }
 
-/* Cookie Agreement Modal styles moved to components/cookie-agreement/cookie-agreement.css */
-
 /* Chat Widget Container */
 .ph-chat-container {
   background: var(--c-white);

@@ -1,5 +1,5 @@
 import { createElement } from '@scripts/common.js';
-import createCarousel from '../components/carousel/carousel.js';
+import createCarousel from '@helpers/carousel/carousel.js';
 
 export function initCarouselCards(block, carouselContainer, itemCount, options = {}) {
   const isStaticDesktop = typeof options.disableDesktopCarousel === 'boolean'
