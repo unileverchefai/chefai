@@ -358,15 +358,21 @@ export default function createModal(options = {}) {
         modalOverlay.classList.add('visible');
       }
 
-      // Focus the first focusable element after animation
+      // Focus the first input field after animation
       setTimeout(() => {
         const focusableElements = getFocusableElements();
         if (focusableElements.length > 0) {
-          // Try to focus close button first, otherwise first focusable element
-          if (closeButton && getFocusableElements().includes(closeButton)) {
-            closeButton.focus();
+          // Find first input field (input, textarea, select)
+          const firstInput = focusableElements.find((el) => el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT');
+
+          if (firstInput) {
+            firstInput.focus();
           } else {
-            focusableElements[0].focus();
+            // If no input found, focus first focusable element (excluding close button)
+            const firstElement = focusableElements.find(
+              (el) => el !== closeButton,
+            ) ?? focusableElements[0];
+            firstElement.focus();
           }
         } else if (modalContent) {
           // If no focusable elements, make content focusable temporarily

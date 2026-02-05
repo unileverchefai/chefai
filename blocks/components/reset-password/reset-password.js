@@ -80,12 +80,24 @@ export default function openResetPasswordModal() {
   bottomArea.appendChild(cancelLink);
   content.appendChild(bottomArea);
 
+  // Restore saved form data
+  const saved = sessionStorage.getItem('reset_password_form');
+  if (saved) {
+    const data = JSON.parse(saved);
+    emailInput.value = data.email ?? '';
+  }
+
   const modal = createModal({
     content,
     showCloseButton: false,
     overlayClass: 'modal-overlay reset-password-modal-overlay',
     contentClass: 'modal-content reset-password-modal-content',
     overlayBackground: 'var(--modal-overlay-bg)',
+    onClose: () => {
+      sessionStorage.setItem('reset_password_form', JSON.stringify({
+        email: emailInput.value,
+      }));
+    },
   });
 
   cancelLink.addEventListener('click', () => {
@@ -106,6 +118,7 @@ export default function openResetPasswordModal() {
       return;
     }
 
+    sessionStorage.removeItem('reset_password_form');
     modal.close();
     const { default: openChangePasswordModal } = await import('./change-password.js');
     openChangePasswordModal(email);

@@ -135,12 +135,30 @@ export default function openSignUpReportModal() {
   bottomArea.appendChild(continueButton);
   content.appendChild(bottomArea);
 
+  // Restore saved form data
+  const saved = sessionStorage.getItem('signup_form');
+  if (saved) {
+    const data = JSON.parse(saved);
+    emailInput.value = data.email ?? '';
+    firstNameInput.value = data.firstName ?? '';
+    surnameInput.value = data.lastName ?? '';
+    consentCheckbox.checked = data.marketingConsent ?? false;
+  }
+
   const modal = createModal({
     content,
     showCloseButton: false,
     overlayClass: 'modal-overlay signup-modal-overlay',
     contentClass: 'modal-content signup-modal-content',
     overlayBackground: 'var(--modal-overlay-bg)',
+    onClose: () => {
+      sessionStorage.setItem('signup_form', JSON.stringify({
+        email: emailInput.value,
+        firstName: firstNameInput.value,
+        lastName: surnameInput.value,
+        marketingConsent: consentCheckbox.checked,
+      }));
+    },
   });
 
   continueButton.addEventListener('click', async () => {
@@ -168,6 +186,7 @@ export default function openSignUpReportModal() {
       marketingConsent,
     };
 
+    sessionStorage.removeItem('signup_form');
     modal.close();
 
     const { default: openSignupPasswordModal } = await import('./signup-password.js');

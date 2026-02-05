@@ -161,6 +161,13 @@ export default function openSignInModal() {
   bottomArea.appendChild(bottomText);
   content.appendChild(bottomArea);
 
+  // Restore saved form data
+  const saved = sessionStorage.getItem('signin_form');
+  if (saved) {
+    const data = JSON.parse(saved);
+    emailInput.value = data.email ?? '';
+  }
+
   // Create modal
   const modal = createModal({
     content,
@@ -168,6 +175,11 @@ export default function openSignInModal() {
     overlayClass: 'modal-overlay signin-modal-overlay',
     contentClass: 'modal-content signin-modal-content',
     overlayBackground: 'var(--modal-overlay-bg)',
+    onClose: () => {
+      sessionStorage.setItem('signin_form', JSON.stringify({
+        email: emailInput.value,
+      }));
+    },
   });
 
   continueLink.addEventListener('click', async (e) => {
@@ -207,6 +219,7 @@ export default function openSignInModal() {
 
     try {
       await login(email, password);
+      sessionStorage.removeItem('signin_form');
       modal.close();
 
       const cookiesAccepted = document.cookie.split(';').some((c) => c.trim().startsWith('personalized-hub-consent=true'));
