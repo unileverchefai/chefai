@@ -1,4 +1,4 @@
-import { SUBSCRIPTION_KEY, ENDPOINTS } from '@components/chatbot/constants/api.js';
+import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
 
 export { SUBSCRIPTION_KEY };
 

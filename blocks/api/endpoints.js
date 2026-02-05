@@ -14,4 +14,13 @@ export const ENDPOINTS = {
   getUserThreads: `${API_BASE_URL}/chat/users/threads`,
   getThreadMessages: `${API_BASE_URL}/chat/threads/messages`,
   recommendations: `${API_BASE_URL}/recommendations`,
+  recommendationsTimeBased: `${API_BASE_URL}/recommendations/time-based`,
+  businessTypes: 'https://api-hub-we.azure-api.net/chefaibe/st/utility/business-types',
+};
+
+export const DEFAULT_PARAMS = {
+  country_code: 'BE',
+  language_code: 'en',
+  type: 'main',
+  limit: 10,
 };

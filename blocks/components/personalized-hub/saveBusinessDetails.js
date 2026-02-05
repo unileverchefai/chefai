@@ -1,5 +1,5 @@
-import { SUBSCRIPTION_KEY, ENDPOINTS } from '../chatbot/constants/api.js';
-import { getUserIdFromCookie } from '../chatbot/utils.js';
+import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
+import { getUserIdFromCookie } from '@components/chatbot/utils.js';
 
 export default async function saveBusinessDetails(businessData, providedUserId = null) {
   const userId = providedUserId ?? getUserIdFromCookie();
