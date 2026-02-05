@@ -20,8 +20,10 @@ const decorateCustomHeader = (navbar) => {
         },
     });
 
+    signInButton.textContent = 'Sign in';
+
     signInButton.addEventListener('click', () => {
-    openSignInModal();
+        openSignInModal();
     });
 
     navbar.appendChild(logo);
@@ -81,7 +83,7 @@ export default async function decorate(block) {
     logo.alt = businessInfo.name;
     businessBlock.appendChild(logo);
 
-    const title = createElement('h2', { className: 'sneak-peek-title' });
+    const title = createElement('h2');
     title.textContent = businessInfo.name;
     businessBlock.appendChild(title);
 
