@@ -9,9 +9,9 @@ export const ENDPOINTS = {
 
 // Default query parameters
 export const DEFAULT_PARAMS = {
-  country_code: 'BE',
-  language_code: 'en',
-  type: 'main',
-  limit: 10,
+  current_date: '2026-01-20T00:00:00Z',
   is_sneakpeek: true,
+  limit: 3,
+  refresh: false,
+  type: 'main',
 };

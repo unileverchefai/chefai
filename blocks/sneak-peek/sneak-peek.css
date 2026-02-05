@@ -142,16 +142,25 @@ main {
   box-shadow: 0 24px 60px rgb(0 0 0 / 25%);
 }
 
+.insight-card h3 {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.insight-card p {
+    font-size: 16px;
+}
+
 /* side peeks */
 .fp-card--left {
   left: 50%;
-  transform: translateX(calc(-50% - 65vw)) scale(.92);
+  transform: translateX(calc(-50% - 65vw)) scale(.96);
   z-index: 1;
 }
 
 .fp-card--right {
   left: 50%;
-  transform: translateX(calc(-50% + 65vw)) scale(.92);
+  transform: translateX(calc(-50% + 65vw)) scale(.96);
   z-index: 1;
 }
 
@@ -238,9 +247,8 @@ main {
     }
 
     .lower-block::after {
-        width: 60vw;
         margin: 0 auto;
-        bottom: 80px;
+        bottom: 55px;
         height: 250px;
         background: linear-gradient(
             to bottom,
