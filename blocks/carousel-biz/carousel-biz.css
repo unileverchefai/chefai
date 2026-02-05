@@ -178,8 +178,6 @@ main > .section:has(.carousel-biz-wrapper) {
 .trend-content {
   position: relative;
   z-index: var(--z-overlay);
-  
-  /* padding: 0 var(--spacing-lg) var(--spacing-lg); */
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
