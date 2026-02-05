@@ -37,9 +37,7 @@ export default async function decorate(block) {
 
   const recommendationP = root.querySelector('div > p:first-of-type');
 
-  // TODO: Fetch sneak peek insightData api
-  const insightData = await fetchSneakPeek({ user_id: 'staging-user' });
-  console.log(insightData);
+  const insightData = await fetchSneakPeek();
   const businessInfo = await fetchBusinessInfo();
 
   // Navbar
@@ -91,7 +89,7 @@ export default async function decorate(block) {
     }
   });
 
-  const logo = createElement('img');
+  const logo = createElement('img', { className: 'business-logo' });
   logo.src = businessInfo.image_url;
   logo.alt = businessInfo.name;
   businessBlock.appendChild(logo);

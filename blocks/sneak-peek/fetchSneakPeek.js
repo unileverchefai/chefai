@@ -16,20 +16,17 @@ const USE_MOCK_FALLBACK = true;
  * @param {string} options.user_id - User ID
  * @returns {Promise<Array>} Array of transformed insight cards
  */
-export async function fetchSneakPeek(options = {}) {
-  const params = new URLSearchParams({
-    ...DEFAULT_PARAMS,
-    ...options,
-  });
-
+export async function fetchSneakPeek() {
   const headers = {
+    Accept: 'application/json',
     'X-Subscription-Key': SUBSCRIPTION_KEY,
-    'X-User-ID': options.user_id,
-    'X-Source': 'chefai-ui',
+    'Content-Type': 'application/json',
   };
 
+  const body = JSON.stringify({ ...DEFAULT_PARAMS });
+
   try {
-    const response = await fetch(`${ENDPOINTS.recommendations}?${params}`, { headers });
+    const response = await fetch(`${ENDPOINTS.recommendations}`, { method: 'POST', headers, body });
 
     if (!response.ok) {
       if (response.status === 404) {
@@ -45,7 +42,7 @@ export async function fetchSneakPeek(options = {}) {
     }
 
     const data = await response.json();
-    const recommendations = data.recommendations || [];
+    const recommendations = data.recommendations[0] || [];
 
     // If no recommendations and mock fallback is enabled
     if (recommendations.length === 0 && USE_MOCK_FALLBACK) {
@@ -80,8 +77,7 @@ export async function fetchSneakPeek(options = {}) {
  */
 export async function fetchBusinessInfo(options = {}) {
   const params = new URLSearchParams({
-    ...DEFAULT_PARAMS,
-    ...options,
+    user_id: 'staging-user',
   });
 
   const headers = {
@@ -91,7 +87,7 @@ export async function fetchBusinessInfo(options = {}) {
   };
 
   try {
-    const response = await fetch(`${ENDPOINTS.recommendations}?${params}`, { headers });
+    const response = await fetch(`${ENDPOINTS.businessInfo}?${params}`, { headers });
 
     if (!response.ok) {
       if (response.status === 404) {
@@ -107,7 +103,7 @@ export async function fetchBusinessInfo(options = {}) {
     }
 
     const data = await response.json();
-    const recommendations = data.recommendations || [];
+    const recommendations = data.data || [];
 
     // If no recommendations and mock fallback is enabled
     if (recommendations.length === 0 && USE_MOCK_FALLBACK) {

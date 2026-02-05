@@ -4,7 +4,7 @@ export const API_BASE_URL = 'https://api-hub-we.azure-api.net/chefaibe/st/api/v1
 
 export const ENDPOINTS = {
   recommendations: `${API_BASE_URL}/recommendations/`,
-  businessTypes: 'https://api-hub-we.azure-api.net/chefaibe/st/utility/business-types',
+  businessInfo: `${API_BASE_URL}/business/info`,
 };
 
 // Default query parameters
@@ -14,4 +14,5 @@ export const DEFAULT_PARAMS = {
   limit: 3,
   refresh: false,
   type: 'main',
+  user_id: 'staging-user',
 };
