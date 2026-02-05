@@ -1,6 +1,15 @@
 import { loadCSS, loadScript } from './aem.js';
 
 /**
+ * Checks if the current host is a development environment.
+ * @returns {boolean} True if the host is a development environment, false otherwise.
+ */
+export function isDevHost() {
+  const devHosts = ['localhost', '127.0.0.1', 'aem.page', 'aem.live'];
+  return devHosts.some((url) => window.location.host.includes(url));
+}
+
+/**
  * Converts variant classes to BEM notation and updates the block's class list accordingly.
  * @param {Object} params The parameters object.
  * @param {DOMTokenList} params.blockClassList The class list of the block element.
@@ -218,6 +227,7 @@ export async function fetchPlaceholders({ prefix = 'default' } = {}) {
   });
   return window.placeholders[prefix];
 }
+
 /**
  * Extract video ID from YouTube URL
  * @param {string} url The YouTube URL
@@ -386,3 +396,44 @@ export async function addVariantLogic({
     await loadCSS(`${window.hlx.codeBasePath}/blocks/${blockName}/variants/${variantName}.css`);
   }
 }
+
+/**
+ * Fetches constants values from the constants.json file.
+ * @returns {Promise<Object|null>} A promise that resolves to the constants
+ * object or null if fetching fails.
+ */
+async function getConstantsValues() {
+  const currentUrl = new URL(window.location.href);
+  const constantsUrl = `${currentUrl.origin}/constants.json`;
+  try {
+    const response = await fetch(constantsUrl);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Failed to fetch %cconstants.json:', 'color:red', { error });
+    return null;
+  }
+}
+
+/**
+ * Formats an array of name-value pairs into an object.
+ * @param {Array} values An array of objects with 'name' and 'value' properties.
+ * @returns {Object} An object with names as keys and corresponding values.
+ */
+function formatValues(values = false) {
+  const obj = {};
+  if (values) {
+    values.forEach(({ name, value }) => {
+      obj[name] = value;
+    });
+  }
+  return obj;
+}
+
+// Fetch and format constants configuration from constants.json
+const { cookieValues } = await getConstantsValues() || {};
+
+export const COOKIE_CONFIG = formatValues(cookieValues?.data);
