@@ -1,4 +1,4 @@
-import { apiRequest } from './api.js';
+import { apiRequest } from './endpoints.js';
 import {
   setToken, removeToken, getToken,
 } from './tokenManager.js';
@@ -12,9 +12,9 @@ import {
 } from './constants.js';
 import {
   getAnonymousUserIdFromCookie, clearAllChatData, setCookie,
-} from '../chatbot/utils.js';
-import saveBusinessDetails from '../personalized-hub/saveBusinessDetails.js';
-import createChefAIUser from '../chatbot/createChefAIUser.js';
+} from '../../components/chatbot/utils.js';
+import saveBusinessDetails from '../../components/personalized-hub/saveBusinessDetails.js';
+import createChefAIUser from '../../components/chatbot/createChefAIUser.js';
 
 export async function login(email, password) {
   if (!email || !password) {
@@ -126,7 +126,7 @@ export async function register(formData) {
             sessionStorage.removeItem('personalized-hub-business-data');
 
             try {
-              const { default: fetchSavedBusinessInfoAndLog } = await import('../personalized-hub/fetchSavedBusinessInfo.js');
+              const { default: fetchSavedBusinessInfoAndLog } = await import('../../components/personalized-hub/fetchSavedBusinessInfo.js');
               await fetchSavedBusinessInfoAndLog();
             } catch (fetchError) {
               // eslint-disable-next-line no-console

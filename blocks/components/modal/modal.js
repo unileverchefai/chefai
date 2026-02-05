@@ -41,6 +41,8 @@ export default function createModal(options = {}) {
     customCloseButton,
     closeButtonLabel = 'Close',
     overlayBackground,
+    ariaLabel,
+    ariaLabelledBy,
   } = options;
 
   let modalOverlay = null;
@@ -48,6 +50,8 @@ export default function createModal(options = {}) {
   let closeButton = null;
   let modalHandle = null;
   let escapeHandler = null;
+  let focusTrapHandler = null;
+  let previousActiveElement = null;
   let isOpen = false;
   let isAnimating = false;
 
@@ -57,8 +61,22 @@ export default function createModal(options = {}) {
   function createOverlay() {
     if (modalOverlay) return modalOverlay;
 
+    const overlayAttributes = {
+      role: 'dialog',
+      'aria-modal': 'true',
+    };
+
+    if (ariaLabel) {
+      overlayAttributes['aria-label'] = ariaLabel;
+    } else if (ariaLabelledBy) {
+      overlayAttributes['aria-labelledby'] = ariaLabelledBy;
+    } else {
+      overlayAttributes['aria-labelledby'] = 'modal-title';
+    }
+
     modalOverlay = createElement('div', {
       className: overlayClass,
+      attributes: overlayAttributes,
     });
 
     if (overlayBackground) {
@@ -76,6 +94,9 @@ export default function createModal(options = {}) {
 
     modalContent = createElement('div', {
       className: contentClass,
+      attributes: {
+        id: 'modal-title',
+      },
     });
 
     return modalContent;
@@ -149,6 +170,21 @@ export default function createModal(options = {}) {
         escapeHandler = null;
       }
 
+      if (focusTrapHandler) {
+        document.removeEventListener('keydown', focusTrapHandler);
+        focusTrapHandler = null;
+      }
+
+      // Restore focus to the element that opened the modal
+      if (previousActiveElement && typeof previousActiveElement.focus === 'function') {
+        try {
+          previousActiveElement.focus();
+        } catch (err) {
+          // Element might not be focusable anymore, ignore
+        }
+      }
+      previousActiveElement = null;
+
       if (onClose) {
         onClose();
       }
@@ -161,6 +197,55 @@ export default function createModal(options = {}) {
   function handleEscape(e) {
     if (e.key === 'Escape' && closeOnEscape) {
       handleClose();
+    }
+  }
+
+  /**
+   * Gets all focusable elements within the modal
+   */
+  function getFocusableElements() {
+    if (!modalContent) return [];
+
+    const focusableSelectors = [
+      'a[href]',
+      'button:not([disabled])',
+      'textarea:not([disabled])',
+      'input:not([disabled])',
+      'select:not([disabled])',
+      '[tabindex]:not([tabindex="-1"])',
+    ].join(', ');
+
+    return Array.from(modalContent.querySelectorAll(focusableSelectors))
+      .filter((el) => {
+        // Filter out hidden elements
+        const style = window.getComputedStyle(el);
+        return style.display !== 'none' && style.visibility !== 'hidden';
+      });
+  }
+
+  /**
+   * Handles focus trap - keeps focus within the modal
+   */
+  function handleFocusTrap(e) {
+    if (!isOpen || !modalContent) return;
+
+    const focusableElements = getFocusableElements();
+    if (focusableElements.length === 0) return;
+
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+
+    // If Tab is pressed
+    if (e.key === 'Tab') {
+      // If Shift+Tab on first element, move to last
+      if (e.shiftKey && document.activeElement === firstElement) {
+        e.preventDefault();
+        lastElement.focus();
+      } else if (!e.shiftKey && document.activeElement === lastElement) {
+        // If Tab on last element, move to first
+        e.preventDefault();
+        firstElement.focus();
+      }
     }
   }
 
@@ -184,6 +269,10 @@ export default function createModal(options = {}) {
       escapeHandler = handleEscape;
       document.addEventListener('keydown', escapeHandler);
     }
+
+    // Setup focus trap
+    focusTrapHandler = handleFocusTrap;
+    document.addEventListener('keydown', focusTrapHandler);
   }
 
   /**
@@ -260,11 +349,31 @@ export default function createModal(options = {}) {
     // Setup event listeners
     setupEventListeners();
 
+    // Store the previously active element for focus restoration
+    previousActiveElement = document.activeElement;
+
     // Trigger open animation
     setTimeout(() => {
       if (modalOverlay) {
         modalOverlay.classList.add('visible');
       }
+
+      // Focus the first focusable element after animation
+      setTimeout(() => {
+        const focusableElements = getFocusableElements();
+        if (focusableElements.length > 0) {
+          // Try to focus close button first, otherwise first focusable element
+          if (closeButton && getFocusableElements().includes(closeButton)) {
+            closeButton.focus();
+          } else {
+            focusableElements[0].focus();
+          }
+        } else if (modalContent) {
+          // If no focusable elements, make content focusable temporarily
+          modalContent.setAttribute('tabindex', '-1');
+          modalContent.focus();
+        }
+      }, animationDuration);
     }, 10);
 
     isOpen = true;
@@ -290,15 +399,31 @@ export default function createModal(options = {}) {
       escapeHandler = null;
     }
 
+    if (focusTrapHandler) {
+      document.removeEventListener('keydown', focusTrapHandler);
+      focusTrapHandler = null;
+    }
+
     if (modalOverlay && modalOverlay.parentNode) {
       document.body.removeChild(modalOverlay);
     }
 
     document.body.style.overflow = '';
+
+    // Restore focus if needed
+    if (previousActiveElement && typeof previousActiveElement.focus === 'function') {
+      try {
+        previousActiveElement.focus();
+      } catch (err) {
+        // Element might not be focusable anymore, ignore
+      }
+    }
+
     modalOverlay = null;
     modalContent = null;
     closeButton = null;
     modalHandle = null;
+    previousActiveElement = null;
     isOpen = false;
     isAnimating = false;
   }

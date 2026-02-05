@@ -59,9 +59,15 @@ export default async function openChatbotModal() {
     modal.open();
 
     requestAnimationFrame(() => {
-      // In the modal we do not need the special "#chatbot" trigger,
-      // so the personalizedHubTrigger is disabled.
       reactRoot.render(h(ChatWidget, { personalizedHubTrigger: null }));
+
+      // Focus input after React renders and modal animation completes
+      setTimeout(() => {
+        const input = container.querySelector('.chat-input');
+        if (input && typeof input.focus === 'function') {
+          input.focus();
+        }
+      }, ANIMATION_DURATION + 50);
     });
   } catch (error) {
     // eslint-disable-next-line no-console

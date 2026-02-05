@@ -1,3 +1,5 @@
+import SuggestedPrompts from './SuggestedPrompts.js';
+
 const { createElement: h } = window.React;
 
 const USER_ID = 1;
@@ -41,11 +43,49 @@ function convertLinksToClickable(text) {
   return parts.length > 0 ? parts : text;
 }
 
-export default function renderMessage(message) {
+export default function renderMessage(message, options = {}) {
+  const { onPromptClick } = options;
   const isUser = message.user._id === USER_ID;
 
+  const suggestedPrompts = message.metadata?.suggested_prompts || [];
+
+  const hasRecipes = (message.metadata?.recipes?.length > 0)
+                     || (message.metadata?.recipe_details?.length > 0)
+                     || (message.text && (message.text.includes('Recipes:') || message.text.includes('Recipe Details:')));
+
+  let textBeforeRecipes = message.text;
+  let textWithRecipes = '';
+
+  if (hasRecipes && message.text) {
+    const recipesIndex = message.text.indexOf('Recipes:');
+    const recipeDetailsIndex = message.text.indexOf('Recipe Details:');
+    let splitIndex = -1;
+    if (recipesIndex !== -1) {
+      splitIndex = recipesIndex;
+    } else if (recipeDetailsIndex !== -1) {
+      splitIndex = recipeDetailsIndex;
+    }
+
+    if (splitIndex !== -1) {
+      textBeforeRecipes = message.text.substring(0, splitIndex).trim();
+      textWithRecipes = message.text.substring(splitIndex);
+    }
+  }
+
   const bubbleContent = [
-    // Images wrapper
+    h(
+      'div',
+      {
+        key: 'text-before',
+        style: {
+          fontFamily: 'var(--body-font-family)',
+          fontSize: 'var(--body-font-size-xs)',
+          lineHeight: '1.5',
+          whiteSpace: 'pre-wrap',
+        },
+      },
+      convertLinksToClickable(textBeforeRecipes),
+    ),
     ...(message.metadata?.images?.length > 0
       ? [
         h(
@@ -57,7 +97,11 @@ export default function renderMessage(message) {
               display: 'flex',
               flexWrap: 'wrap',
               gap: '8px',
-              marginBottom: message.text ? '12px' : '0',
+              marginTop: textBeforeRecipes ? '12px' : '0',
+              marginBottom: (() => {
+                if (textWithRecipes) return '12px';
+                return textBeforeRecipes ? '12px' : '0';
+              })(),
             },
           },
           message.metadata.images.map((img, idx) => h(
@@ -78,21 +122,23 @@ export default function renderMessage(message) {
         ),
       ]
       : []),
-    // Text with clickable links
-    h(
-      'div',
-      {
-        key: 'text',
-        style: {
-          fontFamily: 'var(--body-font-family)',
-          fontSize: 'var(--body-font-size-xs)',
-          lineHeight: '1.5',
-          whiteSpace: 'pre-wrap',
-        },
-      },
-      convertLinksToClickable(message.text),
-    ),
-    // Timestamp
+    ...(textWithRecipes
+      ? [
+        h(
+          'div',
+          {
+            key: 'text-recipes',
+            style: {
+              fontFamily: 'var(--body-font-family)',
+              fontSize: 'var(--body-font-size-xs)',
+              lineHeight: '1.5',
+              whiteSpace: 'pre-wrap',
+            },
+          },
+          convertLinksToClickable(textWithRecipes),
+        ),
+      ]
+      : []),
     h(
       'div',
       {
@@ -128,7 +174,7 @@ export default function renderMessage(message) {
         {
           className: 'message-bubble',
           style: {
-            maxWidth: '70%',
+            maxWidth: '95%',
             padding: '12px 16px',
             borderRadius: '20px',
             backgroundColor: isUser ? 'var(--light-mushroom)' : 'transparent',
@@ -137,6 +183,12 @@ export default function renderMessage(message) {
         },
         bubbleContent,
       ),
+      !isUser && suggestedPrompts.length > 0 && h(SuggestedPrompts, {
+        key: 'suggested-prompts',
+        prompts: suggestedPrompts,
+        onPromptClick,
+        disabled: false,
+      }),
     ],
   );
 }

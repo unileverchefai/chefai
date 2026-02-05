@@ -1,5 +1,5 @@
-import { SUBSCRIPTION_KEY, ENDPOINTS } from './constants/api.js';
-import { COUNTRY_CODE, LANGUAGE_CODE } from '../authentication/constants.js';
+import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
+import { COUNTRY_CODE, LANGUAGE_CODE } from '@api/authentication/constants.js';
 
 export default async function createChefAIUser(userId, userName, businessData = null) {
   if (!userId) {

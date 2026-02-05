@@ -1,4 +1,4 @@
-import { loadReact } from '@components/chatbot/utils.js';
+import { loadReact, createUser } from '@components/chatbot/utils.js';
 import { createElement } from '@scripts/common.js';
 import { loadCSS } from '@scripts/aem.js';
 import createModal from '@components/modal/index.js';
@@ -114,14 +114,27 @@ export default async function openPersonalizedHub() {
         };
 
         const handleConfirm = async () => {
-          sessionStorage.setItem('personalized-hub-business-data', JSON.stringify(businessData));
           setCurrentScreen(SCREENS.LOADING);
 
           try {
-            await saveBusinessDetails(businessData);
+            // Create a new user
+            const userId = await createUser();
+
+            // Store business info in session storage
+            const businessInfoToStore = {
+              ...businessData,
+              user_id: userId,
+              timestamp: Date.now(),
+            };
+            sessionStorage.setItem('personalized-hub-business-data', JSON.stringify(businessInfoToStore));
+
+            // Save business details with the new user_id
+            await saveBusinessDetails(businessData, userId);
           } catch (e) {
             // eslint-disable-next-line no-console
-            console.error('Failed to save business details:', e);
+            console.error('Failed to create user or save business details:', e);
+            // Still store business data in session even if API call fails
+            sessionStorage.setItem('personalized-hub-business-data', JSON.stringify(businessData));
           }
 
           // Show loading for 3 seconds, then redirect to sneak-peek page

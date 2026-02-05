@@ -1,0 +1,189 @@
+/* Import base carousel styles from components plugin */
+@import url('../components/carousel/carousel.css');
+
+/* Mobile-first styles */
+.carousel-insights {
+  position: relative;
+  padding: 0 0 32px;
+  overflow: hidden;
+  background-color: var(--background-color);
+}
+
+/* Fix touch-action to allow horizontal swiping */
+.carousel-insights .carousel-cards-container {
+  touch-action: pan-x pan-y pinch-zoom;
+  align-items: stretch;
+  gap: var(--spacing-lg);
+}
+
+.carousel-insights .card {
+  border-radius: 20px;
+  border: 1px solid #EE4A3E;
+  background: radial-gradient(85.1% 62.92% at 74.5% 69.63%, rgb(252 176 22 / 40%) 0%, rgb(252 176 22 / 0%) 100%), linear-gradient(122deg, rgb(235 34 99 / 90%) -40.01%, rgb(239 93 44 / 90%) 94.12%), #5C3657;
+  box-shadow: 0 4px 7px 0 rgb(255 255 255 / 25%) inset;
+  padding: var(--spacing-md);
+  gap: var(--spacing-sm);
+  color: white;
+  font-family: var(--ff-unilever-shilling);
+  font-size: var(--fs-md);
+  line-height: var(--lh-md);
+  display: flex;
+  flex-direction: column;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 25%);
+}
+  
+.carousel-insights .carousel-insights-loading {
+  display: none;
+}
+
+.carousel-insights .carousel-insights-empty,
+.carousel-insights .carousel-insights-error {
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: var(--squid-ink);
+  font-family: var(--ff-unilever-shilling);
+  font-size: 16px;
+}
+
+.carousel-insights .carousel-insights-error {
+  color: var(--ufs-orange);
+}
+
+/* Indicator styles - same as carousel-cards */
+.carousel-insights .controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.carousel-insights .indicators {
+  display: flex;
+  gap: var(--spacing-xxs);
+  align-items: center;
+}
+
+.carousel-insights .indicator {
+  width: var(--spacing-xxs);
+  height: var(--spacing-xxs);
+  border-radius: 50px;
+  background-color: var(--smoke);
+  transition: all var(--transition-base);
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.carousel-insights .indicator.active {
+  width: 20px;
+  background-color: var(--ufs-orange);
+}
+
+.carousel-insights .indicator:focus {
+  outline: 2px solid var(--ufs-orange);
+  outline-offset: 2px;
+}
+
+.carousel-insights .arrow {
+  width: 50px;
+  height: 50px;
+  border: 1px solid var(--smoke);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  position: relative;
+  padding: 0;
+}
+
+.carousel-insights .arrow:hover {
+  border-color: var(--ufs-orange);
+}
+
+.carousel-insights .arrow:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.carousel-insights .arrow:focus {
+  outline: 2px solid var(--ufs-orange);
+  outline-offset: 2px;
+}
+
+.carousel-insights .arrow.prev {
+  border-radius: 15px 5px 5px;
+}
+
+.carousel-insights .arrow.next {
+  border-radius: 5px 15px 5px 5px;
+}
+
+.carousel-insights .arrow svg {
+  fill: var(--smoke);
+  transition: fill var(--transition-base);
+}
+
+.carousel-insights .arrow:hover svg {
+  fill: var(--ufs-orange);
+}
+
+/* Recommendation card content */
+.carousel-insights .cards-card-body {
+  font-family: var(--ff-unilever-shilling);
+  font-size: var(--body-font-size-s);
+  line-height: 1.5;
+  color: var(--c-white);
+}
+
+.carousel-insights .carousel-insights-description {
+  margin-bottom: var(--spacing-lg);
+  display: -webkit-box;
+  line-clamp: 3;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.carousel-insights .carousel-insights-btn {
+  margin-top: auto;
+  margin-bottom: 0;
+  align-self: baseline;
+  font-size: var(--body-font-size-s);
+  background: rgb(255 255 255 / 10%);
+  backdrop-filter: blur(0.5px); 
+  border-radius: 38px;
+  border: 1px solid #FFF;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 25%);
+}
+
+/* Desktop styles */
+@media (width >= 900px) {
+  .carousel-insights {
+    padding: 76px 0 48px;
+  }
+
+  .carousel-insights .controls {
+    justify-content: space-between;
+    padding: var(--spacing-lg) 100px 0;
+  }
+
+  .carousel-insights .indicators {
+    gap: var(--spacing-xs);
+  }
+
+  .carousel-insights .indicator {
+    width: var(--spacing-xs);
+    height: var(--spacing-xs);
+  }
+
+  .carousel-insights .indicator.active {
+    width: 30px;
+  }
+
+  .carousel-insights .carousel-cards-container .card {
+    flex: 1;
+    max-width: 50%;
+  }
+}
