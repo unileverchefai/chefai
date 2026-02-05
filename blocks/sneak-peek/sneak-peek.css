@@ -64,7 +64,6 @@ main {
   height: 300px;
   pointer-events: none;
   z-index: 10;
-
   background: linear-gradient(
     to bottom,
     rgb(255 255 255 / 0) 0%,
@@ -80,7 +79,7 @@ main {
 }
 
 .business-block h2 {
-    margin: 0 0 6px 0;
+    margin: 0 0 6px;
     color: #FFF;
     text-align: center;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
@@ -96,14 +95,11 @@ main {
     font-size: var(--body-font-size-m);
     line-height: 1.4;
     color: var(--dark-color);
-    /* gradient text highlight matching brand */
     background: linear-gradient(90deg, var(--neon-fm-1) 12%, var(--ufs-orange) 88%);
     background-clip: text;
-    -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     font-weight: 500;
 }
-
 
 .sneak-peek .sneakpeek--logo-text::after {
   content: '';
@@ -114,7 +110,7 @@ main {
   background-position: center;
   width: 120px;
   height: 60px;
-  translate: 0px 20px;
+  translate: 0 20px;
 }
 
 .sneak-peek .sneakpeek--logo-number::after {
@@ -128,17 +124,6 @@ main {
   height: 28px;
   translate: 93px -9px;
 }
-
-@media (max-width: 899px) {
-    .sneak-peek-title {
-        font-size: var(--heading-font-size-s);
-    }
-
-    .sneak-peek-text {
-        font-size: var(--body-font-size-s);
-    }
-}
-
 
 .insight-block {
   position: relative;
@@ -177,13 +162,7 @@ main {
 
 /* center card */
 .fp-card--center {
-  left: 50%;
-  transform: translateX(-50%) scale(1);
-  z-index: 3;
   isolation: isolate;
-}
-
-.fp-card--center {
   position: absolute;
   left: 50%;
   top: 0;
@@ -192,7 +171,6 @@ main {
   border-radius: 28px;
   background: white;
   z-index: 3;
-
   box-shadow: 0 24px 60px rgba(0,0,0,.25);
 }
 
@@ -251,7 +229,6 @@ main {
         margin: 0 auto;
     }
 
-    /* side peeks */
     .fp-card--left {
         transform: translateX(calc(-50% - 10vw)) scale(.92);
     }
@@ -267,8 +244,8 @@ main {
         height: 250px;
         background: linear-gradient(
             to bottom,
-            rgb(255 255 255 / 0) 0%,
-            rgb(255 255 255 / 1) 40%
+            rgb(255 255 255 / 0%) 0%,
+            rgb(255 255 255 / 100%) 40%
         );
 }
 }
