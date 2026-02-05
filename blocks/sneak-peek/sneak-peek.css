@@ -55,6 +55,24 @@ main {
     padding-top: 15px;
 }
 
+.lower-block::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 80px;
+
+  height: 300px;
+  pointer-events: none;
+  z-index: 10;
+
+  background: linear-gradient(
+    to bottom,
+    rgb(255 255 255 / 0) 0%,
+    rgb(255 255 255 / 1) 80%
+  );
+}
+
 .business-block {
     display: flex;
     align-items: center;
@@ -209,10 +227,57 @@ main {
   opacity: 0.85;
   pointer-events: none;
   z-index: 0;
-}
+} */
 
 /* ensure content stays above border */
 .fp-card--center > * {
   position: relative;
   z-index: 2;
+}
+
+/* CTA */
+
+.floating-cta__container {
+  --gradient-color-start: white;
+
+  width: 100%;
+  height: 200px;
+  padding: 32px 20px;
+  position: sticky;
+  bottom: 0;
+  z-index: var(--z-sticky);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  text-align: center;
+
+  &.hidden {
+    display: none;
+  }
+}
+
+.floating-cta__container p:first-child {
+  font-size: 14px;
+}
+
+.floating-cta__container p:last-child{
+  font-size: 10px;
+  color: var(--mid-smoke);
+}
+
+/* .button-container {
+    a {
+        display: flex;
+        height: 50px;
+        padding: 19px 40px;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        align-self: stretch;
+        border-radius: 99px;
+        background: linear-gradient(180deg, #0000 0%, #0003 100%), var(--orange-dark);
+        box-shadow: 0 0 0 4px #fff3;
+        max-width: 284px;
+    }
 } */

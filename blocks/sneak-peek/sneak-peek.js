@@ -1,8 +1,9 @@
 import { fetchBusinessInfo, fetchSneakPeek } from './fetchSneakPeek.js';
 import openSignInModal from '@components/signin/index.js';
 import { createElement } from '@scripts/common.js';
+import { loadCSS } from '@scripts/aem.js';
 
-// create customHeader for sneak peek page. This should be a variant of the main header (future improvements)
+// create customHeader for sneak peek page. TODO: This should be a variant of the main header (future improvements)
 const decorateCustomHeader = (navbar) => {
     const logo = createElement('div', {
         className: 'sneakpeek--logo-wrapper',
@@ -45,7 +46,6 @@ export default async function decorate(block) {
     // Navbar
     const navbar = createElement('nav', { className: 'navbar' });
     decorateCustomHeader(navbar)
-    //block.appendChild(navbar);
 
     // upper block containing business info and recommendation
     const upperBlock = createElement('div', { className: 'upper-block' });
@@ -58,7 +58,7 @@ export default async function decorate(block) {
     const insightBlock = createElement('div', { className: 'insight-block' });
     lowerBlock.appendChild(insightBlock);
 
-    // TODO: Create three cards for the sneak peek insights
+    // Create three cards for the sneak peek insights
     for (let i = 0; i < 3; i++) {
         const card = createElement('div', { className: `insight-card fp-card--${i === 0 ? 'left' : i === 1 ? 'center' : 'right'}` });
         card.innerHTML = `
@@ -70,11 +70,18 @@ export default async function decorate(block) {
         insightBlock.appendChild(card);
     }
 
-    // CTA
-    const ctaBlock = createElement('div', { className: 'cta-block' });
+    // CTA. TODO: This should be a variant of the main CTA (future improvements)
+    const ctaBlock = createElement('div', { className: 'floating-cta__container' });
     root.querySelector('div').querySelectorAll('p').forEach((el, index) => {
         if(index !== 0){
-            ctaBlock.appendChild(el);
+            if(el.className === 'button-container'){
+                const ctaContainer = createElement('div', { className: 'floating-cta__cta orange-button glowy' });
+                ctaContainer.appendChild(el);
+                ctaBlock.appendChild(ctaContainer);
+            }
+            else{
+              ctaBlock.appendChild(el);
+            }
         }
     });
 
@@ -102,4 +109,8 @@ export default async function decorate(block) {
     //Remove footer
     const header = document.getElementsByTagName('header')[0];
     header.remove();
+
+    // Add button.css for the CTA button after styles.css has been loaded otherwise specificity issues will occur and the button will not be styled correctly
+    // TODO: Refactor the CSS to avoid this issue in the future
+    await loadCSS(`${window.hlx.codeBasePath}/styles/buttons.css`);
 }
