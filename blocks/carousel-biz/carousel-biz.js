@@ -1,5 +1,31 @@
 import createCarousel from '@helpers/carousel/carousel.js';
 import { decorateIcons } from '@scripts/aem.js';
+import { createElement } from '@scripts/common.js';
+
+/**
+ * Trend code to CSS class and display name mapping
+ * Authors use simple codes (T1, T2, etc.) in Document Authoring
+ */
+const TREND_CODE_MAP = {
+  T1: { class: 'borderless-cuisine', name: 'Borderless Cuisine' },
+  T2: { class: 'street-food-couture', name: 'Street Food Couture' },
+  T3: { class: 'diner-designed', name: 'Diner Designed' },
+  T4: { class: 'culinary-roots', name: 'Culinary Roots' },
+  TX: { class: 'cross-trend', name: 'Cross-Trend' },
+};
+
+/**
+ * Normalize trend code input from authors
+ * Handles case insensitivity and whitespace
+ * @param {string} input - Raw input from author (e.g., "t1", "T 1", " T1 ")
+ * @returns {string} Normalized code (e.g., "T1")
+ */
+function normalizeTrendCode(input) {
+  return input
+    .trim()
+    .toUpperCase()
+    .replace(/\s+/g, '');
+}
 
 /**
  * Parse dropdown options from first row
@@ -102,22 +128,14 @@ function parseAuthoredContent(block) {
       ? [...typesList.querySelectorAll('li')].map((li) => li.textContent.trim())
       : [];
 
-    let trendClass = '';
-    const trendLower = trendName.toLowerCase();
-    if (trendLower.includes('borderless')) {
-      trendClass = 'borderless-cuisine';
-    } else if (trendLower.includes('street')) {
-      trendClass = 'street-food-couture';
-    } else if (trendLower.includes('dinner') || trendLower.includes('designed')) {
-      trendClass = 'diner-designed';
-    } else if (trendLower.includes('culinary') || trendLower.includes('roots')) {
-      trendClass = 'culinary-roots';
-    } else if (trendLower.includes('cross')) {
-      trendClass = 'cross-trend';
-    }
+    // map trend code to CSS class and display name
+    const normalizedCode = normalizeTrendCode(trendName);
+    const trendMapping = TREND_CODE_MAP[normalizedCode];
+    const trendClass = trendMapping?.class || '';
+    const trendDisplayName = trendMapping?.name || trendName;
 
     return {
-      trendName,
+      trendName: trendDisplayName,
       trendClass,
       stat,
       description,
@@ -139,20 +157,27 @@ function renderCards(container, cards) {
   container.innerHTML = '';
 
   cards.forEach((cardData) => {
-    const card = document.createElement('li');
-    card.className = 'trend-card';
-    card.setAttribute('data-trend', cardData.trendClass || cardData.trendName.toLowerCase().replace(/\s+/g, '-'));
+    const {
+      trendClass = false,
+      trendName,
+      restaurantTypes = false,
+      bgImage = false,
+      description = false,
+      link = false,
+    } = cardData;
+    const card = createElement('li', {
+      className: `trend-card${trendClass ? ` ${trendClass}` : ''}`,
+      attributes: {
+        'data-trend': trendClass || trendName.toLowerCase().replace(/\s+/g, '-'),
+      },
+    });
 
-    if (cardData.trendClass) {
-      card.classList.add(cardData.trendClass);
+    if (restaurantTypes && restaurantTypes.length > 0) {
+      card.setAttribute('data-restaurant-types', restaurantTypes.join('||'));
     }
 
-    if (cardData.restaurantTypes && cardData.restaurantTypes.length > 0) {
-      card.setAttribute('data-restaurant-types', cardData.restaurantTypes.join('||'));
-    }
-
-    if (cardData.bgImage) {
-      card.style.backgroundImage = `url('${cardData.bgImage}')`;
+    if (bgImage) {
+      card.style.backgroundImage = `url('${bgImage}')`;
       card.style.backgroundSize = 'cover';
       card.style.backgroundPosition = 'center';
     }
@@ -160,50 +185,52 @@ function renderCards(container, cards) {
     const isNumberStat = /^\d/.test(cardData.stat);
     const statClass = isNumberStat ? 'stat-number' : 'stat-word';
 
-    const header = document.createElement('div');
-    header.className = 'trend-header';
-    header.textContent = cardData.trendName.toUpperCase();
+    const header = createElement('div', {
+      className: 'trend-header',
+      innerContent: cardData.trendName.toUpperCase(),
+    });
     card.appendChild(header);
 
-    const content = document.createElement('div');
-    content.className = 'trend-content';
+    const content = createElement('div', {
+      className: 'trend-content',
+    });
 
     if (cardData.stat) {
-      const stat = document.createElement('div');
-      stat.className = `trend-stat ${statClass}`;
-      stat.textContent = cardData.stat;
+      const stat = createElement('div', {
+        className: `trend-stat ${statClass}`,
+        innerContent: `<span>${cardData.stat}</span>`,
+      });
+
       content.appendChild(stat);
     }
 
-    if (cardData.description) {
-      const desc = document.createElement('p');
-      desc.className = 'trend-description';
-      desc.textContent = cardData.description;
+    if (description) {
+      const desc = createElement('p', {
+        className: 'trend-description',
+        innerContent: description,
+      });
       content.appendChild(desc);
     }
 
-    // CTA is always rendered to mantain space (next phase of the project!)
-    if (cardData.link) {
-      const cta = document.createElement('a');
-      cta.className = 'trend-cta';
-      cta.href = cardData.link.href;
-
-      const ctaText = document.createElement('span');
-      ctaText.className = 'cta-text';
-      ctaText.textContent = cardData.link.text;
-      cta.appendChild(ctaText);
-
-      const iconSpan = document.createElement('span');
-      iconSpan.className = 'icon icon-arrow_right cta-arrow';
-      cta.appendChild(iconSpan);
+    // TODO: CTA is always rendered to maintain space (next phase of the project!)
+    if (link) {
+      const cta = createElement('a', {
+        className: 'trend-cta',
+        attributes: { href: link.href },
+        innerContent: `
+          <span class="cta-text">${link.text}</span>
+          <span class="icon icon-arrow_right cta-arrow"></span>
+        `,
+      });
       decorateIcons(cta);
 
       content.appendChild(cta);
     } else {
-    // CTA is always rendered to mantain space (next phase of the project!)
-      const cta = document.createElement('div');
-      cta.className = 'trend-cta trend-cta-spacer';
-      cta.setAttribute('aria-hidden', 'true');
+      // TODO: CTA is always rendered to maintain space (next phase of the project!)
+      const cta = createElement('div', {
+        className: 'trend-cta trend-cta-spacer',
+        attributes: { 'aria-hidden': 'true' },
+      });
       content.appendChild(cta);
     }
 
@@ -233,7 +260,7 @@ function initializeCarousel(block, container, itemCount) {
       mobileBreakpoint: 900,
       mobileGap: 20,
       desktopGap: 20,
-      disableDesktopCarousel: false,
+      disableDesktopCarousel: true,
     });
 
     const srAnnouncement = block.querySelector('[aria-live]');
@@ -265,61 +292,52 @@ export default function decorate(block) {
   block.innerHTML = '';
 
   // filter dropdown
-  const filterContainer = document.createElement('div');
-  filterContainer.className = 'carousel-biz-filter';
+  const filterContainer = createElement('div', {
+    className: 'carousel-biz-filter',
+  });
 
   // dropdown button
-  const dropdownButton = document.createElement('button');
-  dropdownButton.className = 'biz-dropdown';
-  dropdownButton.setAttribute('aria-label', `Filter by ${dropdownData?.label || 'business type'}`);
-  dropdownButton.setAttribute('aria-expanded', 'false');
-  dropdownButton.setAttribute('aria-haspopup', 'listbox');
-
-  const dropdownText = document.createElement('span');
-  dropdownText.className = 'biz-dropdown-text';
-  dropdownText.textContent = `${dropdownData?.label}`;
-
-  const dropdownArrow = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  dropdownArrow.setAttribute('class', 'biz-dropdown-arrow');
-  dropdownArrow.setAttribute('width', '12');
-  dropdownArrow.setAttribute('height', '6');
-  dropdownArrow.setAttribute('viewBox', '0 0 12 6');
-  dropdownArrow.setAttribute('fill', 'none');
-
-  const arrowPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  arrowPath.setAttribute('d', 'M1 1L6 5L11 1');
-  arrowPath.setAttribute('stroke', '#131313');
-  arrowPath.setAttribute('stroke-width', '1.5');
-  arrowPath.setAttribute('stroke-linecap', 'round');
-  arrowPath.setAttribute('stroke-linejoin', 'round');
-
-  dropdownArrow.appendChild(arrowPath);
-  dropdownButton.appendChild(dropdownText);
-  dropdownButton.appendChild(dropdownArrow);
+  const dropdownButton = createElement('button', {
+    className: 'biz-dropdown',
+    attributes: {
+      'aria-label': `Filter by ${dropdownData?.label || 'business type'}`,
+      'aria-expanded': 'false',
+      'aria-haspopup': 'listbox',
+    },
+    innerContent: `
+      <span class="biz-dropdown-text">${dropdownData?.label}</span>
+      <svg class="biz-dropdown-arrow" width="12" height="6" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 1L6 5L11 1" stroke="#131313" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    `,
+  });
+  const dropdownText = dropdownButton.querySelector('.biz-dropdown-text');
 
   // dropdown menu
-  const dropdownMenu = document.createElement('div');
-  dropdownMenu.className = 'biz-dropdown-menu';
-  dropdownMenu.setAttribute('role', 'listbox');
-  dropdownMenu.setAttribute('aria-hidden', 'true');
-
-  // all dropdown options
-  const allOption = document.createElement('div');
-  allOption.className = 'biz-dropdown-option active';
-  allOption.setAttribute('role', 'option');
-  allOption.setAttribute('aria-selected', 'true');
-  allOption.dataset.value = 'all';
-  allOption.textContent = `${dropdownData?.label}`;
-  dropdownMenu.appendChild(allOption);
+  const dropdownMenu = createElement('div', {
+    className: 'biz-dropdown-menu',
+    attributes: {
+      role: 'listbox',
+      'aria-hidden': 'true',
+    },
+    innerContent: `
+      <div class="biz-dropdown-option active" role="option" aria-selected="true" data-value="all">
+        ${dropdownData?.label}
+      </div>
+    `,
+  });
 
   if (dropdownData?.options) {
     dropdownData.options.forEach((optionText) => {
-      const option = document.createElement('div');
-      option.className = 'biz-dropdown-option';
-      option.setAttribute('role', 'option');
-      option.setAttribute('aria-selected', 'false');
-      option.dataset.value = optionText;
-      option.textContent = optionText;
+      const option = createElement('div', {
+        className: 'biz-dropdown-option',
+        attributes: {
+          role: 'option',
+          'aria-selected': 'false',
+          'data-value': optionText,
+        },
+        innerContent: optionText,
+      });
       dropdownMenu.appendChild(option);
     });
   }
@@ -328,15 +346,19 @@ export default function decorate(block) {
   filterContainer.appendChild(dropdownMenu);
   block.appendChild(filterContainer);
 
-  const carouselContainer = document.createElement('ul');
-  carouselContainer.className = 'carousel-biz-container';
-  block.appendChild(carouselContainer);
+  const carouselWrapper = createElement('div', {
+    className: 'carousel-biz-carousel-wrapper',
+  });
+
+  const carouselContainer = createElement('ul', {
+    className: 'carousel-biz-container',
+  });
+
+  carouselWrapper.appendChild(carouselContainer);
+  block.appendChild(carouselWrapper);
 
   renderCards(carouselContainer, allCards);
-
-  setTimeout(() => {
-    initializeCarousel(block, carouselContainer, allCards.length);
-  }, 0);
+  initializeCarousel(block, carouselContainer, allCards.length);
 
   let isOpen = false;
 
@@ -355,13 +377,9 @@ export default function decorate(block) {
   };
 
   const filterCards = (restaurantType) => {
-    let filteredCards;
-
-    if (restaurantType === 'all') {
-      filteredCards = allCards;
-    } else {
-      filteredCards = allCards.filter((card) => card.restaurantTypes.includes(restaurantType));
-    }
+    const filteredCards = restaurantType === 'all'
+      ? allCards
+      : allCards.filter((card) => card.restaurantTypes.includes(restaurantType));
 
     if (filteredCards.length === 0) {
       if (block.carouselInstance?.destroy) {
