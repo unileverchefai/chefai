@@ -1,4 +1,4 @@
-import openSignInModal from '@components/signin/index.js';
+import openSignInModal from '@helpers/signin/index.js';
 import { createElement } from '@scripts/common.js';
 import { loadCSS } from '@scripts/aem.js';
 import { fetchBusinessInfo, fetchSneakPeek } from './fetchSneakPeek.js';
@@ -99,7 +99,7 @@ export default async function decorate(block) {
   businessBlock.appendChild(title);
 
   const arrowLogo = createElement('img', { className: 'sneak-peek-arrow-logo' });
-  arrowLogo.src = '/blocks/sneak-peek/mock-images/arrows.svg';
+  arrowLogo.src = 'https://content.da.live/unileverchefai/chefai/media/triple-arrow-logo.svg';
   businessBlock.appendChild(arrowLogo);
   businessBlock.appendChild(recommendationP);
 
