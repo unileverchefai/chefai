@@ -9,7 +9,7 @@
 
 .chatbot-question-btn {
   border: 1px solid var(--neon-fm-2);
-  background: linear-gradient(102.365deg, rgb(241 90 34 / 5%) 0.432%, rgb(235 34 99 / 5%) 49.756%, rgb(176 43 159 / 5%) 99.941%);
+  background: var(--gradient-purple);
   border-radius: var(--radius-lg);
   padding: var(--spacing-xs) var(--spacing-sm);
   font-family: var(--body-font-family);

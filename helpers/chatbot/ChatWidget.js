@@ -299,6 +299,24 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot' } = {})
     handleSend(syntheticEvent, promptText);
   }, [handleSend]);
 
+  useEffect(() => {
+    const handler = (event) => {
+      const message = event.detail?.message;
+      if (!message) return;
+
+      const syntheticEvent = {
+        preventDefault: () => {},
+      };
+      handleSend(syntheticEvent, message);
+    };
+
+    window.addEventListener('chefai:quick-action', handler);
+
+    return () => {
+      window.removeEventListener('chefai:quick-action', handler);
+    };
+  }, [handleSend]);
+
   return renderChatUI({
     error,
     messages,
