@@ -1,6 +1,12 @@
 import { createElement, createVideoEmbed } from '../common.js';
+import { loadCSS } from '../aem.js';
 
 export default function openVideoModal(videoUrl) {
+  // Load modal CSS if not already loaded
+  loadCSS(`${window.hlx.codeBasePath}/styles/modal-video.css`).catch(() => {
+    // CSS loading error handled silently
+  });
+
   const modalOverlay = createElement('div', {
     className: 'video-modal-overlay',
   });
@@ -13,8 +19,9 @@ export default function openVideoModal(videoUrl) {
   // close button
   const closeButton = createElement('button', {
     className: 'video-modal-close',
-    attributes: {
+    properties: {
       'aria-label': 'Close video',
+      type: 'button',
     },
     innerContent: '×',
   });
