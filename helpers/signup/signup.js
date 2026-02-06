@@ -1,9 +1,9 @@
 import { createElement } from '@scripts/common.js';
-import createModal from '@components/modal/index.js';
+import createModal from '@helpers/modal/index.js';
 import { loadCSS } from '@scripts/aem.js';
 
-export default function openSubscriptionStep1(onContinue) {
-  loadCSS(`${window.hlx.codeBasePath}/blocks/components/signup/signup.css`).catch(() => {});
+export default function openSignUpReportModal() {
+  loadCSS(`${window.hlx.codeBasePath}/helpers/signup/signup.css`).catch(() => {});
 
   const content = createElement('div', {
     className: 'signup-modal',
@@ -15,14 +15,14 @@ export default function openSubscriptionStep1(onContinue) {
 
   const title = createElement('h2', {
     className: 'signup-modal-title',
+    innerContent: 'Your report is ready!',
   });
-  title.textContent = 'Be the first to know';
   topArea.appendChild(title);
 
   const description = createElement('p', {
     className: 'signup-modal-description',
+    innerContent: 'Please provide the details below to unlock your tailored report and receive recipes, trends and other valuable resources.',
   });
-  description.textContent = 'Get notified when Future Menus Vol. 4 is live - along with latest recipes and inspirational content, just for professional kitchens!';
   topArea.appendChild(description);
 
   const formContainer = createElement('div', {
@@ -89,46 +89,6 @@ export default function openSubscriptionStep1(onContinue) {
 
   formContainer.appendChild(nameRow);
 
-  const businessTypeGroup = createElement('div', {
-    className: 'form-group',
-  });
-  const businessTypeLabel = createElement('label', {
-    className: 'form-label',
-    innerContent: 'Business type',
-  });
-  const businessTypeWrapper = createElement('div', {
-    className: 'form-input-wrapper',
-  });
-  const businessTypeSelect = createElement('select', {
-    className: 'form-input form-select',
-    attributes: {
-      name: 'business-type',
-    },
-  });
-
-  const businessTypes = [
-    'Independent Restaurant',
-    'Chain Restaurant',
-    'Hotel',
-    'Catering',
-    'Other',
-  ];
-
-  businessTypes.forEach((type) => {
-    const option = createElement('option', {
-      attributes: {
-        value: type.toLowerCase().replace(/\s+/g, '-'),
-      },
-      innerContent: type,
-    });
-    businessTypeSelect.appendChild(option);
-  });
-
-  businessTypeWrapper.appendChild(businessTypeSelect);
-  businessTypeGroup.appendChild(businessTypeLabel);
-  businessTypeGroup.appendChild(businessTypeWrapper);
-  formContainer.appendChild(businessTypeGroup);
-
   const consentGroup = createElement('div', {
     className: 'form-checkbox-group',
   });
@@ -136,14 +96,14 @@ export default function openSubscriptionStep1(onContinue) {
     className: 'form-checkbox',
     attributes: {
       type: 'checkbox',
-      id: 'marketing-consent-step1',
+      id: 'marketing-consent',
       name: 'marketing-consent',
     },
   });
   const consentLabel = createElement('label', {
     className: 'form-checkbox-label',
     attributes: {
-      for: 'marketing-consent-step1',
+      for: 'marketing-consent',
     },
     innerContent: 'I want to receive offers and updates from Unilever Food Solutions tailored to my interests and preferences',
   });
@@ -165,15 +125,25 @@ export default function openSubscriptionStep1(onContinue) {
   const bottomArea = createElement('div', {
     className: 'signup-modal-bottom',
   });
-  const submitButton = createElement('button', {
+  const continueButton = createElement('button', {
     className: 'btn-primary',
-    innerContent: 'Signup to be the first to know',
+    innerContent: 'Continue',
     attributes: {
       type: 'button',
     },
   });
-  bottomArea.appendChild(submitButton);
+  bottomArea.appendChild(continueButton);
   content.appendChild(bottomArea);
+
+  // Restore saved form data
+  const saved = sessionStorage.getItem('signup_form');
+  if (saved) {
+    const data = JSON.parse(saved);
+    emailInput.value = data.email ?? '';
+    firstNameInput.value = data.firstName ?? '';
+    surnameInput.value = data.lastName ?? '';
+    consentCheckbox.checked = data.marketingConsent ?? false;
+  }
 
   const modal = createModal({
     content,
@@ -181,20 +151,28 @@ export default function openSubscriptionStep1(onContinue) {
     overlayClass: 'modal-overlay signup-modal-overlay',
     contentClass: 'modal-content signup-modal-content',
     overlayBackground: 'var(--modal-overlay-bg)',
+    onClose: () => {
+      sessionStorage.setItem('signup_form', JSON.stringify({
+        email: emailInput.value,
+        firstName: firstNameInput.value,
+        lastName: surnameInput.value,
+        marketingConsent: consentCheckbox.checked,
+      }));
+    },
   });
 
-  submitButton.addEventListener('click', async () => {
+  continueButton.addEventListener('click', async () => {
     const email = emailInput.value.trim();
     const firstName = firstNameInput.value.trim();
     const lastName = surnameInput.value.trim();
-    const businessType = businessTypeSelect.value;
     const marketingConsent = consentCheckbox.checked;
+    const mobilePhone = '';
 
     errorMessage.style.display = 'none';
     errorMessage.textContent = '';
     errorMessage.style.color = 'var(--ufs-orange)';
 
-    if (!email || !firstName || !lastName || !businessType) {
+    if (!email || !firstName || !lastName) {
       errorMessage.textContent = 'Please fill in all required fields';
       errorMessage.style.display = 'block';
       return;
@@ -204,14 +182,15 @@ export default function openSubscriptionStep1(onContinue) {
       email,
       firstName,
       lastName,
-      businessType,
+      mobilePhone,
       marketingConsent,
     };
 
+    sessionStorage.removeItem('signup_form');
     modal.close();
-    if (onContinue) {
-      onContinue(formData);
-    }
+
+    const { default: openSignupPasswordModal } = await import('./signup-password.js');
+    openSignupPasswordModal(email, formData);
   });
 
   modal.open();

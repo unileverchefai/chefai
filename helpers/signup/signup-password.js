@@ -1,7 +1,7 @@
 import { createElement } from '@scripts/common.js';
-import createModal from '@components/modal/index.js';
+import createModal from '@helpers/modal/index.js';
 import { loadCSS } from '@scripts/aem.js';
-import { resetPassword } from '@auth/authService.js';
+import { register, resetPassword } from '@auth/authService.js';
 
 function createPasswordRequirement(text) {
   const requirement = createElement('div', {
@@ -18,8 +18,8 @@ function createPasswordRequirement(text) {
 
   const textElement = createElement('p', {
     className: 'password-requirement-text',
+    innerContent: text,
   });
-  textElement.textContent = text;
 
   requirement.appendChild(icon);
   requirement.appendChild(textElement);
@@ -35,10 +35,8 @@ function validatePassword(password) {
   };
 }
 
-export default function openSubscriptionStep4(email) {
-  loadCSS(`${window.hlx.codeBasePath}/blocks/sign-in/sign-in.css`).catch(() => {});
-  loadCSS(`${window.hlx.codeBasePath}/blocks/components/reset-password/reset-password.css`).catch(() => {});
-  loadCSS(`${window.hlx.codeBasePath}/blocks/components/subscription/subscription.css`).catch(() => {});
+export default function openSignupPasswordModal(email, registrationData = null) {
+  loadCSS(`${window.hlx.codeBasePath}/helpers/reset-password/reset-password.css`).catch(() => {});
 
   const content = createElement('div', {
     className: 'change-password-modal',
@@ -51,13 +49,13 @@ export default function openSubscriptionStep4(email) {
   const title = createElement('h2', {
     className: 'change-password-modal-title',
   });
-  title.textContent = 'One final step';
+  title.textContent = 'Thanks!';
   topArea.appendChild(title);
 
   const description = createElement('p', {
     className: 'change-password-modal-description',
   });
-  description.textContent = 'Finalise account creation by creating a password - get access to your saved insights anytime, along with exclusive content and trainings.';
+  description.textContent = 'Finalise account creation by creating a password – get access to your saved insights anytime, along with exclusive content and trainings.';
   topArea.appendChild(description);
 
   const formContainer = createElement('div', {
@@ -122,14 +120,15 @@ export default function openSubscriptionStep4(email) {
   const errorMessage = createElement('div', {
     className: 'change-password-form-error',
     attributes: {
-      style: 'display: none; color: var(--ufs-orange); font-size: var(--body-font-size-xs); margin-top: 8px; text-align: center;',
+      style:
+        'display: none; color: var(--ufs-orange); font-size: var(--body-font-size-xs); margin-top: 8px; text-align: center;',
     },
   });
   formContainer.appendChild(errorMessage);
 
   const submitButton = createElement('button', {
     className: 'btn-primary',
-    innerContent: 'Create account',
+    innerContent: 'Create Account',
     attributes: {
       type: 'button',
     },
@@ -193,57 +192,32 @@ export default function openSubscriptionStep4(email) {
     }
 
     submitButton.disabled = true;
-    submitButton.textContent = 'Sending email...';
+    submitButton.textContent = 'Creating account...';
 
     try {
-      await resetPassword(email);
-      modal.close();
+      if (registrationData) {
+        // Register with the password
+        const formData = {
+          ...registrationData,
+          password,
+          confirmPassword: password,
+        };
 
-      const successContent = createElement('div', {
-        className: 'subscription-final-modal',
-      });
-
-      const successTitle = createElement('h2', {
-        className: 'subscription-final-title',
-      });
-      successTitle.textContent = 'You\'re all set';
-
-      const successText = createElement('p', {
-        className: 'subscription-final-text',
-      });
-      successText.textContent = 'Your account has been created successfully.';
-
-      const continueButton = createElement('button', {
-        className: 'subscription-final-continue',
-        innerContent: 'Continue',
-        attributes: {
-          type: 'button',
-        },
-      });
-
-      successContent.appendChild(successTitle);
-      successContent.appendChild(successText);
-      successContent.appendChild(continueButton);
-
-      const successModal = createModal({
-        content: successContent,
-        showCloseButton: false,
-        overlayClass: 'modal-overlay subscription-final-overlay',
-        contentClass: 'modal-content subscription-final-content',
-        overlayBackground: 'var(--modal-overlay-bg)',
-      });
-
-      continueButton.addEventListener('click', () => {
-        successModal.close();
-        window.location.reload();
-      });
-
-      successModal.open();
+        await register(formData);
+        modal.close();
+        // Redirect to personalized-hub after registration is completed
+        window.location.href = '/personalized-hub';
+      } else {
+        // Fallback: user already registered, just send reset email
+        await resetPassword(email);
+        modal.close();
+        window.location.href = '/personalized-hub';
+      }
     } catch (error) {
-      errorMessage.textContent = error.message ?? 'Failed to send reset email. Please try again.';
+      errorMessage.textContent = error.message ?? 'Failed to create account. Please try again.';
       errorMessage.style.display = 'block';
       submitButton.disabled = false;
-      submitButton.textContent = 'Create account';
+      submitButton.textContent = 'Create Account';
     }
   });
 

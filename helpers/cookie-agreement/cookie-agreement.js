@@ -1,6 +1,6 @@
 import { createElement } from '@scripts/common.js';
 import { loadCSS } from '@scripts/aem.js';
-import createModal from '@components/modal/index.js';
+import createModal from '@helpers/modal/index.js';
 
 function setCookie(name, value, days = 365) {
   try {
@@ -22,7 +22,7 @@ function setCookie(name, value, days = 365) {
  */
 export default function openCookieAgreementModal(onAgree, onClose, required = false) {
   // Load cookie agreement CSS
-  loadCSS(`${window.hlx.codeBasePath}/blocks/components/cookie-agreement/cookie-agreement.css`).catch(() => {
+  loadCSS(`${window.hlx.codeBasePath}/helpers/cookie-agreement/cookie-agreement.css`).catch(() => {
     // CSS loading error handled silently
   });
 

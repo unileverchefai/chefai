@@ -4,7 +4,7 @@ import { setEndpoint } from './sendMessage.js';
 import { loadReact } from './utils.js';
 
 export default async function chatbot(block) {
-  await loadCSS(`${window.hlx.codeBasePath}/blocks/components/chatbot/chatbot.css`);
+  await loadCSS(`${window.hlx.codeBasePath}/helpers/chatbot/chatbot.css`);
 
   const endpoint = getMetadata('chatbot-endpoint') || 'capgemini';
   setEndpoint(endpoint);

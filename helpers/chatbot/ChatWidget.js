@@ -1,4 +1,4 @@
-import openPersonalizedHub from '@components/personalized-hub/personalized-hub.js';
+import openPersonalizedHub from '@helpers/personalized-hub/personalized-hub.js';
 import sendStreamingMessage from './sendStreamingMessage.js';
 import {
   getHistory,

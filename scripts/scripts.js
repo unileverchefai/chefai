@@ -140,7 +140,7 @@ async function loadLazy(doc) {
 
   // Initialize subscription flow triggers (links with href="#subscription-flow")
   try {
-    const { setupSubscriptionFlowTriggers } = await import('@components/subscription/index.js');
+    const { setupSubscriptionFlowTriggers } = await import('@helpers/subscription/index.js');
     if (typeof setupSubscriptionFlowTriggers === 'function') {
       setupSubscriptionFlowTriggers();
     }
@@ -151,7 +151,7 @@ async function loadLazy(doc) {
 
   // Fetch and log user business data on page load
   try {
-    const { default: fetchSavedBusinessInfoAndLog } = await import('@components/personalized-hub/fetchSavedBusinessInfo.js');
+    const { default: fetchSavedBusinessInfoAndLog } = await import('@helpers/personalized-hub/fetchSavedBusinessInfo.js');
     await fetchSavedBusinessInfoAndLog();
   } catch (e) {
     // eslint-disable-next-line no-console

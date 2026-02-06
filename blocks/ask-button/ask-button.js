@@ -1,4 +1,4 @@
-import openChatbotModal from '@components/chatbot/openChatbotModal.js';
+import openChatbotModal from '@helpers/chatbot/openChatbotModal.js';
 import { createElement } from '@scripts/common.js';
 
 /**

@@ -1,9 +1,9 @@
 import { createElement, addVariantLogic } from '@scripts/common.js';
 import { loadCSS } from '@scripts/aem.js';
 import { hasToken } from '@auth/tokenManager.js';
-import openPersonalizedHub from '@components/personalized-hub/personalized-hub.js';
-import hasSavedBusinessName from '@components/personalized-hub/hasSavedBusinessName.js';
-import openChatbotModal from '@components/chatbot/openChatbotModal.js';
+import openPersonalizedHub from '@helpers/personalized-hub/personalized-hub.js';
+import hasSavedBusinessName from '@helpers/personalized-hub/hasSavedBusinessName.js';
+import openChatbotModal from '@helpers/chatbot/openChatbotModal.js';
 
 const blockName = 'floating-cta';
 const blockClasses = {
@@ -145,7 +145,7 @@ export default async function decorate(block) {
 
       // If button has #unlock-personalized-hub, open registration modal
       if (shouldOpenRegistration) {
-        const { default: openSignUpReportModal } = await import('@components/signup/signup.js');
+        const { default: openSignUpReportModal } = await import('@helpers/signup/signup.js');
         openSignUpReportModal();
         return;
       }

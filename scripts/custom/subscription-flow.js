@@ -1,4 +1,4 @@
-import { setupSubscriptionFlowTriggers } from '@blocks/components/subscription/index.js';
+import { setupSubscriptionFlowTriggers } from '@helpers/subscription/index.js';
 
 // Initialize subscription flow click triggers
 setupSubscriptionFlowTriggers();

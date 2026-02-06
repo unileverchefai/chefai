@@ -1,4 +1,4 @@
-import createCarousel from '@components/carousel/carousel.js';
+import createCarousel from '@helpers/carousel/carousel.js';
 import { decorateIcons } from '@scripts/aem.js';
 import { createElement } from '@scripts/common.js';
 

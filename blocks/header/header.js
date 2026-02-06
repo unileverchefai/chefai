@@ -1,6 +1,6 @@
 import { createElement } from '@scripts/common.js';
 import { hasToken } from '@auth/tokenManager.js';
-import openSignInModal from '@components/signin/index.js';
+import openSignInModal from '@helpers/signin/index.js';
 import { getMetadata } from '@scripts/aem.js';
 import { logout } from '@auth/authService.js';
 import { loadFragment } from '@blocks/fragment/fragment.js';
