@@ -99,7 +99,7 @@ export default async function decorate(block) {
   businessBlock.appendChild(title);
 
   const arrowLogo = createElement('img', { className: 'sneak-peek-arrow-logo' });
-  arrowLogo.src = 'https://content.da.live/unileverchefai/chefai/media/triple-arrow-logo.svg';
+  arrowLogo.src = '/icons/triple-arrow-logo.svg';
   businessBlock.appendChild(arrowLogo);
   businessBlock.appendChild(recommendationP);
 
