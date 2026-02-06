@@ -191,12 +191,6 @@ main > .section:has(.carousel-biz-wrapper) {
   gap: var(--spacing-xs);
 }
 
-.trend-cta-spacer {
-  height: 21px;
-  visibility: hidden;
-  pointer-events: none;
-}
-
 .trend-stat {
   font-family: var(--ff-unilever-shilling);
   font-weight: 700;
