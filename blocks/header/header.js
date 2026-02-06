@@ -150,7 +150,7 @@ export default async function decorate(block) {
   headerContainer.append(brand);
 
   // In teaser mode, only show hamburger and logo
-  if (!isLiveMode) {
+  if (isLiveMode) {
     elements.append(hamburger, headerContainer);
   } else {
     // In live mode, also show profile section
