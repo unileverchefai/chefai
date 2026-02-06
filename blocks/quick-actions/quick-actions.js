@@ -1,6 +1,56 @@
 import { createElement } from '@scripts/common.js';
 import openChatbotModal from '@helpers/chatbot/openChatbotModal.js';
+import {
+  setCookie,
+  getUserIdFromCookie,
+  getAnonymousUserIdFromCookie,
+  getAnonymousUserId,
+  createThread,
+} from '@helpers/chatbot/utils.js';
 import { fetchQuickActions } from './constants/api.js';
+
+async function ensureQuickActionThread(recommendationKey) {
+  const storageKey = `chefai-quick-action-thread-${recommendationKey}`;
+
+  try {
+    const stored = sessionStorage.getItem(storageKey);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (parsed?.threadId) {
+        setCookie('chef-ai-thread-id', parsed.threadId);
+        return {
+          threadId: parsed.threadId,
+          isNew: false,
+        };
+      }
+    }
+  } catch {
+    // ignore storage errors
+  }
+
+  let userId = getUserIdFromCookie() ?? getAnonymousUserIdFromCookie();
+
+  if (!userId) {
+    userId = await getAnonymousUserId();
+  }
+
+  const threadId = await createThread(userId);
+
+  try {
+    const payload = JSON.stringify({
+      threadId,
+      initialized: true,
+    });
+    sessionStorage.setItem(storageKey, payload);
+  } catch {
+    // ignore storage errors
+  }
+
+  return {
+    threadId,
+    isNew: true,
+  };
+}
 
 function renderCard(item, index, onActivate) {
   const card = createElement('li', {
@@ -66,12 +116,26 @@ export default function decorate(block) {
   block.appendChild(loading);
   block.appendChild(list);
 
-  const handleCardActivate = (item) => {
+  const handleCardActivate = async (item) => {
     const messageText = item.display_text ?? item.title ?? '';
+    const recommendationKey = item.id
+      ?? item.recommendation_id
+      ?? messageText
+      ?? 'quick-action';
+
+    let isNewThread = false;
+
+    try {
+      const result = await ensureQuickActionThread(recommendationKey);
+      isNewThread = result?.isNew ?? false;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to prepare quick action thread:', error);
+    }
 
     openChatbotModal()
       .then(() => {
-        if (!messageText) return;
+        if (!messageText || !isNewThread) return;
 
         setTimeout(() => {
           const event = new CustomEvent('chefai:quick-action', {

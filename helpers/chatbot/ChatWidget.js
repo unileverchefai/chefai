@@ -304,10 +304,40 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot' } = {})
       const message = event.detail?.message;
       if (!message) return;
 
+      const headlineMessage = {
+        _id: `headline_${Date.now()}`,
+        text: message,
+        createdAt: new Date(),
+        user: {
+          _id: AI_ID,
+          name: 'Chef AI',
+        },
+        metadata: {
+          isQuickActionHeadline: true,
+        },
+      };
+
+      setMessages((prev) => [...prev, headlineMessage]);
+
       const syntheticEvent = {
         preventDefault: () => {},
       };
       handleSend(syntheticEvent, message);
+
+      setTimeout(() => {
+        setMessages((prev) => {
+          if (!prev.length) {
+            return prev;
+          }
+
+          const last = prev[prev.length - 1];
+          if (last?.user?._id === USER_ID && last.text === message) {
+            return prev.slice(0, -1);
+          }
+
+          return prev;
+        });
+      }, 0);
     };
 
     window.addEventListener('chefai:quick-action', handler);
@@ -315,7 +345,7 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot' } = {})
     return () => {
       window.removeEventListener('chefai:quick-action', handler);
     };
-  }, [handleSend]);
+  }, [handleSend, setMessages]);
 
   return renderChatUI({
     error,

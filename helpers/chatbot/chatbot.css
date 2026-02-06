@@ -92,6 +92,18 @@
     contain: layout style;
 }
 
+.chat-message.ai-message {
+    margin-bottom: 0 !important;
+}
+
+.chat-message.ai-message .message-bubble {
+    padding-bottom: 0 !important;
+}
+
+.chat-message.ai-message + .chat-message.user-message {
+    display: none !important;
+}
+
 .message-bubble {
     contain: layout style;
     overflow-wrap: break-word;

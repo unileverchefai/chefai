@@ -73,19 +73,37 @@ export default function renderMessage(message, options = {}) {
   }
 
   const bubbleContent = [
-    h(
-      'div',
-      {
-        key: 'text-before',
-        style: {
-          fontFamily: 'var(--body-font-family)',
-          fontSize: 'var(--body-font-size-xs)',
-          lineHeight: '1.5',
-          whiteSpace: 'pre-wrap',
-        },
-      },
-      convertLinksToClickable(textBeforeRecipes),
-    ),
+    ...(message.metadata?.isQuickActionHeadline
+      ? [
+        h(
+          'div',
+          {
+            key: 'headline',
+            style: {
+              fontFamily: 'var(--ff-unilever-shilling)',
+              fontSize: 'var(--body-font-size-m)',
+              lineHeight: '1.4',
+              marginBottom: '8px',
+            },
+          },
+          message.text,
+        ),
+      ]
+      : [
+        h(
+          'div',
+          {
+            key: 'text-before',
+            style: {
+              fontFamily: 'var(--body-font-family)',
+              fontSize: 'var(--body-font-size-xs)',
+              lineHeight: '1.5',
+              whiteSpace: 'pre-wrap',
+            },
+          },
+          convertLinksToClickable(textBeforeRecipes),
+        ),
+      ]),
     ...(message.metadata?.images?.length > 0
       ? [
         h(
@@ -139,21 +157,25 @@ export default function renderMessage(message, options = {}) {
         ),
       ]
       : []),
-    h(
-      'div',
-      {
-        key: 'time',
-        style: {
-          fontSize: 'var(--body-font-size-xs)',
-          opacity: 0.7,
-          marginTop: '4px',
-        },
-      },
-      new Date(message.createdAt).toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-      }),
-    ),
+    ...(message.metadata?.isQuickActionHeadline
+      ? []
+      : [
+        h(
+          'div',
+          {
+            key: 'time',
+            style: {
+              fontSize: 'var(--body-font-size-xs)',
+              opacity: 0.7,
+              marginTop: '4px',
+            },
+          },
+          new Date(message.createdAt).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+          }),
+        ),
+      ]),
   ];
 
   return h(
