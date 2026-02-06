@@ -1,4 +1,4 @@
-import { ENDPOINTS, SUBSCRIPTION_KEY, DEFAULT_PARAMS } from './constants/api.js';
+import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
 
 const recommendationsData = await fetch('/blocks/sneak-peek/mock-data/recommendation_response.json').then((r) => r.json());
 const businessInfoData = await fetch('/blocks/sneak-peek/mock-data/business_info.json').then((r) => r.json());
@@ -6,8 +6,16 @@ const businessInfoData = await fetch('/blocks/sneak-peek/mock-data/business_info
 const MOCK_RECOMMENDATIONS = recommendationsData.recommendations[0] || [];
 const MOCK_BUSINESS_INFO = businessInfoData.data || {};
 
-// Enable mock data fallback when API is unavailable !!!
 const USE_MOCK_FALLBACK = true;
+
+const DEFAULT_PARAMS = {
+  current_date: '2026-01-20T00:00:00Z',
+  is_sneakpeek: true,
+  limit: 3,
+  refresh: false,
+  type: 'main',
+  user_id: 'staging-user',
+};
 
 /**
  * Fetch insights from the recommendations API
