@@ -358,10 +358,7 @@ export default function decorate(block) {
   block.appendChild(carouselWrapper);
 
   renderCards(carouselContainer, allCards);
-
-  setTimeout(() => {
-    initializeCarousel(block, carouselContainer, allCards.length);
-  }, 0);
+  initializeCarousel(block, carouselContainer, allCards.length);
 
   let isOpen = false;
 
