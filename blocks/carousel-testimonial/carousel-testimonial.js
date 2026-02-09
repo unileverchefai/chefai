@@ -96,10 +96,15 @@ function createVideoItem(videoData) {
   thumbnailContainer.setAttribute('aria-label', `Play video: ${title}`);
   thumbnailContainer.dataset.videoUrl = videoUrl;
 
+  const videoInfo = createElement('div', {
+    className: 'video-info',
+  });
+
   const titleElement = createElement('h3', {
     className: 'video-title',
     innerContent: title,
   });
+  videoInfo.appendChild(titleElement);
 
   const authorInfo = createElement('div', {
     className: 'video-author',
@@ -126,11 +131,12 @@ function createVideoItem(videoData) {
     authorInfo.appendChild(handleElement);
   }
 
-  item.appendChild(thumbnailContainer);
-  item.appendChild(titleElement);
   if (authorInfo.children.length > 0) {
-    item.appendChild(authorInfo);
+    videoInfo.appendChild(authorInfo);
   }
+
+  item.appendChild(thumbnailContainer);
+  item.appendChild(videoInfo);
 
   return item;
 }
@@ -168,8 +174,8 @@ function createCardItem(cardData, colorVariant) {
   cardBody.appendChild(quoteElement);
 
   if (authorName) {
-    const authorInfo = createElement('div', {
-      className: 'card-author',
+    const cardInfo = createElement('div', {
+      className: 'card-info',
     });
 
     if (avatarIcon) {
@@ -182,26 +188,32 @@ function createCardItem(cardData, colorVariant) {
         img.alt = ''; // Decorative, author name provides context
       }
       iconContainer.appendChild(clonedIcon);
-      authorInfo.appendChild(iconContainer);
+      cardInfo.appendChild(iconContainer);
     }
+
+    const authorInfo = createElement('div', {
+      className: 'author-info',
+    });
 
     const nameElement = createElement('strong', {
       className: 'author-name',
       innerContent: authorName,
     });
     authorInfo.appendChild(nameElement);
-    cardBody.appendChild(authorInfo);
+
+    if (jobTitle) {
+      const cardMeta = createElement('div', {
+        className: 'card-meta',
+        innerContent: jobTitle,
+      });
+      authorInfo.appendChild(cardMeta);
+    }
+
+    cardInfo.appendChild(authorInfo);
+    cardBody.appendChild(cardInfo);
   }
 
   item.appendChild(cardBody);
-
-  if (jobTitle) {
-    const cardMeta = createElement('div', {
-      className: 'card-meta',
-      innerContent: jobTitle,
-    });
-    item.appendChild(cardMeta);
-  }
 
   return item;
 }
