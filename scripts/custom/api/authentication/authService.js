@@ -40,6 +40,7 @@ export async function login(email, password) {
 
     setToken(token);
     setCookie('user_id', email);
+    setCookie('chef-ai-thread-id', '', -1);
     return token;
   } catch (error) {
     if (error.message.includes('401') || error.message.includes('Unauthorized')) {
@@ -99,6 +100,7 @@ export async function register(formData) {
     if (response.authToken) {
       setToken(response.authToken);
       setCookie('user_id', email);
+      setCookie('chef-ai-thread-id', '', -1);
 
       try {
         const businessDataStr = sessionStorage.getItem('personalized-hub-business-data');

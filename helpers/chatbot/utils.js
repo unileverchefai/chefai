@@ -39,6 +39,24 @@ export function getStoredThreadId() {
 }
 
 /**
+ * Get or create cookie_id (used as user_id at journey start per API flow).
+ * @returns {string} cookie_id value
+ */
+export function getOrCreateCookieId() {
+  let cookieId = getCookie('cookie_id');
+  if (cookieId) {
+    return cookieId;
+  }
+  cookieId = `cookie_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+  setCookie('cookie_id', cookieId);
+  return cookieId;
+}
+
+export function getCookieId() {
+  return getCookie('cookie_id');
+}
+
+/**
  * Create a new thread via API
  * @param {string} userId - User ID
  * @param {boolean} skipCache - If true, don't store thread_id in cookie (default: false)
@@ -223,15 +241,26 @@ export async function getUserThreads(userId, skipCache = false) {
 }
 
 /**
- * Get or create thread ID using API-based flow
+ * Get or create thread ID using API-based flow.
+ * For the current user we first try to retrieve their thread list and use the most recent thread.
  * @param {string} userId - User ID
  * @param {boolean} validateOnInit - Whether to validate thread on initialization (default: false)
  * @param {boolean} skipCache - If true, don't store thread_id in cookie (default: false)
  * @returns {Promise<string>} Thread ID
  */
 export async function getOrCreateThreadId(userId, validateOnInit = false, skipCache = false) {
-  // If skipCache is true, don't use stored thread_id (for business registration flow)
-  let threadId = skipCache ? null : getStoredThreadId();
+  let threadId = null;
+
+  if (userId) {
+    threadId = await getUserThreads(userId, skipCache);
+    if (threadId) {
+      return threadId;
+    }
+  }
+
+  if (!skipCache) {
+    threadId = getStoredThreadId();
+  }
 
   if (threadId && validateOnInit) {
     const isValid = await validateThread(threadId);
@@ -246,19 +275,11 @@ export async function getOrCreateThreadId(userId, validateOnInit = false, skipCa
     return threadId;
   }
 
-  threadId = await getUserThreads(userId, skipCache);
-  if (threadId) {
-    return threadId;
-  }
-
   try {
     threadId = await createThread(userId, skipCache);
     return threadId;
   } catch (error) {
-    // If thread creation fails because user doesn't exist, clear invalid user IDs and throw
-    // This allows the caller to create a new user and retry
     if (error.message && error.message.includes('does not exist')) {
-      // Clear potentially invalid user ID cookies
       setCookie('user_id', '', -1);
       setCookie('chef-ai-anonymous-user-id', '', -1);
       setCookie('chef-ai-thread-id', '', -1);
@@ -298,7 +319,7 @@ export function clearAllChatData() {
 
 export async function getAnonymousUserId() {
   const cookieName = 'chef-ai-anonymous-user-id';
-  let userId = getCookie(cookieName);
+  const userId = getCookie(cookieName);
 
   if (userId) {
     return userId;
@@ -308,8 +329,15 @@ export async function getAnonymousUserId() {
     throw new Error('Users endpoint is not configured');
   }
 
-  // Generate a user_id client-side (API requires it)
-  userId = `user_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+  const cookieId = getOrCreateCookieId();
+  const tcAgreed = getCookie('personalized-hub-consent') === 'true';
+
+  const payload = {
+    user_id: cookieId,
+    country: COUNTRY_CODE,
+    content_language_code: LANGUAGE_CODE.toUpperCase(),
+    ...(tcAgreed ? { tc_agreed: true } : {}),
+  };
 
   const response = await fetch(ENDPOINTS.users, {
     method: 'POST',
@@ -318,11 +346,7 @@ export async function getAnonymousUserId() {
       Accept: 'application/json',
       'X-Subscription-Key': SUBSCRIPTION_KEY,
     },
-    body: JSON.stringify({
-      user_id: userId,
-      country: COUNTRY_CODE,
-      content_language_code: LANGUAGE_CODE.toUpperCase(),
-    }),
+    body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
@@ -338,15 +362,14 @@ export async function getAnonymousUserId() {
   }
 
   const json = JSON.parse(responseText);
-  // Use the user_id from response if provided, otherwise use the one we generated
-  const returnedUserId = (json.user_id ?? json.data?.user_id ?? userId).toString().trim();
+  const returnedUserId = (json.user_id ?? json.data?.user_id ?? cookieId).toString().trim();
 
   setCookie(cookieName, returnedUserId);
   return returnedUserId;
 }
 
 /**
- * Create a new user via API
+ * Create a new user via API (uses cookie_id as user_id per journey flow).
  * @returns {Promise<string>} User ID
  */
 export async function createUser() {
@@ -354,8 +377,15 @@ export async function createUser() {
     throw new Error('Users endpoint is not configured');
   }
 
-  // Generate a user_id client-side (API requires it)
-  const userId = `user_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+  const cookieId = getOrCreateCookieId();
+  const tcAgreed = getCookie('personalized-hub-consent') === 'true';
+
+  const payload = {
+    user_id: cookieId,
+    country: COUNTRY_CODE,
+    content_language_code: LANGUAGE_CODE.toUpperCase(),
+    ...(tcAgreed ? { tc_agreed: true } : {}),
+  };
 
   const response = await fetch(ENDPOINTS.users, {
     method: 'POST',
@@ -364,11 +394,7 @@ export async function createUser() {
       Accept: 'application/json',
       'X-Subscription-Key': SUBSCRIPTION_KEY,
     },
-    body: JSON.stringify({
-      user_id: userId,
-      country: COUNTRY_CODE,
-      content_language_code: LANGUAGE_CODE.toUpperCase(),
-    }),
+    body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
@@ -382,10 +408,8 @@ export async function createUser() {
   }
 
   const json = JSON.parse(responseText);
-  // Use the user_id from response if provided, otherwise use the one we generated
-  const returnedUserId = (json.user_id ?? json.data?.user_id ?? userId).toString().trim();
+  const returnedUserId = (json.user_id ?? json.data?.user_id ?? cookieId).toString().trim();
 
-  // Store in both cookies for compatibility
   setCookie('user_id', returnedUserId);
   setCookie('chef-ai-anonymous-user-id', returnedUserId);
   return returnedUserId;
