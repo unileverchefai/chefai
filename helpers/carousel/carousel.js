@@ -147,6 +147,11 @@ export default function createCarousel(options) {
   */
   function getCarouselMetrics() {
     const firstItem = container.querySelector('.card, .carousel-item, .trend-card');
+
+    // const firstItem = container.querySelector('.carousel-video-item, .carousel-card-item,
+    //  .card, .carousel-item, .trend-card'); ??
+    // Maybe a less generic approach like const firstItem = container.firstElementChild;??
+
     const itemWidth = firstItem?.offsetWidth || 0;
     const isMobile = window.innerWidth < mobileBreakpoint;
     const gap = isMobile ? mobileGap : desktopGap;
