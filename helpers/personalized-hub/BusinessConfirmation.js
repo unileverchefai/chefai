@@ -65,7 +65,7 @@ export default function BusinessConfirmation({
       'li',
       {
         key: `business-${idx}`,
-        className: `card${isSelected ? ' ph-business-card--selected' : ''}`,
+        className: `card chatbot-carousel-card${isSelected ? ' ph-business-card--selected' : ''}`,
         onClick: () => {
           if (onSelectBusiness) {
             onSelectBusiness(business);
@@ -134,7 +134,7 @@ export default function BusinessConfirmation({
             'div',
             {
               key: 'carousel',
-              className: 'carousel-cards',
+              className: 'carousel-cards chatbot-carousel',
               ref: carouselBlockRef,
             },
             [
