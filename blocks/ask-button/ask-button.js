@@ -1,5 +1,12 @@
 import openChatbotModal from '@helpers/chatbot/openChatbotModal.js';
 import { createElement } from '@scripts/common.js';
+import {
+  setCookie,
+  getUserIdFromCookie,
+  getAnonymousUserIdFromCookie,
+  getAnonymousUserId,
+  createThread,
+} from '@helpers/chatbot/utils.js';
 
 /**
  * Ask Button Block
@@ -49,9 +56,29 @@ export default function decorate(block) {
   const shadowOverlay = createElement('div', { className: 'shadow' });
   button.appendChild(shadowOverlay);
 
-  // Click handler - always open chatbot
+  // Click handler - open chatbot on a dedicated main chat thread
   button.addEventListener('click', async () => {
     try {
+      const storageKey = 'chefai-main-chat-thread';
+      const stored = sessionStorage.getItem(storageKey);
+      let threadId = stored ? JSON.parse(stored)?.threadId ?? null : null;
+
+      if (!threadId) {
+        let userId = getUserIdFromCookie() ?? getAnonymousUserIdFromCookie();
+        if (!userId) {
+          userId = await getAnonymousUserId();
+        }
+
+        threadId = await createThread(userId);
+
+        sessionStorage.setItem(storageKey, JSON.stringify({
+          threadId,
+          initialized: true,
+        }));
+      }
+
+      setCookie('chef-ai-thread-id', threadId);
+
       await openChatbotModal();
     } catch (error) {
       // eslint-disable-next-line no-console

@@ -9,7 +9,7 @@ import {
 } from '@helpers/chatbot/utils.js';
 import { fetchQuickActions } from './constants/api.js';
 
-async function ensureQuickActionThread(recommendationKey) {
+async function ensureQuickActionThread(recommendationKey, headlineText) {
   const storageKey = `chefai-quick-action-thread-${recommendationKey}`;
 
   try {
@@ -40,8 +40,10 @@ async function ensureQuickActionThread(recommendationKey) {
     const payload = JSON.stringify({
       threadId,
       initialized: true,
+      headlineText,
     });
     sessionStorage.setItem(storageKey, payload);
+    sessionStorage.setItem(`chefai-quick-action-headline-${threadId}`, headlineText);
   } catch {
     // ignore storage errors
   }
@@ -126,7 +128,7 @@ export default function decorate(block) {
     let isNewThread = false;
 
     try {
-      const result = await ensureQuickActionThread(recommendationKey);
+      const result = await ensureQuickActionThread(recommendationKey, messageText);
       isNewThread = result?.isNew ?? false;
     } catch (error) {
       // eslint-disable-next-line no-console

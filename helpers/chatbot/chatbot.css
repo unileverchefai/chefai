@@ -100,10 +100,6 @@
     padding-bottom: 0 !important;
 }
 
-.chat-message.ai-message + .chat-message.user-message {
-    display: none !important;
-}
-
 .message-bubble {
     contain: layout style;
     overflow-wrap: break-word;

@@ -91,7 +91,43 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot' } = {})
           setMessages((prev) => {
             // Merge with existing messages, avoiding duplicates
             const existingIds = new Set(prev.map((m) => m._id));
-            const newMessages = apiHistory.filter((m) => !existingIds.has(m._id));
+            let newMessages = apiHistory.filter((m) => !existingIds.has(m._id));
+
+            const headlineText = sessionStorage
+              .getItem(`chefai-quick-action-headline-${threadId}`);
+            if (headlineText && newMessages.length > 0) {
+              const sortedMessages = [...newMessages].sort((a, b) => {
+                const timeA = a.createdAt instanceof Date
+                  ? a.createdAt.getTime()
+                  : new Date(a.createdAt).getTime();
+                const timeB = b.createdAt instanceof Date
+                  ? b.createdAt.getTime()
+                  : new Date(b.createdAt).getTime();
+                return timeA - timeB;
+              });
+
+              const firstUserMessage = sortedMessages
+                .find((m) => m.user?._id === USER_ID && m.text === headlineText);
+              const hasHeadline = sortedMessages
+                .some((m) => m.metadata?.isQuickActionHeadline);
+
+              if (firstUserMessage && !hasHeadline) {
+                const headlineMessage = {
+                  _id: `headline_${firstUserMessage._id}`,
+                  text: headlineText,
+                  createdAt: firstUserMessage.createdAt,
+                  user: {
+                    _id: AI_ID,
+                    name: 'Chef AI',
+                  },
+                  metadata: {
+                    isQuickActionHeadline: true,
+                  },
+                };
+                newMessages = [headlineMessage, ...newMessages];
+              }
+            }
+
             if (newMessages.length > 0) {
               return [...prev, ...newMessages].sort((a, b) => {
                 const timeA = a.createdAt instanceof Date

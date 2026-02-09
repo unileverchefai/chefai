@@ -240,9 +240,7 @@ export function clearAllChatData() {
   setCookie('cookie_id', '', -1);
 
   try {
-    sessionStorage.removeItem('chef-ai-history');
-    sessionStorage.removeItem('personalized-hub-business-data');
-    sessionStorage.removeItem('registered-user-id');
+    sessionStorage.clear();
   } catch (err) {
     // eslint-disable-next-line no-console
     console.error('Failed to clear session storage:', err);

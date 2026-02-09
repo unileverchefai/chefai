@@ -24,8 +24,8 @@
   border-radius: 20px;
   color: var(--c-black);
   font-family: var(--ff-unilever-shilling);
-  font-size: var(--body-font-size-s);
-  line-height: var(--body-line-height-s);
+  font-size: var(--body-font-size-xs);
+  line-height: var(--body-line-height-xs);
   cursor: pointer;
   border: 1px solid #F15A22;
 	background: var(--gradient-purple);

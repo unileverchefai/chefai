@@ -118,6 +118,7 @@ header .nav-hamburger-line {
 
 /* Brand/Logo */
 header .nav-brand {
+  margin-right: 10px;
   flex-shrink: 0;
   line-height: 0;
 
