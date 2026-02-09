@@ -88,6 +88,55 @@ export async function createThread(userId, skipCache = false) {
 }
 
 /**
+ * Create a new thread with a recommendation (quick action) via API
+ * @param {string} userId - User ID
+ * @param {string} recommendationId - Recommendation ID from quick actions API
+ * @param {boolean} skipCache - If true, don't store thread_id in cookie (default: false)
+ * @returns {Promise<{ threadId: string, displayText: string }>}
+ */
+export async function createThreadWithRecommendation(userId, recommendationId, skipCache = false) {
+  if (!ENDPOINTS.createThread) {
+    throw new Error('Create thread endpoint is not configured');
+  }
+
+  const response = await fetch(ENDPOINTS.createThread, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      'X-Subscription-Key': SUBSCRIPTION_KEY,
+    },
+    body: JSON.stringify({
+      user_id: userId,
+      recommendation_id: recommendationId,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to create thread: ${response.status} ${response.statusText}`);
+  }
+
+  const responseText = await response.text();
+  if (!responseText) {
+    throw new Error('Create thread API returned empty response');
+  }
+
+  const json = JSON.parse(responseText);
+  const threadId = (json.thread_id ?? json.data?.thread_id ?? '').toString().trim();
+  const displayText = (json.display_text ?? json.data?.display_text ?? '').toString().trim();
+
+  if (!threadId) {
+    throw new Error('Create thread API response did not contain a thread_id');
+  }
+
+  if (!skipCache) {
+    setCookie('chef-ai-thread-id', threadId);
+  }
+
+  return { threadId, displayText };
+}
+
+/**
  * Validate if a thread exists
  * @param {string} threadId - Thread ID to validate
  * @returns {Promise<boolean>} True if thread exists, false otherwise

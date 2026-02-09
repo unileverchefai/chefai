@@ -5,59 +5,53 @@ import {
   getUserIdFromCookie,
   getAnonymousUserIdFromCookie,
   getAnonymousUserId,
-  createThread,
+  createThreadWithRecommendation,
 } from '@helpers/chatbot/utils.js';
 import { fetchQuickActions } from './constants/api.js';
 
-async function ensureQuickActionThread(recommendationKey, headlineText) {
-  const storageKey = `chefai-quick-action-thread-${recommendationKey}`;
+async function ensureQuickActionThread(recommendationId) {
+  const storageKey = `chefai-quick-action-thread-${recommendationId}`;
 
-  try {
-    const stored = sessionStorage.getItem(storageKey);
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      if (parsed?.threadId) {
-        setCookie('chef-ai-thread-id', parsed.threadId);
-        return {
-          threadId: parsed.threadId,
-          isNew: false,
-        };
-      }
+  const stored = sessionStorage.getItem(storageKey);
+  if (stored) {
+    const parsed = JSON.parse(stored);
+    if (parsed?.threadId) {
+      setCookie('chef-ai-thread-id', parsed.threadId);
+      return {
+        threadId: parsed.threadId,
+        displayText: parsed.displayText ?? '',
+        isNew: false,
+      };
     }
-  } catch {
-    // ignore storage errors
   }
 
   let userId = getUserIdFromCookie() ?? getAnonymousUserIdFromCookie();
-
   if (!userId) {
     userId = await getAnonymousUserId();
   }
 
-  const threadId = await createThread(userId);
+  const { threadId, displayText } = await createThreadWithRecommendation(userId, recommendationId);
 
-  try {
-    const payload = JSON.stringify({
-      threadId,
-      initialized: true,
-      headlineText,
-    });
-    sessionStorage.setItem(storageKey, payload);
-    sessionStorage.setItem(`chefai-quick-action-headline-${threadId}`, headlineText);
-  } catch {
-    // ignore storage errors
-  }
+  sessionStorage.setItem(storageKey, JSON.stringify({
+    threadId,
+    displayText,
+    initialized: true,
+  }));
+  sessionStorage.setItem(`chefai-quick-action-headline-${threadId}`, displayText);
 
   return {
     threadId,
+    displayText: displayText ?? '',
     isNew: true,
   };
 }
 
 function renderCard(item, index, onActivate) {
+  const recommendationId = item.id ?? item.recommendation_id ?? '';
   const card = createElement('li', {
     className: 'card quick-action-card',
     attributes: {
+      'data-recommendation-id': recommendationId,
       'data-item-id': item.id ?? `quick-action-${index}`,
       'data-node-id': `quick-action-card-${index}`,
       role: 'button',
@@ -119,17 +113,14 @@ export default function decorate(block) {
   block.appendChild(list);
 
   const handleCardActivate = async (item) => {
-    const messageText = item.display_text ?? item.title ?? '';
-    const recommendationKey = item.id
-      ?? item.recommendation_id
-      ?? messageText
-      ?? 'quick-action';
+    const recommendationId = item.id ?? item.recommendation_id ?? '';
+    if (!recommendationId) {
+      return;
+    }
 
-    let isNewThread = false;
-
+    let result = { isNew: false, displayText: '' };
     try {
-      const result = await ensureQuickActionThread(recommendationKey, messageText);
-      isNewThread = result?.isNew ?? false;
+      result = await ensureQuickActionThread(recommendationId);
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Failed to prepare quick action thread:', error);
@@ -137,17 +128,13 @@ export default function decorate(block) {
 
     openChatbotModal()
       .then(() => {
-        if (!messageText || !isNewThread) return;
-
-        setTimeout(() => {
-          const event = new CustomEvent('chefai:quick-action', {
-            detail: {
-              message: messageText,
-              recommendation: item,
-            },
-          });
-          window.dispatchEvent(event);
-        }, 400);
+        if (result.isNew && result.displayText) {
+          setTimeout(() => {
+            window.dispatchEvent(new CustomEvent('chefai:quick-action', {
+              detail: { displayText: result.displayText },
+            }));
+          }, 400);
+        }
       })
       .catch((error) => {
         // eslint-disable-next-line no-console

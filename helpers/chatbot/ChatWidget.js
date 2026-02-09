@@ -96,26 +96,18 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot' } = {})
             const headlineText = sessionStorage
               .getItem(`chefai-quick-action-headline-${threadId}`);
             if (headlineText && newMessages.length > 0) {
-              const sortedMessages = [...newMessages].sort((a, b) => {
-                const timeA = a.createdAt instanceof Date
-                  ? a.createdAt.getTime()
-                  : new Date(a.createdAt).getTime();
-                const timeB = b.createdAt instanceof Date
-                  ? b.createdAt.getTime()
-                  : new Date(b.createdAt).getTime();
-                return timeA - timeB;
-              });
-
-              const firstUserMessage = sortedMessages
-                .find((m) => m.user?._id === USER_ID && m.text === headlineText);
-              const hasHeadline = sortedMessages
+              const hasHeadline = newMessages
                 .some((m) => m.metadata?.isQuickActionHeadline);
 
-              if (firstUserMessage && !hasHeadline) {
+              if (!hasHeadline) {
+                const firstMsg = newMessages[0];
+                const firstTime = firstMsg?.createdAt
+                  ? new Date(firstMsg.createdAt).getTime()
+                  : Date.now();
                 const headlineMessage = {
-                  _id: `headline_${firstUserMessage._id}`,
+                  _id: `headline_${threadId}`,
                   text: headlineText,
-                  createdAt: firstUserMessage.createdAt,
+                  createdAt: new Date(firstTime - 1),
                   user: {
                     _id: AI_ID,
                     name: 'Chef AI',
@@ -337,12 +329,12 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot' } = {})
 
   useEffect(() => {
     const handler = (event) => {
-      const message = event.detail?.message;
-      if (!message) return;
+      const displayText = event.detail?.displayText;
+      if (!displayText) return;
 
       const headlineMessage = {
         _id: `headline_${Date.now()}`,
-        text: message,
+        text: displayText,
         createdAt: new Date(),
         user: {
           _id: AI_ID,
@@ -353,27 +345,7 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot' } = {})
         },
       };
 
-      setMessages((prev) => [...prev, headlineMessage]);
-
-      const syntheticEvent = {
-        preventDefault: () => {},
-      };
-      handleSend(syntheticEvent, message);
-
-      setTimeout(() => {
-        setMessages((prev) => {
-          if (!prev.length) {
-            return prev;
-          }
-
-          const last = prev[prev.length - 1];
-          if (last?.user?._id === USER_ID && last.text === message) {
-            return prev.slice(0, -1);
-          }
-
-          return prev;
-        });
-      }, 0);
+      setMessages((prev) => [headlineMessage, ...prev]);
     };
 
     window.addEventListener('chefai:quick-action', handler);
@@ -381,7 +353,7 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot' } = {})
     return () => {
       window.removeEventListener('chefai:quick-action', handler);
     };
-  }, [handleSend, setMessages]);
+  }, [setMessages]);
 
   return renderChatUI({
     error,
