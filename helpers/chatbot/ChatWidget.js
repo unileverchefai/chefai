@@ -91,7 +91,35 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot' } = {})
           setMessages((prev) => {
             // Merge with existing messages, avoiding duplicates
             const existingIds = new Set(prev.map((m) => m._id));
-            const newMessages = apiHistory.filter((m) => !existingIds.has(m._id));
+            let newMessages = apiHistory.filter((m) => !existingIds.has(m._id));
+
+            const headlineText = sessionStorage
+              .getItem(`chefai-quick-action-headline-${threadId}`);
+            if (headlineText && newMessages.length > 0) {
+              const hasHeadline = newMessages
+                .some((m) => m.metadata?.isQuickActionHeadline);
+
+              if (!hasHeadline) {
+                const firstMsg = newMessages[0];
+                const firstTime = firstMsg?.createdAt
+                  ? new Date(firstMsg.createdAt).getTime()
+                  : Date.now();
+                const headlineMessage = {
+                  _id: `headline_${threadId}`,
+                  text: headlineText,
+                  createdAt: new Date(firstTime - 1),
+                  user: {
+                    _id: AI_ID,
+                    name: 'Chef AI',
+                  },
+                  metadata: {
+                    isQuickActionHeadline: true,
+                  },
+                };
+                newMessages = [headlineMessage, ...newMessages];
+              }
+            }
+
             if (newMessages.length > 0) {
               return [...prev, ...newMessages].sort((a, b) => {
                 const timeA = a.createdAt instanceof Date
@@ -298,6 +326,34 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot' } = {})
     };
     handleSend(syntheticEvent, promptText);
   }, [handleSend]);
+
+  useEffect(() => {
+    const handler = (event) => {
+      const displayText = event.detail?.displayText;
+      if (!displayText) return;
+
+      const headlineMessage = {
+        _id: `headline_${Date.now()}`,
+        text: displayText,
+        createdAt: new Date(),
+        user: {
+          _id: AI_ID,
+          name: 'Chef AI',
+        },
+        metadata: {
+          isQuickActionHeadline: true,
+        },
+      };
+
+      setMessages((prev) => [headlineMessage, ...prev]);
+    };
+
+    window.addEventListener('chefai:quick-action', handler);
+
+    return () => {
+      window.removeEventListener('chefai:quick-action', handler);
+    };
+  }, [setMessages]);
 
   return renderChatUI({
     error,

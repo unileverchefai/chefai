@@ -48,6 +48,13 @@ export default function renderMessage(message, options = {}) {
   const isUser = message.user._id === USER_ID;
 
   const suggestedPrompts = message.metadata?.suggested_prompts || [];
+  const products = message.metadata?.products || message.metadata?.product_details || [];
+
+  const productImageUrls = new Set(
+    (products || [])
+      .map((p) => p.image_url || p.image)
+      .filter((url) => typeof url === 'string' && url),
+  );
 
   const hasRecipes = (message.metadata?.recipes?.length > 0)
                      || (message.metadata?.recipe_details?.length > 0)
@@ -73,19 +80,37 @@ export default function renderMessage(message, options = {}) {
   }
 
   const bubbleContent = [
-    h(
-      'div',
-      {
-        key: 'text-before',
-        style: {
-          fontFamily: 'var(--body-font-family)',
-          fontSize: 'var(--body-font-size-xs)',
-          lineHeight: '1.5',
-          whiteSpace: 'pre-wrap',
-        },
-      },
-      convertLinksToClickable(textBeforeRecipes),
-    ),
+    ...(message.metadata?.isQuickActionHeadline
+      ? [
+        h(
+          'div',
+          {
+            key: 'headline',
+            style: {
+              fontFamily: 'var(--ff-unilever-shilling)',
+              fontSize: 'var(--body-font-size-m)',
+              lineHeight: '1.4',
+              marginBottom: '8px',
+            },
+          },
+          message.text,
+        ),
+      ]
+      : [
+        h(
+          'div',
+          {
+            key: 'text-before',
+            style: {
+              fontFamily: 'var(--body-font-family)',
+              fontSize: 'var(--body-font-size-xs)',
+              lineHeight: '1.5',
+              whiteSpace: 'pre-wrap',
+            },
+          },
+          convertLinksToClickable(textBeforeRecipes),
+        ),
+      ]),
     ...(message.metadata?.images?.length > 0
       ? [
         h(
@@ -104,21 +129,23 @@ export default function renderMessage(message, options = {}) {
               })(),
             },
           },
-          message.metadata.images.map((img, idx) => h(
-            'img',
-            {
-              key: `img-${idx}`,
-              src: img.url,
-              alt: img.alt,
-              style: {
-                maxWidth: message.metadata.images.length === 1 ? '100%' : 'calc(50% - 4px)',
-                height: 'auto',
-                borderRadius: '8px',
-                objectFit: 'cover',
+          message.metadata.images
+            .filter((img) => !productImageUrls.has(img.url))
+            .map((img, idx) => h(
+              'img',
+              {
+                key: `img-${idx}`,
+                src: img.url,
+                alt: img.alt,
+                style: {
+                  maxWidth: message.metadata.images.length === 1 ? '50%' : 'calc(50% - 4px)',
+                  height: 'auto',
+                  borderRadius: '8px',
+                  objectFit: 'cover',
+                },
+                loading: 'lazy',
               },
-              loading: 'lazy',
-            },
-          )),
+            )),
         ),
       ]
       : []),
@@ -139,21 +166,95 @@ export default function renderMessage(message, options = {}) {
         ),
       ]
       : []),
-    h(
-      'div',
-      {
-        key: 'time',
-        style: {
-          fontSize: 'var(--body-font-size-xs)',
-          opacity: 0.7,
-          marginTop: '4px',
-        },
-      },
-      new Date(message.createdAt).toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-      }),
-    ),
+    ...(!isUser && products.length > 0
+      ? [
+        h(
+          'div',
+          {
+            key: 'products-heading',
+            className: 'chat-products-heading',
+          },
+          'Products:',
+        ),
+        h(
+          'div',
+          {
+            key: 'products-carousel',
+            className: 'chatbot-carousel',
+          },
+          products.map((product, index) => h(
+            'div',
+            {
+              key: `product-${index}`,
+              className: 'chatbot-carousel-card',
+            },
+            [
+              (product.image_url || product.image) && h(
+                'img',
+                {
+                  key: 'image',
+                  src: product.image_url || product.image,
+                  alt: product.name
+                    || product.title_in_user_language
+                    || product.title_in_original_language
+                    || 'Product image',
+                  className: 'chat-product-image',
+                },
+              ),
+              h(
+                'div',
+                {
+                  key: 'name',
+                  className: 'chat-product-name',
+                },
+                product.name
+                  || product.title_in_user_language
+                  || product.title_in_original_language
+                  || 'Product',
+              ),
+              product.description && h(
+                'div',
+                {
+                  key: 'description',
+                  className: 'chat-product-description',
+                },
+                product.description,
+              ),
+              product.url && h(
+                'a',
+                {
+                  key: 'link',
+                  href: product.url,
+                  target: '_blank',
+                  rel: 'noopener noreferrer',
+                  className: 'chat-product-link',
+                },
+                'check it out',
+              ),
+            ],
+          )),
+        ),
+      ]
+      : []),
+    ...(message.metadata?.isQuickActionHeadline
+      ? []
+      : [
+        h(
+          'div',
+          {
+            key: 'time',
+            style: {
+              fontSize: 'var(--body-font-size-xs)',
+              opacity: 0.7,
+              marginTop: '4px',
+            },
+          },
+          new Date(message.createdAt).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+          }),
+        ),
+      ]),
   ];
 
   return h(

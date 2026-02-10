@@ -4,7 +4,6 @@
 /* Mobile-first styles */
 .carousel-insights {
   position: relative;
-  padding: 0 0 32px;
   overflow: hidden;
   background-color: var(--background-color);
 }
@@ -160,10 +159,6 @@
 
 /* Desktop styles */
 @media (width >= 900px) {
-  .carousel-insights {
-    padding: 76px 0 48px;
-  }
-
   .carousel-insights .controls {
     justify-content: space-between;
     padding: var(--spacing-lg) 100px 0;

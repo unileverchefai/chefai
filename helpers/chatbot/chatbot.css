@@ -10,7 +10,7 @@
 
 .chatbot-question-btn {
   border: 1px solid var(--neon-fm-2);
-  background: linear-gradient(102.365deg, rgb(241 90 34 / 5%) 0.432%, rgb(235 34 99 / 5%) 49.756%, rgb(176 43 159 / 5%) 99.941%);
+  background: var(--gradient-purple);
   border-radius: var(--radius-lg);
   padding: var(--spacing-xs) var(--spacing-sm);
   font-family: var(--body-font-family);
@@ -91,6 +91,14 @@
 
 .chat-message {
     contain: layout style;
+}
+
+.chat-message.ai-message {
+    margin-bottom: 0 !important;
+}
+
+.chat-message.ai-message .message-bubble {
+    padding-bottom: 0 !important;
 }
 
 .message-bubble {
@@ -250,6 +258,68 @@
 
 .message-bubble a:hover {
     opacity: 0.8;
+}
+
+/* Product carousel inside messages */
+.chatbot-carousel {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+  padding-bottom: var(--spacing-xs);
+  overflow-x: auto;
+}
+
+.chatbot-carousel-card {
+  min-width: 180px;
+  max-width: 220px;
+  border-radius: 12px;
+  border: 1px solid var(--light-mushroom);
+  padding: var(--spacing-xs);
+  background-color: var(--background-color);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxs);
+}
+
+.chat-product-image {
+  width: 100%;
+  height: 120px;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-bottom: var(--spacing-xxs);
+}
+
+.chat-product-name {
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-xs);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.chat-product-description {
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-xss);
+  line-height: 1.4;
+  color: var(--text-color);
+  margin-top: var(--spacing-xxs);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.chat-product-link {
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-xss);
+  margin-top: var(--spacing-xxs);
+}
+
+.chat-products-heading {
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-xs);
+  font-weight: 600;
+  margin-top: var(--spacing-md);
 }
 
 .user-message .message-bubble a {

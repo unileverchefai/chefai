@@ -17,6 +17,7 @@
 :root {
   /* colors */
   --c-white: #fff;
+  --c-black: #000;
   --background-color: var(--c-white);
   --light-color: #f8f8f8;
   --dark-color: #505050;
@@ -184,6 +185,7 @@
   --box-shadow-card-trend: 0 0 24px rgb(0 0 0 / 25%);
   --gradient-highlight: linear-gradient(90deg, var(--orange-dark) 0%, var(--purple) 100%);
   --gradient-border: linear-gradient(135deg, var(--ufs-orange) 0%, var(--orange-dark) 50%, var(--purple) 100%);
+  --gradient-purple: linear-gradient(122deg, rgb(241 90 34 / 10%) 30.08%, rgb(235 34 99 / 10%) 55.84%, rgb(176 43 159 / 10%) 68.19%), #FFF;
 
   /* Trend card gradients */
   --trend-header-shine: linear-gradient(180deg, rgb(255 255 255 / 10%) 0%, rgb(255 255 255 / 3%) 100%);

@@ -83,16 +83,7 @@ export default function formatResponse(apiResponse) {
     });
   }
 
-  // Handle product details
-  if (apiResponse.response?.product_details?.length > 0) {
-    messageText += '\n\nProducts:\n';
-    apiResponse.response.product_details.forEach((product, index) => {
-      messageText += `\n${index + 1}. ${product.name}`;
-      if (product.description) messageText += `\n   ${product.description}`;
-      if (product.code) messageText += `\n   Code: ${product.code}`;
-      if (product.url) messageText += `\n   Link: ${product.url}`;
-    });
-  }
+  // Products are rendered via a dedicated carousel in the UI.
 
   // Collect all images from response
   const images = [];
@@ -118,7 +109,14 @@ export default function formatResponse(apiResponse) {
     apiResponse.response?.recipe_details,
     (recipe) => recipe.title_in_user_language || recipe.title_in_original_language || 'Recipe image',
   );
-  extractImages(apiResponse.response?.product_details, (product) => product.name || 'Product image');
+  extractImages(apiResponse.response?.product_details, (product) => product.name
+    || product.title_in_user_language
+    || product.title_in_original_language
+    || 'Product image');
+  extractImages(apiResponse.response?.products, (product) => product.name
+    || product.title_in_user_language
+    || product.title_in_original_language
+    || 'Product image');
 
   return {
     _id: apiResponse.message_id || `msg_${Date.now()}`,
@@ -134,6 +132,7 @@ export default function formatResponse(apiResponse) {
       recipes: apiResponse.response?.recipes || [],
       recipe_details: apiResponse.response?.recipe_details || [],
       product_details: apiResponse.response?.product_details || [],
+      products: apiResponse.response?.products || [],
       suggested_prompts: apiResponse.response?.suggested_prompts || [],
       businesses: apiResponse.response?.businesses || [],
       images,
