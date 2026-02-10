@@ -45,7 +45,6 @@ export function createRegistrationPayload(data) {
 
   const payload = {
     id: idValue,
-    ...(anonymousUserId ? { user_id: anonymousUserId } : {}),
     site: SITE_CODE,
     email,
     mobilePhone: mobilePhone ?? '',

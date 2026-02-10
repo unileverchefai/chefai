@@ -1,8 +1,15 @@
 import {
-  getAnonymousUserIdFromCookie, clearAllChatData, setCookie,
+  getAnonymousUserIdFromCookie,
+  clearAllChatData,
+  setCookie,
+  getUserIdFromCookie,
+  getCookieId,
+  getOrCreateCookieId,
+  createUser,
 } from '@helpers/chatbot/utils.js';
 import saveBusinessDetails from '@helpers/personalized-hub/saveBusinessDetails.js';
 import createChefAIUser from '@helpers/chatbot/createChefAIUser.js';
+import { ENDPOINTS as CHEF_AI_ENDPOINTS, SUBSCRIPTION_KEY as CHEF_AI_SUBSCRIPTION_KEY } from '@api/endpoints.js';
 import { apiRequest } from './endpoints.js';
 import {
   setToken, removeToken, getToken,
@@ -15,6 +22,74 @@ import {
   BUSINESS_TYPE_MAP,
   createRegistrationPayload,
 } from './constants.js';
+
+async function ensureChefAiUserId() {
+  try {
+    const cookieUserId = getCookieId();
+    if (cookieUserId) {
+      return cookieUserId;
+    }
+
+    const existingUserId = getUserIdFromCookie();
+    if (existingUserId) {
+      setCookie('cookie_id', existingUserId);
+      return existingUserId;
+    }
+
+    const createdUserId = await createUser();
+    if (createdUserId) {
+      return createdUserId;
+    }
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('[Auth] Failed to ensure ChefAI user id:', error);
+  }
+
+  try {
+    const fallbackId = getOrCreateCookieId();
+    setCookie('cookie_id', fallbackId);
+    return fallbackId;
+  } catch {
+    return null;
+  }
+}
+
+async function loginUserWithCookieId(email) {
+  if (!CHEF_AI_ENDPOINTS.usersLogin) {
+    return;
+  }
+
+  try {
+    const cookieId = await ensureChefAiUserId();
+    if (!cookieId) {
+      return;
+    }
+
+    const payload = {
+      cookie_id: cookieId,
+      login_user_id: email,
+    };
+
+    const response = await fetch(CHEF_AI_ENDPOINTS.usersLogin, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'X-Subscription-Key': CHEF_AI_SUBSCRIPTION_KEY,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      // eslint-disable-next-line no-console
+      console.error('[Auth] ChefAI users/login failed:', response.status, response.statusText, errorText);
+    }
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('[Auth] ChefAI users/login error:', error);
+  }
+}
 
 export async function login(email, password) {
   if (!email || !password) {
@@ -41,6 +116,7 @@ export async function login(email, password) {
     setToken(token);
     setCookie('user_id', email);
     setCookie('chef-ai-thread-id', '', -1);
+    loginUserWithCookieId(email).catch(() => {});
     return token;
   } catch (error) {
     if (error.message.includes('401') || error.message.includes('Unauthorized')) {
@@ -143,6 +219,8 @@ export async function register(formData) {
         // eslint-disable-next-line no-console
         console.error('[Registration] Error checking for business data:', error);
       }
+
+      loginUserWithCookieId(email).catch(() => {});
 
       return response;
     }

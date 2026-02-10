@@ -47,7 +47,7 @@ export function getOrCreateCookieId() {
   if (cookieId) {
     return cookieId;
   }
-  cookieId = `cookie_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+  cookieId = `${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
   setCookie('cookie_id', cookieId);
   return cookieId;
 }
@@ -281,30 +281,22 @@ export async function getOrCreateThreadId(userId, validateOnInit = false, skipCa
   } catch (error) {
     if (error.message && error.message.includes('does not exist')) {
       setCookie('user_id', '', -1);
-      setCookie('chef-ai-anonymous-user-id', '', -1);
       setCookie('chef-ai-thread-id', '', -1);
     }
     throw error;
   }
 }
 
-export function getAnonymousUserIdFromCookie() {
-  const cookieName = 'chef-ai-anonymous-user-id';
-  return getCookie(cookieName);
-}
-
 export function getUserIdFromCookie() {
   return getCookie('user_id');
 }
 
-export function clearAnonymousUserIdCookie() {
-  const cookieName = 'chef-ai-anonymous-user-id';
-  setCookie(cookieName, '', -1);
+export function getAnonymousUserIdFromCookie() {
+  return getUserIdFromCookie();
 }
 
 export function clearAllChatData() {
   setCookie('chef-ai-thread-id', '', -1);
-  setCookie('chef-ai-anonymous-user-id', '', -1);
   setCookie('personalized-hub-consent', '', -1);
   setCookie('user_id', '', -1);
   setCookie('cookie_id', '', -1);
@@ -318,11 +310,9 @@ export function clearAllChatData() {
 }
 
 export async function getAnonymousUserId() {
-  const cookieName = 'chef-ai-anonymous-user-id';
-  const userId = getCookie(cookieName);
-
-  if (userId) {
-    return userId;
+  const existingUserId = getUserIdFromCookie();
+  if (existingUserId) {
+    return existingUserId;
   }
 
   if (!ENDPOINTS.users) {
@@ -364,7 +354,8 @@ export async function getAnonymousUserId() {
   const json = JSON.parse(responseText);
   const returnedUserId = (json.user_id ?? json.data?.user_id ?? cookieId).toString().trim();
 
-  setCookie(cookieName, returnedUserId);
+  setCookie('cookie_id', returnedUserId);
+  setCookie('user_id', returnedUserId);
   return returnedUserId;
 }
 
@@ -410,8 +401,8 @@ export async function createUser() {
   const json = JSON.parse(responseText);
   const returnedUserId = (json.user_id ?? json.data?.user_id ?? cookieId).toString().trim();
 
+  setCookie('cookie_id', returnedUserId);
   setCookie('user_id', returnedUserId);
-  setCookie('chef-ai-anonymous-user-id', returnedUserId);
   return returnedUserId;
 }
 

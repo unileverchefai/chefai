@@ -97,7 +97,7 @@ export default function openCookieAgreementModal(onAgree, onClose, required = fa
   agreeButton.addEventListener('click', () => {
     setCookie('personalized-hub-consent', 'true');
 
-    const cookieId = `cookie_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+    const cookieId = `${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
     setCookie('cookie_id', cookieId);
 
     modal.close();
