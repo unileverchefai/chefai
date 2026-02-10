@@ -19,7 +19,7 @@ export default function openVideoModal(videoUrl) {
   // close button
   const closeButton = createElement('button', {
     className: 'video-modal-close',
-    properties: {
+    attributes: {
       'aria-label': 'Close video',
       type: 'button',
     },
