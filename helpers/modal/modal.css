@@ -91,9 +91,9 @@
   outline-offset: 2px;
 }
 
-@media (width < 992px) {
+@media (width < 990px) {
   .modal-overlay {
-    padding: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
   }
 
   .modal-handle {
