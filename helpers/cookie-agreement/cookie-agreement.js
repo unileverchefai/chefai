@@ -1,6 +1,9 @@
 import { createElement } from '@scripts/common.js';
 import { loadCSS } from '@scripts/aem.js';
 import createModal from '@helpers/modal/index.js';
+import { loadFragment } from '@blocks/fragment/fragment.js';
+
+const COOKIE_FRAGMENT_PATH = '/fragments/cookies';
 
 function setCookie(name, value, days = 365) {
   try {
@@ -21,74 +24,30 @@ function setCookie(name, value, days = 365) {
  * @returns {Object} Modal instance
  */
 export default function openCookieAgreementModal(onAgree, onClose, required = false) {
-  // Load cookie agreement CSS
   loadCSS(`${window.hlx.codeBasePath}/helpers/cookie-agreement/cookie-agreement.css`).catch(() => {
     // CSS loading error handled silently
   });
 
-  // Create modal content
   const content = createElement('div', {
     className: 'cookie-agreement-modal',
   });
 
-  // Content area
   const contentArea = createElement('div', {
     className: 'cookie-agreement-content',
   });
 
-  // Text area
   const textArea = createElement('div', {
     className: 'cookie-agreement-text',
   });
 
-  // First paragraph with links
-  const paragraph1 = createElement('p');
-  paragraph1.appendChild(document.createTextNode('Before proceeding further, please read our '));
-
-  const termsLink = createElement('a', {
-    innerContent: 'AI Terms & Conditions',
-    attributes: {
-      href: '#',
-    },
+  const loadingParagraph = createElement('p', {
+    innerContent: 'Loading cookie information…',
   });
-  termsLink.addEventListener('click', (e) => e.preventDefault());
-  paragraph1.appendChild(termsLink);
-
-  paragraph1.appendChild(document.createTextNode(', '));
-
-  const privacyLink = createElement('a', {
-    innerContent: 'Privacy Notice',
-    attributes: {
-      href: '#',
-    },
-  });
-  privacyLink.addEventListener('click', (e) => e.preventDefault());
-  paragraph1.appendChild(privacyLink);
-
-  paragraph1.appendChild(document.createTextNode(', and '));
-
-  const cookieLink = createElement('a', {
-    innerContent: 'Cookie Statement',
-    attributes: {
-      href: '#',
-    },
-  });
-  cookieLink.addEventListener('click', (e) => e.preventDefault());
-  paragraph1.appendChild(cookieLink);
-
-  paragraph1.appendChild(document.createTextNode(' to better understand how we use your data.'));
-  textArea.appendChild(paragraph1);
-
-  // Second paragraph
-  const paragraph2 = createElement('p', {
-    innerContent: 'I have read and agree to the terms and conditions and I am over 16 years old.',
-  });
-  textArea.appendChild(paragraph2);
+  textArea.appendChild(loadingParagraph);
 
   contentArea.appendChild(textArea);
   content.appendChild(contentArea);
 
-  // Buttons area
   const buttonsArea = createElement('div', {
     className: 'cookie-agreement-buttons',
   });
@@ -104,7 +63,6 @@ export default function openCookieAgreementModal(onAgree, onClose, required = fa
   buttonsArea.appendChild(agreeButton);
   content.appendChild(buttonsArea);
 
-  // Create modal
   const modal = createModal({
     content,
     showCloseButton: false,
@@ -118,17 +76,31 @@ export default function openCookieAgreementModal(onAgree, onClose, required = fa
     },
   });
 
-  // Set up event listener after modal is created
+  // Load fragment content asynchronously and inject into the modal text area
+  loadFragment(COOKIE_FRAGMENT_PATH)
+    .then((fragment) => {
+      if (fragment) {
+        textArea.innerHTML = fragment.innerHTML;
+        const links = textArea.querySelectorAll('a[href]');
+        links.forEach((link) => {
+          link.setAttribute('target', '_blank');
+          link.setAttribute('rel', 'noopener noreferrer');
+        });
+      } else {
+        textArea.innerHTML = '<p>Unable to load cookie information.</p>';
+      }
+    })
+    .catch(() => {
+      textArea.innerHTML = '<p>Unable to load cookie information.</p>';
+    });
+
   agreeButton.addEventListener('click', () => {
     setCookie('personalized-hub-consent', 'true');
 
-    // Create cookie_id (will later be replaced with OneTrust cookie ID)
     const cookieId = `cookie_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
     setCookie('cookie_id', cookieId);
 
-    // Close modal first, then call onAgree after animation completes
     modal.close();
-    // Wait for modal close animation to complete before calling onAgree
     setTimeout(() => {
       if (onAgree) onAgree();
     }, 300);

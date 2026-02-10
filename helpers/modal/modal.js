@@ -56,6 +56,79 @@ export default function createModal(options = {}) {
   let isAnimating = false;
 
   /**
+   * Sets up swipe-down-to-close behavior for the modal handle on mobile
+   */
+  function setupSwipeToClose() {
+    if (!modalHandle || !modalContent) return;
+
+    if (window.innerWidth >= 990) return;
+
+    const minSwipeDistance = 60;
+    const maxSwipeTime = 500;
+    const maxTranslate = 80;
+
+    let startY = 0;
+    let startTime = 0;
+    let isSwiping = false;
+
+    function resetTransform() {
+      modalContent.style.transform = '';
+    }
+
+    function handleTouchStart(event) {
+      if (!event.touches || event.touches.length !== 1) return;
+
+      const touch = event.touches[0];
+      startY = touch.clientY;
+      startTime = Date.now();
+      isSwiping = true;
+    }
+
+    function handleTouchMove(event) {
+      if (!isSwiping || !event.touches || event.touches.length !== 1) return;
+
+      const touch = event.touches[0];
+      const deltaY = touch.clientY - startY;
+
+      // Only react to downward movement
+      if (deltaY <= 0) {
+        resetTransform();
+        return;
+      }
+
+      const translateY = Math.min(deltaY, maxTranslate);
+      modalContent.style.transform = `translateY(${translateY}px)`;
+    }
+
+    function handleTouchEnd(event) {
+      if (!isSwiping) return;
+
+      const touch = event.changedTouches && event.changedTouches[0];
+      if (!touch) {
+        resetTransform();
+        isSwiping = false;
+        return;
+      }
+
+      const deltaY = touch.clientY - startY;
+      const elapsedTime = Date.now() - startTime;
+
+      resetTransform();
+      isSwiping = false;
+
+      const isValidSwipe = deltaY >= minSwipeDistance && elapsedTime <= maxSwipeTime;
+
+      if (isValidSwipe) {
+        handleClose();
+      }
+    }
+
+    modalHandle.addEventListener('touchstart', handleTouchStart, { passive: true });
+    modalHandle.addEventListener('touchmove', handleTouchMove, { passive: true });
+    modalHandle.addEventListener('touchend', handleTouchEnd);
+  }
+
+  /**
    * Creates the modal overlay element
    */
   function createOverlay() {
@@ -348,6 +421,9 @@ export default function createModal(options = {}) {
 
     // Setup event listeners
     setupEventListeners();
+
+    // Setup swipe-to-close behavior for mobile handle
+    setupSwipeToClose();
 
     // Store the previously active element for focus restoration
     previousActiveElement = document.activeElement;

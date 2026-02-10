@@ -126,13 +126,6 @@
   max-width: 100%;
 }
 
-/* Pre-defined Question Buttons */
-.ph-predefined-questions {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-}
-
 .ph-btn-gradient {
   background: linear-gradient(91.765deg, rgb(232 91 14 / 6%) 3.749%, rgb(255 90 0 / 6%) 28.36%, rgb(92 54 87 / 6%) 69.867%, rgb(134 36 121 / 6%) 103.17%);
 }
