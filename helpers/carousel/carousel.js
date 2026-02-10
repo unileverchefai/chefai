@@ -146,13 +146,17 @@ export default function createCarousel(options) {
    * itemWidth, isMobile, gap, itemsPerSlide, slideWidth, totalSlides
   */
   function getCarouselMetrics() {
-    const firstItem = container.querySelector('.card, .carousel-item, .trend-card');
+    // Use the widest child as the base item width so mixed-width
+    // carousels (e.g. video + cards) still slide in consistent pages.
+    let itemWidth = 0;
+    const children = Array.from(container.children);
+    children.forEach((child) => {
+      const width = child.offsetWidth ?? 0;
+      if (width > itemWidth) {
+        itemWidth = width;
+      }
+    });
 
-    // const firstItem = container.querySelector('.carousel-video-item, .carousel-card-item,
-    //  .card, .carousel-item, .trend-card'); ??
-    // Maybe a less generic approach like const firstItem = container.firstElementChild;??
-
-    const itemWidth = firstItem?.offsetWidth || 0;
     const isMobile = window.innerWidth < mobileBreakpoint;
     const gap = isMobile ? mobileGap : desktopGap;
     const itemsPerSlide = isMobile ? mobileItemsPerSlide : desktopItemsPerSlide;

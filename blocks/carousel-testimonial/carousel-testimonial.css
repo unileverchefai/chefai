@@ -8,8 +8,10 @@ main > .section > .carousel-testimonial-wrapper {
 }
 
 .carousel-testimonial {
+  position: relative;
   padding: var(--spacing-lg) 0 var(--spacing-lg) var(--spacing-md);
   background: var(--c-white);
+  overflow: hidden;
 }
 
 .carousel-testimonial.var-1,
@@ -25,17 +27,11 @@ main > .section > .carousel-testimonial-wrapper {
 .carousel-testimonial .carousel-container {
   display: flex;
   gap: var(--spacing-md);
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
   list-style: none;
   margin: 0;
   padding: 0 0 var(--spacing-lg);
-}
-
-.carousel-testimonial .carousel-container::-webkit-scrollbar {
-  display: none;
+  transition: transform var(--transition-base);
+  will-change: transform;
 }
 
 .carousel-video-item {

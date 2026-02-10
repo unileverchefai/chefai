@@ -227,14 +227,6 @@ export default function decorate(block) {
   carouselContainer.setAttribute('role', 'region');
   carouselContainer.setAttribute('aria-label', 'Testimonial carousel');
 
-  const liveRegion = createElement('div', {
-    className: 'sr-only',
-    properties: {
-      'aria-live': 'polite',
-      'aria-atomic': 'true',
-    },
-  });
-
   // auto-rotate card colors to avoid repetiton :))
   let cardCounter = 0;
   const variants = ['variant-1', 'variant-2', 'variant-3'];
@@ -261,7 +253,6 @@ export default function decorate(block) {
   });
 
   block.innerHTML = '';
-  block.appendChild(liveRegion);
   block.appendChild(carouselContainer);
 
   //  static layout on desktop if 4 or less items
@@ -285,6 +276,7 @@ export default function decorate(block) {
       swipeOnDesktop: true,
       enableMomentum: true,
       disableDesktopCarousel: isStaticDesktop,
+      disableSnap: true,
     });
   }
 
