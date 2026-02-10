@@ -1,6 +1,5 @@
 const eventsSettingsUrl = '/analytics.json';
 
-// Object structure based on Adobe Experience Platform Web SDK specifications
 const PAGE_VIEW = {
   event: 'pageView',
   web: {
@@ -51,9 +50,13 @@ const PAGE_VIEW = {
   },
 };
 
+const PAGE_SCROLL = {
+  event: 'pageScroll',
+};
+
 const eventList = {
   load: PAGE_VIEW,
-  // TODO: add the rest of the objects based on the specific data to be collected
+  scroll: PAGE_SCROLL,
 };
 
 async function getEventsSettings(targetUrl = eventsSettingsUrl) {
@@ -121,14 +124,25 @@ export default async function addCustomAnalyticsEvents() {
     const eventConfigObject = eventList[eventType] || {};
     const scrollTracked = {}; // Track which scroll events have fired
 
-    if (eventType !== 'scroll') {
-      targetElement.addEventListener(eventConfigEvent, () => {
-        pushEventToDataLayer({
-          sdr,
-          targetElement: targetElement.className || targetElement.id || targetElement.tagName,
-          ...eventConfigObject,
-        });
+    const handler = () => {
+      pushEventToDataLayer({
+        sdr,
+        targetElement: targetElement.className || targetElement.id || targetElement.tagName,
+        ...eventConfigObject,
       });
+    };
+
+    if (eventType === 'load') {
+      if (document.readyState === 'loading') {
+        targetElement.addEventListener(eventConfigEvent, handler);
+      } else {
+        handler();
+      }
+      return;
+    }
+
+    if (eventType !== 'scroll') {
+      targetElement.addEventListener(eventConfigEvent, handler);
     } else {
       targetElement.addEventListener('scroll', () => {
         const scrollPosition = window.scrollY + window.innerHeight;
