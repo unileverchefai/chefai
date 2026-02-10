@@ -44,7 +44,7 @@ function convertLinksToClickable(text) {
 }
 
 export default function renderMessage(message, options = {}) {
-  const { onPromptClick } = options;
+  const { onPromptClick, hideSuggestedPrompts = false } = options;
   const isUser = message.user._id === USER_ID;
 
   const suggestedPrompts = message.metadata?.suggested_prompts || [];
@@ -284,7 +284,7 @@ export default function renderMessage(message, options = {}) {
         },
         bubbleContent,
       ),
-      !isUser && suggestedPrompts.length > 0 && h(SuggestedPrompts, {
+      !isUser && suggestedPrompts.length > 0 && !hideSuggestedPrompts && h(SuggestedPrompts, {
         key: 'suggested-prompts',
         prompts: suggestedPrompts,
         onPromptClick,

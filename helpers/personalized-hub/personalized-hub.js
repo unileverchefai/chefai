@@ -1,8 +1,8 @@
-import { loadReact, createUser } from '@helpers/chatbot/utils.js';
+import { loadReact, getCookieId, getUserIdFromCookie } from '@helpers/chatbot/utils.js';
+import sendStreamingMessage from '@helpers/chatbot/sendStreamingMessage.js';
 import { createElement } from '@scripts/common.js';
 import { loadCSS } from '@scripts/aem.js';
 import createModal from '@helpers/modal/index.js';
-import saveBusinessDetails from './saveBusinessDetails.js';
 
 const SCREENS = {
   CHAT: 'chat',
@@ -83,9 +83,17 @@ export default async function openPersonalizedHub() {
               business_name: b.name ?? '',
               address: b.address ?? '',
               image_url: b.image_url ?? '',
-              logo_url: '',
-              place_id: b.place_id,
-              url: b.url,
+              logo_url: b.logo_url ?? '',
+              place_id: b.place_id ?? '',
+              url: b.url ?? '',
+              street: b.street ?? '',
+              city: b.city ?? '',
+              postal_code: b.postal_code ?? '',
+              phone_number: b.phone_number ?? '',
+              rating: b.rating ?? null,
+              business_type: b.business_type ?? '',
+              cuisine_type: b.cuisine_type ?? '',
+              keywords: Array.isArray(b.keywords) ? b.keywords : (b.types ?? []),
             }));
 
             setBusinessCandidates(normalized);
@@ -113,34 +121,39 @@ export default async function openPersonalizedHub() {
           setCurrentScreen(SCREENS.CONFIRMATION);
         };
 
-        const handleConfirm = async () => {
+        const handleConfirm = () => {
           setCurrentScreen(SCREENS.LOADING);
 
+          const userId = getCookieId() ?? getUserIdFromCookie();
+          const placeId = businessData?.place_id ?? '';
+
+          const businessInfoToStore = {
+            ...businessData,
+            user_id: userId,
+            timestamp: Date.now(),
+          };
           try {
-            // Create a new user
-            const userId = await createUser();
-
-            // Store business info in session storage
-            const businessInfoToStore = {
-              ...businessData,
-              user_id: userId,
-              timestamp: Date.now(),
-            };
             sessionStorage.setItem('personalized-hub-business-data', JSON.stringify(businessInfoToStore));
-
-            // Save business details with the new user_id
-            await saveBusinessDetails(businessData, userId);
-          } catch (e) {
-            // eslint-disable-next-line no-console
-            console.error('Failed to create user or save business details:', e);
-            // Still store business data in session even if API call fails
-            sessionStorage.setItem('personalized-hub-business-data', JSON.stringify(businessData));
+          } catch {
+            // ignore storage errors
           }
 
-          // Show loading for 3 seconds, then redirect to sneak-peek page
-          setTimeout(() => {
-            window.location.href = '/sneak-peek';
-          }, 3000);
+          let threadId = null;
+          try {
+            const stored = sessionStorage.getItem('personalized-hub-thread-id');
+            if (stored) threadId = stored;
+          } catch {
+            // ignore
+          }
+
+          const confirmMessage = placeId ? `place_id: ${placeId}` : '';
+
+          sendStreamingMessage(confirmMessage, {
+            skipCache: true,
+            ...(threadId ? { thread_id: threadId } : {}),
+            onComplete: () => {},
+            onError: () => {},
+          });
         };
 
         const handleReject = () => {

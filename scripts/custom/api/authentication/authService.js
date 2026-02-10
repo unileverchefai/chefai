@@ -7,8 +7,6 @@ import {
   getOrCreateCookieId,
   createUser,
 } from '@helpers/chatbot/utils.js';
-import saveBusinessDetails from '@helpers/personalized-hub/saveBusinessDetails.js';
-import createChefAIUser from '@helpers/chatbot/createChefAIUser.js';
 import { ENDPOINTS as CHEF_AI_ENDPOINTS, SUBSCRIPTION_KEY as CHEF_AI_SUBSCRIPTION_KEY } from '@api/endpoints.js';
 import { apiRequest } from './endpoints.js';
 import {
@@ -54,19 +52,24 @@ async function ensureChefAiUserId() {
   }
 }
 
-async function loginUserWithCookieId(email) {
+/**
+ * Call Chef AI users/login to link cookie_id with SIFU email.
+ * @param {string} email - SIFU email (login_user_id)
+ * @param {string} [cookieId] - If provided, use as cookie_id; otherwise use ensureChefAiUserId()
+ */
+async function loginUserWithCookieId(email, cookieId = null) {
   if (!CHEF_AI_ENDPOINTS.usersLogin) {
     return;
   }
 
   try {
-    const cookieId = await ensureChefAiUserId();
-    if (!cookieId) {
+    const idToSend = cookieId ?? await ensureChefAiUserId();
+    if (!idToSend) {
       return;
     }
 
     const payload = {
-      cookie_id: cookieId,
+      cookie_id: idToSend,
       login_user_id: email,
     };
 
@@ -151,6 +154,7 @@ export async function register(formData) {
     : 'other';
   const now = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
   const anonymousUserId = getAnonymousUserIdFromCookie();
+  const cookieIdForLogin = getCookieId() ?? getUserIdFromCookie();
 
   const payload = createRegistrationPayload({
     email,
@@ -178,49 +182,7 @@ export async function register(formData) {
       setCookie('user_id', email);
       setCookie('chef-ai-thread-id', '', -1);
 
-      try {
-        const businessDataStr = sessionStorage.getItem('personalized-hub-business-data');
-        let businessData = null;
-        if (businessDataStr) {
-          try {
-            businessData = JSON.parse(businessDataStr);
-          } catch (parseError) {
-            // eslint-disable-next-line no-console
-            console.error('[Registration] Failed to parse business data:', parseError);
-          }
-        }
-
-        try {
-          const userName = `${firstName} ${lastName}`;
-          await createChefAIUser(email, userName, businessData);
-        } catch (chefAIError) {
-          // eslint-disable-next-line no-console
-          console.error('[Registration] Failed to create ChefAI user:', chefAIError);
-        }
-
-        if (businessData && businessData.business_name) {
-          try {
-            await saveBusinessDetails(businessData, email);
-            sessionStorage.removeItem('personalized-hub-business-data');
-
-            try {
-              const { default: fetchSavedBusinessInfoAndLog } = await import('@helpers/personalized-hub/fetchSavedBusinessInfo.js');
-              await fetchSavedBusinessInfoAndLog();
-            } catch (fetchError) {
-              // eslint-disable-next-line no-console
-              console.error('[Registration] Failed to fetch user data after save:', fetchError);
-            }
-          } catch (businessError) {
-            // eslint-disable-next-line no-console
-            console.error('[Registration] Failed to save business details:', businessError);
-          }
-        }
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('[Registration] Error checking for business data:', error);
-      }
-
-      loginUserWithCookieId(email).catch(() => {});
+      loginUserWithCookieId(email, cookieIdForLogin ?? undefined).catch(() => {});
 
       return response;
     }

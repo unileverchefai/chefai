@@ -206,12 +206,12 @@ export default function openSignupPasswordModal(email, registrationData = null) 
         await register(formData);
         modal.close();
         // Redirect to personalized-hub after registration is completed
-        window.location.href = '/personalized-hub';
+        // window.location.href = '/personalized-hub';
       } else {
         // Fallback: user already registered, just send reset email
         await resetPassword(email);
         modal.close();
-        window.location.href = '/personalized-hub';
+        // window.location.href = '/personalized-hub';
       }
     } catch (error) {
       errorMessage.textContent = error.message ?? 'Failed to create account. Please try again.';

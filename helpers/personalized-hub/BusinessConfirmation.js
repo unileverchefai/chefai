@@ -59,6 +59,7 @@ export default function BusinessConfirmation({
     const address = business.address ?? '';
     const imageUrl = business.image_url ?? '';
     const logoUrl = business.logo_url ?? '';
+    const placeId = business.place_id ?? '';
     const isSelected = name === selectedName;
 
     return h(
@@ -66,6 +67,7 @@ export default function BusinessConfirmation({
       {
         key: `business-${idx}`,
         className: `card chatbot-carousel-card${isSelected ? ' ph-business-card--selected' : ''}`,
+        'data-place-id': placeId,
         onClick: () => {
           if (onSelectBusiness) {
             onSelectBusiness(business);

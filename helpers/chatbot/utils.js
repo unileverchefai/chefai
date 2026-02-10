@@ -52,7 +52,20 @@ export function getOrCreateCookieId() {
   return cookieId;
 }
 
+/**
+ * Get cookie_id. If user_id is stored in session, sync cookie_id to that value and return it.
+ * @returns {string|null} cookie_id value
+ */
 export function getCookieId() {
+  try {
+    const sessionUserId = sessionStorage.getItem('chefai_user_id');
+    if (sessionUserId) {
+      setCookie('cookie_id', sessionUserId);
+      return sessionUserId;
+    }
+  } catch {
+    // ignore
+  }
   return getCookie('cookie_id');
 }
 
@@ -354,6 +367,11 @@ export async function getAnonymousUserId() {
   const json = JSON.parse(responseText);
   const returnedUserId = (json.user_id ?? json.data?.user_id ?? cookieId).toString().trim();
 
+  try {
+    sessionStorage.setItem('chefai_user_id', returnedUserId);
+  } catch {
+    // ignore
+  }
   setCookie('cookie_id', returnedUserId);
   setCookie('user_id', returnedUserId);
   return returnedUserId;
@@ -361,6 +379,8 @@ export async function getAnonymousUserId() {
 
 /**
  * Create a new user via API (uses cookie_id as user_id per journey flow).
+ * Once we get user_id from the API, store it in session and update cookie_id to that same value.
+ *
  * @returns {Promise<string>} User ID
  */
 export async function createUser() {
@@ -401,6 +421,11 @@ export async function createUser() {
   const json = JSON.parse(responseText);
   const returnedUserId = (json.user_id ?? json.data?.user_id ?? cookieId).toString().trim();
 
+  try {
+    sessionStorage.setItem('chefai_user_id', returnedUserId);
+  } catch {
+    // ignore
+  }
   setCookie('cookie_id', returnedUserId);
   setCookie('user_id', returnedUserId);
   return returnedUserId;
