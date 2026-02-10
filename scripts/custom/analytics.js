@@ -1,5 +1,5 @@
 const eventsSettingsUrl = '/analytics.json';
-
+// Object structure based on Adobe Experience Platform Web SDK specifications
 const PAGE_VIEW = {
   event: 'pageView',
   web: {
