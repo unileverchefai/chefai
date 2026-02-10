@@ -1,6 +1,6 @@
-import openSignInModal from '@helpers/signin/index.js';
 import { createElement } from '@scripts/common.js';
 import { loadCSS } from '@scripts/aem.js';
+import createProfileSection from '@helpers/nav-profile/nav-profile.js';
 import { fetchBusinessInfo, fetchSneakPeek } from './fetchSneakPeek.js';
 
 // create customHeader for sneak peek page.
@@ -14,22 +14,10 @@ const decorateCustomHeader = (navbar) => {
     `,
   });
 
-  const signInButton = createElement('button', {
-    className: 'nav-signin-button',
-    attributes: {
-      type: 'button',
-      'aria-label': 'Sign in',
-    },
-  });
-
-  signInButton.textContent = 'Sign in';
-
-  signInButton.addEventListener('click', () => {
-    openSignInModal();
-  });
+  const profile = createProfileSection();
 
   navbar.appendChild(logo);
-  navbar.appendChild(signInButton);
+  navbar.appendChild(profile);
 };
 
 export default async function decorate(block) {
