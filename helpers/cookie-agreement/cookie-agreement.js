@@ -6,14 +6,10 @@ import { loadFragment } from '@blocks/fragment/fragment.js';
 const COOKIE_FRAGMENT_PATH = '/fragments/cookies';
 
 function setCookie(name, value, days = 365) {
-  try {
-    const date = new Date();
-    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-    const expires = `; expires=${date.toUTCString()}`;
-    document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value || '')}${expires}; path=/`;
-  } catch {
-    // ignore cookie errors
-  }
+  const date = new Date();
+  date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+  const expires = `; expires=${date.toUTCString()}`;
+  document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value || '')}${expires}; path=/`;
 }
 
 /**

@@ -253,14 +253,6 @@ export default function PersonalizedChatWidget({
             user: { _id: AI_ID, name: 'Chef AI' },
             metadata: {},
           }),
-          isTyping && streamingText === null && h(
-            'div',
-            {
-              key: 'typing',
-              className: 'ph-typing-indicator',
-            },
-            'Chef AI is typing...',
-          ),
           h('div', { key: 'scroll-anchor', ref: messagesEndRef }),
         ],
       ),

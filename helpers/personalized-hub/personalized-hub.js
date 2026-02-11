@@ -11,7 +11,6 @@ const SCREENS = {
   WELCOME: 'welcome',
   COMPLETED: 'completed',
 };
-
 export default async function openPersonalizedHub() {
   await loadCSS(`${window.hlx.codeBasePath}/helpers/personalized-hub/personalized-hub.css`);
 
@@ -153,7 +152,6 @@ export default async function openPersonalizedHub() {
           setBusinessData(null);
           setBusinessCandidates([]);
           // Clear chat messages so previous business suggestions
-          // don't immediately re-trigger confirmation
           setChatMessages([]);
           // Return user to the chat screen
           setCurrentScreen(SCREENS.CHAT);
