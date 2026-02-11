@@ -35,16 +35,8 @@ export function createRegistrationPayload(data) {
     anonymousUserId,
   } = data;
 
-  let idValue = 0;
-  if (anonymousUserId) {
-    const parsedId = parseInt(anonymousUserId, 10);
-    if (!Number.isNaN(parsedId)) {
-      idValue = parsedId;
-    }
-  }
-
   const payload = {
-    id: idValue,
+    id: 0,
     ...(anonymousUserId ? { user_id: anonymousUserId } : {}),
     site: SITE_CODE,
     email,

@@ -1,33 +1,32 @@
 import sendMessage from '../chatbot/sendMessage.js';
+import sendStreamingMessage from '../chatbot/sendStreamingMessage.js';
 import renderMessage from '../chatbot/renderMessage.js';
 import ChatInput from '../chatInput/ChatInput.js';
-
-const {
-  useState, useCallback, useRef, useEffect,
-} = window.React;
-const { createElement: h } = window.React;
 
 const USER_ID = 1;
 const AI_ID = 2;
 
-const PREDEFINED_QUESTIONS = [
-  'Why do you need my business name?',
-  'How are these insights created?',
-  'What would my information used for?',
-  'What if I don\'t have any business information for this country?',
-];
+// Suggested questions are provided dynamically by the API (metadata.suggested_prompts).
+// Do not hardcode any defaults here.
 
 export default function PersonalizedChatWidget({
   onBusinessNameSubmit,
   messages: controlledMessages,
   onMessagesChange,
 }) {
+  const {
+    useState, useCallback, useRef, useEffect,
+  } = window.React;
+  const { createElement: h } = window.React;
   const [uncontrolledMessages, setUncontrolledMessages] = useState([]);
   const [businessName, setBusinessName] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [visibleQuestions, setVisibleQuestions] = useState(PREDEFINED_QUESTIONS);
+  const [visibleQuestions, setVisibleQuestions] = useState([]);
+  const [streamingText, setStreamingText] = useState(null);
   const messagesEndRef = useRef(null);
   const businessesProcessedRef = useRef(false);
+  const threadIdRef = useRef(null);
+  const initialPromptLoadedRef = useRef(false);
 
   const isControlled = Array.isArray(controlledMessages) && typeof onMessagesChange === 'function';
   const messages = isControlled ? controlledMessages : uncontrolledMessages;
@@ -35,7 +34,52 @@ export default function PersonalizedChatWidget({
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, streamingText]);
+
+  // Load initial system message dynamically from Chef AI
+  useEffect(() => {
+    if (initialPromptLoadedRef.current) return;
+    if (messages.length > 0) {
+      initialPromptLoadedRef.current = true;
+      return;
+    }
+
+    initialPromptLoadedRef.current = true;
+    setIsTyping(true);
+
+    (async () => {
+      try {
+        const response = await sendMessage('', {
+          context: {
+            messageHistory: [],
+          },
+          skipCache: true,
+        });
+
+        setMessages((prev) => [...prev, response]);
+
+        if (!threadIdRef.current) {
+          threadIdRef.current = response.metadata?.thread_id
+            ?? response.metadata?.threadId
+            ?? response.thread_id
+            ?? null;
+          if (threadIdRef.current) {
+            sessionStorage.setItem('personalized-hub-thread-id', threadIdRef.current);
+          }
+        }
+
+        const dynamicQuestions = response.metadata?.suggested_prompts;
+        if (Array.isArray(dynamicQuestions) && dynamicQuestions.length > 0) {
+          setVisibleQuestions(dynamicQuestions);
+        }
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to load initial personalized hub prompt:', err);
+      } finally {
+        setIsTyping(false);
+      }
+    })();
+  }, [messages, setMessages]);
 
   useEffect(() => {
     if (!onBusinessNameSubmit || businessesProcessedRef.current) return;
@@ -68,12 +112,28 @@ export default function PersonalizedChatWidget({
     setIsTyping(true);
 
     try {
-      const response = await sendMessage(question, {
+      const baseOptions = {
         context: {
           messageHistory: messages.slice(-5),
         },
         skipCache: true, // Don't cache thread_id during business registration
-      });
+      };
+
+      if (threadIdRef.current) {
+        baseOptions.thread_id = threadIdRef.current;
+      }
+
+      const response = await sendMessage(question, baseOptions);
+
+      if (!threadIdRef.current) {
+        threadIdRef.current = response.metadata?.thread_id
+          ?? response.metadata?.threadId
+          ?? response.thread_id
+          ?? null;
+        if (threadIdRef.current) {
+          sessionStorage.setItem('personalized-hub-thread-id', threadIdRef.current);
+        }
+      }
       setMessages((prev) => [...prev, response]);
     } catch (err) {
       // eslint-disable-next-line no-console
@@ -93,67 +153,88 @@ export default function PersonalizedChatWidget({
     }
   }, [messages]);
 
-  const handleBusinessNameSubmit = useCallback(async () => {
+  const handleBusinessNameSubmit = useCallback(() => {
     const trimmedName = businessName.trim();
     if (!trimmedName) return;
 
+    const userMessage = {
+      _id: Date.now().toString(),
+      text: trimmedName,
+      createdAt: new Date(),
+      user: {
+        _id: USER_ID,
+        name: 'You',
+      },
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+    setVisibleQuestions([]);
     setIsTyping(true);
-    try {
-      const userMessage = {
-        _id: Date.now().toString(),
-        text: trimmedName,
-        createdAt: new Date(),
-        user: {
-          _id: USER_ID,
-          name: 'You',
-        },
-      };
+    setStreamingText('');
 
-      setMessages((prev) => [...prev, userMessage]);
+    const baseOptions = {
+      context: {
+        messageHistory: messages.slice(-5),
+      },
+      skipCache: true,
+    };
 
-      const response = await sendMessage(trimmedName, {
-        context: {
-          messageHistory: messages.slice(-5),
-        },
-        skipCache: true, // Don't cache thread_id during business registration
-      });
-
-      setMessages((prev) => [...prev, response]);
-
-      let businesses = null;
-
-      if (response.metadata?.businesses
-        && Array.isArray(response.metadata.businesses)
-        && response.metadata.businesses.length > 0) {
-        businesses = response.metadata.businesses;
-      } else if (response.businesses
-        && Array.isArray(response.businesses)
-        && response.businesses.length > 0) {
-        businesses = response.businesses;
-      }
-
-      if (onBusinessNameSubmit && businesses) {
-        businessesProcessedRef.current = true;
-        onBusinessNameSubmit(businesses);
-      } else if (onBusinessNameSubmit && !businessesProcessedRef.current) {
-        onBusinessNameSubmit(trimmedName);
-      }
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error('Failed to send business name message:', err);
-      setMessages((prev) => [...prev, {
-        _id: Date.now().toString(),
-        text: 'Sorry, I\'m having trouble connecting right now. Please try again in a moment.',
-        createdAt: new Date(),
-        user: {
-          _id: AI_ID,
-          name: 'Chef AI',
-        },
-        system: true,
-      }]);
-    } finally {
-      setIsTyping(false);
+    if (threadIdRef.current) {
+      baseOptions.thread_id = threadIdRef.current;
     }
+
+    sendStreamingMessage(trimmedName, {
+      ...baseOptions,
+      onChunk: (text) => setStreamingText(text),
+      onComplete: (response) => {
+        setStreamingText(null);
+        setIsTyping(false);
+
+        if (!threadIdRef.current) {
+          threadIdRef.current = response.metadata?.thread_id
+            ?? response.metadata?.threadId
+            ?? response.thread_id
+            ?? null;
+          if (threadIdRef.current) {
+            sessionStorage.setItem('personalized-hub-thread-id', threadIdRef.current);
+          }
+        }
+
+        setMessages((prev) => [...prev, response]);
+
+        let businesses = null;
+        if (response.metadata?.businesses
+          && Array.isArray(response.metadata.businesses)
+          && response.metadata.businesses.length > 0) {
+          businesses = response.metadata.businesses;
+        } else if (response.businesses
+          && Array.isArray(response.businesses)
+          && response.businesses.length > 0) {
+          businesses = response.businesses;
+        }
+
+        if (onBusinessNameSubmit && businesses) {
+          businessesProcessedRef.current = true;
+          onBusinessNameSubmit(businesses);
+        } else if (onBusinessNameSubmit && !businessesProcessedRef.current) {
+          onBusinessNameSubmit(trimmedName);
+        }
+      },
+      onError: () => {
+        setStreamingText(null);
+        setIsTyping(false);
+        setMessages((prev) => [...prev, {
+          _id: Date.now().toString(),
+          text: 'Sorry, I\'m having trouble connecting right now. Please try again in a moment.',
+          createdAt: new Date(),
+          user: {
+            _id: AI_ID,
+            name: 'Chef AI',
+          },
+          system: true,
+        }]);
+      },
+    });
   }, [businessName, onBusinessNameSubmit, messages, setMessages]);
 
   return h(
@@ -164,27 +245,14 @@ export default function PersonalizedChatWidget({
         'div',
         { key: 'messages', className: 'ph-chat-messages' },
         [
-          h(
-            'div',
-            { key: 'initial-prompt', className: 'ph-system-message' },
-            [
-              h('p', { key: 'thanks' }, 'Thanks for agreeing!'),
-              h('p', { key: 'text', className: 'text-bold' }, [
-                'Now please enter your ',
-                h('span', { key: 'highlight', className: 'text-orange' }, 'business name'),
-                ' to unlock personalised growth insights',
-              ]),
-            ],
-          ),
-          ...messages.map(renderMessage),
-          isTyping && h(
-            'div',
-            {
-              key: 'typing',
-              className: 'ph-typing-indicator',
-            },
-            'Chef AI is typing...',
-          ),
+          ...messages.map((msg) => renderMessage(msg, { hideSuggestedPrompts: true })),
+          streamingText !== null && renderMessage({
+            _id: 'streaming',
+            text: `${streamingText}\u258B`,
+            createdAt: new Date(),
+            user: { _id: AI_ID, name: 'Chef AI' },
+            metadata: {},
+          }),
           h('div', { key: 'scroll-anchor', ref: messagesEndRef }),
         ],
       ),
