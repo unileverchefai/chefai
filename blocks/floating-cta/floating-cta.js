@@ -13,9 +13,9 @@ const blockClasses = {
   title: `${blockName}__title`,
   disclaimer: `${blockName}__disclaimer`,
 };
-const MAX_TITLE_LENGTH = 65;
+const MAX_TITLE_LENGTH = 80;
 const MAX_BUTTON_LENGTH = 40;
-const MAX_DISCLAIMER_LENGTH = 70;
+const MAX_DISCLAIMER_LENGTH = 65;
 // There are 2 flags that determine the behavior of the floating cta:
 // 1. Presence of Hero cta button
 // - If there is no Hero cta button, then the floating cta is always visible.
