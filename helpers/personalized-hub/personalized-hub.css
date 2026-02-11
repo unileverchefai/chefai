@@ -42,6 +42,7 @@
 
 .personalized-hub-container .carousel-cards .carousel-cards-container {
   gap: var(--spacing-md);
+  overflow: auto;
 }
 
 .personalized-hub-container .carousel-cards .cards {
@@ -269,16 +270,24 @@
 .ph-loading-step {
   font-family: var(--body-font-family);
   font-size: var(--body-font-size-xs);
-  color: var(--text-color);
   line-height: 1.571;
 }
 
-.ph-loading-step:nth-child(2) {
-  opacity: 0.8;
+.ph-loading-step--inactive {
+  color: var(--mushroom);
 }
 
-.ph-loading-step:nth-child(3) {
-  opacity: 0.5;
+.ph-loading-step--completed {
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+.ph-loading-step-icon {
+  margin-right: var(--spacing-xxs);
+}
+
+.ph-loading-step-label {
+  vertical-align: middle;
 }
 
 /* Business Card */

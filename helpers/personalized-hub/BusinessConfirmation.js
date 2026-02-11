@@ -1,11 +1,5 @@
 import { initCarouselCards } from '../../blocks/carousel-cards/carousel-cards.js';
 
-const {
-  createElement: h,
-  useEffect,
-  useRef,
-} = window.React;
-
 export default function BusinessConfirmation({
   businessData,
   businesses,
@@ -13,6 +7,11 @@ export default function BusinessConfirmation({
   onConfirm,
   onReject,
 }) {
+  const {
+    createElement: h,
+    useEffect,
+    useRef,
+  } = window.React;
   let candidates = [];
   if (Array.isArray(businesses) && businesses.length > 0) {
     candidates = businesses;
@@ -39,7 +38,7 @@ export default function BusinessConfirmation({
       carouselInstance = initCarouselCards(blockEl, containerEl, candidates.length, {
         disableDesktopCarousel: false,
         swipeOnDesktop: true,
-        hideArrows: false,
+        hideArrows: true,
         disableSnap: true,
       });
     } catch (error) {

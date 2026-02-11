@@ -11,6 +11,45 @@ const SCREENS = {
   WELCOME: 'welcome',
   COMPLETED: 'completed',
 };
+
+// Prefetch React, styles and modules after the page has fully loaded
+async function prefetchPersonalizedHub() {
+  try {
+    // Ensure React/ReactDOM are available
+    await loadReact();
+
+    // Warm up critical CSS (loadCSS should be idempotent)
+    const basePath = window.hlx && window.hlx.codeBasePath ? window.hlx.codeBasePath : '';
+    await Promise.all([
+      loadCSS(`${basePath}/helpers/personalized-hub/personalized-hub.css`),
+      loadCSS(`${basePath}/helpers/cookie-agreement/cookie-agreement.css`),
+      loadCSS(`${basePath}/blocks/carousel-cards/carousel-cards.css`),
+    ]);
+
+    // Warm up dynamic imports so they are instant when opening the modal
+    await Promise.all([
+      import('../cookie-agreement/index.js'),
+      import('./PersonalizedChatWidget.js'),
+      import('./LoadingState.js'),
+      import('./BusinessConfirmation.js'),
+      import('./WelcomeScreen.js'),
+    ]);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error('Failed to prefetch Personalized Hub assets:', e);
+  }
+}
+
+if (typeof window !== 'undefined') {
+  if (document.readyState === 'complete') {
+    prefetchPersonalizedHub().catch(() => {});
+  } else {
+    window.addEventListener('load', () => {
+      prefetchPersonalizedHub().catch(() => {});
+    }, { once: true });
+  }
+}
+
 export default async function openPersonalizedHub() {
   await loadCSS(`${window.hlx.codeBasePath}/helpers/personalized-hub/personalized-hub.css`);
 
@@ -30,9 +69,11 @@ export default async function openPersonalizedHub() {
     overlayBackground: 'var(--modal-overlay-bg)',
     animationDuration: ANIMATION_DURATION,
     onClose: () => {
-      if (reactRoot) {
+      if (reactRoot && typeof reactRoot.unmount === 'function') {
         reactRoot.unmount();
         reactRoot = null;
+      } else if (window.ReactDOM && typeof window.ReactDOM.unmountComponentAtNode === 'function') {
+        window.ReactDOM.unmountComponentAtNode(container);
       }
     },
   });
@@ -59,17 +100,18 @@ export default async function openPersonalizedHub() {
     const { default: BusinessConfirmation } = await import('./BusinessConfirmation.js');
     const { default: WelcomeScreen } = await import('./WelcomeScreen.js');
 
-    const { useState } = window.React;
-    const { createElement: h } = window.React;
-
     // Function to render the personalized hub app
     const renderPersonalizedHubApp = () => {
+      const { useState } = window.React;
+      const { createElement: h } = window.React;
       const PersonalizedHubApp = () => {
         const [currentScreen, setCurrentScreen] = useState(SCREENS.CHAT);
         const [businessData, setBusinessData] = useState(null);
         const [businessCandidates, setBusinessCandidates] = useState([]);
         const [error, setError] = useState(null);
         const [chatMessages, setChatMessages] = useState([]);
+        const [loadingStep, setLoadingStep] = useState(0);
+        const [loadingMessages, setLoadingMessages] = useState([]);
 
         // Removed signup flow - now redirecting to /personalized-hub instead
 
@@ -122,6 +164,8 @@ export default async function openPersonalizedHub() {
 
         const handleConfirm = () => {
           setCurrentScreen(SCREENS.LOADING);
+          setLoadingStep(0);
+          setLoadingMessages([]);
 
           const userId = getCookieId() ?? getUserIdFromCookie();
           const placeId = businessData?.place_id ?? '';
@@ -142,8 +186,26 @@ export default async function openPersonalizedHub() {
           sendStreamingMessage(confirmMessage, {
             skipCache: true,
             ...(threadId ? { thread_id: threadId } : {}),
-            onComplete: () => {},
-            onError: () => {},
+            onChunk: (text) => {
+              setLoadingMessages((prev) => {
+                if (prev.includes(text)) {
+                  return prev;
+                }
+                const updated = [...prev, text];
+                const trimmed = updated.slice(-3);
+                setLoadingStep(trimmed.length);
+                return trimmed;
+              });
+            },
+            onComplete: () => {
+              setLoadingStep((prev) => (prev === 0 ? 1 : prev));
+              window.location.href = '/sneak-peek';
+            },
+            onError: () => {
+              setLoadingStep(0);
+              setError('Something went wrong while creating your personalised insights. Please try again.');
+              setCurrentScreen(SCREENS.CHAT);
+            },
           });
         };
 
@@ -190,6 +252,8 @@ export default async function openPersonalizedHub() {
         if (currentScreen === SCREENS.LOADING) {
           return h(LoadingState, {
             businessData,
+            activeStep: loadingStep,
+            steps: loadingMessages,
             onClose: animateAndClose,
           });
         }
@@ -214,6 +278,8 @@ export default async function openPersonalizedHub() {
         if (currentScreen === SCREENS.COMPLETED) {
           return h(LoadingState, {
             businessData,
+            activeStep: loadingStep || 3,
+            steps: loadingMessages,
             onClose: animateAndClose,
           });
         }
@@ -221,11 +287,21 @@ export default async function openPersonalizedHub() {
         return null;
       };
 
-      reactRoot = window.ReactDOM.createRoot(container);
+      if (window.ReactDOM && typeof window.ReactDOM.createRoot === 'function') {
+        reactRoot = window.ReactDOM.createRoot(container);
 
-      requestAnimationFrame(() => {
-        reactRoot.render(h(PersonalizedHubApp));
-      });
+        requestAnimationFrame(() => {
+          reactRoot.render(h(PersonalizedHubApp));
+        });
+      } else if (window.ReactDOM && typeof window.ReactDOM.render === 'function') {
+        reactRoot = null;
+
+        requestAnimationFrame(() => {
+          window.ReactDOM.render(h(PersonalizedHubApp), container);
+        });
+      } else {
+        throw new Error('ReactDOM is not available');
+      }
     };
 
     const renderAndOpenPersonalizedHub = () => {

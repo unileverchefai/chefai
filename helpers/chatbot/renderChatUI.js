@@ -1,8 +1,6 @@
 import renderMessage from './renderMessage.js';
 import ChatInput from '../chatInput/ChatInput.js';
 
-const { createElement: h } = window.React;
-
 export default function renderChatUI({
   error,
   messages,
@@ -14,6 +12,7 @@ export default function renderChatUI({
   disabled,
   onPromptClick,
 }) {
+  const { createElement: h } = window.React;
   return h(
     'div',
     {

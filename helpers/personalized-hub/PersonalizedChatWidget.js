@@ -3,11 +3,6 @@ import sendStreamingMessage from '../chatbot/sendStreamingMessage.js';
 import renderMessage from '../chatbot/renderMessage.js';
 import ChatInput from '../chatInput/ChatInput.js';
 
-const {
-  useState, useCallback, useRef, useEffect,
-} = window.React;
-const { createElement: h } = window.React;
-
 const USER_ID = 1;
 const AI_ID = 2;
 
@@ -19,6 +14,10 @@ export default function PersonalizedChatWidget({
   messages: controlledMessages,
   onMessagesChange,
 }) {
+  const {
+    useState, useCallback, useRef, useEffect,
+  } = window.React;
+  const { createElement: h } = window.React;
   const [uncontrolledMessages, setUncontrolledMessages] = useState([]);
   const [businessName, setBusinessName] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -169,6 +168,7 @@ export default function PersonalizedChatWidget({
     };
 
     setMessages((prev) => [...prev, userMessage]);
+    setVisibleQuestions([]);
     setIsTyping(true);
     setStreamingText('');
 

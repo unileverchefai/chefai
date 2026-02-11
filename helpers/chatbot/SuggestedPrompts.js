@@ -1,5 +1,3 @@
-const { createElement: h } = window.React;
-
 /**
  * Reusable component for displaying suggested prompts/quick questions.
  * Uses the same design as the personalized hub predefined questions.
@@ -10,6 +8,7 @@ const { createElement: h } = window.React;
  * @param {boolean} [props.disabled] - Whether prompts are disabled
  */
 export default function SuggestedPrompts({ prompts, onPromptClick, disabled = false }) {
+  const { createElement: h } = window.React;
   if (!prompts || !Array.isArray(prompts) || prompts.length === 0) {
     return null;
   }

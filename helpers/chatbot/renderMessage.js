@@ -1,49 +1,45 @@
 import SuggestedPrompts from './SuggestedPrompts.js';
 
-const { createElement: h } = window.React;
-
 const USER_ID = 1;
 
-function convertLinksToClickable(text) {
-  // URL regex pattern
-  const urlPattern = /(https?:\/\/[^\s]+)/g;
-  const parts = [];
-  let lastIndex = 0;
-
-  text.replace(urlPattern, (match, url, offset) => {
-    // Add text before the URL
-    if (offset > lastIndex) {
-      parts.push(text.slice(lastIndex, offset));
-    }
-    // Add the clickable link
-    parts.push(
-      h(
-        'a',
-        {
-          href: url,
-          target: '_blank',
-          rel: 'noopener noreferrer',
-          style: {
-            color: 'inherit',
-            textDecoration: 'underline',
-          },
-        },
-        url,
-      ),
-    );
-    lastIndex = offset + match.length;
-    return match;
-  });
-
-  // Add remaining text after last URL
-  if (lastIndex < text.length) {
-    parts.push(text.slice(lastIndex));
-  }
-
-  return parts.length > 0 ? parts : text;
-}
-
 export default function renderMessage(message, options = {}) {
+  const { createElement: h } = window.React;
+
+  const convertLinksToClickable = (text) => {
+    const urlPattern = /(https?:\/\/[^\s]+)/g;
+    const parts = [];
+    let lastIndex = 0;
+
+    text.replace(urlPattern, (match, url, offset) => {
+      if (offset > lastIndex) {
+        parts.push(text.slice(lastIndex, offset));
+      }
+
+      parts.push(
+        h(
+          'a',
+          {
+            href: url,
+            target: '_blank',
+            rel: 'noopener noreferrer',
+            style: {
+              color: 'inherit',
+              textDecoration: 'underline',
+            },
+          },
+          url,
+        ),
+      );
+      lastIndex = offset + match.length;
+      return match;
+    });
+
+    if (lastIndex < text.length) {
+      parts.push(text.slice(lastIndex));
+    }
+
+    return parts.length > 0 ? parts : text;
+  };
   const { onPromptClick, hideSuggestedPrompts = false } = options;
   const isUser = message.user._id === USER_ID;
 

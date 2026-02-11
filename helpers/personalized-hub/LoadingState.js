@@ -1,6 +1,9 @@
-const { createElement: h } = window.React;
-
-export default function LoadingState({ businessData }) {
+export default function LoadingState({
+  businessData,
+  activeStep = 0,
+  steps = [],
+}) {
+  const { createElement: h } = window.React;
   const logoUrl = businessData?.logo_url ?? businessData?.image_url ?? '';
 
   return h(
@@ -46,11 +49,34 @@ export default function LoadingState({ businessData }) {
           h(
             'div',
             { key: 'steps', className: 'ph-loading-steps' },
-            [
-              h('div', { key: 'step1', className: 'ph-loading-step' }, 'Analizing your menu'),
-              h('div', { key: 'step2', className: 'ph-loading-step' }, 'Reading customer reviews'),
-              h('div', { key: 'step3', className: 'ph-loading-step' }, 'Checking competitors in the area'),
-            ],
+            steps.map((label, index) => {
+              const stepNumber = index + 1;
+              const isCompleted = activeStep >= stepNumber;
+
+              return h(
+                'div',
+                {
+                  key: `step-${stepNumber}`,
+                  className: `ph-loading-step${isCompleted ? ' ph-loading-step--completed' : ' ph-loading-step--inactive'}`,
+                },
+                [
+                  isCompleted && h(
+                    'span',
+                    {
+                      key: 'icon',
+                      className: 'ph-loading-step-icon',
+                      'aria-hidden': 'true',
+                    },
+                    '✓',
+                  ),
+                  h(
+                    'span',
+                    { key: 'label', className: 'ph-loading-step-label' },
+                    label,
+                  ),
+                ],
+              );
+            }),
           ),
         ],
       ),

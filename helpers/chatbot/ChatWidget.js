@@ -11,17 +11,16 @@ import {
 } from './utils.js';
 import renderChatUI from './renderChatUI.js';
 
-const {
-  useState,
-  useCallback,
-  useEffect,
-  useRef,
-} = window.React;
-
 const USER_ID = 1;
 const AI_ID = 2;
 
 export default function ChatWidget({ personalizedHubTrigger = '#chatbot' } = {}) {
+  const {
+    useState,
+    useCallback,
+    useEffect,
+    useRef,
+  } = window.React;
   // Load cached history immediately for fast display
   const storedThreadId = getStoredThreadId();
   const cachedHistory = getHistory(storedThreadId);

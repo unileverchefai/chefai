@@ -1,6 +1,5 @@
-const { createElement: h } = window.React;
-
 export default function WelcomeScreen({ onGotIt }) {
+  const { createElement: h } = window.React;
   return h(
     'div',
     { className: 'ph-chat-container' },

@@ -1,5 +1,3 @@
-const { createElement: h } = window.React;
-
 export default function ChatInput({
   value,
   onChange,
@@ -8,6 +6,7 @@ export default function ChatInput({
   disabled = false,
   submitDisabled = false,
 }) {
+  const { createElement: h } = window.React;
   const handleSubmit = (e) => {
     e.preventDefault();
     if (onSubmit && !submitDisabled) {
