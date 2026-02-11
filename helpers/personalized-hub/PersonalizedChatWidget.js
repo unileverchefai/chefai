@@ -11,12 +11,8 @@ const { createElement: h } = window.React;
 const USER_ID = 1;
 const AI_ID = 2;
 
-const PREDEFINED_QUESTIONS = [
-  'Why do you need my business name?',
-  'How are these insights created?',
-  'What is my information used for?',
-  'What if I don\'t have any business information for this country?',
-];
+// Suggested questions are provided dynamically by the API (metadata.suggested_prompts).
+// Do not hardcode any defaults here.
 
 export default function PersonalizedChatWidget({
   onBusinessNameSubmit,
@@ -26,7 +22,7 @@ export default function PersonalizedChatWidget({
   const [uncontrolledMessages, setUncontrolledMessages] = useState([]);
   const [businessName, setBusinessName] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [visibleQuestions, setVisibleQuestions] = useState(PREDEFINED_QUESTIONS);
+  const [visibleQuestions, setVisibleQuestions] = useState([]);
   const [streamingText, setStreamingText] = useState(null);
   const messagesEndRef = useRef(null);
   const businessesProcessedRef = useRef(false);
@@ -69,11 +65,7 @@ export default function PersonalizedChatWidget({
             ?? response.thread_id
             ?? null;
           if (threadIdRef.current) {
-            try {
-              sessionStorage.setItem('personalized-hub-thread-id', threadIdRef.current);
-            } catch {
-              // ignore storage errors
-            }
+            sessionStorage.setItem('personalized-hub-thread-id', threadIdRef.current);
           }
         }
 
@@ -140,11 +132,7 @@ export default function PersonalizedChatWidget({
           ?? response.thread_id
           ?? null;
         if (threadIdRef.current) {
-          try {
-            sessionStorage.setItem('personalized-hub-thread-id', threadIdRef.current);
-          } catch {
-            // ignore storage errors
-          }
+          sessionStorage.setItem('personalized-hub-thread-id', threadIdRef.current);
         }
       }
       setMessages((prev) => [...prev, response]);
@@ -208,11 +196,7 @@ export default function PersonalizedChatWidget({
             ?? response.thread_id
             ?? null;
           if (threadIdRef.current) {
-            try {
-              sessionStorage.setItem('personalized-hub-thread-id', threadIdRef.current);
-            } catch {
-              // ignore storage errors
-            }
+            sessionStorage.setItem('personalized-hub-thread-id', threadIdRef.current);
           }
         }
 

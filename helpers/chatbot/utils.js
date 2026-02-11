@@ -57,14 +57,10 @@ export function getOrCreateCookieId() {
  * @returns {string|null} cookie_id value
  */
 export function getCookieId() {
-  try {
-    const sessionUserId = sessionStorage.getItem('chefai_user_id');
-    if (sessionUserId) {
-      setCookie('cookie_id', sessionUserId);
-      return sessionUserId;
-    }
-  } catch {
-    // ignore
+  const sessionUserId = sessionStorage.getItem('chefai_user_id');
+  if (sessionUserId) {
+    setCookie('cookie_id', sessionUserId);
+    return sessionUserId;
   }
   return getCookie('cookie_id');
 }
@@ -367,11 +363,7 @@ export async function getAnonymousUserId() {
   const json = JSON.parse(responseText);
   const returnedUserId = (json.user_id ?? json.data?.user_id ?? cookieId).toString().trim();
 
-  try {
-    sessionStorage.setItem('chefai_user_id', returnedUserId);
-  } catch {
-    // ignore
-  }
+  sessionStorage.setItem('chefai_user_id', returnedUserId);
   setCookie('cookie_id', returnedUserId);
   setCookie('user_id', returnedUserId);
   return returnedUserId;
@@ -421,11 +413,7 @@ export async function createUser() {
   const json = JSON.parse(responseText);
   const returnedUserId = (json.user_id ?? json.data?.user_id ?? cookieId).toString().trim();
 
-  try {
-    sessionStorage.setItem('chefai_user_id', returnedUserId);
-  } catch {
-    // ignore
-  }
+  sessionStorage.setItem('chefai_user_id', returnedUserId);
   setCookie('cookie_id', returnedUserId);
   setCookie('user_id', returnedUserId);
   return returnedUserId;

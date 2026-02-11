@@ -132,19 +132,11 @@ export default async function openPersonalizedHub() {
             user_id: userId,
             timestamp: Date.now(),
           };
-          try {
-            sessionStorage.setItem('personalized-hub-business-data', JSON.stringify(businessInfoToStore));
-          } catch {
-            // ignore storage errors
-          }
+          sessionStorage.setItem('personalized-hub-business-data', JSON.stringify(businessInfoToStore));
 
           let threadId = null;
-          try {
-            const stored = sessionStorage.getItem('personalized-hub-thread-id');
-            if (stored) threadId = stored;
-          } catch {
-            // ignore
-          }
+          const stored = sessionStorage.getItem('personalized-hub-thread-id');
+          if (stored) threadId = stored;
 
           const confirmMessage = placeId ? `place_id: ${placeId}` : '';
 
