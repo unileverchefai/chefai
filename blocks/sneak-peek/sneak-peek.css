@@ -64,7 +64,8 @@ main {
 	height: 300px;
 	pointer-events: none;
 	z-index: 10;
-	background: linear-gradient(to bottom,
+	background: linear-gradient(
+			to bottom,
 			rgb(255 255 255 / 0%) 0%,
 			rgb(255 255 255 / 100%) 80%);
 }
@@ -207,7 +208,7 @@ main {
 	box-shadow: 0 24px 60px rgb(0 0 0 / 25%);
 }
 
-.fp-card--center>* {
+.fp-card--center > * {
 	position: relative;
 	z-index: 2;
 }
@@ -248,11 +249,12 @@ main {
 }
 
 /* DESKTOP */
-@media (width >=900px) {
+@media (width >= 900px) {
 	.business-block {
 		display: flex;
 		flex-direction: row;
 		gap: 20px;
+		margin-top: 50px;
 	}
 
 	.sneak-peek-title {
@@ -279,11 +281,16 @@ main {
 		transform: rotate(-90deg);
 	}
 
+	.lower-block {
+		margin-top: -100px;
+	}
+
 	.lower-block::after {
 		bottom: 0;
 		margin: 0 auto;
 		height: 250px;
-		background: linear-gradient(to bottom,
+		background: linear-gradient(
+				to bottom,
 				rgb(255 255 255 / 0%) 0%,
 				rgb(255 255 255 / 100%) 40%);
 	}

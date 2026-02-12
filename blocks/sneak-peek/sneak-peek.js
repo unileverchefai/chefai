@@ -8,12 +8,11 @@ import { fetchBusinessInfo, fetchSneakPeek } from './fetchSneakPeek.js';
 const decorateCustomHeader = (navbar) => {
   const logo = createElement('div', {
     className: 'sneakpeek--logo-wrapper',
-    innerContent: `
-        <div class="sneakpeek--logo-text"></div>
-        <div class="sneakpeek--logo-number"></div>
-    `,
   });
-
+  const logoText = createElement('div', { className: 'sneakpeek--logo-text' });
+  const logoNumber = createElement('div', { className: 'sneakpeek--logo-number' });
+  logo.appendChild(logoText);
+  logo.appendChild(logoNumber);
   const profile = createProfileSection();
 
   navbar.appendChild(logo);
@@ -54,16 +53,19 @@ export default async function decorate(block) {
     } else {
       cardPosition = 'right';
     }
-    const card = createElement('div', { className: `insight-card fp-card--${cardPosition}` });
     const title = insightData?.title || '';
     const description = insightData?.description || '';
 
-    card.innerHTML = `
-            <div class="insight-card-content">
-                <h3>${title}</h3>
-                <p>${description}</p>
-            </div>
-        `;
+    const card = createElement('div', { className: `insight-card fp-card--${cardPosition}` });
+    const cardContent = createElement('div', { className: 'insight-card-content' });
+    const cardTitle = createElement('h3');
+    cardTitle.textContent = title;
+    const cardDescription = createElement('p');
+    cardDescription.textContent = description;
+
+    cardContent.appendChild(cardTitle);
+    cardContent.appendChild(cardDescription);
+    card.appendChild(cardContent);
     insightBlock.appendChild(card);
   }
 
@@ -97,9 +99,13 @@ export default async function decorate(block) {
   // Left wrapper: logo + title
   const leftWrapper = createElement('div', { className: 'business-block-left' });
   if (businessInfo?.image_url) {
-    const logo = createElement('img', { className: 'business-logo' });
-    logo.src = businessInfo.image_url;
-    logo.alt = businessInfo.name || '';
+    const logo = createElement('img', {
+      className: 'business-logo',
+      attributes: {
+        src: businessInfo.image_url,
+        alt: businessInfo.name || '',
+      },
+    });
     leftWrapper.appendChild(logo);
   }
 
@@ -111,18 +117,27 @@ export default async function decorate(block) {
   businessBlock.appendChild(leftWrapper);
 
   // Middle: arrow logo
-  const arrowLogo = createElement('img', { className: 'sneak-peek-arrow-logo' });
-  arrowLogo.src = '/icons/triple-arrow-logo.svg';
+  const arrowLogo = createElement('img', {
+    className: 'sneak-peek-arrow-logo',
+    attributes: {
+      src: '/icons/triple-arrow-logo.svg',
+      alt: 'arrow icon',
+    },
+  });
   businessBlock.appendChild(arrowLogo);
 
   // Right wrapper: recommendation metric (number + label)
   const rightWrapper = createElement('div', { className: 'business-block-right' });
   if (recommendationNumberP && recommendationLabelP) {
-    const numberEl = createElement('div', { className: 'recommendation-number' });
-    numberEl.textContent = (recommendationNumberP.textContent ?? '').trim();
+    const numberEl = createElement('div', {
+      className: 'recommendation-number',
+      innerContent: (recommendationNumberP.textContent ?? '').trim(),
+    });
 
-    const textEl = createElement('div', { className: 'recommendation-text' });
-    textEl.textContent = (recommendationLabelP.textContent ?? '').trim();
+    const textEl = createElement('div', {
+      className: 'recommendation-text',
+      innerContent: (recommendationLabelP.textContent ?? '').trim(),
+    });
 
     rightWrapper.appendChild(numberEl);
     rightWrapper.appendChild(textEl);
