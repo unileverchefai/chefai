@@ -71,7 +71,7 @@ export default function decorate(block) {
     const card = createElement('li', { className: 'card', attributes: { 'data-node-id': `card-${index}` } });
 
     if (cardData.title) {
-      const title = createElement('div', { className: 'cards-card-title' });
+      const title = createElement('h2', { className: 'cards-card-title' });
 
       // Add small class for text titles (not percentage titles)
       const isPercentage = /^\d+%$/.test(cardData.title);

@@ -1,6 +1,40 @@
 import { createElement } from '@scripts/common.js';
 import createCarousel from '@helpers/carousel/carousel.js';
-import { fetchInsights } from './constants/api.js';
+import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
+import { getUserIdFromCookie } from '@helpers/chatbot/utils.js';
+
+async function fetchInsights(options = {}) {
+  const {
+    userId,
+    limit = 10,
+    type = 'main',
+  } = options;
+
+  const payload = {
+    user_id: userId,
+    limit,
+    type,
+  };
+
+  const endpoint = `${ENDPOINTS.recommendations}/`;
+
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'X-Subscription-Key': SUBSCRIPTION_KEY,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to load insights: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return data.recommendations ?? data.data?.recommendations ?? [];
+}
 
 /**
  * Render a thread card using the insights styling (title + CTA).
@@ -14,9 +48,15 @@ function renderCard(item, index) {
     },
   });
 
-  const title = createElement('div', { className: 'cards-card-title' });
+  const title = createElement('h2', { className: 'cards-card-title' });
   title.textContent = item.display_text ?? item.title ?? `Conversation ${index + 1}`;
   card.appendChild(title);
+
+  if (item.description) {
+    const description = createElement('div', { className: 'carousel-insights-description' });
+    description.textContent = item.description;
+    card.appendChild(description);
+  }
 
   const buttonText = item.button_text ?? item.cta_label ?? 'Show me the details';
   const button = createElement('button', {
@@ -33,7 +73,11 @@ export default function decorate(block) {
   block.classList.add('carousel-base');
   block.classList.add('carousel-insights');
 
-  const userId = block.dataset.userId ?? 'staging-user';
+  let { userId } = block.dataset;
+  if (!userId) {
+    userId = getUserIdFromCookie();
+  }
+
   const limit = parseInt(block.dataset.limit ?? '3', 10);
 
   // Clear authored content and create container
@@ -43,13 +87,14 @@ export default function decorate(block) {
   });
   block.appendChild(list);
 
+  if (!userId) {
+    return;
+  }
+
   // Fetch insights on load
-  fetchInsights({ user_id: userId, limit })
+  fetchInsights({ userId, limit })
     .then((items) => {
       if (!items || items.length === 0) {
-        const empty = createElement('div', { className: 'carousel-insights-empty' });
-        empty.textContent = 'No insights available.';
-        block.appendChild(empty);
         return;
       }
 

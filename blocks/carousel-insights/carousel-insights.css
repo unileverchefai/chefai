@@ -136,13 +136,18 @@
   color: var(--c-white);
 }
 
+.cards-card-title {
+  font-size: var(--heading-font-size-s);
+}
+
 .carousel-insights .carousel-insights-description {
   margin-bottom: var(--spacing-lg);
   display: -webkit-box;
-  line-clamp: 3;
-  -webkit-line-clamp: 3;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  font-size: var(--body-font-size-xs);
 }
 
 .carousel-insights .carousel-insights-btn {
