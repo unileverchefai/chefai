@@ -6,7 +6,7 @@ import {
   getUserIdFromCookie,
   getAnonymousUserIdFromCookie,
   createUser,
-} from './utils.js';
+} from '@scripts/custom/utils.js';
 
 let currentEndpoint = 'capgemini';
 

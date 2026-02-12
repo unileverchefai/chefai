@@ -1,4 +1,4 @@
-import { loadReact, getCookieId, getUserIdFromCookie } from '@helpers/chatbot/utils.js';
+import { loadReact, getCookieId, getUserIdFromCookie } from '@scripts/custom/utils.js';
 import sendStreamingMessage from '@helpers/chatbot/sendStreamingMessage.js';
 import { createElement } from '@scripts/common.js';
 import { loadCSS } from '@scripts/aem.js';

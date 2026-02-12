@@ -8,7 +8,7 @@ import {
   getOrCreateThreadId,
   getAnonymousUserId,
   getUserIdFromCookie,
-} from './utils.js';
+} from '@scripts/custom/utils.js';
 import renderChatUI from './renderChatUI.js';
 
 const USER_ID = 1;

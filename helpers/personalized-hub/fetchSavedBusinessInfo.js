@@ -1,5 +1,5 @@
 import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
-import { getUserIdFromCookie } from '@helpers/chatbot/utils.js';
+import { getUserIdFromCookie } from '@scripts/custom/utils.js';
 
 export default async function fetchSavedBusinessInfoAndLog() {
   try {

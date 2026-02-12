@@ -6,7 +6,7 @@ import {
   getAnonymousUserIdFromCookie,
   getAnonymousUserId,
   createThread,
-} from '@helpers/chatbot/utils.js';
+} from '@scripts/custom/utils.js';
 
 /**
  * Ask Button Block

@@ -6,7 +6,7 @@ import {
   getUserIdFromCookie,
   getAnonymousUserIdFromCookie,
   createUser,
-} from './utils.js';
+} from '@scripts/custom/utils.js';
 import sendMessage from './sendMessage.js';
 import formatResponse, { parseStreamingEvent } from './responseHandler.js';
 
