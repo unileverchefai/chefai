@@ -1,7 +1,7 @@
 import { getMetadata, loadCSS } from '@scripts/aem.js';
 import { createElement } from '@scripts/common.js';
 import createModal from '@helpers/modal/index.js';
-import { loadReact } from './utils.js';
+import { loadReact } from '@scripts/custom/utils.js';
 import { setEndpoint } from './sendMessage.js';
 
 const ANIMATION_DURATION = 300;

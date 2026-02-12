@@ -6,7 +6,7 @@ import {
   getCookieId,
   getOrCreateCookieId,
   createUser,
-} from '@helpers/chatbot/utils.js';
+} from '@scripts/custom/utils.js';
 import { ENDPOINTS as CHEF_AI_ENDPOINTS, SUBSCRIPTION_KEY as CHEF_AI_SUBSCRIPTION_KEY } from '@api/endpoints.js';
 import { apiRequest } from './endpoints.js';
 import {

@@ -1,12 +1,12 @@
 import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
-import { generateRunId, connectToAgentRunStream } from './sseStream.js';
 import {
   getOrCreateThreadId,
   getAnonymousUserId,
   getUserIdFromCookie,
   getAnonymousUserIdFromCookie,
   createUser,
-} from './utils.js';
+} from '@scripts/custom/utils.js';
+import { generateRunId, connectToAgentRunStream } from './sseStream.js';
 import sendMessage from './sendMessage.js';
 import formatResponse, { parseStreamingEvent } from './responseHandler.js';
 

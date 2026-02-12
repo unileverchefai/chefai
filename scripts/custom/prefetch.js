@@ -1,4 +1,4 @@
-import { loadReact } from '@helpers/chatbot/utils.js';
+import { loadReact } from '@scripts/custom/utils.js';
 import { loadCSS } from '@scripts/aem.js';
 
 // Prefetch assets for the Personalized Hub chatbot modal

@@ -1,4 +1,4 @@
-import { loadReact, getCookieId, getUserIdFromCookie } from '@helpers/chatbot/utils.js';
+import { loadReact, getCookieId, getUserIdFromCookie } from '@scripts/custom/utils.js';
 import sendStreamingMessage from '@helpers/chatbot/sendStreamingMessage.js';
 import { createElement } from '@scripts/common.js';
 import { loadCSS } from '@scripts/aem.js';
@@ -187,15 +187,13 @@ export default async function openPersonalizedHub() {
             skipCache: true,
             ...(threadId ? { thread_id: threadId } : {}),
             onChunk: (text) => {
-              setLoadingMessages((prev) => {
-                if (prev.includes(text)) {
-                  return prev;
-                }
-                const updated = [...prev, text];
-                const trimmed = updated.slice(-3);
-                setLoadingStep(trimmed.length);
-                return trimmed;
-              });
+              const fullText = (text ?? '').trim();
+              if (!fullText) return;
+              const sentenceBoundary = /\.\s+|\n+/;
+              const steps = fullText.split(sentenceBoundary).map((s) => s.trim()).filter(Boolean);
+              if (steps.length === 0) return;
+              setLoadingMessages(steps.slice(-10));
+              setLoadingStep(steps.length);
             },
             onComplete: () => {
               setLoadingStep((prev) => (prev === 0 ? 1 : prev));

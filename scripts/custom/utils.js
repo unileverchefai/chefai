@@ -1,6 +1,6 @@
 import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
 import { COUNTRY_CODE, LANGUAGE_CODE } from '@api/authentication/constants.js';
-import formatResponse from './responseHandler.js';
+import formatResponse from '@helpers/chatbot/responseHandler.js';
 
 export { formatResponse };
 
@@ -556,7 +556,6 @@ export function transformApiMessagesToChatFormat(apiMessages) {
       user: {
         _id: AI_ID,
         name: 'Chef AI',
-        avatar: '/icons/chef-ai-avatar.svg',
       },
       metadata: {
         thread_id: msg.thread_id,
