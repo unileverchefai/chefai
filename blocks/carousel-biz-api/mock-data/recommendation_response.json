@@ -1,0 +1,78 @@
+{
+  "recommendations": [
+    {
+      "id": "698217eb61a8ad03244cdda1",
+      "title": "Elevate bowl experience – add umami and citrus for depth and freshness",
+      "description": "Poké and wok customers value **flavourful, complex tastes**—and those last finishing touches are what separate a good bowl from a great one. Knorr Professional Intense Flavours Caramelised Umami and Citrus Fresh are liquid seasonings that deliver instant depth, balance, or brightness. A few drops let you level up broths, dressings, or finishing sauces on-demand.",
+      "type": "main",
+      "pain_points": [
+        "Supply Chain Reliability",
+        "Staff Management",
+        "Profitability"
+      ],
+      "trends": [
+        "Diner Designed",
+        "Borderless Cuisine"
+      ],
+      "is_sneakpeek": false
+    },
+    {
+      "id": "698217eb61a8ad03244cdd9a",
+      "title": "DIY snacks engage Gen Z – add Summer rolls with Teriyaki dipping sauce",
+      "description": "Summer rolls are an ideal **multi-sensory and interactive snack**, letting your guests engage with their food and create great social media moments. They're perfectly aligned to your health-forward, Asian menu—fresh, colorful, and portable for dine-in or take-out.",
+      "type": "main",
+      "pain_points": [
+        "Supply Chain Reliability",
+        "Staff Management",
+        "Profitability"
+      ],
+      "trends": [
+        "Street Food Couture",
+        "Diner Designed"
+      ],
+      "is_sneakpeek": false
+    },
+    {
+      "id": "698217eb61a8ad03244cdd98",
+      "title": "Broth innovation refreshes vegan offering – add Katsu Tofu Broth",
+      "description": "A vegan, katsu-inspired tofu broth taps into both **plant-forward dining and innovative Asian fusion,** giving you a comforting bowl that stands out from the crowd. It solves for diners who want a hot, satisfying meal that's still light, aligning with your healthy, customizable focus.",
+      "type": "main",
+      "pain_points": [
+        "Gen Z Appeal",
+        "Profitability"
+      ],
+      "trends": [
+        "Borderless Cuisine"
+      ],
+      "is_sneakpeek": false
+    },
+    {
+      "id": "698217eb61a8ad03244cdd96",
+      "title": "Young diners prioritize sustainability",
+      "description": "Younger generations increasingly value transparent sourcing and environmental responsibility in their dining choices.",
+      "type": "main",
+      "pain_points": [
+        "Supply Chain Reliability"
+      ],
+      "trends": [
+        "Culinary Roots"
+      ],
+      "is_sneakpeek": false
+    },
+    {
+      "id": "698217eb61a8ad03244cdd97",
+      "title": "60% prefer elevated comfort food",
+      "description": "Diners seek familiar dishes with premium ingredients and contemporary techniques, creating memorable experiences through refined execution.",
+      "type": "main",
+      "pain_points": [
+        "Staff Management",
+        "Profitability"
+      ],
+      "trends": [
+        "Diner Designed"
+      ],
+      "is_sneakpeek": false
+    }
+  ],
+  "message": "Successfully retrieved 5 recommendations"
+}

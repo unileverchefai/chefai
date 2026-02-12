@@ -1,0 +1,27 @@
+{
+  "Borderless Cuisine": {
+    "class": "borderless-cuisine",
+    "image": "/icons/borderless-cuisine.jpg",
+    "description": "Fusion of global culinary traditions"
+  },
+  "Street Food Couture": {
+    "class": "street-food-couture",
+    "image": "/icons/street-food-couture.jpg",
+    "description": "Elevated street food experiences"
+  },
+  "Diner Designed": {
+    "class": "diner-designed",
+    "image": "/icons/diner-designed.jpg",
+    "description": "Customer-centric dining innovation"
+  },
+  "Culinary Roots": {
+    "class": "culinary-roots",
+    "image": "/icons/culinary-roots.jpg",
+    "description": "Traditional heritage cooking"
+  },
+  "Cross-Trend": {
+    "class": "cross-trend",
+    "image": "/icons/cross-trend.jpg",
+    "description": "Multi-trend fusion concepts"
+  }
+}
