@@ -721,4 +721,3 @@ export function loadScript(src) {
     document.head.appendChild(script);
   });
 }
-
