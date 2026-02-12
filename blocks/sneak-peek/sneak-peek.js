@@ -82,7 +82,8 @@ export default async function decorate(block) {
     }
   });
 
-  // If the CTA button uses #unlock-personalized-hub, open the registration modal instead of navigating.
+  // If the CTA button uses #unlock-personalized-hub,
+  // open the registration modal instead of navigating.
   const ctaButton = ctaBlock.querySelector('.button');
   const ctaHref = ctaButton?.getAttribute('href') ?? '';
   if (ctaButton && ctaHref.includes('#unlock-personalized-hub')) {
