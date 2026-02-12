@@ -42,7 +42,6 @@
 
 .personalized-hub-container .carousel-cards .carousel-cards-container {
   gap: var(--spacing-md);
-  overflow: auto;
 }
 
 .personalized-hub-container .carousel-cards .cards {
