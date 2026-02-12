@@ -53,19 +53,15 @@ export default async function decorate(block) {
     } else {
       cardPosition = 'right';
     }
-    const title = insightData?.title || '';
-    const description = insightData?.description || '';
-
-    const card = createElement('div', { className: `insight-card fp-card--${cardPosition}` });
-    const cardContent = createElement('div', { className: 'insight-card-content' });
-    const cardTitle = createElement('h3');
-    cardTitle.textContent = title;
-    const cardDescription = createElement('p');
-    cardDescription.textContent = description;
-
-    cardContent.appendChild(cardTitle);
-    cardContent.appendChild(cardDescription);
-    card.appendChild(cardContent);
+    const card = createElement('div', {
+      className: `insight-card fp-card--${cardPosition}`,
+      innerContent: `
+        <div class="insight-card-content">
+          <h3>${insightData?.title ?? ''}</h3>
+          <p>${insightData?.description ?? ''}</p>
+        </div>
+      `,
+    });
     insightBlock.appendChild(card);
   }
 

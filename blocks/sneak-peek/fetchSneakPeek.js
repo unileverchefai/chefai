@@ -8,14 +8,6 @@ const DEFAULT_PARAMS = {
   type: 'main',
 };
 
-async function getActiveUserId() {
-  const cookieUserId = getUserIdFromCookie();
-  if (cookieUserId) {
-    return cookieUserId;
-  }
-  return null;
-}
-
 /**
  * Fetch insights from the recommendations API
  * @param {Object} options - Query parameters
@@ -24,7 +16,7 @@ async function getActiveUserId() {
  * @returns {Promise<Object|null>} Single recommendation object or null
  */
 export async function fetchSneakPeek() {
-  const userId = await getActiveUserId();
+  const userId = getUserIdFromCookie();
 
   if (!userId) {
     // eslint-disable-next-line no-console
