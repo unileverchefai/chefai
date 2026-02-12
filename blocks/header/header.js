@@ -1,9 +1,7 @@
 import { createElement } from '@scripts/common.js';
-import { hasToken } from '@auth/tokenManager.js';
-import openSignInModal from '@helpers/signin/index.js';
 import { getMetadata } from '@scripts/aem.js';
-import { logout } from '@auth/authService.js';
 import { loadFragment } from '@blocks/fragment/fragment.js';
+import createProfileSection from '@helpers/nav-profile/nav-profile.js';
 
 // media query match that indicates mobile/tablet width
 const isDesktop = window.matchMedia('(min-width: 992px)');
@@ -66,7 +64,6 @@ export default async function decorate(block) {
   // Get campaign phase metadata (defaults to 'teaser')
   const campaignPhase = getMetadata('campaign-phase') || 'teaser';
   const isLiveMode = campaignPhase === 'live';
-  const isLoggedIn = hasToken();
 
   // Load nav fragment
   const navMeta = getMetadata('nav');
@@ -153,107 +150,7 @@ export default async function decorate(block) {
   if (!isLiveMode) {
     elements.append(hamburger, headerContainer);
   } else {
-    // In live mode, also show profile section
-    // Create profile section
-    const profile = createElement('div', { className: 'nav-profile' });
-    const profileButton = createElement('button', {
-      className: 'nav-profile-button',
-      attributes: {
-        type: 'button',
-        'aria-label': isLoggedIn ? 'My account' : 'Sign in',
-      },
-    });
-
-    if (isLoggedIn) {
-      // Logged in: show profile icon + "My account" text
-      const profileIcon = createElement('span', {
-        className: 'nav-profile-icon',
-        innerContent: `
-          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="16" cy="16" r="15" stroke="currentColor" stroke-width="2"/>
-            <path d="M16 16c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.33 0-10 1.67-10 5v2h20v-2c0-3.33-6.67-5-10-5z" fill="currentColor"/>
-          </svg>
-        `,
-      });
-      profileButton.appendChild(profileIcon);
-
-      // Add "My account" text for desktop
-      const accountText = createElement('span', {
-        className: 'nav-profile-text',
-        innerContent: 'My account',
-      });
-      profileButton.appendChild(accountText);
-
-      // Create dropdown menu for logged-in users
-      const dropdown = createElement('div', {
-        className: 'nav-profile-dropdown',
-      });
-
-      const accountLink = createElement('a', {
-        className: 'nav-profile-dropdown-item',
-        innerContent: 'My account',
-        attributes: {
-          href: '/account',
-        },
-      });
-
-      const logoutButton = createElement('button', {
-        className: 'nav-profile-dropdown-item',
-        innerContent: 'Logout',
-        attributes: {
-          type: 'button',
-        },
-      });
-
-      logoutButton.addEventListener('click', async (e) => {
-        e.stopPropagation();
-        await logout();
-        window.location.href = '/';
-      });
-
-      dropdown.append(accountLink, logoutButton);
-      profile.appendChild(dropdown);
-
-      // Toggle dropdown on profile button click
-      profileButton.addEventListener('click', (e) => {
-        e.stopPropagation();
-        dropdown.classList.toggle('nav-profile-dropdown--active');
-      });
-
-      // Close dropdown when clicking outside
-      document.addEventListener('click', () => {
-        dropdown.classList.remove('nav-profile-dropdown--active');
-      });
-    } else {
-      // Not logged in: show "Sign in" text
-      // Mobile: Sign in text only
-      // Desktop: "Already registered? Sign in" prefix + link
-      const signInText = createElement('span', {
-        className: 'nav-profile-text nav-profile-text--signin',
-      });
-
-      const desktopPrefix = createElement('span', {
-        className: 'nav-profile-text-prefix',
-        innerContent: 'Already registered? ',
-      });
-
-      const signInLink = createElement('span', {
-        className: 'nav-profile-text-link',
-        innerContent: 'Sign in',
-      });
-
-      signInText.append(desktopPrefix, signInLink);
-      profileButton.appendChild(signInText);
-    }
-
-    // Handle profile click
-    if (!isLoggedIn) {
-      profileButton.addEventListener('click', () => {
-        openSignInModal();
-      });
-    }
-
-    profile.appendChild(profileButton);
+    const profile = createProfileSection();
     headerContainer.append(profile);
 
     elements.append(hamburger, headerContainer);
