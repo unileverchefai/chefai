@@ -290,15 +290,17 @@
   vertical-align: middle;
 }
 
+.ph-loading-step-line {
+  display: block;
+}
+
+.ph-loading-step-line + .ph-loading-step-line {
+  margin-top: var(--spacing-xxs, 4px);
+}
+
 /* Business Card */
-.ph-business-card {
-  background: var(--light-mushroom);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-xs);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-  max-width: 220px;
+.carousel-cards {
+  cursor: pointer;
 }
 
 .ph-business-image-container {

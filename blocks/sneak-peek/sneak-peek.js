@@ -54,10 +54,13 @@ export default async function decorate(block) {
       cardPosition = 'right';
     }
     const card = createElement('div', { className: `insight-card fp-card--${cardPosition}` });
+    const title = insightData?.title || '';
+    const description = insightData?.description || '';
+
     card.innerHTML = `
             <div class="insight-card-content">
-                <h3>${insightData.title}</h3>
-                <p>${insightData.description}</p>
+                <h3>${title}</h3>
+                <p>${description}</p>
             </div>
         `;
     insightBlock.appendChild(card);
@@ -67,7 +70,8 @@ export default async function decorate(block) {
   const ctaBlock = createElement('div', { className: 'floating-cta__container' });
   root.querySelector('div').querySelectorAll('p').forEach((el, index) => {
     if (index !== 0) {
-      if (el.className === 'button-container') {
+      const hasButton = el.querySelector('.button');
+      if (hasButton) {
         const ctaContainer = createElement('div', { className: 'floating-cta__cta orange-button glowy' });
         ctaContainer.appendChild(el);
         ctaBlock.appendChild(ctaContainer);
@@ -77,14 +81,29 @@ export default async function decorate(block) {
     }
   });
 
-  const logo = createElement('img', { className: 'business-logo' });
-  logo.src = businessInfo.image_url;
-  logo.alt = businessInfo.name;
-  businessBlock.appendChild(logo);
+  // If the CTA button uses #unlock-personalized-hub, open the registration modal instead of navigating.
+  const ctaButton = ctaBlock.querySelector('.button');
+  const ctaHref = ctaButton?.getAttribute('href') ?? '';
+  if (ctaButton && ctaHref.includes('#unlock-personalized-hub')) {
+    ctaButton.addEventListener('click', async (event) => {
+      event.preventDefault();
+      const { default: openSignUpReportModal } = await import('@helpers/signup/signup.js');
+      openSignUpReportModal();
+    });
+  }
 
-  const title = createElement('h2');
-  title.textContent = businessInfo.name;
-  businessBlock.appendChild(title);
+  if (businessInfo?.image_url) {
+    const logo = createElement('img', { className: 'business-logo' });
+    logo.src = businessInfo.image_url;
+    logo.alt = businessInfo.name || '';
+    businessBlock.appendChild(logo);
+  }
+
+  if (businessInfo?.name) {
+    const title = createElement('h2');
+    title.textContent = businessInfo.name;
+    businessBlock.appendChild(title);
+  }
 
   const arrowLogo = createElement('img', { className: 'sneak-peek-arrow-logo' });
   arrowLogo.src = '/icons/triple-arrow-logo.svg';

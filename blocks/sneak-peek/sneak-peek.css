@@ -61,7 +61,7 @@ main {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 65px;
+  bottom: 0;
   height: 300px;
   pointer-events: none;
   z-index: 10;
@@ -163,14 +163,14 @@ main {
 /* side peeks */
 .fp-card--left {
   left: 50%;
-  transform: translateX(calc(-50% - 65vw)) scale(.96);
   z-index: 1;
+	transform: translateX(calc(-50% - 10vw)) scale(.92);
 }
 
 .fp-card--right {
   left: 50%;
-  transform: translateX(calc(-50% + 65vw)) scale(.96);
   z-index: 1;
+	transform: translateX(calc(-50% + 10vw)) scale(.92);
 }
 
 .fp-card--left .insight-card-content,
@@ -234,6 +234,12 @@ main {
 
 /* DESKTOP */
 @media (width >= 900px) {
+    .business-block {
+      display: flex;
+      flex-direction: row;
+      gap: 20px;
+    }
+
     .sneak-peek-title {
         font-size: var(--heading-font-size-s);
     }
@@ -243,21 +249,16 @@ main {
     }
 
     .sneak-peek .navbar {
-        max-width: 45vw;
+        max-width: 65vw;
         margin: 0 auto;
     }
 
     .fp-card--left {
-        transform: translateX(calc(-50% - 10vw)) scale(.92);
-    }
-
-    .fp-card--right {
-        transform: translateX(calc(-50% + 10vw)) scale(.92);
+        left: 50%;
     }
 
     .lower-block::after {
         margin: 0 auto;
-        bottom: 55px;
         height: 250px;
         background: linear-gradient(
             to bottom,

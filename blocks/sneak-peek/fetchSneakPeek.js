@@ -1,78 +1,70 @@
 import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
-
-const recommendationsData = await fetch('/blocks/sneak-peek/mock-data/recommendation_response.json').then((r) => r.json());
-const businessInfoData = await fetch('/blocks/sneak-peek/mock-data/business_info.json').then((r) => r.json());
-
-const MOCK_RECOMMENDATIONS = recommendationsData.recommendations[0] || [];
-const MOCK_BUSINESS_INFO = businessInfoData.data || {};
-
-const USE_MOCK_FALLBACK = true;
+import { getUserIdFromCookie } from '@helpers/chatbot/utils.js';
 
 const DEFAULT_PARAMS = {
-  current_date: '2026-01-20T00:00:00Z',
   is_sneakpeek: true,
   limit: 3,
   refresh: false,
   type: 'main',
-  user_id: 'staging-user',
 };
+
+async function getActiveUserId() {
+  const cookieUserId = getUserIdFromCookie();
+  if (cookieUserId) {
+    return cookieUserId;
+  }
+  return null;
+}
 
 /**
  * Fetch insights from the recommendations API
  * @param {Object} options - Query parameters
  * @param {string} options.business_type_id - Optional business type filter
  * @param {string} options.user_id - User ID
- * @returns {Promise<Array>} Array of transformed insight cards
+ * @returns {Promise<Object|null>} Single recommendation object or null
  */
 export async function fetchSneakPeek() {
+  const userId = await getActiveUserId();
+
+  if (!userId) {
+    // eslint-disable-next-line no-console
+    console.warn('[Sneak Peek] No user id available, skipping recommendations fetch');
+    return null;
+  }
+
   const headers = {
     Accept: 'application/json',
     'X-Subscription-Key': SUBSCRIPTION_KEY,
     'Content-Type': 'application/json',
   };
 
-  const body = JSON.stringify({ ...DEFAULT_PARAMS });
+  const body = JSON.stringify({
+    ...DEFAULT_PARAMS,
+    current_date: new Date().toISOString(),
+    user_id: userId,
+  });
 
   try {
-    const response = await fetch(`${ENDPOINTS.recommendations}`, { method: 'POST', headers, body });
+    const response = await fetch(`${ENDPOINTS.recommendations}/`, { method: 'POST', headers, body });
 
     if (!response.ok) {
-      if (response.status === 404) {
-        // No recommendations found - use mock data if enabled
-        if (USE_MOCK_FALLBACK) {
-          // eslint-disable-next-line no-console
-          console.warn('API returned 404, using mock data');
-          return MOCK_RECOMMENDATIONS;
-        }
-        return [];
-      }
       throw new Error(`API error: ${response.status}`);
     }
 
     const data = await response.json();
-    const recommendations = data.recommendations[0] || [];
+    const [firstRecommendation] = data.recommendations || [];
 
-    // If no recommendations and mock fallback is enabled
-    if (recommendations.length === 0 && USE_MOCK_FALLBACK) {
+    if (!firstRecommendation) {
       // eslint-disable-next-line no-console
-      console.warn('No API data available, using mock data');
-      return MOCK_RECOMMENDATIONS;
+      console.warn('[Sneak Peek] Recommendations API returned no data');
+      return null;
     }
 
-    // Transform and filter out invalid entries
-    return recommendations;
+    return firstRecommendation;
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.error('Failed to fetch insights:', error);
-
-    // Use mock data as fallback on error
-    if (USE_MOCK_FALLBACK) {
-      // eslint-disable-next-line no-console
-      console.warn('Using mock data due to API error');
-      return MOCK_RECOMMENDATIONS;
-    }
-
-    return [];
+    console.error('[Sneak Peek] Failed to fetch recommendations:', error);
+    return null;
   }
 }
 
@@ -81,58 +73,44 @@ export async function fetchSneakPeek() {
  * @param {Object} options - Query parameters
  * @param {string} options.business_type_id - Optional business type filter
  * @param {string} options.user_id - User ID
- * @returns {Promise<Array>} Array of transformed insight cards
+ * @returns {Promise<Object|null>} Business info object or null
  */
-export async function fetchBusinessInfo(options = {}) {
-  const params = new URLSearchParams({
-    user_id: 'staging-user',
-  });
+export async function fetchBusinessInfo() {
+  const userId = getUserIdFromCookie();
 
-  const headers = {
-    'X-Subscription-Key': SUBSCRIPTION_KEY,
-    'X-User-ID': options.user_id,
-    'X-Source': 'chefai-ui',
-  };
+  if (!userId) {
+    // eslint-disable-next-line no-console
+    console.warn('[Sneak Peek] No user id available, skipping business info fetch');
+    return null;
+  }
+
+  const url = `${ENDPOINTS.businessInfo}?user_id=${encodeURIComponent(userId)}`;
 
   try {
-    const response = await fetch(`${ENDPOINTS.businessInfo}?${params}`, { headers });
+    const response = await fetch(url, {
+      headers: {
+        Accept: 'application/json',
+        'X-Subscription-Key': SUBSCRIPTION_KEY,
+      },
+    });
 
     if (!response.ok) {
-      if (response.status === 404) {
-        // No recommendations found - use mock data if enabled
-        if (USE_MOCK_FALLBACK) {
-          // eslint-disable-next-line no-console
-          console.warn('API returned 404, using mock data');
-          return MOCK_BUSINESS_INFO;
-        }
-        return [];
-      }
       throw new Error(`API error: ${response.status}`);
     }
 
     const data = await response.json();
-    const recommendations = data.data || [];
+    const businessInfo = data.data || null;
 
-    // If no recommendations and mock fallback is enabled
-    if (recommendations.length === 0 && USE_MOCK_FALLBACK) {
+    if (!businessInfo) {
       // eslint-disable-next-line no-console
-      console.warn('No API data available, using mock data');
-      return MOCK_BUSINESS_INFO;
+      console.warn('[Sneak Peek] Business info API returned no data');
+      return null;
     }
 
-    // Transform and filter out invalid entries
-    return recommendations;
+    return businessInfo;
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.error('Failed to fetch insights:', error);
-
-    // Use mock data as fallback on error
-    if (USE_MOCK_FALLBACK) {
-      // eslint-disable-next-line no-console
-      console.warn('Using mock data due to API error');
-      return MOCK_BUSINESS_INFO;
-    }
-
-    return [];
+    console.error('[Sneak Peek] Failed to fetch business info:', error);
+    return null;
   }
 }

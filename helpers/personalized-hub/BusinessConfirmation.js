@@ -19,6 +19,7 @@ export default function BusinessConfirmation({
     candidates = [businessData];
   }
 
+  const selectedPlaceId = businessData?.place_id ?? '';
   const selectedName = businessData?.business_name ?? 'Unknown Business';
 
   const carouselBlockRef = useRef(null);
@@ -59,14 +60,17 @@ export default function BusinessConfirmation({
     const imageUrl = business.image_url ?? '';
     const logoUrl = business.logo_url ?? '';
     const placeId = business.place_id ?? '';
-    const isSelected = name === selectedName;
+    const isSelected = placeId && selectedPlaceId
+      ? placeId === selectedPlaceId
+      : name === selectedName;
 
     return h(
       'li',
       {
-        key: `business-${idx}`,
+        key: placeId ? `business-${placeId}` : `business-${idx}`,
         className: `card chatbot-carousel-card${isSelected ? ' ph-business-card--selected' : ''}`,
         'data-place-id': placeId,
+        'data-product-id': placeId,
         onClick: () => {
           if (onSelectBusiness) {
             onSelectBusiness(business);
