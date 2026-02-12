@@ -1,5 +1,5 @@
 import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
-import { getUserIdFromCookie, getAnonymousUserId } from '../chatbot/utils.js';
+import { getUserIdFromCookie, getAnonymousUserId } from '@scripts/custom/utils.js';
 
 export default async function hasSavedBusinessName() {
   try {

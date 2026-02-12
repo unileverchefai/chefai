@@ -6,7 +6,7 @@ import {
   getUserIdFromCookie,
   getAnonymousUserIdFromCookie,
   createUser,
-} from './utils.js';
+} from '@scripts/custom/utils.js';
 
 let currentEndpoint = 'capgemini';
 
@@ -36,29 +36,32 @@ export default async function sendMessage(message, options = {}) {
     userId = await getAnonymousUserId();
   }
 
-  // Get or create thread ID using API
-  // If it fails because user doesn't exist, create a new user and retry
-  // skipCache option prevents storing thread_id during business registration flow
+  // Get or reuse thread ID:
+  // - If options.thread_id is provided, always reuse that thread
+  // - Otherwise, use API-based flow to get or create a thread
+  //   (if it fails because user doesn't exist, create a new user and retry)
+  //   skipCache option prevents storing thread_id during business registration flow
   const skipCache = options.skipCache ?? false;
-  let threadId;
-  try {
-    threadId = await getOrCreateThreadId(userId, false, skipCache);
-  } catch (error) {
-    if (error.message && error.message.includes('does not exist')) {
-      // User doesn't exist, create a new one and retry
-      userId = await createUser();
+  let threadId = options.thread_id ?? null;
+  if (!threadId) {
+    try {
       threadId = await getOrCreateThreadId(userId, false, skipCache);
-    } else {
-      throw error;
+    } catch (error) {
+      if (error.message && error.message.includes('does not exist')) {
+        // User doesn't exist, create a new one and retry
+        userId = await createUser();
+        threadId = await getOrCreateThreadId(userId, false, skipCache);
+      } else {
+        throw error;
+      }
     }
   }
 
   const payload = {
-    ...options,
     message,
     thread_id: threadId,
     user_id: userId,
-    country: options.country || 'BE',
+    country: options.country ?? 'BE',
   };
 
   try {

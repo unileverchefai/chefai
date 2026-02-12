@@ -1,11 +1,5 @@
 import { initCarouselCards } from '../../blocks/carousel-cards/carousel-cards.js';
 
-const {
-  createElement: h,
-  useEffect,
-  useRef,
-} = window.React;
-
 export default function BusinessConfirmation({
   businessData,
   businesses,
@@ -13,6 +7,11 @@ export default function BusinessConfirmation({
   onConfirm,
   onReject,
 }) {
+  const {
+    createElement: h,
+    useEffect,
+    useRef,
+  } = window.React;
   let candidates = [];
   if (Array.isArray(businesses) && businesses.length > 0) {
     candidates = businesses;
@@ -20,6 +19,7 @@ export default function BusinessConfirmation({
     candidates = [businessData];
   }
 
+  const selectedPlaceId = businessData?.place_id ?? '';
   const selectedName = businessData?.business_name ?? 'Unknown Business';
 
   const carouselBlockRef = useRef(null);
@@ -39,7 +39,7 @@ export default function BusinessConfirmation({
       carouselInstance = initCarouselCards(blockEl, containerEl, candidates.length, {
         disableDesktopCarousel: false,
         swipeOnDesktop: true,
-        hideArrows: false,
+        hideArrows: true,
         disableSnap: true,
       });
     } catch (error) {
@@ -59,13 +59,18 @@ export default function BusinessConfirmation({
     const address = business.address ?? '';
     const imageUrl = business.image_url ?? '';
     const logoUrl = business.logo_url ?? '';
-    const isSelected = name === selectedName;
+    const placeId = business.place_id ?? '';
+    const isSelected = placeId && selectedPlaceId
+      ? placeId === selectedPlaceId
+      : name === selectedName;
 
     return h(
       'li',
       {
-        key: `business-${idx}`,
+        key: placeId ? `business-${placeId}` : `business-${idx}`,
         className: `card chatbot-carousel-card${isSelected ? ' ph-business-card--selected' : ''}`,
+        'data-place-id': placeId,
+        'data-product-id': placeId,
         onClick: () => {
           if (onSelectBusiness) {
             onSelectBusiness(business);

@@ -1,6 +1,16 @@
-const { createElement: h } = window.React;
+const SENTENCE_BOUNDARY = /\.\s+|\n+/;
 
-export default function LoadingState({ businessData }) {
+function splitSentences(text) {
+  if (typeof text !== 'string' || !text.trim()) return [];
+  return text.split(SENTENCE_BOUNDARY).map((s) => s.trim()).filter(Boolean);
+}
+
+export default function LoadingState({
+  businessData,
+  activeStep = 0,
+  steps = [],
+}) {
+  const { createElement: h } = window.React;
   const logoUrl = businessData?.logo_url ?? businessData?.image_url ?? '';
 
   return h(
@@ -46,11 +56,39 @@ export default function LoadingState({ businessData }) {
           h(
             'div',
             { key: 'steps', className: 'ph-loading-steps' },
-            [
-              h('div', { key: 'step1', className: 'ph-loading-step' }, 'Analizing your menu'),
-              h('div', { key: 'step2', className: 'ph-loading-step' }, 'Reading customer reviews'),
-              h('div', { key: 'step3', className: 'ph-loading-step' }, 'Checking competitors in the area'),
-            ],
+            steps.map((label, index) => {
+              const stepNumber = index + 1;
+              const isCompleted = activeStep >= stepNumber;
+              const lines = splitSentences(label);
+
+              return h(
+                'div',
+                {
+                  key: `step-${stepNumber}`,
+                  className: `ph-loading-step${isCompleted ? ' ph-loading-step--completed' : ' ph-loading-step--inactive'}`,
+                },
+                [
+                  isCompleted && h(
+                    'span',
+                    {
+                      key: 'icon',
+                      className: 'ph-loading-step-icon',
+                      'aria-hidden': 'true',
+                    },
+                    '✓',
+                  ),
+                  lines.length > 0
+                    ? h(
+                      'span',
+                      { key: 'label', className: 'ph-loading-step-label' },
+                      lines.length === 1
+                        ? lines[0]
+                        : lines.map((line, i) => h('span', { key: `l-${i}`, className: 'ph-loading-step-line' }, line)),
+                    )
+                    : h('span', { key: 'label', className: 'ph-loading-step-label' }, label),
+                ],
+              );
+            }),
           ),
         ],
       ),

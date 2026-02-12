@@ -1,6 +1,6 @@
 import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
 import { COUNTRY_CODE, LANGUAGE_CODE } from '@api/authentication/constants.js';
-import formatResponse from './responseHandler.js';
+import formatResponse from '@helpers/chatbot/responseHandler.js';
 
 export { formatResponse };
 
@@ -47,12 +47,21 @@ export function getOrCreateCookieId() {
   if (cookieId) {
     return cookieId;
   }
-  cookieId = `cookie_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+  cookieId = `${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
   setCookie('cookie_id', cookieId);
   return cookieId;
 }
 
+/**
+ * Get cookie_id. If user_id is stored in session, sync cookie_id to that value and return it.
+ * @returns {string|null} cookie_id value
+ */
 export function getCookieId() {
+  const sessionUserId = sessionStorage.getItem('chefai_user_id');
+  if (sessionUserId) {
+    setCookie('cookie_id', sessionUserId);
+    return sessionUserId;
+  }
   return getCookie('cookie_id');
 }
 
@@ -281,30 +290,22 @@ export async function getOrCreateThreadId(userId, validateOnInit = false, skipCa
   } catch (error) {
     if (error.message && error.message.includes('does not exist')) {
       setCookie('user_id', '', -1);
-      setCookie('chef-ai-anonymous-user-id', '', -1);
       setCookie('chef-ai-thread-id', '', -1);
     }
     throw error;
   }
 }
 
-export function getAnonymousUserIdFromCookie() {
-  const cookieName = 'chef-ai-anonymous-user-id';
-  return getCookie(cookieName);
-}
-
 export function getUserIdFromCookie() {
   return getCookie('user_id');
 }
 
-export function clearAnonymousUserIdCookie() {
-  const cookieName = 'chef-ai-anonymous-user-id';
-  setCookie(cookieName, '', -1);
+export function getAnonymousUserIdFromCookie() {
+  return getUserIdFromCookie();
 }
 
 export function clearAllChatData() {
   setCookie('chef-ai-thread-id', '', -1);
-  setCookie('chef-ai-anonymous-user-id', '', -1);
   setCookie('personalized-hub-consent', '', -1);
   setCookie('user_id', '', -1);
   setCookie('cookie_id', '', -1);
@@ -318,11 +319,9 @@ export function clearAllChatData() {
 }
 
 export async function getAnonymousUserId() {
-  const cookieName = 'chef-ai-anonymous-user-id';
-  const userId = getCookie(cookieName);
-
-  if (userId) {
-    return userId;
+  const existingUserId = getUserIdFromCookie();
+  if (existingUserId) {
+    return existingUserId;
   }
 
   if (!ENDPOINTS.users) {
@@ -364,12 +363,16 @@ export async function getAnonymousUserId() {
   const json = JSON.parse(responseText);
   const returnedUserId = (json.user_id ?? json.data?.user_id ?? cookieId).toString().trim();
 
-  setCookie(cookieName, returnedUserId);
+  sessionStorage.setItem('chefai_user_id', returnedUserId);
+  setCookie('cookie_id', returnedUserId);
+  setCookie('user_id', returnedUserId);
   return returnedUserId;
 }
 
 /**
  * Create a new user via API (uses cookie_id as user_id per journey flow).
+ * Once we get user_id from the API, store it in session and update cookie_id to that same value.
+ *
  * @returns {Promise<string>} User ID
  */
 export async function createUser() {
@@ -410,8 +413,9 @@ export async function createUser() {
   const json = JSON.parse(responseText);
   const returnedUserId = (json.user_id ?? json.data?.user_id ?? cookieId).toString().trim();
 
+  sessionStorage.setItem('chefai_user_id', returnedUserId);
+  setCookie('cookie_id', returnedUserId);
   setCookie('user_id', returnedUserId);
-  setCookie('chef-ai-anonymous-user-id', returnedUserId);
   return returnedUserId;
 }
 
@@ -552,7 +556,6 @@ export function transformApiMessagesToChatFormat(apiMessages) {
       user: {
         _id: AI_ID,
         name: 'Chef AI',
-        avatar: '/icons/chef-ai-avatar.svg',
       },
       metadata: {
         thread_id: msg.thread_id,

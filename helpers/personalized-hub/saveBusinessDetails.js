@@ -1,5 +1,28 @@
 import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
-import { getUserIdFromCookie } from '@helpers/chatbot/utils.js';
+import { getUserIdFromCookie } from '@scripts/custom/utils.js';
+
+/**
+ * Build payload for POST /api/v1/business/details.
+ * Maps businessData (from confirmation) to the API shape.
+ */
+function buildBusinessDetailsPayload(businessData, userId) {
+  const addressStr = businessData?.address ?? '';
+  return {
+    user_id: userId,
+    name: businessData?.business_name ?? '',
+    place_id: businessData?.place_id ?? '',
+    street: businessData?.street ?? addressStr,
+    house_number: businessData?.house_number ?? '',
+    city: businessData?.city ?? '',
+    postal_code: businessData?.postal_code ?? '',
+    phone_number: businessData?.phone_number ?? '',
+    url: businessData?.url ?? '',
+    rating: businessData?.rating ?? null,
+    business_type: businessData?.business_type ?? '',
+    cuisine_type: businessData?.cuisine_type ?? '',
+    keywords: Array.isArray(businessData?.keywords) ? businessData.keywords : [],
+  };
+}
 
 export default async function saveBusinessDetails(businessData, providedUserId = null) {
   const userId = providedUserId ?? getUserIdFromCookie();
@@ -8,26 +31,12 @@ export default async function saveBusinessDetails(businessData, providedUserId =
     throw new Error('User ID is required to save business details.');
   }
 
-  const endpoint = `${ENDPOINTS.businessDetails}`;
+  const payload = buildBusinessDetailsPayload(businessData, userId);
 
-  const payload = {
-    user_id: userId,
-    place_id: businessData?.place_id ?? '',
-    name: businessData?.business_name ?? '',
-    street: businessData?.street ?? '',
-    house_number: businessData?.house_number ?? '',
-    city: businessData?.city ?? '',
-    postal_code: businessData?.postal_code ?? '',
-    country: businessData?.country ?? '',
-    image_url: businessData?.image_url ?? '',
-    logo_url: businessData?.logo_url ?? '',
-    url: businessData?.url ?? '',
-  };
-
-  const response = await fetch(endpoint, {
+  const response = await fetch(ENDPOINTS.businessDetails, {
     method: 'POST',
     headers: {
-      Accept: 'application/json',
+      Accept: '*/*',
       'Content-Type': 'application/json',
       'X-Subscription-Key': SUBSCRIPTION_KEY,
     },

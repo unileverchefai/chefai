@@ -1,6 +1,6 @@
-import openSignInModal from '@helpers/signin/index.js';
 import { createElement } from '@scripts/common.js';
 import { loadCSS } from '@scripts/aem.js';
+import createProfileSection from '@helpers/nav-profile/nav-profile.js';
 import { fetchBusinessInfo, fetchSneakPeek } from './fetchSneakPeek.js';
 
 // create customHeader for sneak peek page.
@@ -8,34 +8,22 @@ import { fetchBusinessInfo, fetchSneakPeek } from './fetchSneakPeek.js';
 const decorateCustomHeader = (navbar) => {
   const logo = createElement('div', {
     className: 'sneakpeek--logo-wrapper',
-    innerContent: `
-        <div class="sneakpeek--logo-text"></div>
-        <div class="sneakpeek--logo-number"></div>
-    `,
   });
-
-  const signInButton = createElement('button', {
-    className: 'nav-signin-button',
-    attributes: {
-      type: 'button',
-      'aria-label': 'Sign in',
-    },
-  });
-
-  signInButton.textContent = 'Sign in';
-
-  signInButton.addEventListener('click', () => {
-    openSignInModal();
-  });
+  const logoText = createElement('div', { className: 'sneakpeek--logo-text' });
+  const logoNumber = createElement('div', { className: 'sneakpeek--logo-number' });
+  logo.appendChild(logoText);
+  logo.appendChild(logoNumber);
+  const profile = createProfileSection();
 
   navbar.appendChild(logo);
-  navbar.appendChild(signInButton);
+  navbar.appendChild(profile);
 };
 
 export default async function decorate(block) {
   const root = block.querySelector(':scope > div');
 
-  const recommendationP = root.querySelector('div > p:first-of-type');
+  const recommendationNumberP = root.querySelector('div > p:nth-of-type(1)');
+  const recommendationLabelP = root.querySelector('div > p:nth-of-type(2)');
 
   const insightData = await fetchSneakPeek();
   const businessInfo = await fetchBusinessInfo();
@@ -65,21 +53,24 @@ export default async function decorate(block) {
     } else {
       cardPosition = 'right';
     }
-    const card = createElement('div', { className: `insight-card fp-card--${cardPosition}` });
-    card.innerHTML = `
-            <div class="insight-card-content">
-                <h3>${insightData.title}</h3>
-                <p>${insightData.description}</p>
-            </div>
-        `;
+    const card = createElement('div', {
+      className: `insight-card fp-card--${cardPosition}`,
+      innerContent: `
+        <div class="insight-card-content">
+          <h3>${insightData?.title ?? ''}</h3>
+          <p>${insightData?.description ?? ''}</p>
+        </div>
+      `,
+    });
     insightBlock.appendChild(card);
   }
 
   // CTA. TODO: This should be a variant of the main CTA (future improvements)
   const ctaBlock = createElement('div', { className: 'floating-cta__container' });
   root.querySelector('div').querySelectorAll('p').forEach((el, index) => {
-    if (index !== 0) {
-      if (el.className === 'button-container') {
+    if (index > 1) {
+      const hasButton = el.querySelector('.button');
+      if (hasButton) {
         const ctaContainer = createElement('div', { className: 'floating-cta__cta orange-button glowy' });
         ctaContainer.appendChild(el);
         ctaBlock.appendChild(ctaContainer);
@@ -89,19 +80,67 @@ export default async function decorate(block) {
     }
   });
 
-  const logo = createElement('img', { className: 'business-logo' });
-  logo.src = businessInfo.image_url;
-  logo.alt = businessInfo.name;
-  businessBlock.appendChild(logo);
+  // If the CTA button uses #unlock-personalized-hub,
+  // open the registration modal instead of navigating.
+  const ctaButton = ctaBlock.querySelector('.button');
+  const ctaHref = ctaButton?.getAttribute('href') ?? '';
+  if (ctaButton && ctaHref.includes('#unlock-personalized-hub')) {
+    ctaButton.addEventListener('click', async (event) => {
+      event.preventDefault();
+      const { default: openSignUpReportModal } = await import('@helpers/signup/signup.js');
+      openSignUpReportModal();
+    });
+  }
 
-  const title = createElement('h2');
-  title.textContent = businessInfo.name;
-  businessBlock.appendChild(title);
+  // Left wrapper: logo + title
+  const leftWrapper = createElement('div', { className: 'business-block-left' });
+  if (businessInfo?.image_url) {
+    const logo = createElement('img', {
+      className: 'business-logo',
+      attributes: {
+        src: businessInfo.image_url,
+        alt: businessInfo.name || '',
+      },
+    });
+    leftWrapper.appendChild(logo);
+  }
 
-  const arrowLogo = createElement('img', { className: 'sneak-peek-arrow-logo' });
-  arrowLogo.src = '/icons/triple-arrow-logo.svg';
+  if (businessInfo?.name) {
+    const title = createElement('h2');
+    title.textContent = businessInfo.name;
+    leftWrapper.appendChild(title);
+  }
+  businessBlock.appendChild(leftWrapper);
+
+  // Middle: arrow logo
+  const arrowLogo = createElement('img', {
+    className: 'sneak-peek-arrow-logo',
+    attributes: {
+      src: '/icons/triple-arrow-logo.svg',
+      alt: 'arrow icon',
+    },
+  });
   businessBlock.appendChild(arrowLogo);
-  businessBlock.appendChild(recommendationP);
+
+  // Right wrapper: recommendation metric (number + label)
+  const rightWrapper = createElement('div', { className: 'business-block-right' });
+  if (recommendationNumberP && recommendationLabelP) {
+    const numberEl = createElement('div', {
+      className: 'recommendation-number',
+      innerContent: (recommendationNumberP.textContent ?? '').trim(),
+    });
+
+    const textEl = createElement('div', {
+      className: 'recommendation-text',
+      innerContent: (recommendationLabelP.textContent ?? '').trim(),
+    });
+
+    rightWrapper.appendChild(numberEl);
+    rightWrapper.appendChild(textEl);
+  } else if (recommendationNumberP) {
+    rightWrapper.appendChild(recommendationNumberP);
+  }
+  businessBlock.appendChild(rightWrapper);
 
   // Replace block content
   block.replaceChildren(upperBlock, lowerBlock, ctaBlock);

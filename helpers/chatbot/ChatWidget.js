@@ -1,5 +1,4 @@
 import openPersonalizedHub from '@helpers/personalized-hub/personalized-hub.js';
-import sendStreamingMessage from './sendStreamingMessage.js';
 import {
   getHistory,
   getHistoryWithFallback,
@@ -8,20 +7,20 @@ import {
   getOrCreateThreadId,
   getAnonymousUserId,
   getUserIdFromCookie,
-} from './utils.js';
+} from '@scripts/custom/utils.js';
+import sendStreamingMessage from './sendStreamingMessage.js';
 import renderChatUI from './renderChatUI.js';
-
-const {
-  useState,
-  useCallback,
-  useEffect,
-  useRef,
-} = window.React;
 
 const USER_ID = 1;
 const AI_ID = 2;
 
 export default function ChatWidget({ personalizedHubTrigger = '#chatbot' } = {}) {
+  const {
+    useState,
+    useCallback,
+    useEffect,
+    useRef,
+  } = window.React;
   // Load cached history immediately for fast display
   const storedThreadId = getStoredThreadId();
   const cachedHistory = getHistory(storedThreadId);

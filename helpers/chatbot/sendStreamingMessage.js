@@ -1,12 +1,12 @@
 import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
-import { generateRunId, connectToAgentRunStream } from './sseStream.js';
 import {
   getOrCreateThreadId,
   getAnonymousUserId,
   getUserIdFromCookie,
   getAnonymousUserIdFromCookie,
   createUser,
-} from './utils.js';
+} from '@scripts/custom/utils.js';
+import { generateRunId, connectToAgentRunStream } from './sseStream.js';
 import sendMessage from './sendMessage.js';
 import formatResponse, { parseStreamingEvent } from './responseHandler.js';
 
@@ -55,20 +55,19 @@ export default async function sendStreamingMessage(message, options = {}) {
     userId = await getAnonymousUserId();
   }
 
-  // Get or create thread ID using API
-  // If it fails because user doesn't exist, create a new user and retry
-  // skipCache option prevents storing thread_id during business registration flow
+  // Get or reuse thread ID (same as sendMessage): use options.thread_id if provided
   const skipCache = options.skipCache ?? false;
-  let threadId;
-  try {
-    threadId = await getOrCreateThreadId(userId, false, skipCache);
-  } catch (error) {
-    if (error.message && error.message.includes('does not exist')) {
-      // User doesn't exist, create a new one and retry
-      userId = await createUser();
+  let threadId = options.thread_id ?? null;
+  if (!threadId) {
+    try {
       threadId = await getOrCreateThreadId(userId, false, skipCache);
-    } else {
-      throw error;
+    } catch (error) {
+      if (error.message && error.message.includes('does not exist')) {
+        userId = await createUser();
+        threadId = await getOrCreateThreadId(userId, false, skipCache);
+      } else {
+        throw error;
+      }
     }
   }
 
@@ -153,15 +152,14 @@ export default async function sendStreamingMessage(message, options = {}) {
         throw new Error('SSE connection failed');
       }
 
-      // Step 3: Send API request with the SAME run_id
+      // Step 3: Send API request with the SAME run_id (only API fields, no callbacks)
       const endpoint = ENDPOINTS[currentEndpoint];
       const payload = {
-        ...options,
         message,
         thread_id: threadId,
         user_id: userId,
-        country: options.country || 'BE',
-        run_id: runId, // CRITICAL: Same run_id!
+        country: options.country ?? 'BE',
+        run_id: runId,
         enable_metadata: true,
       };
 
@@ -251,6 +249,7 @@ export default async function sendStreamingMessage(message, options = {}) {
         const response = await sendMessage(message, {
           ...options,
           user_id: userId,
+          thread_id: threadId,
           country: options.country || 'BE',
         });
 

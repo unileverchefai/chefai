@@ -1,8 +1,8 @@
-import { loadReact, createUser } from '@helpers/chatbot/utils.js';
+import { loadReact, getCookieId, getUserIdFromCookie } from '@scripts/custom/utils.js';
+import sendStreamingMessage from '@helpers/chatbot/sendStreamingMessage.js';
 import { createElement } from '@scripts/common.js';
 import { loadCSS } from '@scripts/aem.js';
 import createModal from '@helpers/modal/index.js';
-import saveBusinessDetails from './saveBusinessDetails.js';
 
 const SCREENS = {
   CHAT: 'chat',
@@ -11,6 +11,44 @@ const SCREENS = {
   WELCOME: 'welcome',
   COMPLETED: 'completed',
 };
+
+// Prefetch React, styles and modules after the page has fully loaded
+async function prefetchPersonalizedHub() {
+  try {
+    // Ensure React/ReactDOM are available
+    await loadReact();
+
+    // Warm up critical CSS (loadCSS should be idempotent)
+    const basePath = window.hlx && window.hlx.codeBasePath ? window.hlx.codeBasePath : '';
+    await Promise.all([
+      loadCSS(`${basePath}/helpers/personalized-hub/personalized-hub.css`),
+      loadCSS(`${basePath}/helpers/cookie-agreement/cookie-agreement.css`),
+      loadCSS(`${basePath}/blocks/carousel-cards/carousel-cards.css`),
+    ]);
+
+    // Warm up dynamic imports so they are instant when opening the modal
+    await Promise.all([
+      import('../cookie-agreement/index.js'),
+      import('./PersonalizedChatWidget.js'),
+      import('./LoadingState.js'),
+      import('./BusinessConfirmation.js'),
+      import('./WelcomeScreen.js'),
+    ]);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error('Failed to prefetch Personalized Hub assets:', e);
+  }
+}
+
+if (typeof window !== 'undefined') {
+  if (document.readyState === 'complete') {
+    prefetchPersonalizedHub().catch(() => {});
+  } else {
+    window.addEventListener('load', () => {
+      prefetchPersonalizedHub().catch(() => {});
+    }, { once: true });
+  }
+}
 
 export default async function openPersonalizedHub() {
   await loadCSS(`${window.hlx.codeBasePath}/helpers/personalized-hub/personalized-hub.css`);
@@ -31,9 +69,11 @@ export default async function openPersonalizedHub() {
     overlayBackground: 'var(--modal-overlay-bg)',
     animationDuration: ANIMATION_DURATION,
     onClose: () => {
-      if (reactRoot) {
+      if (reactRoot && typeof reactRoot.unmount === 'function') {
         reactRoot.unmount();
         reactRoot = null;
+      } else if (window.ReactDOM && typeof window.ReactDOM.unmountComponentAtNode === 'function') {
+        window.ReactDOM.unmountComponentAtNode(container);
       }
     },
   });
@@ -60,17 +100,18 @@ export default async function openPersonalizedHub() {
     const { default: BusinessConfirmation } = await import('./BusinessConfirmation.js');
     const { default: WelcomeScreen } = await import('./WelcomeScreen.js');
 
-    const { useState } = window.React;
-    const { createElement: h } = window.React;
-
     // Function to render the personalized hub app
     const renderPersonalizedHubApp = () => {
+      const { useState } = window.React;
+      const { createElement: h } = window.React;
       const PersonalizedHubApp = () => {
         const [currentScreen, setCurrentScreen] = useState(SCREENS.CHAT);
         const [businessData, setBusinessData] = useState(null);
         const [businessCandidates, setBusinessCandidates] = useState([]);
         const [error, setError] = useState(null);
         const [chatMessages, setChatMessages] = useState([]);
+        const [loadingStep, setLoadingStep] = useState(0);
+        const [loadingMessages, setLoadingMessages] = useState([]);
 
         // Removed signup flow - now redirecting to /personalized-hub instead
 
@@ -83,9 +124,17 @@ export default async function openPersonalizedHub() {
               business_name: b.name ?? '',
               address: b.address ?? '',
               image_url: b.image_url ?? '',
-              logo_url: '',
-              place_id: b.place_id,
-              url: b.url,
+              logo_url: b.logo_url ?? '',
+              place_id: b.place_id ?? '',
+              url: b.url ?? '',
+              street: b.street ?? '',
+              city: b.city ?? '',
+              postal_code: b.postal_code ?? '',
+              phone_number: b.phone_number ?? '',
+              rating: b.rating ?? null,
+              business_type: b.business_type ?? '',
+              cuisine_type: b.cuisine_type ?? '',
+              keywords: Array.isArray(b.keywords) ? b.keywords : (b.types ?? []),
             }));
 
             setBusinessCandidates(normalized);
@@ -113,34 +162,49 @@ export default async function openPersonalizedHub() {
           setCurrentScreen(SCREENS.CONFIRMATION);
         };
 
-        const handleConfirm = async () => {
+        const handleConfirm = () => {
           setCurrentScreen(SCREENS.LOADING);
+          setLoadingStep(0);
+          setLoadingMessages([]);
 
-          try {
-            // Create a new user
-            const userId = await createUser();
+          const userId = getCookieId() ?? getUserIdFromCookie();
+          const placeId = businessData?.place_id ?? '';
 
-            // Store business info in session storage
-            const businessInfoToStore = {
-              ...businessData,
-              user_id: userId,
-              timestamp: Date.now(),
-            };
-            sessionStorage.setItem('personalized-hub-business-data', JSON.stringify(businessInfoToStore));
+          const businessInfoToStore = {
+            ...businessData,
+            user_id: userId,
+            timestamp: Date.now(),
+          };
+          sessionStorage.setItem('personalized-hub-business-data', JSON.stringify(businessInfoToStore));
 
-            // Save business details with the new user_id
-            await saveBusinessDetails(businessData, userId);
-          } catch (e) {
-            // eslint-disable-next-line no-console
-            console.error('Failed to create user or save business details:', e);
-            // Still store business data in session even if API call fails
-            sessionStorage.setItem('personalized-hub-business-data', JSON.stringify(businessData));
-          }
+          let threadId = null;
+          const stored = sessionStorage.getItem('personalized-hub-thread-id');
+          if (stored) threadId = stored;
 
-          // Show loading for 3 seconds, then redirect to sneak-peek page
-          setTimeout(() => {
-            window.location.href = '/sneak-peek';
-          }, 3000);
+          const confirmMessage = placeId ? `place_id: ${placeId}` : '';
+
+          sendStreamingMessage(confirmMessage, {
+            skipCache: true,
+            ...(threadId ? { thread_id: threadId } : {}),
+            onChunk: (text) => {
+              const fullText = (text ?? '').trim();
+              if (!fullText) return;
+              const sentenceBoundary = /\.\s+|\n+/;
+              const steps = fullText.split(sentenceBoundary).map((s) => s.trim()).filter(Boolean);
+              if (steps.length === 0) return;
+              setLoadingMessages(steps.slice(-10));
+              setLoadingStep(steps.length);
+            },
+            onComplete: () => {
+              setLoadingStep((prev) => (prev === 0 ? 1 : prev));
+              window.location.href = '/sneak-peek';
+            },
+            onError: () => {
+              setLoadingStep(0);
+              setError('Something went wrong while creating your personalised insights. Please try again.');
+              setCurrentScreen(SCREENS.CHAT);
+            },
+          });
         };
 
         const handleReject = () => {
@@ -148,7 +212,6 @@ export default async function openPersonalizedHub() {
           setBusinessData(null);
           setBusinessCandidates([]);
           // Clear chat messages so previous business suggestions
-          // don't immediately re-trigger confirmation
           setChatMessages([]);
           // Return user to the chat screen
           setCurrentScreen(SCREENS.CHAT);
@@ -187,6 +250,8 @@ export default async function openPersonalizedHub() {
         if (currentScreen === SCREENS.LOADING) {
           return h(LoadingState, {
             businessData,
+            activeStep: loadingStep,
+            steps: loadingMessages,
             onClose: animateAndClose,
           });
         }
@@ -211,6 +276,8 @@ export default async function openPersonalizedHub() {
         if (currentScreen === SCREENS.COMPLETED) {
           return h(LoadingState, {
             businessData,
+            activeStep: loadingStep || 3,
+            steps: loadingMessages,
             onClose: animateAndClose,
           });
         }
@@ -218,11 +285,21 @@ export default async function openPersonalizedHub() {
         return null;
       };
 
-      reactRoot = window.ReactDOM.createRoot(container);
+      if (window.ReactDOM && typeof window.ReactDOM.createRoot === 'function') {
+        reactRoot = window.ReactDOM.createRoot(container);
 
-      requestAnimationFrame(() => {
-        reactRoot.render(h(PersonalizedHubApp));
-      });
+        requestAnimationFrame(() => {
+          reactRoot.render(h(PersonalizedHubApp));
+        });
+      } else if (window.ReactDOM && typeof window.ReactDOM.render === 'function') {
+        reactRoot = null;
+
+        requestAnimationFrame(() => {
+          window.ReactDOM.render(h(PersonalizedHubApp), container);
+        });
+      } else {
+        throw new Error('ReactDOM is not available');
+      }
     };
 
     const renderAndOpenPersonalizedHub = () => {

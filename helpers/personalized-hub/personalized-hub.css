@@ -42,6 +42,7 @@
 
 .personalized-hub-container .carousel-cards .carousel-cards-container {
   gap: var(--spacing-md);
+  overflow: auto;
 }
 
 .personalized-hub-container .carousel-cards .cards {
@@ -269,27 +270,37 @@
 .ph-loading-step {
   font-family: var(--body-font-family);
   font-size: var(--body-font-size-xs);
-  color: var(--text-color);
   line-height: 1.571;
 }
 
-.ph-loading-step:nth-child(2) {
-  opacity: 0.8;
+.ph-loading-step--inactive {
+  color: var(--mushroom);
 }
 
-.ph-loading-step:nth-child(3) {
-  opacity: 0.5;
+.ph-loading-step--completed {
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+.ph-loading-step-icon {
+  margin-right: var(--spacing-xxs);
+}
+
+.ph-loading-step-label {
+  vertical-align: middle;
+}
+
+.ph-loading-step-line {
+  display: block;
+}
+
+.ph-loading-step-line + .ph-loading-step-line {
+  margin-top: var(--spacing-xxs, 4px);
 }
 
 /* Business Card */
-.ph-business-card {
-  background: var(--light-mushroom);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-xs);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-  max-width: 220px;
+.carousel-cards {
+  cursor: pointer;
 }
 
 .ph-business-image-container {

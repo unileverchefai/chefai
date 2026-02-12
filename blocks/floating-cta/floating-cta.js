@@ -140,6 +140,15 @@ export default async function decorate(block) {
   }
 
   if (isLivePhase) {
+    // Prefetch Personalized Hub assets when the live CTA is present
+    import('@scripts/custom/prefetch.js')
+      .then(({ default: prefetchPersonalizedHub }) => {
+        if (typeof prefetchPersonalizedHub === 'function') {
+          prefetchPersonalizedHub().catch(() => {});
+        }
+      })
+      .catch(() => {});
+
     newBlockContainer.addEventListener('click', async (e) => {
       e.preventDefault();
 

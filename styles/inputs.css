@@ -35,7 +35,7 @@
   color: var(--text-color);
   outline: none;
   box-sizing: border-box;
-  transition: all var(--transition-fast);
+  transition: border var(--transition-fast);
 }
 
 .form-input-wrapper .form-input {

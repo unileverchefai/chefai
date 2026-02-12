@@ -6,7 +6,7 @@ import {
   getAnonymousUserIdFromCookie,
   getAnonymousUserId,
   createThreadWithRecommendation,
-} from '@helpers/chatbot/utils.js';
+} from '@scripts/custom/utils.js';
 import { fetchQuickActions } from './constants/api.js';
 
 async function ensureQuickActionThread(recommendationId) {
