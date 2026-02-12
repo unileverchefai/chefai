@@ -23,7 +23,8 @@ const decorateCustomHeader = (navbar) => {
 export default async function decorate(block) {
   const root = block.querySelector(':scope > div');
 
-  const recommendationP = root.querySelector('div > p:first-of-type');
+  const recommendationNumberP = root.querySelector('div > p:nth-of-type(1)');
+  const recommendationLabelP = root.querySelector('div > p:nth-of-type(2)');
 
   const insightData = await fetchSneakPeek();
   const businessInfo = await fetchBusinessInfo();
@@ -69,7 +70,7 @@ export default async function decorate(block) {
   // CTA. TODO: This should be a variant of the main CTA (future improvements)
   const ctaBlock = createElement('div', { className: 'floating-cta__container' });
   root.querySelector('div').querySelectorAll('p').forEach((el, index) => {
-    if (index !== 0) {
+    if (index > 1) {
       const hasButton = el.querySelector('.button');
       if (hasButton) {
         const ctaContainer = createElement('div', { className: 'floating-cta__cta orange-button glowy' });
@@ -92,23 +93,42 @@ export default async function decorate(block) {
     });
   }
 
+  // Left wrapper: logo + title
+  const leftWrapper = createElement('div', { className: 'business-block-left' });
   if (businessInfo?.image_url) {
     const logo = createElement('img', { className: 'business-logo' });
     logo.src = businessInfo.image_url;
     logo.alt = businessInfo.name || '';
-    businessBlock.appendChild(logo);
+    leftWrapper.appendChild(logo);
   }
 
   if (businessInfo?.name) {
     const title = createElement('h2');
     title.textContent = businessInfo.name;
-    businessBlock.appendChild(title);
+    leftWrapper.appendChild(title);
   }
+  businessBlock.appendChild(leftWrapper);
 
+  // Middle: arrow logo
   const arrowLogo = createElement('img', { className: 'sneak-peek-arrow-logo' });
   arrowLogo.src = '/icons/triple-arrow-logo.svg';
   businessBlock.appendChild(arrowLogo);
-  businessBlock.appendChild(recommendationP);
+
+  // Right wrapper: recommendation metric (number + label)
+  const rightWrapper = createElement('div', { className: 'business-block-right' });
+  if (recommendationNumberP && recommendationLabelP) {
+    const numberEl = createElement('div', { className: 'recommendation-number' });
+    numberEl.textContent = (recommendationNumberP.textContent ?? '').trim();
+
+    const textEl = createElement('div', { className: 'recommendation-text' });
+    textEl.textContent = (recommendationLabelP.textContent ?? '').trim();
+
+    rightWrapper.appendChild(numberEl);
+    rightWrapper.appendChild(textEl);
+  } else if (recommendationNumberP) {
+    rightWrapper.appendChild(recommendationNumberP);
+  }
+  businessBlock.appendChild(rightWrapper);
 
   // Replace block content
   block.replaceChildren(upperBlock, lowerBlock, ctaBlock);

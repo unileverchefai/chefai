@@ -19,7 +19,6 @@ main {
     justify-content: space-between;
     align-items: center;
     padding: 0 20px;
-    padding-top: 50px;
     padding-bottom: 10px;
     color: #FFF;
 }
@@ -61,7 +60,7 @@ main {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: 30px;
   height: 300px;
   pointer-events: none;
   z-index: 10;
@@ -77,6 +76,8 @@ main {
     align-items: center;
     flex-direction: column;
     gap: 10px;
+		align-items: center;
+		justify-content: center;
 }
 
 .business-block h2 {
@@ -100,6 +101,24 @@ main {
     background-clip: text;
     -webkit-text-fill-color: transparent;
     font-weight: 500;
+}
+
+.business-block-left {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.business-block-right {
+	background: linear-gradient(90deg, #FF3878 12.12%, #FF5C1F 88.27%);
+	background-clip: text;
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	font-weight: 500;
+	font-size: var(--heading-font-size-s);
+	text-align: center;
+	line-height: 2;
 }
 
 .business-block .business-logo {
@@ -249,15 +268,23 @@ main {
     }
 
     .sneak-peek .navbar {
-        max-width: 65vw;
-        margin: 0 auto;
+        max-width: 900px;
+        margin: 0 auto 20px auto;
+				padding-top: 50px;
     }
 
     .fp-card--left {
         left: 50%;
     }
 
+		.sneak-peek-arrow-logo {
+			width: 40px;
+			height: 40px;
+			transform: rotate(-90deg);
+		}
+
     .lower-block::after {
+				bottom: 0;
         margin: 0 auto;
         height: 250px;
         background: linear-gradient(
