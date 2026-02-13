@@ -1,5 +1,4 @@
 /* Import base carousel styles from components plugin */
-@import url('../../helpers/carousel/carousel.css');
 
 /* Mobile-first styles */
 .carousel-insights {
@@ -26,8 +25,6 @@
   font-family: var(--ff-unilever-shilling);
   font-size: var(--fs-md);
   line-height: var(--lh-md);
-  display: flex;
-  flex-direction: column;
   text-shadow: 0 1px 2px rgb(0 0 0 / 25%);
 }
   
@@ -42,10 +39,6 @@
   color: var(--squid-ink);
   font-family: var(--ff-unilever-shilling);
   font-size: 16px;
-}
-
-.carousel-insights .carousel-insights-error {
-  color: var(--ufs-orange);
 }
 
 /* Indicator styles - same as carousel-cards */
@@ -81,6 +74,10 @@
 .carousel-insights .indicator:focus {
   outline: 2px solid var(--ufs-orange);
   outline-offset: 2px;
+}
+
+.carousel-insights .arrows {
+  display: none;
 }
 
 .carousel-insights .arrow {
@@ -136,10 +133,6 @@
   color: var(--c-white);
 }
 
-.cards-card-title {
-  font-size: var(--heading-font-size-s);
-}
-
 .carousel-insights .carousel-insights-description {
   margin-bottom: var(--spacing-lg);
   display: -webkit-box;
@@ -156,6 +149,7 @@
   align-self: baseline;
   font-size: var(--body-font-size-s);
   background: rgb(255 255 255 / 10%);
+  padding: var(--spacing-md);
   backdrop-filter: blur(0.5px); 
   border-radius: 38px;
   border: 1px solid #FFF;
@@ -183,7 +177,12 @@
   }
 
   .carousel-insights .carousel-cards-container .card {
-    flex: 1;
-    max-width: 50%;
+    max-width: 400px;
+    min-width: 30vw;
   }
+
+  .carousel-insights .arrows {
+    display: flex;
+    gap: var(--spacing-sm);
+  }  
 }

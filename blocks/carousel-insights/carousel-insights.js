@@ -1,15 +1,12 @@
 import { createElement } from '@scripts/common.js';
 import createCarousel from '@helpers/carousel/carousel.js';
 import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
-import { getUserIdFromCookie } from '@helpers/chatbot/utils.js';
+import { getUserIdFromCookie } from '@scripts/custom/utils.js';
 
-async function fetchInsights(options = {}) {
-  const {
-    userId,
-    limit = 10,
-    type = 'main',
-  } = options;
+const DEFAULT_LIMIT = 10;
+const DEFAULT_TYPE = 'main';
 
+async function fetchInsights({ userId, limit, type }) {
   const payload = {
     user_id: userId,
     limit,
@@ -37,48 +34,58 @@ async function fetchInsights(options = {}) {
 }
 
 /**
- * Render a thread card using the insights styling (title + CTA).
+ * Render a single insight card (title + optional description + CTA button).
  */
 function renderCard(item, index) {
-  const card = createElement('li', {
+  return createElement('li', {
     className: 'card',
     attributes: {
       'data-item-id': item.id ?? `item-${index}`,
       'data-node-id': `card-${index}`,
     },
+    innerContent: `
+      <h2 class="cards-card-title">
+        ${item.display_text ?? item.title ?? `Conversation ${index + 1}`}
+      </h2>
+      ${
+  item.description
+    ? `<div class="carousel-insights-description">${item.description}</div>`
+    : ''
+}
+      <button class="btn carousel-insights-btn">
+        ${item.button_text ?? item.cta_label ?? 'Show me the details'}
+      </button>
+    `,
   });
-
-  const title = createElement('h2', { className: 'cards-card-title' });
-  title.textContent = item.display_text ?? item.title ?? `Conversation ${index + 1}`;
-  card.appendChild(title);
-
-  if (item.description) {
-    const description = createElement('div', { className: 'carousel-insights-description' });
-    description.textContent = item.description;
-    card.appendChild(description);
-  }
-
-  const buttonText = item.button_text ?? item.cta_label ?? 'Show me the details';
-  const button = createElement('button', {
-    className: 'btn carousel-insights-btn',
-  });
-  button.textContent = buttonText;
-  card.appendChild(button);
-
-  return card;
 }
 
-export default function decorate(block) {
-  // Ensure base carousel styling
-  block.classList.add('carousel-base');
+function initializeCarousel(block, list, itemsLength) {
+  const carousel = createCarousel({
+    container: list,
+    block,
+    itemCount: itemsLength,
+    mobileItemsPerSlide: 1,
+    desktopItemsPerSlide: 3,
+    mobileBreakpoint: 900,
+    mobileGap: 16,
+    desktopGap: 24,
+    disableDesktopCarousel: false,
+  });
+
+  // Expose instance for potential teardown/debug
+  // eslint-disable-next-line no-param-reassign
+  block.carouselInstance = carousel;
+}
+
+export default async function decorate(block) {
   block.classList.add('carousel-insights');
 
-  let { userId } = block.dataset;
+  const userId = getUserIdFromCookie();
   if (!userId) {
-    userId = getUserIdFromCookie();
+    return;
   }
 
-  const limit = parseInt(block.dataset.limit ?? '3', 10);
+  const limit = parseInt(block.dataset.limit ?? `${DEFAULT_LIMIT}`, 10);
 
   // Clear authored content and create container
   block.innerHTML = '';
@@ -87,45 +94,23 @@ export default function decorate(block) {
   });
   block.appendChild(list);
 
-  if (!userId) {
-    return;
-  }
+  try {
+    const items = await fetchInsights({ userId, limit, type: DEFAULT_TYPE });
 
-  // Fetch insights on load
-  fetchInsights({ userId, limit })
-    .then((items) => {
-      if (!items || items.length === 0) {
-        return;
-      }
+    if (!items || items.length === 0) {
+      return;
+    }
 
-      items.forEach((item, index) => {
-        list.appendChild(renderCard(item, index));
-      });
-
-      // Initialize carousel with the loaded items
-      try {
-        const carousel = createCarousel({
-          container: list,
-          block,
-          itemCount: items.length,
-          mobileItemsPerSlide: 1,
-          desktopItemsPerSlide: 3,
-          mobileBreakpoint: 900,
-          mobileGap: 16,
-          desktopGap: 24,
-          disableDesktopCarousel: false,
-        });
-        block.carouselInstance = carousel;
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('Failed to initialize carousel-insights:', error);
-      }
-    })
-    .catch((error) => {
-      // eslint-disable-next-line no-console
-      console.error('Failed to load recommendations:', error);
-      const errorState = createElement('div', { className: 'carousel-insights-error' });
-      errorState.textContent = 'Failed to load insights.';
-      block.appendChild(errorState);
+    items.forEach((item, index) => {
+      list.appendChild(renderCard(item, index));
     });
+
+    initializeCarousel(block, list, items.length);
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('Failed to load recommendations:', error);
+    const errorState = createElement('div', { className: 'carousel-insights-error' });
+    errorState.textContent = 'Failed to load insights.';
+    block.appendChild(errorState);
+  }
 }
