@@ -1,4 +1,4 @@
-import { initCarouselCards } from '../../blocks/carousel-cards/carousel-cards.js';
+import { initCarouselCards } from '@blocks/carousel-cards/carousel-cards.js';
 
 export default function BusinessConfirmation({
   businessData,
@@ -24,6 +24,16 @@ export default function BusinessConfirmation({
 
   const carouselBlockRef = useRef(null);
   const carouselContainerRef = useRef(null);
+  const buttonsRef = useRef(null);
+
+  const handleClickOutsideCard = (e) => {
+    if (!businessData || !onSelectBusiness) return;
+    const onCard = e.target.closest?.('.chatbot-carousel-card') ?? false;
+    const onButtons = buttonsRef.current?.contains?.(e.target) ?? false;
+    if (!onCard && !onButtons) {
+      onSelectBusiness(null);
+    }
+  };
 
   useEffect(() => {
     const blockEl = carouselBlockRef.current;
@@ -73,7 +83,7 @@ export default function BusinessConfirmation({
         'data-product-id': placeId,
         onClick: () => {
           if (onSelectBusiness) {
-            onSelectBusiness(business);
+            onSelectBusiness(isSelected ? null : business);
           }
         },
       },
@@ -121,7 +131,10 @@ export default function BusinessConfirmation({
 
   return h(
     'div',
-    { className: 'ph-chat-container' },
+    {
+      className: 'ph-chat-container',
+      onClick: handleClickOutsideCard,
+    },
     [
       h(
         'div',
@@ -157,28 +170,30 @@ export default function BusinessConfirmation({
       ),
       h(
         'div',
-        { key: 'buttons', className: 'ph-confirmation-buttons' },
-        [
-          h(
-            'button',
-            {
-              key: 'confirm',
-              className: 'ph-btn-primary',
-              onClick: onConfirm,
-              disabled: !businessData,
-            },
-            'Yes, it\'s correct',
-          ),
-          h(
-            'button',
-            {
-              key: 'reject',
-              className: 'ph-btn-secondary',
-              onClick: onReject,
-            },
-            'No, it\'s wrong',
-          ),
-        ],
+        { key: 'buttons', className: 'ph-confirmation-buttons', ref: buttonsRef },
+        businessData
+          ? [
+            h(
+              'button',
+              {
+                key: 'confirm',
+                className: 'ph-btn-primary',
+                onClick: onConfirm,
+              },
+              'I confirm this is my business',
+            ),
+          ]
+          : [
+            h(
+              'button',
+              {
+                key: 'reject',
+                className: 'ph-btn-secondary',
+                onClick: onReject,
+              },
+              'None of them',
+            ),
+          ],
       ),
     ],
   );
