@@ -178,6 +178,13 @@ export default function openSignUpReportModal() {
       return;
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      errorMessage.textContent = 'Please enter a valid email address';
+      errorMessage.style.display = 'block';
+      return;
+    }
+
     const formData = {
       email,
       firstName,

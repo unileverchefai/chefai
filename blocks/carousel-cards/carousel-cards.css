@@ -46,7 +46,7 @@ main > .section > .carousel-cards-wrapper {
   background: rgb(234 231 235 / 95%);
   backdrop-filter: var(--backdrop-blur);
   border-radius: var(--radius-md);
-  padding: var(--spacing-lg) var(--spacing-md);
+  padding: var(--spacing-md);
   box-shadow: var(--box-shadow-card);
   position: relative;
   height: auto;

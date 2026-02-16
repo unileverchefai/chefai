@@ -4,7 +4,7 @@
 
 .chat-input-form {
   min-height: 80px;
-  padding: var(--spacing-md);
+  padding: var(--spacing-md) 0;
   flex-shrink: 0;
   box-sizing: border-box;
 }
