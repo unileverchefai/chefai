@@ -1,10 +1,11 @@
 import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
+import { getUserIdFromCookie } from '@scripts/custom/utils.js';
 
 export { SUBSCRIPTION_KEY };
 
 export async function fetchQuickActions(options = {}) {
+  const userId = getUserIdFromCookie();
   const {
-    userId = 'staging-user',
     limit = 4,
     isSneakpeek = false,
     refresh = false,

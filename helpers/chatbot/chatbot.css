@@ -267,7 +267,7 @@
   gap: var(--spacing-sm);
   margin-top: var(--spacing-md);
   padding-bottom: var(--spacing-xs);
-  overflow-x: auto;
+  overflow-x: hidden;
 }
 
 .chatbot-carousel-card {
