@@ -13,7 +13,7 @@ async function fetchInsights({ userId, limit, type }) {
     type,
   };
 
-  const endpoint = `${ENDPOINTS.recommendations}/`;
+  const endpoint = ENDPOINTS.recommendationsTimeBased;
 
   const response = await fetch(endpoint, {
     method: 'POST',
