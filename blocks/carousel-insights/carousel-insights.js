@@ -1,14 +1,21 @@
 import { createElement } from '@scripts/common.js';
 import createCarousel from '@helpers/carousel/carousel.js';
 import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
-import { getUserIdFromCookie } from '@scripts/custom/utils.js';
+import openChatbotModal from '@helpers/chatbot/openChatbotModal.js';
+import {
+  setCookie,
+  getUserIdFromCookie,
+  getAnonymousUserIdFromCookie,
+  getAnonymousUserId,
+  createThreadWithRecommendation,
+} from '@scripts/custom/utils.js';
 
 const DEFAULT_LIMIT = 10;
 const DEFAULT_TYPE = 'main';
 
 async function fetchInsights({ userId, limit, type }) {
   const payload = {
-    user_id: userId,
+    user_id: 'staging-user',
     limit,
     type,
   };
@@ -33,11 +40,48 @@ async function fetchInsights({ userId, limit, type }) {
   return data.recommendations ?? data.data?.recommendations ?? [];
 }
 
+async function ensureInsightsThread(recommendationId) {
+  const storageKey = `chefai-insights-thread-${recommendationId}`;
+
+  const stored = sessionStorage.getItem(storageKey);
+  if (stored) {
+    const parsed = JSON.parse(stored);
+    if (parsed?.threadId) {
+      setCookie('chef-ai-thread-id', parsed.threadId);
+      return {
+        threadId: parsed.threadId,
+        displayText: parsed.displayText ?? '',
+        isNew: false,
+      };
+    }
+  }
+
+  let userId = getUserIdFromCookie() ?? getAnonymousUserIdFromCookie();
+  if (!userId) {
+    userId = await getAnonymousUserId();
+  }
+
+  const { threadId, displayText } = await createThreadWithRecommendation(userId, recommendationId);
+
+  sessionStorage.setItem(storageKey, JSON.stringify({
+    threadId,
+    displayText,
+    initialized: true,
+  }));
+  sessionStorage.setItem(`chefai-insights-headline-${threadId}`, displayText);
+
+  return {
+    threadId,
+    displayText: displayText ?? '',
+    isNew: true,
+  };
+}
+
 /**
  * Render a single insight card (title + optional description + CTA button).
  */
-function renderCard(item, index) {
-  return createElement('li', {
+function renderCard(item, index, onActivate) {
+  const card = createElement('li', {
     className: 'card',
     attributes: {
       'data-item-id': item.id ?? `item-${index}`,
@@ -57,6 +101,17 @@ function renderCard(item, index) {
       </button>
     `,
   });
+
+  const handleActivate = () => {
+    if (typeof onActivate === 'function') {
+      onActivate(item);
+    }
+  };
+
+  const button = card.querySelector('button');
+  button.addEventListener('click', handleActivate);
+
+  return card;
 }
 
 function initializeCarousel(block, list, itemsLength) {
@@ -94,23 +149,61 @@ export default async function decorate(block) {
   });
   block.appendChild(list);
 
-  try {
-    const items = await fetchInsights({ userId, limit, type: DEFAULT_TYPE });
-
-    if (!items || items.length === 0) {
+  const handleCardActivate = async (item) => {
+    console.log('Activating card with item:', item);
+    const recommendationId = item.id ?? item.recommendation_id ?? '';
+    if (!recommendationId) {
       return;
     }
 
-    items.forEach((item, index) => {
-      list.appendChild(renderCard(item, index));
-    });
+    let result = { isNew: false, displayText: '' };
+    try {
+      result = await ensureInsightsThread(recommendationId);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to prepare insights thread:', error);
+    }
 
-    initializeCarousel(block, list, items.length);
-  } catch (error) {
+    openChatbotModal()
+      .then(() => {
+        if (result.isNew && result.displayText) {
+          setTimeout(() => {
+            window.dispatchEvent(new CustomEvent('chefai:insights', {
+              detail: { displayText: result.displayText },
+            }));
+          }, 400);
+        }
+      })
+      .catch((error) => {
+        // eslint-disable-next-line no-console
+        console.error('Failed to open chatbot from quick action:', error);
+      });
+  };
+
+  // Fetch insights on load
+  fetchInsights({ userId, limit })
+    .then((items) => {
+      if (!items || items.length === 0) {
+        const empty = createElement('div', { className: 'carousel-insights-empty' });
+        empty.textContent = 'No insights available.';
+        block.appendChild(empty);
+        return;
+      }
+
+      items.forEach((item, index) => {
+        list.appendChild(renderCard(item, index, handleCardActivate));
+      });
+
+      items.forEach((item, index) => {
+        list.appendChild(renderCard(item, index));
+      });
+
+      initializeCarousel(block, list, items.length);
+    }).catch((error) => {
     // eslint-disable-next-line no-console
-    console.error('Failed to load recommendations:', error);
-    const errorState = createElement('div', { className: 'carousel-insights-error' });
-    errorState.textContent = 'Failed to load insights.';
-    block.appendChild(errorState);
-  }
+      console.error('Failed to load recommendations:', error);
+      const errorState = createElement('div', { className: 'carousel-insights-error' });
+      errorState.textContent = 'Failed to load insights.';
+      block.appendChild(errorState);
+    });
 }
