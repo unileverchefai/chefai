@@ -144,6 +144,10 @@ main > .section:has(.carousel-biz-wrapper) {
   background-repeat: no-repeat;
 }
 
+.trend-card:nth-child(n + 5) {
+  display: none;
+}
+
 .trend-card::after {
   content: '';
   position: absolute;
@@ -510,10 +514,6 @@ a.trend-cta {
   .trend-card {
     width: var(--card-width-desktop);
     height: var(--card-height-desktop);
-  }
-
-  .trend-card:nth-child(n + 5) {
-    display: none;
   }
 
   .carousel-biz .controls {
