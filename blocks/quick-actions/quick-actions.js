@@ -7,7 +7,7 @@ import {
   getAnonymousUserId,
   createThreadWithRecommendation,
 } from '@scripts/custom/utils.js';
-import { fetchQuickActions } from './constants/api.js';
+import { fetchQuickActions } from './fetchQuickActions.js';
 
 async function ensureQuickActionThread(recommendationId) {
   const storageKey = `chefai-quick-action-thread-${recommendationId}`;

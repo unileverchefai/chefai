@@ -60,10 +60,7 @@
   font-family: var(--ff-unilever-shilling);
   font-size: var(--body-font-size-s);
   color: var(--squid-ink);
-}
-
-.quick-actions-error {
-  color: var(--ufs-orange);
+  text-align: center;
 }
 
 @media (width >= 900px) {
