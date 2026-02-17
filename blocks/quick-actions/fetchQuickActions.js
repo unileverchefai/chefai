@@ -10,7 +10,7 @@ export async function fetchQuickActions(options = {}) {
     isSneakpeek = false,
     refresh = false,
     type = 'quick',
-  } = options || {};
+  } = options;
 
   const payload = {
     is_sneakpeek: isSneakpeek,
