@@ -11,6 +11,7 @@ import {
   loadSection,
   loadSections,
   loadCSS,
+  getMetadata,
 } from './aem.js';
 import { fetchPlaceholders } from './common.js';
 
@@ -132,8 +133,13 @@ async function loadLazy(doc) {
   const element = hash ? doc.getElementById(hash.substring(1)) : false;
   if (hash && element) element.scrollIntoView();
 
-  loadHeader(doc.querySelector('header'));
-  loadFooter(doc.querySelector('footer'));
+  const header = doc.querySelector('header');
+  const altHeader = getMetadata('alt-header');
+  const footer = doc.querySelector('footer');
+  // eslint-disable-next-line no-unused-expressions
+  header && !altHeader && loadHeader(header);
+  // eslint-disable-next-line no-unused-expressions
+  footer && loadFooter(footer);
 
   loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
   loadFonts();
