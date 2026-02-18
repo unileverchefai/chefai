@@ -335,7 +335,7 @@ export async function getAnonymousUserId() {
     user_id: cookieId,
     country: COUNTRY_CODE,
     content_language_code: LANGUAGE_CODE.toUpperCase(),
-    ...(tcAgreed ? { tc_agreed: true } : {}),
+    tc_agreed: tcAgreed,
   };
 
   const response = await fetch(ENDPOINTS.users, {
@@ -387,7 +387,7 @@ export async function createUser() {
     user_id: cookieId,
     country: COUNTRY_CODE,
     content_language_code: LANGUAGE_CODE.toUpperCase(),
-    ...(tcAgreed ? { tc_agreed: true } : {}),
+    tc_agreed: tcAgreed,
   };
 
   const response = await fetch(ENDPOINTS.users, {

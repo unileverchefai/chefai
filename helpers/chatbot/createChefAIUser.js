@@ -1,5 +1,6 @@
 import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
 import { COUNTRY_CODE, LANGUAGE_CODE } from '@api/authentication/constants.js';
+import { getCookie } from '@scripts/custom/utils.js';
 
 export default async function createChefAIUser(userId, userName, businessData = null) {
   if (!userId) {
@@ -34,13 +35,15 @@ export default async function createChefAIUser(userId, userName, businessData = 
   }
   metadata.additionalProperty = 'anything';
 
+  const tcAgreed = getCookie('personalized-hub-consent') === 'true';
+
   const payload = {
     user_id: userId,
     country: COUNTRY_CODE,
     content_language_code: LANGUAGE_CODE.toUpperCase(),
     user_name: userName ?? '',
     metadata,
-    tc_agreed: true,
+    tc_agreed: tcAgreed,
   };
 
   const response = await fetch(ENDPOINTS.users, {

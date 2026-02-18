@@ -1,8 +1,28 @@
 import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
 import { getUserIdFromCookie, getAnonymousUserId } from '@scripts/custom/utils.js';
 
+export function hasConfirmedBusiness() {
+  try {
+    const stored = sessionStorage.getItem('personalized-hub-business-data');
+    if (!stored) return false;
+    const businessData = JSON.parse(stored);
+    const name = typeof businessData?.business_name === 'string' ? businessData.business_name.trim() : '';
+    return name.length > 0;
+  } catch {
+    return false;
+  }
+}
+
 export default async function hasSavedBusinessName() {
   try {
+    const hasConsent = document.cookie
+      .split(';')
+      .some((c) => c.trim().startsWith('personalized-hub-consent=true'));
+
+    if (!hasConsent) {
+      return false;
+    }
+
     const rawUserId = getUserIdFromCookie();
     const userId = rawUserId || await getAnonymousUserId();
 

@@ -1,3 +1,4 @@
+import { checkPageAccess } from '@scripts/custom/redirect.js';
 import {
   buildBlock,
   loadHeader,
@@ -170,6 +171,11 @@ function loadDelayed() {
 }
 
 async function loadPage() {
+  const canProceed = await checkPageAccess();
+  if (!canProceed) {
+    return;
+  }
+
   await loadEager(document);
   await loadLazy(document);
   loadDelayed();
