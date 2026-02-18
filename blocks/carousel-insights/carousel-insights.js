@@ -8,6 +8,7 @@ import {
   getAnonymousUserIdFromCookie,
   getAnonymousUserId,
   createThreadWithRecommendation,
+  loadThreadMessages,
 } from '@scripts/custom/utils.js';
 
 const DEFAULT_LIMIT = 10;
@@ -159,17 +160,23 @@ export default async function decorate(block) {
     let result = { isNew: false, displayText: '' };
     try {
       result = await ensureInsightsThread(recommendationId);
+      console.log('chat thread result:', result);
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Failed to prepare insights thread:', error);
     }
 
+    console.log('Fetching thread messages for threadId:', result.threadId);
+    const messageInsight = await loadThreadMessages(result.threadId);
+    console.log('message', messageInsight);
+
     openChatbotModal()
       .then(() => {
-        if (result.isNew && result.displayText) {
+        if (messageInsight && messageInsight.length > 0) {
           setTimeout(() => {
+            console.log('Dispatching chefai:insights event with message:', messageInsight[0].text);
             window.dispatchEvent(new CustomEvent('chefai:insights', {
-              detail: { displayText: result.displayText },
+              detail: { displayText: messageInsight[0].text },
             }));
           }, 400);
         }

@@ -62,6 +62,25 @@
     position: relative;
 }
 
+@media (width < 900px) {
+    .chatbot-modal-scroll-button {
+        height: 44px;
+        width: 44px;
+        background-color: white;
+        border: 1px solid #E5E2E3;
+        position: fixed;
+        bottom: 10%;
+        border-radius: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-image: url('/icons/scroll-down-icon.svg');
+        background-size: 20px 20px;
+        background-repeat: no-repeat;
+        background-position: center;
+        cursor: pointer;
+    }
+}
+
 .chatbot-root {
     width: 100%;
     height: 100%;
@@ -93,17 +112,17 @@
     contain: layout style;
 }
 
+.message-bubble {
+    contain: layout style;
+    overflow-wrap: break-word;
+}
+
 .chat-message.ai-message {
     margin-bottom: 0 !important;
 }
 
 .chat-message.ai-message .message-bubble {
     padding-bottom: 0 !important;
-}
-
-.message-bubble {
-    contain: layout style;
-    overflow-wrap: break-word;
 }
 
 /* Chatbot-specific input form styling */

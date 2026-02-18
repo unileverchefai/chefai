@@ -5,7 +5,6 @@ export default function renderChatUI({
   error,
   messages,
   isTyping,
-  messagesEndRef,
   inputValue,
   setInputValue,
   handleSend,
@@ -52,14 +51,11 @@ export default function renderChatUI({
             padding: '20px',
             display: 'flex',
             flexDirection: 'column',
+            scrollBehavior: 'smooth',
           },
         },
         [
           ...messages.map((msg) => renderMessage(msg, { onPromptClick })),
-          h('div', {
-            key: 'scroll-anchor',
-            ref: messagesEndRef,
-          }),
         ],
       ),
       h(ChatInput, {
@@ -71,6 +67,13 @@ export default function renderChatUI({
         disabled: isTyping,
         submitDisabled: disabled,
       }),
+      h(
+        'div',
+        {
+          key: 'scroll-button',
+          className: 'chatbot-modal-scroll-button',
+        },
+      ),
     ],
   );
 }

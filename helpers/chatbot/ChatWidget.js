@@ -170,6 +170,48 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot' } = {})
     }
   }, []);
 
+  useEffect(() => {
+    const scrollButton = document.getElementsByClassName('chatbot-modal-scroll-button')[0];
+    const messagesContainer = document.getElementsByClassName('chat-messages')[0];
+
+    if (!scrollButton || !messagesContainer) return undefined;
+
+    let initialScrollHandled = false;
+    const handleScroll = () => {
+      // On first render, treat as NOT scrolled to bottom
+      // Only update isScrolledToBottom after first scroll event
+      let isScrolledToBottom;
+      if (!initialScrollHandled) {
+        isScrolledToBottom = false;
+        initialScrollHandled = true;
+      } else {
+        isScrolledToBottom = Math.abs(
+          messagesContainer.scrollHeight - messagesContainer.scrollTop
+          - messagesContainer.clientHeight,
+        ) < 2;
+      }
+      if (isScrolledToBottom) {
+        scrollButton.style.display = 'none';
+      } else {
+        scrollButton.style.display = '';
+      }
+    };
+
+    messagesContainer.addEventListener('scroll', handleScroll);
+
+    handleScroll();
+
+    const handleClick = () => {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    };
+    scrollButton.addEventListener('click', handleClick);
+
+    return () => {
+      messagesContainer.removeEventListener('scroll', handleScroll);
+      scrollButton.removeEventListener('click', handleClick);
+    };
+  }, []);
+
   const handleSend = useCallback(async (e, messageOverride = null) => {
     if (e && e.preventDefault) {
       e.preventDefault();
@@ -347,10 +389,12 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot' } = {})
       setMessages((prev) => [headlineMessage, ...prev]);
     };
 
-    window.addEventListener('chefai:quick-action', handler);
+    // window.addEventListener('chefai:quick-action', handler);
+    window.addEventListener('chefai:insights', handler);
 
     return () => {
-      window.removeEventListener('chefai:quick-action', handler);
+      // window.removeEventListener('chefai:quick-action', handler);
+      window.removeEventListener('chefai:insights', handler);
     };
   }, [setMessages]);
 
