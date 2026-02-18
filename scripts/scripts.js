@@ -1,5 +1,4 @@
-import { redirectToHomeIfNotLoggedIn } from '@api/authentication/authService.js';
-import hasSavedBusinessName from '@helpers/personalized-hub/hasSavedBusinessName.js';
+import { checkPageAccess } from '@scripts/custom/redirect.js';
 import {
   buildBlock,
   loadHeader,
@@ -169,23 +168,6 @@ function loadDelayed() {
   // eslint-disable-next-line import/no-cycle
   window.setTimeout(() => import('./delayed.js'), 3000);
   // load anything that can be postponed to the latest here
-}
-
-async function checkPageAccess() {
-  const pathname = window.location.pathname ?? '/';
-  const publicPaths = ['/'];
-  const isPublicPage = publicPaths.some((p) => pathname === p || pathname.startsWith(`${p}/`));
-
-  if (isPublicPage) {
-    return true;
-  }
-
-  const isSneakPeekPage = pathname === '/sneak-peek' || pathname.startsWith('/sneak-peek/');
-  if (isSneakPeekPage && (await hasSavedBusinessName())) {
-    return true;
-  }
-
-  return redirectToHomeIfNotLoggedIn();
 }
 
 async function loadPage() {

@@ -203,7 +203,8 @@ export default async function openPersonalizedHub() {
             },
             onComplete: () => {
               setLoadingStep((prev) => (prev === 0 ? 1 : prev));
-              window.location.href = '/sneak-peek';
+              const basePath = window.location.pathname.replace(/\/$/, '');
+              window.location.href = `${basePath}/sneak-peek`;
             },
             onError: () => {
               setLoadingStep(0);
