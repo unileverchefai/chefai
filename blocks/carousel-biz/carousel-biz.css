@@ -317,7 +317,7 @@ main > .section:has(.carousel-biz-wrapper) {
   color: var(--c-white);
   text-shadow: var(--text-shadow-sm);
   margin: 0;
-  padding: 0 var(--spacing-lg) var(--spacing-lg);
+  padding: 0 var(--spacing-lg) var(--spacing-md);
 }
 
 /* ----> Borderless Cuisine <---- */
@@ -462,12 +462,13 @@ main > .section:has(.carousel-biz-wrapper) {
 .trend-cta {
   display: flex;
   align-items: center;
-  gap: 1px;
+  gap: 3px;
   transition: opacity var(--transition-fast);
 }
 
 a.trend-cta {
   text-decoration: none;
+  padding: 0 var(--spacing-lg) var(--spacing-lg);
 }
 
 .trend-cta:hover {
@@ -477,7 +478,7 @@ a.trend-cta {
 .cta-text {
   font-family: var(--ff-unilever-shilling);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 21px;
   color: var(--c-white);
   text-shadow: var(--text-shadow-sm);
@@ -495,6 +496,9 @@ a.trend-cta {
   width: 20px;
   height: 20px;
   flex-shrink: 0;
+  stroke-width: 1.2px;
+  stroke: #FFF;
+  filter: drop-shadow(0 0 5px #F8B003);
 }
 
 .cta-arrow img {
