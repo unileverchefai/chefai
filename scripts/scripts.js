@@ -171,20 +171,27 @@ function loadDelayed() {
   // load anything that can be postponed to the latest here
 }
 
-async function loadPage() {
+async function checkPageAccess() {
   const pathname = window.location.pathname ?? '/';
   const publicPaths = ['/'];
   const isPublicPage = publicPaths.some((p) => pathname === p || pathname.startsWith(`${p}/`));
-  const isSneakPeekPage = pathname === '/sneak-peek' || pathname.startsWith('/sneak-peek/');
 
-  if (!isPublicPage) {
-    const allowSneakPeek = isSneakPeekPage && (await hasSavedBusinessName());
-    if (!allowSneakPeek) {
-      const ok = redirectToHomeIfNotLoggedIn();
-      if (!ok) {
-        return;
-      }
-    }
+  if (isPublicPage) {
+    return true;
+  }
+
+  const isSneakPeekPage = pathname === '/sneak-peek' || pathname.startsWith('/sneak-peek/');
+  if (isSneakPeekPage && (await hasSavedBusinessName())) {
+    return true;
+  }
+
+  return redirectToHomeIfNotLoggedIn();
+}
+
+async function loadPage() {
+  const canProceed = await checkPageAccess();
+  if (!canProceed) {
+    return;
   }
 
   await loadEager(document);
