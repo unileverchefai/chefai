@@ -21,6 +21,24 @@ import {
   createRegistrationPayload,
 } from './constants.js';
 
+export function isUserLoggedIn() {
+  const token = getToken();
+  return Boolean(token);
+}
+
+export function redirectToHomeIfNotLoggedIn() {
+  if (typeof window === 'undefined') {
+    return true;
+  }
+
+  if (isUserLoggedIn()) {
+    return true;
+  }
+
+  window.location.href = '/';
+  return false;
+}
+
 async function ensureChefAiUserId() {
   try {
     const cookieUserId = getCookieId();

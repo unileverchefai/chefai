@@ -1,3 +1,5 @@
+import { redirectToHomeIfNotLoggedIn } from '@api/authentication/authService.js';
+import hasSavedBusinessName from '@helpers/personalized-hub/hasSavedBusinessName.js';
 import {
   buildBlock,
   loadHeader,
@@ -170,6 +172,21 @@ function loadDelayed() {
 }
 
 async function loadPage() {
+  const pathname = window.location.pathname ?? '/';
+  const publicPaths = ['/'];
+  const isPublicPage = publicPaths.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+  const isSneakPeekPage = pathname === '/sneak-peek' || pathname.startsWith('/sneak-peek/');
+
+  if (!isPublicPage) {
+    const allowSneakPeek = isSneakPeekPage && (await hasSavedBusinessName());
+    if (!allowSneakPeek) {
+      const ok = redirectToHomeIfNotLoggedIn();
+      if (!ok) {
+        return;
+      }
+    }
+  }
+
   await loadEager(document);
   await loadLazy(document);
   loadDelayed();
