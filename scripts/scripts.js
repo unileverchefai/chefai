@@ -134,12 +134,16 @@ async function loadLazy(doc) {
   if (hash && element) element.scrollIntoView();
 
   const header = doc.querySelector('header');
-  const altHeader = getMetadata('alt-header');
+  const altHeader = getMetadata('alt-header'); // alternative header metadata flag
   const footer = doc.querySelector('footer');
-  // eslint-disable-next-line no-unused-expressions
-  header && !altHeader && loadHeader(header);
-  // eslint-disable-next-line no-unused-expressions
-  footer && loadFooter(footer);
+
+  if (header && !altHeader) {
+    loadHeader(header);
+  }
+
+  if (footer) {
+    loadFooter(footer);
+  }
 
   loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
   loadFonts();
