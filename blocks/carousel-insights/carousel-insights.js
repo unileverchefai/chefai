@@ -12,11 +12,10 @@ import {
 } from '@scripts/custom/utils.js';
 
 const DEFAULT_LIMIT = 10;
-const DEFAULT_TYPE = 'main';
 
 async function fetchInsights({ userId, limit, type }) {
   const payload = {
-    user_id: 'staging-user',
+    user_id: 'staging-user' || userId,
     limit,
     type,
   };
@@ -151,7 +150,6 @@ export default async function decorate(block) {
   block.appendChild(list);
 
   const handleCardActivate = async (item) => {
-    console.log('Activating card with item:', item);
     const recommendationId = item.id ?? item.recommendation_id ?? '';
     if (!recommendationId) {
       return;
@@ -160,21 +158,17 @@ export default async function decorate(block) {
     let result = { isNew: false, displayText: '' };
     try {
       result = await ensureInsightsThread(recommendationId);
-      console.log('chat thread result:', result);
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Failed to prepare insights thread:', error);
     }
 
-    console.log('Fetching thread messages for threadId:', result.threadId);
     const messageInsight = await loadThreadMessages(result.threadId);
-    console.log('message', messageInsight);
 
-    openChatbotModal()
+    openChatbotModal('insights')
       .then(() => {
         if (messageInsight && messageInsight.length > 0) {
           setTimeout(() => {
-            console.log('Dispatching chefai:insights event with message:', messageInsight[0].text);
             window.dispatchEvent(new CustomEvent('chefai:insights', {
               detail: { displayText: messageInsight[0].text },
             }));

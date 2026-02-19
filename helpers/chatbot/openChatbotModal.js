@@ -9,10 +9,10 @@ const ANIMATION_DURATION = 300;
 /**
  * Opens the Chef AI chatbot in a modal.
  * This reuses the existing ChatWidget, but renders it in an overlay instead of inline.
- *
+ * @param {Object} type - Type of chatbot to open (e.g. 'quick-actions', 'insights')
  * @returns {Promise<void>}
  */
-export default async function openChatbotModal() {
+export default async function openChatbotModal(type) {
   // Container for React app
   const container = createElement('div', {
     className: 'chatbot-modal-container',
@@ -59,7 +59,7 @@ export default async function openChatbotModal() {
     modal.open();
 
     requestAnimationFrame(() => {
-      reactRoot.render(h(ChatWidget, { personalizedHubTrigger: null }));
+      reactRoot.render(h(ChatWidget, { personalizedHubTrigger: null, type }));
 
       // Focus input after React renders and modal animation completes
       setTimeout(() => {
