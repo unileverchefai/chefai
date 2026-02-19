@@ -389,11 +389,11 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot' } = {})
       setMessages((prev) => [headlineMessage, ...prev]);
     };
 
-    // window.addEventListener('chefai:quick-action', handler);
+    window.addEventListener('chefai:quick-action', handler);
     window.addEventListener('chefai:insights', handler);
 
     return () => {
-      // window.removeEventListener('chefai:quick-action', handler);
+      window.removeEventListener('chefai:quick-action', handler);
       window.removeEventListener('chefai:insights', handler);
     };
   }, [setMessages]);
