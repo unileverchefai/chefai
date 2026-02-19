@@ -124,6 +124,25 @@ async function loadEager(doc) {
 }
 
 /**
+ * checks if header should be rendered based on metadata flags
+ * @returns {boolean} true if header should be rendered, false otherwise
+*/
+function renderHeaderCheck() {
+  const altHeader = getMetadata('alt-header'); // alternative header metadata flag
+  const noHeader = getMetadata('no-header'); // no render header metadata flag
+  return !altHeader && !noHeader;
+}
+
+/**
+ * checks if footer should be rendered based on metadata flags
+ * @returns {boolean} true if footer should be rendered, false otherwise
+*/
+function renderFooterCheck() {
+  const noFooter = getMetadata('no-footer'); // no render footer metadata flag
+  return !noFooter;
+}
+
+/**
  * Loads everything that doesn't need to be delayed.
  * @param {Element} doc The container element
  */
@@ -136,14 +155,13 @@ async function loadLazy(doc) {
   if (hash && element) element.scrollIntoView();
 
   const header = doc.querySelector('header');
-  const altHeader = getMetadata('alt-header'); // alternative header metadata flag
   const footer = doc.querySelector('footer');
 
-  if (header && !altHeader) {
+  if (header && renderHeaderCheck()) {
     loadHeader(header);
   }
 
-  if (footer) {
+  if (footer && renderFooterCheck()) {
     loadFooter(footer);
   }
 
