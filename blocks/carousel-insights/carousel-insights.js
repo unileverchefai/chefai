@@ -15,7 +15,7 @@ const DEFAULT_LIMIT = 10;
 
 async function fetchInsights({ userId, limit, type }) {
   const payload = {
-    user_id: 'staging-user' || userId,
+    user_id: userId,
     limit,
     type,
   };
