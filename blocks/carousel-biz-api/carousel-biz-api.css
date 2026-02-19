@@ -60,7 +60,7 @@ main > .section:has(.carousel-biz-api-wrapper) {
 
 .trend-card {
   position: relative;
-  width: var(--card-  width-mobile);
+  width: var(--card-width-mobile);
   height: var(--card-height-mobile);
   border-radius: var(--radius-card);
   overflow: hidden;
