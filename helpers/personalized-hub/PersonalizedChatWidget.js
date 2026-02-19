@@ -90,7 +90,8 @@ export default function PersonalizedChatWidget({
 
       if (businesses && Array.isArray(businesses) && businesses.length > 0) {
         businessesProcessedRef.current = true;
-        onBusinessNameSubmit(businesses);
+        const message = (msg.text ?? '').trim();
+        onBusinessNameSubmit({ businesses, message });
         return;
       }
     }
@@ -215,7 +216,8 @@ export default function PersonalizedChatWidget({
 
         if (onBusinessNameSubmit && businesses) {
           businessesProcessedRef.current = true;
-          onBusinessNameSubmit(businesses);
+          const message = (response.text ?? '').trim();
+          onBusinessNameSubmit({ businesses, message });
         } else if (onBusinessNameSubmit && !businessesProcessedRef.current) {
           onBusinessNameSubmit(trimmedName);
         }

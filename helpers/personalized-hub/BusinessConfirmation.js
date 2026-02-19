@@ -3,6 +3,7 @@ import { initCarouselCards } from '@blocks/carousel-cards/carousel-cards.js';
 export default function BusinessConfirmation({
   businessData,
   businesses,
+  confirmationMessage,
   onSelectBusiness,
   onConfirm,
   onReject,
@@ -143,10 +144,7 @@ export default function BusinessConfirmation({
           h(
             'div',
             { key: 'confirmation-text', className: 'ph-system-message' },
-            [
-              'Thanks! I\'ve found these businesses based on the business name you entered. ',
-              'Could you please confirm which one is correct?',
-            ],
+            (confirmationMessage ?? '').trim(),
           ),
           h(
             'div',
