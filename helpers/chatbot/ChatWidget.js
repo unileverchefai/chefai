@@ -92,7 +92,6 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot', type }
               // Merge with existing messages, avoiding duplicates
               const existingIds = new Set(prev.map((m) => m._id));
               let newMessages = apiHistory.filter((m) => !existingIds.has(m._id));
-
               const headlineText = sessionStorage
                 .getItem(`chefai-quick-action-headline-${threadId}`);
               if (headlineText && newMessages.length > 0) {
@@ -373,7 +372,6 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot', type }
   useEffect(() => {
     const handler = (event) => {
       const displayText = event.detail?.displayText;
-      console.log('displayText:', displayText);
       if (!displayText) return;
 
       const headlineMessage = {
@@ -386,6 +384,7 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot', type }
         },
         metadata: {
           isQuickActionHeadline: true,
+          ...(event.detail?.prompts && { suggested_prompts: event.detail.prompts }),
         },
       };
 
