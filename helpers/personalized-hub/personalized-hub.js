@@ -8,7 +8,6 @@ const SCREENS = {
   CHAT: 'chat',
   LOADING: 'loading',
   CONFIRMATION: 'confirmation',
-  WELCOME: 'welcome',
   COMPLETED: 'completed',
 };
 
@@ -32,7 +31,6 @@ async function prefetchPersonalizedHub() {
       import('./PersonalizedChatWidget.js'),
       import('./LoadingState.js'),
       import('./BusinessConfirmation.js'),
-      import('./WelcomeScreen.js'),
     ]);
   } catch (e) {
     // eslint-disable-next-line no-console
@@ -98,7 +96,6 @@ export default async function openPersonalizedHub() {
     const { default: PersonalizedChatWidget } = await import('./PersonalizedChatWidget.js');
     const { default: LoadingState } = await import('./LoadingState.js');
     const { default: BusinessConfirmation } = await import('./BusinessConfirmation.js');
-    const { default: WelcomeScreen } = await import('./WelcomeScreen.js');
 
     // Function to render the personalized hub app
     const renderPersonalizedHubApp = () => {
@@ -272,12 +269,6 @@ export default async function openPersonalizedHub() {
             onConfirm: handleConfirm,
             onReject: handleReject,
             onClose: animateAndClose,
-          });
-        }
-
-        if (currentScreen === SCREENS.WELCOME) {
-          return h(WelcomeScreen, {
-            onGotIt: animateAndClose,
           });
         }
 

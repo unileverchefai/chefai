@@ -98,6 +98,7 @@ async function loginUserWithCookieId(email, cookieId = null) {
         Accept: 'application/json',
         'X-Subscription-Key': CHEF_AI_SUBSCRIPTION_KEY,
       },
+      keepalive: true,
       body: JSON.stringify(payload),
     });
 
