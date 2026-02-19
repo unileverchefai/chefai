@@ -1,4 +1,4 @@
-import { checkPageAccess } from '@scripts/custom/redirect.js';
+// import { checkPageAccess } from '@scripts/custom/redirect.js';
 import { welcomeModalSeen } from '@scripts/custom/utils.js';
 import {
   buildBlock,
@@ -189,8 +189,8 @@ function loadDelayed() {
 }
 
 async function loadPage() {
-  // TODO: comment it for now unblock pages access and 
-  // to fix the redirect different use cases 
+  // TODO: comment it for now unblock pages access and
+  // to fix the redirect different use cases
   // const canProceed = await checkPageAccess();
   // if (!canProceed) {
   //   return;
