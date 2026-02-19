@@ -128,6 +128,9 @@ function parseAuthoredContent(block) {
       ? [...typesList.querySelectorAll('li')].map((li) => li.textContent.trim())
       : [];
 
+    // description is mandatory
+    if (!description) return null;
+
     // map trend code to CSS class and display name
     const normalizedCode = normalizeTrendCode(trendName);
     const trendMapping = TREND_CODE_MAP[normalizedCode];
@@ -187,7 +190,7 @@ function renderCards(container, cards) {
 
     const header = createElement('div', {
       className: 'trend-header',
-      innerContent: cardData.trendName.toUpperCase(),
+      innerContent: trendName.toUpperCase(),
     });
     card.appendChild(header);
 
@@ -376,16 +379,44 @@ export default function decorate(block) {
     filterContainer.classList.remove('open');
   };
 
-  const filterCards = (restaurantType) => {
+  const filterCards = async (restaurantType) => {
     const filteredCards = restaurantType === 'all'
       ? allCards
       : allCards.filter((card) => card.restaurantTypes.includes(restaurantType));
+
+    // fade out existing cards
+    carouselContainer.classList.add('fade-out');
+    carouselContainer.classList.remove('fade-in', 'is-loading');
+
+    await new Promise((resolve) => { setTimeout(resolve, 300); });
+
+    // always render placeholder loading cards, 4 placeholders. Not sure if good UX...
+    carouselContainer.innerHTML = '';
+
+    for (let i = 0; i < 4; i += 1) {
+      const loadingCard = createElement('li', {
+        className: 'trend-card',
+      });
+      const loadingText = createElement('div', {
+        className: 'loading-text',
+        innerContent: 'Customising insights',
+      });
+      loadingCard.appendChild(loadingText);
+      carouselContainer.appendChild(loadingCard);
+    }
+
+    // trigger animation
+    carouselContainer.classList.remove('fade-out');
+    carouselContainer.classList.add('is-loading');
+
+    await new Promise((resolve) => { setTimeout(resolve, 500); });
 
     if (filteredCards.length === 0) {
       if (block.carouselInstance?.destroy) {
         block.carouselInstance.destroy();
       }
 
+      carouselContainer.classList.remove('is-loading');
       carouselContainer.innerHTML = '<li class="empty-state">No insights available for this selection.</li>';
 
       // hide carousel controls
@@ -396,14 +427,22 @@ export default function decorate(block) {
       return;
     }
 
-    // show carousel controls
     const controls = block.querySelector('.controls');
     if (controls) {
       controls.style.display = '';
     }
 
+    // update cards
     renderCards(carouselContainer, filteredCards);
     initializeCarousel(block, carouselContainer, filteredCards.length);
+
+    // remove animations
+    carouselContainer.classList.remove('is-loading');
+    carouselContainer.classList.add('fade-in');
+
+    setTimeout(() => {
+      carouselContainer.classList.remove('fade-in');
+    }, 400);
   };
 
   const selectOption = (option) => {
