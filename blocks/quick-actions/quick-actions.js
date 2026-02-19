@@ -126,7 +126,7 @@ export default function decorate(block) {
       console.error('Failed to prepare quick action thread:', error);
     }
 
-    openChatbotModal()
+    openChatbotModal('quick-actions')
       .then(() => {
         if (result.isNew && result.displayText) {
           setTimeout(() => {
