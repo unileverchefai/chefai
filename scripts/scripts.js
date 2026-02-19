@@ -181,10 +181,12 @@ function loadDelayed() {
 }
 
 async function loadPage() {
-  const canProceed = await checkPageAccess();
-  if (!canProceed) {
-    return;
-  }
+  // TODO: comment it for now unblock pages access and 
+  // to fix the redirect different use cases 
+  // const canProceed = await checkPageAccess();
+  // if (!canProceed) {
+  //   return;
+  // }
 
   await loadEager(document);
   await loadLazy(document);
