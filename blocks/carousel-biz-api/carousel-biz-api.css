@@ -60,8 +60,10 @@ main > .section:has(.carousel-biz-api-wrapper) {
 
 .trend-card {
   position: relative;
-  width: var(--card-width-mobile);
-  height: var(--card-height-mobile);
+
+  /* ----> hardcoded dimensions, TODO: update global styles <---- */
+  width: 330px;
+  height: 393px;
   border-radius: var(--radius-card);
   overflow: hidden;
   flex-shrink: 0;
