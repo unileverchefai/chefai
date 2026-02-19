@@ -15,7 +15,7 @@ export function setCookie(name, value, days = 365) {
   }
 }
 
-function getCookie(name) {
+export function getCookie(name) {
   try {
     const nameEQ = `${encodeURIComponent(name)}=`;
     const ca = document.cookie.split(';');
@@ -302,6 +302,12 @@ export function getUserIdFromCookie() {
 
 export function getAnonymousUserIdFromCookie() {
   return getUserIdFromCookie();
+}
+
+/** True if user has already seen the welcome modal (cookie personalized-hub-welcome=true). */
+export function welcomeModalSeen() {
+  const welcomeModalState = getCookie('personalized-hub-welcome');
+  return welcomeModalState != null && welcomeModalState.trim().toLowerCase() === 'true';
 }
 
 export function clearAllChatData() {

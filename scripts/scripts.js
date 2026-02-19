@@ -1,4 +1,5 @@
-import { checkPageAccess } from '@scripts/custom/redirect.js';
+// import { checkPageAccess } from '@scripts/custom/redirect.js';
+import { welcomeModalSeen } from '@scripts/custom/utils.js';
 import {
   buildBlock,
   loadHeader,
@@ -168,6 +169,13 @@ async function loadLazy(doc) {
     // eslint-disable-next-line no-console
     console.error('Failed to fetch user business data on page load', e);
   }
+
+  // Load and open welcome modal only on personalized-hub when user has not seen it yet
+  const pathname = window.location.pathname ?? '';
+  if (pathname.includes('personalized-hub') && !welcomeModalSeen()) {
+    const { default: openWelcomeModal } = await import('@helpers/welcome-modal/welcome-modal.js');
+    openWelcomeModal().catch((e) => console.error('Welcome modal failed', e));
+  }
 }
 
 /**
@@ -181,10 +189,12 @@ function loadDelayed() {
 }
 
 async function loadPage() {
-  const canProceed = await checkPageAccess();
-  if (!canProceed) {
-    return;
-  }
+  // TODO: comment it for now unblock pages access and
+  // to fix the redirect different use cases
+  // const canProceed = await checkPageAccess();
+  // if (!canProceed) {
+  //   return;
+  // }
 
   await loadEager(document);
   await loadLazy(document);
