@@ -13,6 +13,7 @@ import {
   loadSection,
   loadSections,
   loadCSS,
+  getMetadata,
 } from './aem.js';
 import { fetchPlaceholders } from './common.js';
 
@@ -134,8 +135,17 @@ async function loadLazy(doc) {
   const element = hash ? doc.getElementById(hash.substring(1)) : false;
   if (hash && element) element.scrollIntoView();
 
-  loadHeader(doc.querySelector('header'));
-  loadFooter(doc.querySelector('footer'));
+  const header = doc.querySelector('header');
+  const altHeader = getMetadata('alt-header'); // alternative header metadata flag
+  const footer = doc.querySelector('footer');
+
+  if (header && !altHeader) {
+    loadHeader(header);
+  }
+
+  if (footer) {
+    loadFooter(footer);
+  }
 
   loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
   loadFonts();
@@ -179,10 +189,12 @@ function loadDelayed() {
 }
 
 async function loadPage() {
-  const canProceed = await checkPageAccess();
-  if (!canProceed) {
-    return;
-  }
+  // TODO: comment it for now unblock pages access and 
+  // to fix the redirect different use cases 
+  // const canProceed = await checkPageAccess();
+  // if (!canProceed) {
+  //   return;
+  // }
 
   await loadEager(document);
   await loadLazy(document);
