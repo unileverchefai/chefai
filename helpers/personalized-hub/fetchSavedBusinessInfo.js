@@ -1,4 +1,4 @@
-import { SUBSCRIPTION_KEY, ENDPOINTS } from '../../api/endpoints.js';
+import { SUBSCRIPTION_KEY, ENDPOINTS } from '../../scripts/custom/api/endpoints.js';
 import { getUserIdFromCookie, setCookie } from '../../scripts/custom/utils.js';
 
 export default async function fetchSavedBusinessInfoAndLog() {

@@ -1,5 +1,5 @@
-import { SUBSCRIPTION_KEY, ENDPOINTS } from '../../api/endpoints.js';
-import { COUNTRY_CODE, LANGUAGE_CODE } from '../../api/authentication/constants.js';
+import { SUBSCRIPTION_KEY, ENDPOINTS } from './api/endpoints.js';
+import { COUNTRY_CODE, LANGUAGE_CODE } from './api/authentication/constants.js';
 import formatResponse from '../../helpers/chatbot/responseHandler.js';
 
 export { formatResponse };

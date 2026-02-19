@@ -1,4 +1,4 @@
-import { SUBSCRIPTION_KEY, ENDPOINTS } from '../../api/endpoints.js';
+import { SUBSCRIPTION_KEY, ENDPOINTS } from '../../scripts/custom/api/endpoints.js';
 import {
   getOrCreateThreadId,
   formatResponse,
