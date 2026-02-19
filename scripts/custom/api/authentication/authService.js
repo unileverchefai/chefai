@@ -6,8 +6,8 @@ import {
   getCookieId,
   getOrCreateCookieId,
   createUser,
-} from '@scripts/custom/utils.js';
-import { ENDPOINTS as CHEF_AI_ENDPOINTS, SUBSCRIPTION_KEY as CHEF_AI_SUBSCRIPTION_KEY } from '@api/endpoints.js';
+} from '../../scripts/custom/utils.js';
+import { ENDPOINTS as CHEF_AI_ENDPOINTS, SUBSCRIPTION_KEY as CHEF_AI_SUBSCRIPTION_KEY } from '../endpoints.js';
 import { apiRequest } from './endpoints.js';
 import {
   setToken, removeToken, getToken,

@@ -1,7 +1,7 @@
-import { createElement } from '@scripts/common.js';
-import { loadCSS } from '@scripts/aem.js';
-import createModal from '@helpers/modal/index.js';
-import { loadFragment } from '@blocks/fragment/fragment.js';
+import { createElement } from '../../scripts/common.js';
+import { loadCSS } from '../../scripts/aem.js';
+import createModal from '../modal/index.js';
+import { loadFragment } from '../../blocks/fragment/fragment.js';
 
 const COOKIE_FRAGMENT_PATH = '/fragments/cookies';
 

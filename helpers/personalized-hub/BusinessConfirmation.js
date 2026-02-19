@@ -1,4 +1,4 @@
-import { initCarouselCards } from '@blocks/carousel-cards/carousel-cards.js';
+import { initCarouselCards } from '../../blocks/carousel-cards/carousel-cards.js';
 
 export default function BusinessConfirmation({
   businessData,

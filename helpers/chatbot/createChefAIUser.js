@@ -1,6 +1,6 @@
-import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
-import { COUNTRY_CODE, LANGUAGE_CODE } from '@api/authentication/constants.js';
-import { getCookie } from '@scripts/custom/utils.js';
+import { SUBSCRIPTION_KEY, ENDPOINTS } from '../../api/endpoints.js';
+import { COUNTRY_CODE, LANGUAGE_CODE } from '../../api/authentication/constants.js';
+import { getCookie } from '../../scripts/custom/utils.js';
 
 export default async function createChefAIUser(userId, userName, businessData = null) {
   if (!userId) {

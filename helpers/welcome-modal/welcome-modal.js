@@ -1,7 +1,7 @@
-import { setCookie } from '@scripts/custom/utils.js';
-import { createElement } from '@scripts/common.js';
-import { loadCSS } from '@scripts/aem.js';
-import createModal from '@helpers/modal/index.js';
+import { setCookie } from '../../scripts/custom/utils.js';
+import { createElement } from '../../scripts/common.js';
+import { loadCSS } from '../../scripts/aem.js';
+import createModal from '../modal/index.js';
 
 const WELCOME_COOKIE = 'personalized-hub-welcome';
 const DURATION = 300;

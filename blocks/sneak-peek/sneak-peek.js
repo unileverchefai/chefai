@@ -1,6 +1,6 @@
-import { createElement } from '@scripts/common.js';
-import { loadCSS } from '@scripts/aem.js';
-import createProfileSection from '@helpers/nav-profile/nav-profile.js';
+import { createElement } from '../../scripts/common.js';
+import { loadCSS } from '../../scripts/aem.js';
+import createProfileSection from '../../helpers/nav-profile/nav-profile.js';
 import { fetchBusinessInfo, fetchSneakPeek } from './fetchSneakPeek.js';
 
 // create customHeader for sneak peek page.

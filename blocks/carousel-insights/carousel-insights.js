@@ -1,7 +1,7 @@
-import { createElement } from '@scripts/common.js';
-import createCarousel from '@helpers/carousel/carousel.js';
-import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
-import { getUserIdFromCookie } from '@scripts/custom/utils.js';
+import { createElement } from '../../scripts/common.js';
+import createCarousel from '../../helpers/carousel/carousel.js';
+import { SUBSCRIPTION_KEY, ENDPOINTS } from '../../api/endpoints.js';
+import { getUserIdFromCookie } from '../../scripts/custom/utils.js';
 
 const DEFAULT_LIMIT = 10;
 const DEFAULT_TYPE = 'main';

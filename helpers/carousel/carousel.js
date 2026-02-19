@@ -1,4 +1,4 @@
-import { createElement } from '@scripts/common.js';
+import { createElement } from '../../scripts/common.js';
 
 /**
  * Debounce utility function

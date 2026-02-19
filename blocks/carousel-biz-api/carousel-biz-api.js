@@ -1,6 +1,6 @@
-import createCarousel from '@helpers/carousel/carousel.js';
-import { decorateIcons } from '@scripts/aem.js';
-import { createElement } from '@scripts/common.js';
+import createCarousel from '../../helpers/carousel/carousel.js';
+import { decorateIcons } from '../../scripts/aem.js';
+import { createElement } from '../../scripts/common.js';
 import fetchRecommendations from './fetchRecommendations.js';
 
 const MIN_ITEMS = 3;

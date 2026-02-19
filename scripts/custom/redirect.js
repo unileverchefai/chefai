@@ -1,5 +1,5 @@
-import { redirectToHomeIfNotLoggedIn, isUserLoggedIn } from '@api/authentication/authService.js';
-import { hasConfirmedBusiness } from '@helpers/personalized-hub/hasSavedBusinessName.js';
+import { redirectToHomeIfNotLoggedIn, isUserLoggedIn } from './api/authentication/authService.js';
+import { hasConfirmedBusiness } from '../../helpers/personalized-hub/hasSavedBusinessName.js';
 
 const FUTURE_MENUS_4_BASE = 'future-menus-4';
 

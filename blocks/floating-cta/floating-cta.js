@@ -1,9 +1,9 @@
-import { createElement, addVariantLogic } from '@scripts/common.js';
-import { loadCSS } from '@scripts/aem.js';
-import { hasToken } from '@auth/tokenManager.js';
-import openPersonalizedHub from '@helpers/personalized-hub/personalized-hub.js';
-import hasSavedBusinessName from '@helpers/personalized-hub/hasSavedBusinessName.js';
-import openChatbotModal from '@helpers/chatbot/openChatbotModal.js';
+import { createElement, addVariantLogic } from '../../scripts/common.js';
+import { loadCSS } from '../../scripts/aem.js';
+import { hasToken } from '../../scripts/custom/api/authentication/tokenManager.js';
+import openPersonalizedHub from '../../helpers/personalized-hub/personalized-hub.js';
+import hasSavedBusinessName from '../../helpers/personalized-hub/hasSavedBusinessName.js';
+import openChatbotModal from '../../helpers/chatbot/openChatbotModal.js';
 
 const blockName = 'floating-cta';
 const blockClasses = {

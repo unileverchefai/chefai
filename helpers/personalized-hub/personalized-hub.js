@@ -1,8 +1,8 @@
-import { loadReact, getCookieId, getUserIdFromCookie } from '@scripts/custom/utils.js';
-import sendStreamingMessage from '@helpers/chatbot/sendStreamingMessage.js';
-import { createElement } from '@scripts/common.js';
-import { loadCSS } from '@scripts/aem.js';
-import createModal from '@helpers/modal/index.js';
+import { loadReact, getCookieId, getUserIdFromCookie } from '../../scripts/custom/utils.js';
+import sendStreamingMessage from '../chatbot/sendStreamingMessage.js';
+import { createElement } from '../../scripts/common.js';
+import { loadCSS } from '../../scripts/aem.js';
+import createModal from '../modal/index.js';
 
 const SCREENS = {
   CHAT: 'chat',

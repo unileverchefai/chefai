@@ -1,6 +1,6 @@
-import { createElement } from '@scripts/common.js';
-import createModal from '@helpers/modal/index.js';
-import { loadCSS } from '@scripts/aem.js';
+import { createElement } from '../../scripts/common.js';
+import createModal from '../modal/index.js';
+import { loadCSS } from '../../scripts/aem.js';
 
 export default function openResetPasswordModal() {
   loadCSS(`${window.hlx.codeBasePath}/helpers/reset-password/reset-password.css`).catch(() => {});

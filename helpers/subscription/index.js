@@ -1,4 +1,4 @@
-import { hasToken } from '@auth/tokenManager.js';
+import { hasToken } from '../../scripts/custom/api/authentication/tokenManager.js';
 import openSubscriptionStep1 from './subscription-step1.js';
 import openSubscriptionStep2 from './subscription-step2.js';
 import openSubscriptionStep3 from './subscription-step3.js';

@@ -1,5 +1,5 @@
-import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
-import { getUserIdFromCookie } from '@scripts/custom/utils.js';
+import { SUBSCRIPTION_KEY, ENDPOINTS } from '../../api/endpoints.js';
+import { getUserIdFromCookie } from '../../scripts/custom/utils.js';
 
 export { SUBSCRIPTION_KEY };
 

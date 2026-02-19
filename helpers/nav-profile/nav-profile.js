@@ -1,8 +1,8 @@
-import { createElement } from '@scripts/common.js';
-import { hasToken } from '@auth/tokenManager.js';
-import { logout } from '@auth/authService.js';
-import { loadCSS } from '@scripts/aem.js';
-import openSignInModal from '@helpers/signin/index.js';
+import { createElement } from '../../scripts/common.js';
+import { hasToken } from '../../scripts/custom/api/authentication/tokenManager.js';
+import { logout } from '../../scripts/custom/api/authentication/authService.js';
+import { loadCSS } from '../../scripts/aem.js';
+import openSignInModal from '../signin/index.js';
 
 loadCSS(`${window.hlx.codeBasePath}/helpers/nav-profile/nav-profile.css`);
 

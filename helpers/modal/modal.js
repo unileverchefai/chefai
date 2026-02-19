@@ -1,5 +1,5 @@
-import { createElement } from '@scripts/common.js';
-import { loadCSS } from '@scripts/aem.js';
+import { createElement } from '../../scripts/common.js';
+import { loadCSS } from '../../scripts/aem.js';
 
 /**
  * Creates a generic, reusable modal component

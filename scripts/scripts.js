@@ -1,5 +1,5 @@
-// import { checkPageAccess } from '@scripts/custom/redirect.js';
-import { welcomeModalSeen } from '@scripts/custom/utils.js';
+// import { checkPageAccess } from './custom/redirect.js';
+import { welcomeModalSeen } from './custom/utils.js';
 import {
   buildBlock,
   loadHeader,

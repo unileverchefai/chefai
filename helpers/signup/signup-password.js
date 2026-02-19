@@ -1,8 +1,8 @@
-import { createElement } from '@scripts/common.js';
-import createModal from '@helpers/modal/index.js';
-import { loadCSS } from '@scripts/aem.js';
-import { register } from '@auth/authService.js';
-import { getRedirectUrlToPage } from '@scripts/custom/redirect.js';
+import { createElement } from '../../scripts/common.js';
+import createModal from '../modal/index.js';
+import { loadCSS } from '../../scripts/aem.js';
+import { register } from '../../scripts/custom/api/authentication/authService.js';
+import { getRedirectUrlToPage } from '../../scripts/custom/redirect.js';
 
 function createPasswordRequirement(text) {
   const requirement = createElement('div', {

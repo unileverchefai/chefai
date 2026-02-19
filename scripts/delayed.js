@@ -1,6 +1,6 @@
-import { loadScript } from '@scripts/aem.js';
-import { createElement, isDevHost, COOKIE_CONFIG } from '@scripts/common.js';
-import addCustomAnalyticsEvents from '@scripts/custom/analytics.js';
+import { loadScript } from '../../scripts/aem.js';
+import { createElement, isDevHost, COOKIE_CONFIG } from '../../scripts/common.js';
+import addCustomAnalyticsEvents from '../../scripts/custom/analytics.js';
 
 const { DATA_DOMAIN_SCRIPT = false } = COOKIE_CONFIG;
 

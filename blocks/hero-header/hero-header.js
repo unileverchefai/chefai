@@ -1,5 +1,5 @@
-import { createElement } from '@scripts/common.js';
-import { buildNavSections, createHamburgerMenu } from '@blocks/header/header.js';
+import { createElement } from '../../scripts/common.js';
+import { buildNavSections, createHamburgerMenu } from '../header/header.js';
 
 const blockName = 'hero-header';
 const blockClasses = {

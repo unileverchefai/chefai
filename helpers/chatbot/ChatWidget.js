@@ -1,4 +1,4 @@
-import openPersonalizedHub from '@helpers/personalized-hub/personalized-hub.js';
+import openPersonalizedHub from '../personalized-hub/personalized-hub.js';
 import {
   getHistory,
   getHistoryWithFallback,
@@ -7,7 +7,7 @@ import {
   getOrCreateThreadId,
   getAnonymousUserId,
   getUserIdFromCookie,
-} from '@scripts/custom/utils.js';
+} from '../../scripts/custom/utils.js';
 import sendStreamingMessage from './sendStreamingMessage.js';
 import renderChatUI from './renderChatUI.js';
 

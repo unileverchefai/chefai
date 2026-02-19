@@ -1,7 +1,7 @@
-import { createElement } from '@scripts/common.js';
-import { getMetadata } from '@scripts/aem.js';
-import { loadFragment } from '@blocks/fragment/fragment.js';
-import createProfileSection from '@helpers/nav-profile/nav-profile.js';
+import { createElement } from '../../scripts/common.js';
+import { getMetadata } from '../../scripts/aem.js';
+import { loadFragment } from '../fragment/fragment.js';
+import createProfileSection from '../../helpers/nav-profile/nav-profile.js';
 
 // media query match that indicates mobile/tablet width
 const isDesktop = window.matchMedia('(min-width: 992px)');

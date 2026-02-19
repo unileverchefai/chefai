@@ -1,5 +1,5 @@
-import { loadReact } from '@scripts/custom/utils.js';
-import { loadCSS } from '@scripts/aem.js';
+import { loadReact } from './utils.js';
+import { loadCSS } from '../aem.js';
 
 // Prefetch assets for the Personalized Hub chatbot modal
 export default async function prefetchPersonalizedHub() {

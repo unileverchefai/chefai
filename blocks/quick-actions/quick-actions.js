@@ -1,12 +1,12 @@
-import { createElement } from '@scripts/common.js';
-import openChatbotModal from '@helpers/chatbot/openChatbotModal.js';
+import { createElement } from '../../scripts/common.js';
+import openChatbotModal from '../../helpers/chatbot/openChatbotModal.js';
 import {
   setCookie,
   getUserIdFromCookie,
   getAnonymousUserIdFromCookie,
   getAnonymousUserId,
   createThreadWithRecommendation,
-} from '@scripts/custom/utils.js';
+} from '../../scripts/custom/utils.js';
 import { fetchQuickActions } from './fetchQuickActions.js';
 
 async function ensureQuickActionThread(recommendationId) {

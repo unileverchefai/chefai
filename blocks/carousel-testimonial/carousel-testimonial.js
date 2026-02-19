@@ -1,5 +1,5 @@
-import { createElement, findVideoLink } from '@scripts/common.js';
-import createCarousel from '@helpers/carousel/carousel.js';
+import { createElement, findVideoLink } from '../../scripts/common.js';
+import createCarousel from '../../helpers/carousel/carousel.js';
 import openVideoModal from '../../scripts/custom/modal-video.js';
 
 /**

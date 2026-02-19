@@ -1,12 +1,12 @@
-import openChatbotModal from '@helpers/chatbot/openChatbotModal.js';
-import { createElement } from '@scripts/common.js';
+import openChatbotModal from '../../helpers/chatbot/openChatbotModal.js';
+import { createElement } from '../../scripts/common.js';
 import {
   setCookie,
   getUserIdFromCookie,
   getAnonymousUserIdFromCookie,
   getAnonymousUserId,
   createThread,
-} from '@scripts/custom/utils.js';
+} from '../../scripts/custom/utils.js';
 
 /**
  * Ask Button Block
