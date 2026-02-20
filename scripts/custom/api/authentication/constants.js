@@ -1,7 +1,7 @@
 export const API_BASE_URL = 'https://stage-api.ufs.com/auth';
 export const SUBSCRIPTION_KEY = 'f6acb8e1cc574a41bbcc82e177524a9d';
-export const COUNTRY_CODE = 'AU';
-export const SITE_CODE = 'ufs-au';
+export const COUNTRY_CODE = 'GB';
+export const SITE_CODE = 'ufs-gb';
 export const LANGUAGE_CODE = 'en';
 
 export const ENDPOINTS = {

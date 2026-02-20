@@ -1,4 +1,3 @@
-// import { checkPageAccess } from '@scripts/custom/redirect.js';
 import { welcomeModalSeen } from '@scripts/custom/utils.js';
 import {
   buildBlock,
