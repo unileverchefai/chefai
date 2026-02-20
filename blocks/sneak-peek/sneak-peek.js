@@ -58,7 +58,7 @@ export default async function decorate(block) {
       innerContent: `
         <div class="insight-card-content">
           <h3>${insightData?.title ?? ''}</h3>
-          <p>${insightData?.description ?? ''}</p>
+          <p>${insightData?.description.slice(0, 255) ?? ''}</p>
         </div>
       `,
     });
