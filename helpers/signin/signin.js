@@ -3,6 +3,7 @@ import createModal from '@helpers/modal/index.js';
 import { loadCSS } from '@scripts/aem.js';
 import { login } from '@auth/authService.js';
 import openCookieAgreementModal from '@helpers/cookie-agreement/index.js';
+import { getUrl } from '@scripts/custom/redirect.js';
 
 /**
  * Opens the sign-in modal
@@ -226,13 +227,13 @@ export default function openSignInModal() {
       if (!cookiesAccepted) {
         openCookieAgreementModal(
           () => {
-            window.location.reload();
+            window.location.href = getUrl('personalized-hub');
           },
           () => {},
           true,
         );
       } else {
-        window.location.reload();
+        window.location.href = getUrl('personalized-hub');
       }
     } catch (error) {
       // Show error message
