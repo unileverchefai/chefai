@@ -1,55 +1,26 @@
-import { redirectToHomeIfNotLoggedIn, isUserLoggedIn } from '@api/authentication/authService.js';
-import { hasConfirmedBusiness } from '@helpers/personalized-hub/hasSavedBusinessName.js';
+/** Base folder for future-menus-4; paths are built relative to this. */
+const BASE_FOLDER = 'future-menus-4';
 
-const FUTURE_MENUS_4_BASE = 'future-menus-4';
-
-function redirectToParentPage(pathname, segment) {
-  const parentPath = pathname.replace(new RegExp(`/${segment}.*$`), '');
-  window.location.href = parentPath ? `${parentPath}/` : '/';
+/**
+ * Returns the base URL: path up to and including BASE_FOLDER, with trailing slash.
+ * e.g. /uk/en/inspiration/future-menus-4/personalized-hub -> /uk/en/inspiration/future-menus-4/
+ */
+export function getBaseUrl(pathname = window.location.pathname ?? '/') {
+  const path = pathname.replace(/\/$/, '') ?? '/';
+  if (path === '' || path === '/') return '/';
+  const segments = path.split('/').filter(Boolean);
+  const idx = segments.indexOf(BASE_FOLDER);
+  if (idx === -1) return '/';
+  const baseSegments = segments.slice(0, idx + 1);
+  return `/${baseSegments.join('/')}/`;
 }
 
-export function getFutureMenus4BasePath(pathname = window.location.pathname ?? '/') {
-  if (pathname.includes(FUTURE_MENUS_4_BASE)) {
-    const idx = pathname.indexOf(FUTURE_MENUS_4_BASE);
-    const base = pathname.slice(0, idx + FUTURE_MENUS_4_BASE.length);
-    return base.replace(/\/$/, '') || base;
-  }
-  return `/${FUTURE_MENUS_4_BASE}`;
-}
-
-export function getRedirectUrlToPage(pageName, pathname = window.location.pathname ?? '/') {
-  return `${getFutureMenus4BasePath(pathname)}/${pageName}`;
-}
-
-export async function checkPageAccess() {
-  const pathname = window.location.pathname ?? '/';
-
-  if (pathname === '/' || pathname === '') {
-    return true;
-  }
-
-  if (pathname.includes(FUTURE_MENUS_4_BASE) && !pathname.includes('personalized-hub') && !pathname.includes('sneak-peek')) {
-    return true;
-  }
-
-  if (isUserLoggedIn()) {
-    return true;
-  }
-
-  const isSneakPeekPage = pathname.includes('sneak-peek');
-  if (isSneakPeekPage && hasConfirmedBusiness()) {
-    return true;
-  }
-
-  if (isSneakPeekPage && pathname.includes(FUTURE_MENUS_4_BASE)) {
-    redirectToParentPage(pathname, 'sneak-peek');
-    return false;
-  }
-
-  if (pathname.includes('personalized-hub') && pathname.includes(FUTURE_MENUS_4_BASE)) {
-    redirectToParentPage(pathname, 'personalized-hub');
-    return false;
-  }
-
-  return redirectToHomeIfNotLoggedIn();
+/**
+ * Returns the URL for a page under the base folder (e.g. on login/register -> personalized-hub).
+ * e.g. getUrl('personalized-hub') -> /uk/en/inspiration/future-menus-4/personalized-hub
+ */
+export function getUrl(pageName, pathname = window.location.pathname ?? '/') {
+  const base = getBaseUrl(pathname);
+  if (base === '/') return `/${pageName}`;
+  return `${base.replace(/\/$/, '')}/${pageName}`;
 }

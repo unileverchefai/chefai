@@ -3,6 +3,7 @@ import { hasToken } from '@auth/tokenManager.js';
 import { logout } from '@auth/authService.js';
 import { loadCSS } from '@scripts/aem.js';
 import openSignInModal from '@helpers/signin/index.js';
+import { getBaseUrl } from '@scripts/custom/redirect.js';
 
 loadCSS(`${window.hlx.codeBasePath}/helpers/nav-profile/nav-profile.css`);
 
@@ -59,7 +60,7 @@ export default function createProfileSection() {
     logoutButton.addEventListener('click', async (e) => {
       e.stopPropagation();
       await logout();
-      window.location.href = '/';
+      window.location.href = getBaseUrl();
     });
 
     dropdown.append(accountLink, logoutButton);
