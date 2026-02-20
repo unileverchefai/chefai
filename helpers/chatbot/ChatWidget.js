@@ -174,11 +174,16 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot', type }
   useEffect(() => {
     const scrollButton = document.getElementsByClassName('chatbot-modal-scroll-button')[0];
     const messagesContainer = document.getElementsByClassName('chat-messages')[0];
-
     if (!scrollButton || !messagesContainer) return undefined;
 
     let initialScrollHandled = false;
     const handleScroll = () => {
+      // Hide scroll button if chat is empty (no text)
+      if (!messagesContainer.textContent.trim()) {
+        scrollButton.style.display = 'none';
+        return;
+      }
+
       // On first render, treat as NOT scrolled to bottom
       // Only update isScrolledToBottom after first scroll event
       let isScrolledToBottom;
@@ -207,9 +212,14 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot', type }
     };
     scrollButton.addEventListener('click', handleClick);
 
+    // Also observe for text/content changes in the messages container
+    const observer = new MutationObserver(handleScroll);
+    observer.observe(messagesContainer, { childList: true, subtree: true, characterData: true });
+
     return () => {
       messagesContainer.removeEventListener('scroll', handleScroll);
       scrollButton.removeEventListener('click', handleClick);
+      observer.disconnect();
     };
   }, []);
 
