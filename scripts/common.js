@@ -171,62 +171,80 @@ export async function loadVariantScript({ blockName, variantName }) {
   }
 }
 
-/** Retrieves placeholder text based on key and optional prefix.
- * @param {string} key The placeholder key
- * @param {string} [prefix='default'] The optional prefix for placeholder categories
- * @returns {string} The corresponding placeholder text or an empty string if not found
- */
-export function getPlaceholderText({ key, prefix = 'default' } = {}) {
-  try {
-    const placeholders = window.placeholders[prefix] || {};
-    return placeholders[key] || '';
-  } catch (e) {
-    return null;
+export function getPageLanguage() {
+  const htmlLang = document.documentElement.lang;
+  if (htmlLang) {
+    const normalizedLang = htmlLang.toLowerCase();
+    return normalizedLang.split(/[-_]/)[0]; // Return the primary language code (e.g., 'en' from 'en-US')
   }
+  return 'en'; // Default to English if no language is specified
 }
 
 /**
- * Gets placeholders object.
- * @param {string} [prefix] Location of placeholders, _default_ or custom prefix.
- * @returns {object} Window placeholders object
- */
-export async function fetchPlaceholders({ prefix = 'default' } = {}) {
-  window.placeholders = window.placeholders || {};
-  if (window.placeholders[prefix]) {
-    return window.placeholders[prefix];
-  }
-
-  window.placeholders[prefix] = new Promise((resolve) => {
-    const pathname = prefix === 'default' ? '' : `/${prefix.toLowerCase()}`;
-    const url = new URL(
-      window.location.origin,
-    );
-    url.pathname = `${pathname}/placeholders.json`;
-    fetch(url.href)
-      .then((resp) => {
-        if (!resp.ok) {
-          throw new Error(`HTTP error! status: %c${resp.status}`, 'color: red;');
-        }
-        return resp.json();
-      })
-      .then((json) => {
-        const placeholders = {};
-        json.data
-          .filter((item) => item.key)
-          .forEach((item) => {
-            placeholders[item.key] = item.text;
-          });
-        window.placeholders[prefix] = placeholders;
-        resolve(window.placeholders[prefix]);
-      })
-      .catch((error) => {
-        console.error('Error loading placeholders:', { error });
-        window.placeholders[prefix] = {};
-        resolve(window.placeholders[prefix]);
-      });
-  });
-  return window.placeholders[prefix];
+ * Fetches placeholders from the server and returns them as an object.
+ * @returns {Promise<Object>} A promise that resolves to an object containing placeholders.
+ * The object structure is expected to have keys corresponding to placeholder categories,
+ * each containing an array of placeholder items with 'key' and language-specific text properties.
+*/
+export async function getPlaceholders() {
+  const url = new URL(window.location.href);
+  url.pathname = '/placeholders.json';
+  return fetch(url.href)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((json) => {
+      const placeholders = json || {};
+      return placeholders;
+    })
+    .catch((error) => {
+      console.error('Error loading placeholders:', { error });
+      return {};
+    });
 }
+
+/**
+ * Format the placeholders data into a structured object for easier access.
+ * @param {Object} values The raw placeholders data fetched from the server.
+ * @returns {Object} An object where each key corresponds to a placeholder category,
+ * and its value is an object mapping placeholder keys to their language-specific text.
+ * @description The input `values` is expected to be an array of placeholder items,
+ * each containing a 'key' and language-specific text properties (e.g., 'en', 'it', 'de', 'es').
+ */
+function formatPlaceholders(values = false) {
+  const object = {};
+  if (!values) {
+    return {};
+  }
+  values.forEach((item) => {
+    if (!item.key) {
+      return;
+    }
+    const {
+      key, en, it, de, es,
+    } = item;
+    object[key] = {
+      en, it, de, es,
+    };
+  });
+  return object;
+}
+
+const {
+  loginmodal,
+  herobanner,
+  countdownhero,
+  data: placeholdersData,
+} = await getPlaceholders() || {};
+
+// Format placeholders for different categories and store them in constants for easy access
+export const LOGIN_MODAL_PLACEHOLDERS = formatPlaceholders(loginmodal?.data);
+export const HERO_BANNER_PLACEHOLDERS = formatPlaceholders(herobanner?.data);
+export const COUNTDOWN_HERO_PLACEHOLDERS = formatPlaceholders(countdownhero?.data);
+export const OTHER_PLACEHOLDERS = formatPlaceholders(placeholdersData?.data);
 
 /**
  * Extract video ID from YouTube URL

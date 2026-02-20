@@ -1,5 +1,7 @@
 import { getMetadata } from '@scripts/aem.js';
-import { getPlaceholderText, createElement, getBEMTemplateName } from '@scripts/common.js';
+import {
+  COUNTDOWN_HERO_PLACEHOLDERS, getPageLanguage, createElement, getBEMTemplateName,
+} from '@scripts/common.js';
 
 let intervalId = null;
 
@@ -60,11 +62,12 @@ function updateCountdown({
 
 export default function setCountdownToHero({ countdownArea, countdownClass }) {
   // Placeholder function for countdown hero decoration
-  const labelText = getPlaceholderText({ key: 'countdown_label-text' });
-  const daysText = getPlaceholderText({ key: 'countdown_days' });
-  const hoursText = getPlaceholderText({ key: 'countdown_hours' });
-  const minutesText = getPlaceholderText({ key: 'countdown_minutes' });
-  const secondsText = getPlaceholderText({ key: 'countdown_seconds' });
+  const language = getPageLanguage();
+  const labelText = COUNTDOWN_HERO_PLACEHOLDERS['label-text'][language];
+  const daysText = COUNTDOWN_HERO_PLACEHOLDERS.days[language];
+  const hoursText = COUNTDOWN_HERO_PLACEHOLDERS.hours[language];
+  const minutesText = COUNTDOWN_HERO_PLACEHOLDERS.minutes[language];
+  const secondsText = COUNTDOWN_HERO_PLACEHOLDERS.seconds[language];
   const startDateISO = getMetadata('countdown-start-date');
   const endDateISO = getMetadata('countdown-end-date');
 
