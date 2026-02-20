@@ -170,6 +170,7 @@ export default async function decorate(block) {
           setTimeout(() => {
             window.dispatchEvent(new CustomEvent('chefai:insights', {
               detail: {
+                headlineTitle: item.title,
                 displayText: messageInsight[0].text,
                 prompts: messageInsight[0].metadata?.suggested_prompts ?? [],
               },
