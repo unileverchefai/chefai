@@ -306,3 +306,34 @@ main {
 				rgb(255 255 255 / 100%) 40%);
 	}
 }
+
+@media (width <= 768px) and (height < 800px) {
+  /* mobile short-height styles */
+	.business-block-left{
+		flex-direction: row;
+	}
+
+	.business-block-left .business-logo  {
+		height: 30px;
+		width: 30px;
+	}
+
+	.business-block h2 {
+		font-size: 14px;
+		margin-left: 10px;
+	}
+
+	.business-block-right {
+		font-size: 14px;
+	}
+
+	.floating-cta__container {
+		height: auto;
+		padding: 0;
+	}
+
+	.lower-block::after {
+		bottom: 23%;
+		height: 280px;
+	}
+}
