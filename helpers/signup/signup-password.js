@@ -2,6 +2,7 @@ import { createElement } from '@scripts/common.js';
 import createModal from '@helpers/modal/index.js';
 import { loadCSS } from '@scripts/aem.js';
 import { register } from '@auth/authService.js';
+import { getUrl } from '@scripts/custom/redirect.js';
 
 function createPasswordRequirement(text) {
   const requirement = createElement('div', {
@@ -205,8 +206,7 @@ export default function openSignupPasswordModal(email, registrationData = null) 
 
         await register(formData);
         modal.close();
-        // Redirect to personalized-hub after registration is completed
-        window.location.href = '/personalized-hub';
+        window.location.href = getUrl('personalized-hub');
       }
     } catch (error) {
       errorMessage.textContent = error.message ?? 'Failed to create account. Please try again.';

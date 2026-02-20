@@ -54,31 +54,16 @@ function toggleMenu(nav) {
   }
 }
 
-/**
- * loads and decorates the test header
- * @param {Element} block The header block element
- */
-export default async function decorate(block) {
-  block.textContent = '';
-
-  // Get campaign phase metadata (defaults to 'teaser')
-  const campaignPhase = getMetadata('campaign-phase') || 'teaser';
-  const isLiveMode = campaignPhase === 'live';
-
-  // Load nav fragment
+export async function buildNavSections() {
   const navMeta = getMetadata('nav');
   const navPath = navMeta ? new URL(navMeta, window.location).pathname : '/nav';
   const fragment = await loadFragment(navPath);
 
-  const nav = createElement('nav', { attributes: { id: 'nav' } });
-
-  // Add fragment content to nav sections
   const navSections = createElement('div', { className: 'nav-sections' });
   while (fragment.firstElementChild) {
     navSections.appendChild(fragment.firstElementChild);
   }
 
-  // Decorate nav sections
   navSections.querySelectorAll(':scope .default-content-wrapper > ul > li').forEach((navSection) => {
     if (navSection.querySelector('ul')) navSection.classList.add('nav-drop');
     navSection.addEventListener('click', () => {
@@ -90,7 +75,10 @@ export default async function decorate(block) {
     });
   });
 
-  // Create hamburger menu
+  return navSections;
+}
+
+export function createHamburgerMenu(nav) {
   const hamburger = createElement('div', {
     className: 'nav-hamburger',
   });
@@ -107,7 +95,6 @@ export default async function decorate(block) {
     className: 'nav-hamburger-icon',
   });
 
-  // Create the three lines of the hamburger
   for (let i = 0; i < 3; i += 1) {
     const line = createElement('span', {
       className: 'nav-hamburger-line',
@@ -118,6 +105,25 @@ export default async function decorate(block) {
   hamburgerButton.appendChild(hamburgerIcon);
   hamburger.appendChild(hamburgerButton);
   hamburger.addEventListener('click', () => toggleMenu(nav));
+
+  return hamburger;
+}
+
+/**
+ * loads and decorates the test header
+ * @param {Element} block The header block element
+ */
+export default async function decorate(block) {
+  block.textContent = '';
+
+  // Get campaign phase metadata (defaults to 'teaser')
+  const campaignPhase = getMetadata('campaign-phase') || 'teaser';
+  const isLiveMode = campaignPhase === 'live';
+
+  const nav = createElement('nav', { attributes: { id: 'nav' } });
+
+  const navSections = await buildNavSections();
+  const hamburger = createHamburgerMenu(nav);
 
   // Prepend hamburger and append nav sections
   nav.prepend(hamburger);

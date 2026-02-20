@@ -19,7 +19,6 @@ export default async function prefetchPersonalizedHub() {
       import('@helpers/personalized-hub/PersonalizedChatWidget.js'),
       import('@helpers/personalized-hub/LoadingState.js'),
       import('@helpers/personalized-hub/BusinessConfirmation.js'),
-      import('@helpers/personalized-hub/WelcomeScreen.js'),
     ]);
   } catch (e) {
     // eslint-disable-next-line no-console

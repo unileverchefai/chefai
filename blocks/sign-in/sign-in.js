@@ -1,5 +1,6 @@
 import openSignInModal from '@helpers/signin/index.js';
 import { createElement } from '@scripts/common.js';
+import { getUrl } from '@scripts/custom/redirect.js';
 
 /**
  * Sign In Block
@@ -13,7 +14,7 @@ export default function decorate(block) {
     className: 'sign-in-link',
     innerContent: 'Sign in',
     attributes: {
-      href: '#',
+      href: getUrl('personalized-hub'),
       'aria-label': 'Sign in',
     },
   });

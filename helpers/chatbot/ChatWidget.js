@@ -14,7 +14,7 @@ import renderChatUI from './renderChatUI.js';
 const USER_ID = 1;
 const AI_ID = 2;
 
-export default function ChatWidget({ personalizedHubTrigger = '#chatbot' } = {}) {
+export default function ChatWidget({ personalizedHubTrigger = '#chatbot', type } = {}) {
   const {
     useState,
     useCallback,
@@ -67,77 +67,78 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot' } = {})
   }, [messages, scrollToEnd]);
 
   // Load history from API in background on mount
-  useEffect(() => {
-    if (historyLoadedRef.current) return;
-    historyLoadedRef.current = true;
+  if (type !== 'insights') {
+    useEffect(() => {
+      if (historyLoadedRef.current) return;
+      historyLoadedRef.current = true;
 
-    (async () => {
-      try {
-        const cookieUserId = getUserIdFromCookie();
-        let userId = cookieUserId;
-        if (!userId) {
-          userId = await getAnonymousUserId();
-        }
+      (async () => {
+        try {
+          const cookieUserId = getUserIdFromCookie();
+          let userId = cookieUserId;
+          if (!userId) {
+            userId = await getAnonymousUserId();
+          }
 
-        // Get or create thread ID (validates on init)
-        const threadId = await getOrCreateThreadId(userId, true);
+          // Get or create thread ID (validates on init)
+          const threadId = await getOrCreateThreadId(userId, true);
 
-        // Load history with fallback (uses cache first, then API)
-        const apiHistory = await getHistoryWithFallback(threadId, userId);
+          // Load history with fallback (uses cache first, then API)
+          const apiHistory = await getHistoryWithFallback(threadId, userId);
 
-        // Only update if we got new messages from API
-        if (apiHistory && apiHistory.length > 0) {
-          setMessages((prev) => {
-            // Merge with existing messages, avoiding duplicates
-            const existingIds = new Set(prev.map((m) => m._id));
-            let newMessages = apiHistory.filter((m) => !existingIds.has(m._id));
+          // Only update if we got new messages from API
+          if (apiHistory && apiHistory.length > 0) {
+            setMessages((prev) => {
+              // Merge with existing messages, avoiding duplicates
+              const existingIds = new Set(prev.map((m) => m._id));
+              let newMessages = apiHistory.filter((m) => !existingIds.has(m._id));
+              const headlineText = sessionStorage
+                .getItem(`chefai-quick-action-headline-${threadId}`);
+              if (headlineText && newMessages.length > 0) {
+                const hasHeadline = newMessages
+                  .some((m) => m.metadata?.isQuickActionHeadline);
 
-            const headlineText = sessionStorage
-              .getItem(`chefai-quick-action-headline-${threadId}`);
-            if (headlineText && newMessages.length > 0) {
-              const hasHeadline = newMessages
-                .some((m) => m.metadata?.isQuickActionHeadline);
-
-              if (!hasHeadline) {
-                const firstMsg = newMessages[0];
-                const firstTime = firstMsg?.createdAt
-                  ? new Date(firstMsg.createdAt).getTime()
-                  : Date.now();
-                const headlineMessage = {
-                  _id: `headline_${threadId}`,
-                  text: headlineText,
-                  createdAt: new Date(firstTime - 1),
-                  user: {
-                    _id: AI_ID,
-                    name: 'Chef AI',
-                  },
-                  metadata: {
-                    isQuickActionHeadline: true,
-                  },
-                };
-                newMessages = [headlineMessage, ...newMessages];
+                if (!hasHeadline) {
+                  const firstMsg = newMessages[0];
+                  const firstTime = firstMsg?.createdAt
+                    ? new Date(firstMsg.createdAt).getTime()
+                    : Date.now();
+                  const headlineMessage = {
+                    _id: `headline_${threadId}`,
+                    text: headlineText,
+                    createdAt: new Date(firstTime - 1),
+                    user: {
+                      _id: AI_ID,
+                      name: 'Chef AI',
+                    },
+                    metadata: {
+                      isQuickActionHeadline: true,
+                    },
+                  };
+                  newMessages = [headlineMessage, ...newMessages];
+                }
               }
-            }
 
-            if (newMessages.length > 0) {
-              return [...prev, ...newMessages].sort((a, b) => {
-                const timeA = a.createdAt instanceof Date
-                  ? a.createdAt.getTime()
-                  : new Date(a.createdAt).getTime();
-                const timeB = b.createdAt instanceof Date
-                  ? b.createdAt.getTime()
-                  : new Date(b.createdAt).getTime();
-                return timeA - timeB;
-              });
-            }
-            return prev;
-          });
+              if (newMessages.length > 0) {
+                return [...prev, ...newMessages].sort((a, b) => {
+                  const timeA = a.createdAt instanceof Date
+                    ? a.createdAt.getTime()
+                    : new Date(a.createdAt).getTime();
+                  const timeB = b.createdAt instanceof Date
+                    ? b.createdAt.getTime()
+                    : new Date(b.createdAt).getTime();
+                  return timeA - timeB;
+                });
+              }
+              return prev;
+            });
+          }
+        } catch (err) {
+          // Silently fail - cached history is already displayed
         }
-      } catch (err) {
-        // Silently fail - cached history is already displayed
-      }
-    })();
-  }, []);
+      })();
+    }, []);
+  }
 
   useEffect(() => {
     if (messages.length > 0) {
@@ -168,6 +169,58 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot' } = {})
     if (streamingConnectionRef.current) {
       streamingConnectionRef.current.disconnect();
     }
+  }, []);
+
+  useEffect(() => {
+    const scrollButton = document.getElementsByClassName('chatbot-modal-scroll-button')[0];
+    const messagesContainer = document.getElementsByClassName('chat-messages')[0];
+    if (!scrollButton || !messagesContainer) return undefined;
+
+    let initialScrollHandled = false;
+    const handleScroll = () => {
+      // Hide scroll button if chat is empty (no text)
+      if (!messagesContainer.textContent.trim()) {
+        scrollButton.style.display = 'none';
+        return;
+      }
+
+      // On first render, treat as NOT scrolled to bottom
+      // Only update isScrolledToBottom after first scroll event
+      let isScrolledToBottom;
+      if (!initialScrollHandled) {
+        isScrolledToBottom = false;
+        initialScrollHandled = true;
+      } else {
+        isScrolledToBottom = Math.abs(
+          messagesContainer.scrollHeight - messagesContainer.scrollTop
+          - messagesContainer.clientHeight,
+        ) < 2;
+      }
+      if (isScrolledToBottom) {
+        scrollButton.style.display = 'none';
+      } else {
+        scrollButton.style.display = '';
+      }
+    };
+
+    messagesContainer.addEventListener('scroll', handleScroll);
+
+    handleScroll();
+
+    const handleClick = () => {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    };
+    scrollButton.addEventListener('click', handleClick);
+
+    // Also observe for text/content changes in the messages container
+    const observer = new MutationObserver(handleScroll);
+    observer.observe(messagesContainer, { childList: true, subtree: true, characterData: true });
+
+    return () => {
+      messagesContainer.removeEventListener('scroll', handleScroll);
+      scrollButton.removeEventListener('click', handleClick);
+      observer.disconnect();
+    };
   }, []);
 
   const handleSend = useCallback(async (e, messageOverride = null) => {
@@ -344,13 +397,47 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot' } = {})
         },
       };
 
-      setMessages((prev) => [headlineMessage, ...prev]);
+      // TODO: This logic is a bit hacky - we should ideally have a clearer way to manage
+      // headline vs regular messages in all the flows.
+      if (type === 'insights') {
+        const headlineInsightMessage = {
+          _id: `headline_${Date.now()}`,
+          text: event.detail?.headlineTitle,
+          createdAt: new Date(),
+          user: {
+            _id: AI_ID,
+            name: 'Chef AI',
+          },
+          metadata: {
+            isQuickActionHeadline: true,
+          },
+        };
+
+        const insightMessage = {
+          _id: `headline_${Date.now()}`,
+          text: displayText,
+          createdAt: new Date(),
+          user: {
+            _id: AI_ID,
+            name: 'Chef AI',
+          },
+          metadata: {
+            isQuickActionHeadline: false,
+            ...(event.detail?.prompts && { suggested_prompts: event.detail.prompts }),
+          },
+        };
+        setMessages((prev) => [headlineInsightMessage, insightMessage, ...prev]);
+      } else {
+        setMessages((prev) => [headlineMessage, ...prev]);
+      }
     };
 
     window.addEventListener('chefai:quick-action', handler);
+    window.addEventListener('chefai:insights', handler);
 
     return () => {
       window.removeEventListener('chefai:quick-action', handler);
+      window.removeEventListener('chefai:insights', handler);
     };
   }, [setMessages]);
 

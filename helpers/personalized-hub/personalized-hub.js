@@ -8,7 +8,6 @@ const SCREENS = {
   CHAT: 'chat',
   LOADING: 'loading',
   CONFIRMATION: 'confirmation',
-  WELCOME: 'welcome',
   COMPLETED: 'completed',
 };
 
@@ -32,7 +31,6 @@ async function prefetchPersonalizedHub() {
       import('./PersonalizedChatWidget.js'),
       import('./LoadingState.js'),
       import('./BusinessConfirmation.js'),
-      import('./WelcomeScreen.js'),
     ]);
   } catch (e) {
     // eslint-disable-next-line no-console
@@ -98,7 +96,6 @@ export default async function openPersonalizedHub() {
     const { default: PersonalizedChatWidget } = await import('./PersonalizedChatWidget.js');
     const { default: LoadingState } = await import('./LoadingState.js');
     const { default: BusinessConfirmation } = await import('./BusinessConfirmation.js');
-    const { default: WelcomeScreen } = await import('./WelcomeScreen.js');
 
     // Function to render the personalized hub app
     const renderPersonalizedHubApp = () => {
@@ -108,6 +105,7 @@ export default async function openPersonalizedHub() {
         const [currentScreen, setCurrentScreen] = useState(SCREENS.CHAT);
         const [businessData, setBusinessData] = useState(null);
         const [businessCandidates, setBusinessCandidates] = useState([]);
+        const [confirmationMessage, setConfirmationMessage] = useState('');
         const [error, setError] = useState(null);
         const [chatMessages, setChatMessages] = useState([]);
         const [loadingStep, setLoadingStep] = useState(0);
@@ -118,9 +116,13 @@ export default async function openPersonalizedHub() {
         const handleBusinessNameSubmit = (result) => {
           setError(null);
 
-          // If we receive an array of businesses from the chat API, use it.
-          if (Array.isArray(result) && result.length > 0) {
-            const normalized = result.map((b) => ({
+          const businesses = result?.businesses ?? (Array.isArray(result) ? result : null);
+          const message = typeof result === 'object' && result !== null && !Array.isArray(result)
+            ? (result.message ?? '')
+            : '';
+
+          if (businesses && Array.isArray(businesses) && businesses.length > 0) {
+            const normalized = businesses.map((b) => ({
               business_name: b.name ?? '',
               address: b.address ?? '',
               image_url: b.image_url ?? '',
@@ -137,13 +139,14 @@ export default async function openPersonalizedHub() {
               keywords: Array.isArray(b.keywords) ? b.keywords : (b.types ?? []),
             }));
 
+            setConfirmationMessage((message ?? '').trim());
             setBusinessCandidates(normalized);
             setBusinessData(normalized[0]);
             setCurrentScreen(SCREENS.CONFIRMATION);
             return;
           }
 
-          const trimmedName = (result ?? '').trim();
+          const trimmedName = (typeof result === 'string' ? result : (result ?? '')).trim();
           if (!trimmedName) {
             setError('Business name is required.');
             return;
@@ -197,7 +200,8 @@ export default async function openPersonalizedHub() {
             },
             onComplete: () => {
               setLoadingStep((prev) => (prev === 0 ? 1 : prev));
-              window.location.href = '/sneak-peek';
+              const basePath = window.location.pathname.replace(/\/$/, '');
+              window.location.href = `${basePath}/sneak-peek`;
             },
             onError: () => {
               setLoadingStep(0);
@@ -260,16 +264,11 @@ export default async function openPersonalizedHub() {
           return h(BusinessConfirmation, {
             businessData,
             businesses: businessCandidates,
+            confirmationMessage,
             onSelectBusiness: setBusinessData,
             onConfirm: handleConfirm,
             onReject: handleReject,
             onClose: animateAndClose,
-          });
-        }
-
-        if (currentScreen === SCREENS.WELCOME) {
-          return h(WelcomeScreen, {
-            onGotIt: animateAndClose,
           });
         }
 

@@ -1,3 +1,4 @@
+import { welcomeModalSeen } from '@scripts/custom/utils.js';
 import {
   buildBlock,
   loadHeader,
@@ -11,6 +12,7 @@ import {
   loadSection,
   loadSections,
   loadCSS,
+  getMetadata,
 } from './aem.js';
 import { fetchPlaceholders } from './common.js';
 
@@ -121,6 +123,25 @@ async function loadEager(doc) {
 }
 
 /**
+ * checks if header should be rendered based on metadata flags
+ * @returns {boolean} true if header should be rendered, false otherwise
+*/
+function renderHeaderCheck() {
+  const altHeader = getMetadata('alt-header'); // alternative header metadata flag
+  const noHeader = getMetadata('no-header'); // no render header metadata flag
+  return !altHeader && !noHeader;
+}
+
+/**
+ * checks if footer should be rendered based on metadata flags
+ * @returns {boolean} true if footer should be rendered, false otherwise
+*/
+function renderFooterCheck() {
+  const noFooter = getMetadata('no-footer'); // no render footer metadata flag
+  return !noFooter;
+}
+
+/**
  * Loads everything that doesn't need to be delayed.
  * @param {Element} doc The container element
  */
@@ -132,8 +153,16 @@ async function loadLazy(doc) {
   const element = hash ? doc.getElementById(hash.substring(1)) : false;
   if (hash && element) element.scrollIntoView();
 
-  loadHeader(doc.querySelector('header'));
-  loadFooter(doc.querySelector('footer'));
+  const header = doc.querySelector('header');
+  const footer = doc.querySelector('footer');
+
+  if (header && renderHeaderCheck()) {
+    loadHeader(header);
+  }
+
+  if (footer && renderFooterCheck()) {
+    loadFooter(footer);
+  }
 
   loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
   loadFonts();
@@ -157,6 +186,13 @@ async function loadLazy(doc) {
     // eslint-disable-next-line no-console
     console.error('Failed to fetch user business data on page load', e);
   }
+
+  // Load and open welcome modal only on personalized-hub when user has not seen it yet
+  const pathname = window.location.pathname ?? '';
+  if (pathname.includes('personalized-hub') && !welcomeModalSeen()) {
+    const { default: openWelcomeModal } = await import('@helpers/welcome-modal/welcome-modal.js');
+    openWelcomeModal().catch((e) => console.error('Welcome modal failed', e));
+  }
 }
 
 /**
@@ -170,6 +206,13 @@ function loadDelayed() {
 }
 
 async function loadPage() {
+  // TODO: comment it for now unblock pages access and
+  // to fix the redirect different use cases
+  // const canProceed = await checkPageAccess();
+  // if (!canProceed) {
+  //   return;
+  // }
+
   await loadEager(document);
   await loadLazy(document);
   loadDelayed();

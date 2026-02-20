@@ -15,7 +15,7 @@ export function setCookie(name, value, days = 365) {
   }
 }
 
-function getCookie(name) {
+export function getCookie(name) {
   try {
     const nameEQ = `${encodeURIComponent(name)}=`;
     const ca = document.cookie.split(';');
@@ -304,6 +304,12 @@ export function getAnonymousUserIdFromCookie() {
   return getUserIdFromCookie();
 }
 
+/** True if user has already seen the welcome modal (cookie personalized-hub-welcome=true). */
+export function welcomeModalSeen() {
+  const welcomeModalState = getCookie('personalized-hub-welcome');
+  return welcomeModalState != null && welcomeModalState.trim().toLowerCase() === 'true';
+}
+
 export function clearAllChatData() {
   setCookie('chef-ai-thread-id', '', -1);
   setCookie('personalized-hub-consent', '', -1);
@@ -335,7 +341,7 @@ export async function getAnonymousUserId() {
     user_id: cookieId,
     country: COUNTRY_CODE,
     content_language_code: LANGUAGE_CODE.toUpperCase(),
-    ...(tcAgreed ? { tc_agreed: true } : {}),
+    tc_agreed: tcAgreed,
   };
 
   const response = await fetch(ENDPOINTS.users, {
@@ -387,7 +393,7 @@ export async function createUser() {
     user_id: cookieId,
     country: COUNTRY_CODE,
     content_language_code: LANGUAGE_CODE.toUpperCase(),
-    ...(tcAgreed ? { tc_agreed: true } : {}),
+    tc_agreed: tcAgreed,
   };
 
   const response = await fetch(ENDPOINTS.users, {

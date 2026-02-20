@@ -1,125 +1,24 @@
-main > .section > .carousel-biz-wrapper {
+main > .section > .carousel-biz-api-wrapper {
   padding: 0;
   overflow: visible;
 }
 
-main > .section:has(.carousel-biz-wrapper) {
+main > .section:has(.carousel-biz-api-wrapper) {
   overflow: visible;
 }
 
-.carousel-biz {
+.carousel-biz-api {
   background: var(--background-color);
   padding: var(--spacing-lg) var(--spacing-md) 32px;
   max-width: 100%;
   margin: 0 auto;
 }
 
-.carousel-biz-filter {
-  margin-bottom: var(--spacing-md);
-  display: flex;
-  justify-content: center;
-  position: relative;
-}
-
-.biz-dropdown {
-  width: 100%;
-  max-width: 590px;
-  height: 48px;
-  padding: 13px 16px;
-  background: linear-gradient(180deg, rgb(255 255 255) 0%, var(--light-smoke) 100%);
-  border: 1px solid var(--mid-smoke);
-  border-radius: var(--radius-sm);
-  font-family: var(--ff-unilever-shilling);
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 22px;
-  color: var(--text-color);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  text-align: left;
-  transition: border-color var(--transition-fast);
-}
-
-.biz-dropdown:hover {
-  border-color: var(--smoke);
-}
-
-.biz-dropdown:focus {
-  outline: none;
-  border-color: var(--mid-smoke);
-}
-
-.biz-dropdown-text {
-  flex: 1;
-}
-
-.biz-dropdown-arrow {
-  flex-shrink: 0;
-  transition: transform var(--transition-fast);
-}
-
-.carousel-biz-filter.open .biz-dropdown-arrow {
-  transform: scaleY(-1);
-}
-
-.biz-dropdown-menu {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 590px;
-  max-height: 218px;
-  overflow-y: auto;
-  background: var(--dropdown-bg);
-  backdrop-filter: blur(8px);
-  border: 1px solid var(--mid-smoke);
-  border-radius: var(--radius-sm);
-  padding: var(--spacing-md) var(--spacing-sm);
-  box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
-  display: none;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-  z-index: var(--z-dropdown);
-}
-
-.carousel-biz-filter.open .biz-dropdown-menu {
-  display: flex;
-}
-
-.biz-dropdown-option {
-  padding: var(--spacing-xs) var(--spacing-sm);
-  font-family: var(--ff-unilever-shilling);
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 22px;
-  color: var(--text-color);
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color var(--transition-fast);
-}
-
-.biz-dropdown-option:hover {
-  background-color: var(--mid-mushroom);
-}
-
-.biz-dropdown-option.active {
-  font-weight: 500;
-  background-color: var(--mid-mushroom);
-}
-
-.biz-dropdown-option:focus {
-  outline: 2px solid var(--ufs-orange);
-  outline-offset: 2px;
-}
-
-.carousel-biz-carousel-wrapper {
+.carousel-biz-api-carousel-wrapper {
   overflow: hidden;
 }
 
-.carousel-biz-container {
+.carousel-biz-api-container {
   display: flex;
   gap: 20px;
   list-style: none;
@@ -153,7 +52,7 @@ main > .section:has(.carousel-biz-wrapper) {
   from {
     opacity: 1;
   }
-  
+
   to {
     opacity: 0;
   }
@@ -161,8 +60,10 @@ main > .section:has(.carousel-biz-wrapper) {
 
 .trend-card {
   position: relative;
-  width: var(--card-width-mobile);
-  height: var(--card-height-mobile);
+
+  /* ----> hardcoded dimensions, TODO: update global styles <---- */
+  width: 330px;
+  height: 393px;
   border-radius: var(--radius-card);
   overflow: hidden;
   flex-shrink: 0;
@@ -187,21 +88,21 @@ main > .section:has(.carousel-biz-wrapper) {
   z-index: 1;
 }
 
-.carousel-biz-container.fade-out .trend-card {
+.carousel-biz-api-container.fade-out .trend-card {
   animation: fade-out 0.3s ease-in-out forwards;
 }
 
-.carousel-biz-container.fade-in .trend-card {
+.carousel-biz-api-container.fade-in .trend-card {
   animation: fade-in 0.4s ease-in-out;
 }
 
-.carousel-biz-container.is-loading .trend-card {
+.carousel-biz-api-container.is-loading .trend-card {
   background-color: white !important;
   background-image: linear-gradient(180deg, rgb(241 90 34 / 10%) 0%, rgb(235 34 99 / 10%) 65%, rgb(176 43 159 / 10%) 100%) !important;
   position: relative;
 }
 
-.carousel-biz-container.is-loading .trend-card::after {
+.carousel-biz-api-container.is-loading .trend-card::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -213,7 +114,7 @@ main > .section:has(.carousel-biz-wrapper) {
   border-radius: var(--radius-card);
 }
 
-.carousel-biz-container.is-loading .trend-card::before {
+.carousel-biz-api-container.is-loading .trend-card::before {
   content: '';
   position: absolute;
   top: 50%;
@@ -230,11 +131,11 @@ main > .section:has(.carousel-biz-wrapper) {
   z-index: 10;
 }
 
-.carousel-biz-container.is-loading .trend-card * {
+.carousel-biz-api-container.is-loading .trend-card * {
   opacity: 0;
 }
 
-.carousel-biz-container.is-loading .trend-card .loading-text {
+.carousel-biz-api-container.is-loading .trend-card .loading-text {
   opacity: 1 !important;
   position: absolute;
   top: 50%;
@@ -367,8 +268,8 @@ main > .section:has(.carousel-biz-wrapper) {
 } */
 
 .trend-card.street-food-couture .trend-stat span {
-  -webkit-text-stroke: 1.5px #DC4D8B;
-  text-shadow: #DC4D8B 0 0 39px;
+  -webkit-text-stroke: 1.5px #dc4d8b;
+  text-shadow: #dc4d8b 0 0 39px;
   color: transparent;
 }
 
@@ -391,8 +292,8 @@ main > .section:has(.carousel-biz-wrapper) {
 } */
 
 .trend-card.diner-designed .trend-stat span {
-  -webkit-text-stroke: 1.5px #A1B83B;
-  text-shadow: #A1B83B 0 0 39px;
+  -webkit-text-stroke: 1.5px #a1b83b;
+  text-shadow: #a1b83b 0 0 39px;
   color: transparent;
 }
 
@@ -409,14 +310,14 @@ main > .section:has(.carousel-biz-wrapper) {
   background: var(--trend-gradient);
 }
 
- /* .trend-card.culinary-roots .trend-stat { -----> TO DO
+/* .trend-card.culinary-roots .trend-stat { -----> TO DO
   background: 
     
 } */
 
 .trend-card.culinary-roots .trend-stat span {
-  -webkit-text-stroke: 1.5px #0090BA;
-  text-shadow: #0090BA 0 0 39px;
+  -webkit-text-stroke: 1.5px #0090ba;
+  text-shadow: #0090ba 0 0 39px;
   color: transparent;
 }
 
@@ -433,7 +334,7 @@ main > .section:has(.carousel-biz-wrapper) {
   background: var(--trend-gradient);
 }
 
- /* .trend-card.cross-trend .trend-stat { -----> TO DO
+/* .trend-card.cross-trend .trend-stat { -----> TO DO
   background: 
     
 } */
@@ -497,8 +398,8 @@ a.trend-cta {
   height: 20px;
   flex-shrink: 0;
   stroke-width: 1.2px;
-  stroke: #FFF;
-  filter: drop-shadow(0 0 5px #F8B003);
+  stroke: #fff;
+  filter: drop-shadow(0 0 5px #f8b003);
 }
 
 .cta-arrow img {
@@ -511,7 +412,7 @@ a.trend-cta {
   filter: none;
 }
 
-.carousel-biz .controls {
+.carousel-biz-api .controls {
   margin-top: 32px;
   display: flex;
   align-items: center;
@@ -519,12 +420,12 @@ a.trend-cta {
   gap: var(--spacing-lg);
 }
 
-.carousel-biz .indicators {
+.carousel-biz-api .indicators {
   display: flex;
   gap: var(--spacing-xs);
 }
 
-.carousel-biz .indicator {
+.carousel-biz-api .indicator {
   width: var(--spacing-xs);
   height: var(--spacing-xs);
   background: var(--mid-smoke);
@@ -534,16 +435,16 @@ a.trend-cta {
   transition: background var(--transition-fast);
 }
 
-.carousel-biz .indicator.active {
+.carousel-biz-api .indicator.active {
   background: var(--ufs-orange);
   width: 30px;
 }
 
-.carousel-biz .arrows {
+.carousel-biz-api .arrows {
   display: none;
 }
 
-.carousel-biz .arrow {
+.carousel-biz-api .arrow {
   width: var(--icon-size-sm);
   height: var(--icon-size-sm);
   border-radius: 50%;
@@ -556,17 +457,17 @@ a.trend-cta {
   transition: all var(--transition-fast);
 }
 
-.carousel-biz .arrow:hover {
+.carousel-biz-api .arrow:hover {
   border-color: var(--ufs-orange);
   background: var(--light-mushroom);
 }
 
-.carousel-biz .arrow:disabled {
+.carousel-biz-api .arrow:disabled {
   opacity: 0.3;
   cursor: not-allowed;
 }
 
-.carousel-biz .arrow::before {
+.carousel-biz-api .arrow::before {
   content: '';
   width: var(--spacing-sm);
   height: var(--spacing-sm);
@@ -574,41 +475,26 @@ a.trend-cta {
   border-bottom: 2px solid var(--text-color);
 }
 
-.carousel-biz .arrow.prev::before {
+.carousel-biz-api .arrow.prev::before {
   transform: rotate(135deg);
   margin-left: 4px;
 }
 
-.carousel-biz .arrow.next::before {
+.carousel-biz-api .arrow.next::before {
   transform: rotate(-45deg);
   margin-right: 4px;
 }
 
 @media (width >= 900px) {
-  .carousel-biz {
+  .carousel-biz-api {
     padding: var(--spacing-lg) 100px 80px;
   }
 
-  .carousel-biz-carousel-wrapper {
+  .carousel-biz-api-carousel-wrapper {
     overflow: visible;
   }
 
-  .carousel-biz-filter {
-    margin-bottom: var(--spacing-xl);
-  }
-
-  .biz-dropdown {
-    height: 54px;
-    font-size: 16px;
-    line-height: 24px;
-  }
-
-  .biz-dropdown-option {
-    font-size: 16px;
-    line-height: 24px;
-  }
-
-  .carousel-biz-container {
+  .carousel-biz-api-container {
     flex-wrap: wrap;
     justify-content: center;
   }
@@ -618,7 +504,7 @@ a.trend-cta {
     height: var(--card-height-desktop);
   }
 
-  .carousel-biz .controls {
+  .carousel-biz-api .controls {
     display: none;
   }
 

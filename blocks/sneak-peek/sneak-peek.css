@@ -60,7 +60,7 @@ main {
 	position: absolute;
 	left: 0;
 	right: 0;
-	bottom: 30px;
+	bottom: 15%;
 	height: 300px;
 	pointer-events: none;
 	z-index: 10;
@@ -179,13 +179,13 @@ main {
 .fp-card--left {
 	left: 50%;
 	z-index: 1;
-	transform: translateX(calc(-50% - 10vw)) scale(.92);
+	transform: translateX(calc(-50% - 65vw)) scale(.90) translateY(20px);
 }
 
 .fp-card--right {
 	left: 50%;
 	z-index: 1;
-	transform: translateX(calc(-50% + 10vw)) scale(.92);
+	transform: translateX(calc(-50% + 65vw)) scale(.90) translateY(20px);
 }
 
 .fp-card--left .insight-card-content,
@@ -240,7 +240,7 @@ main {
 
 .floating-cta__container p:last-child {
 	font-size: 10px;
-	color: var(--mid-smoke);
+	color: #757575;
 }
 
 .button-container a {
@@ -252,7 +252,7 @@ main {
 	.business-block {
 		display: flex;
 		flex-direction: row;
-		margin-top: 50px;
+		margin-bottom: 50px;
 		gap: var(--spacing-3xl);
 	}
 
@@ -262,7 +262,7 @@ main {
 
 	.business-block-right	 {
 		font-size: var(--heading-font-size-m);
-	} 
+	}
 
 	.sneak-peek-title {
 		font-size: var(--heading-font-size-s);
@@ -278,9 +278,13 @@ main {
 		padding-top: 50px;
 	}
 
-	.fp-card--left {
-		left: 50%;
-	}
+    .fp-card--left {
+        transform: translateX(calc(-50% - 10vw)) scale(.92) translateY(50px);
+    }
+
+    .fp-card--right {
+        transform: translateX(calc(-50% + 10vw)) scale(.92) translateY(50px);
+    }
 
 	.sneak-peek-arrow-logo {
 		width: 40px;
