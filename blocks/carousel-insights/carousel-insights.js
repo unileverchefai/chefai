@@ -164,13 +164,15 @@ export default async function decorate(block) {
     }
 
     const messageInsight = await loadThreadMessages(result.threadId);
-
     openChatbotModal('insights')
       .then(() => {
         if (messageInsight && messageInsight.length > 0) {
           setTimeout(() => {
             window.dispatchEvent(new CustomEvent('chefai:insights', {
-              detail: { displayText: messageInsight[0].text },
+              detail: {
+                displayText: messageInsight[0].text,
+                prompts: messageInsight[0].metadata?.suggested_prompts ?? [],
+              },
             }));
           }, 400);
         }
