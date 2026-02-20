@@ -384,11 +384,42 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot', type }
         },
         metadata: {
           isQuickActionHeadline: true,
-          ...(event.detail?.prompts && { suggested_prompts: event.detail.prompts }),
         },
       };
 
-      setMessages((prev) => [headlineMessage, ...prev]);
+      // TODO: This logic is a bit hacky - we should ideally have a clearer way to manage
+      // headline vs regular messages in all the flows.
+      if (type === 'insights') {
+        const headlineInsightMessage = {
+          _id: `headline_${Date.now()}`,
+          text: event.detail?.headlineTitle,
+          createdAt: new Date(),
+          user: {
+            _id: AI_ID,
+            name: 'Chef AI',
+          },
+          metadata: {
+            isQuickActionHeadline: true,
+          },
+        };
+
+        const insightMessage = {
+          _id: `headline_${Date.now()}`,
+          text: displayText,
+          createdAt: new Date(),
+          user: {
+            _id: AI_ID,
+            name: 'Chef AI',
+          },
+          metadata: {
+            isQuickActionHeadline: false,
+            ...(event.detail?.prompts && { suggested_prompts: event.detail.prompts }),
+          },
+        };
+        setMessages((prev) => [headlineInsightMessage, insightMessage, ...prev]);
+      } else {
+        setMessages((prev) => [headlineMessage, ...prev]);
+      }
     };
 
     window.addEventListener('chefai:quick-action', handler);
