@@ -14,7 +14,7 @@ import {
   loadCSS,
   getMetadata,
 } from './aem.js';
-import { fetchPlaceholders } from './common.js';
+import { getPlaceholders } from './common.js';
 
 /**
  * Builds hero block and prepends to main in a new section.
@@ -97,12 +97,8 @@ export function decorateMain(main) {
  * @param {Element} doc The container element
  */
 async function loadEager(doc) {
-  const prefix = 'default';
-  if (!window.placeholders || !window.placeholders[prefix]) {
-    window.placeholders = { prefix };
-  }
   document.documentElement.lang = 'en';
-  await fetchPlaceholders({ prefix });
+  await getPlaceholders();
   decorateTemplateAndTheme();
   const main = doc.querySelector('main');
   if (main) {
