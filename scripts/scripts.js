@@ -14,7 +14,7 @@ import {
   loadCSS,
   getMetadata,
 } from './aem.js';
-import { getPlaceholders } from './common.js';
+import { getPlaceholders, loadTemplate } from './common.js';
 
 /**
  * Builds hero block and prepends to main in a new section.
@@ -102,6 +102,7 @@ async function loadEager(doc) {
   decorateTemplateAndTheme();
   const main = doc.querySelector('main');
   if (main) {
+    await loadTemplate(main);
     decorateMain(main);
     document.body.classList.add('appear');
     await loadSection(main.querySelector('.section'), waitForFirstImage);

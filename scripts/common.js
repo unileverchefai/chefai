@@ -1,4 +1,6 @@
-import { loadCSS, loadScript } from './aem.js';
+import {
+  loadCSS, loadScript, toClassName, getMetadata,
+} from './aem.js';
 
 /**
  * Checks if the current host is a development environment.
@@ -455,3 +457,19 @@ function formatValues(values = false) {
 const { cookieValues } = await getConstantsValues() || {};
 
 export const COOKIE_CONFIG = formatValues(cookieValues?.data);
+
+export async function loadTemplate(main) {
+  const template = toClassName(getMetadata('template'));
+  if (!template) {
+    return;
+  }
+  try {
+    await loadCSS(`${window.hlx.codeBasePath}/templates/${template}/${template}.css`);
+    const mod = await import(`${window.hlx.codeBasePath}/templates/${template}/${template}.js`);
+    if (mod && typeof mod.default === 'function') {
+      await mod.default(main);
+    }
+  } catch (error) {
+    console.error(`Failed to load template ${template}:`, error);
+  }
+}
