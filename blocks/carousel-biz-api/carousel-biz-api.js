@@ -264,8 +264,8 @@ function initializeCarousel(block, container, itemCount) {
   if (block.carouselInstance?.destroy) block.carouselInstance.destroy();
 
   try {
-    const disableDesktopCarousel = itemCount <= 3;
-    block.classList.toggle('carousel-biz-api-desktop-carousel', !disableDesktopCarousel);
+    const enableDesktopCarousel = itemCount > 3;
+    block.classList.toggle('carousel-biz-api-desktop-carousel', enableDesktopCarousel);
 
     const carousel = createCarousel({
       container,
@@ -276,7 +276,7 @@ function initializeCarousel(block, container, itemCount) {
       mobileBreakpoint: 900,
       mobileGap: 20,
       desktopGap: 20,
-      disableDesktopCarousel,
+      enableDesktopCarousel,
     });
 
     // Remove any stale screen-reader announcement injected by a previous carousel

@@ -254,8 +254,8 @@ function initializeCarousel(block, container, itemCount) {
   }
 
   try {
-    const disableDesktopCarousel = itemCount < 3;
-    block.classList.toggle('carousel-biz-desktop-carousel', !disableDesktopCarousel);
+    const enableDesktopCarousel = itemCount > 3;
+    block.classList.toggle('carousel-biz-desktop-carousel', enableDesktopCarousel);
 
     const carousel = createCarousel({
       container,
@@ -266,7 +266,7 @@ function initializeCarousel(block, container, itemCount) {
       mobileBreakpoint: 900,
       mobileGap: 20,
       desktopGap: 20,
-      disableDesktopCarousel,
+      enableDesktopCarousel,
     });
 
     const srAnnouncement = block.querySelector('[aria-live]');
