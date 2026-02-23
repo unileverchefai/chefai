@@ -103,8 +103,9 @@ export default function renderMessage(message, options = {}) {
               lineHeight: '1.5',
               whiteSpace: 'pre-wrap',
             },
+            dangerouslySetInnerHTML: { __html: message.text },
           },
-          convertLinksToClickable(textBeforeRecipes),
+          // TODO:Check if BE can send markdown URL convertLinksToClickable(textBeforeRecipes),
         ),
       ]),
     ...(message.metadata?.images?.length > 0
