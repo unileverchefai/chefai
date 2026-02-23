@@ -1,5 +1,5 @@
 /* Chatbot Block Styles */
-@import url('../chatInput/chat-input.css');
+@import url('../../helpers/chatInput/chat-input.css');
 
 .ph-predefined-questions {
   display: flex;
@@ -119,6 +119,10 @@
 
 .chat-message.ai-message {
     margin-bottom: 0 !important;
+}
+
+.chat-message.user-message .message-bubble {
+    padding: 12px 16px;
 }
 
 .chat-message.ai-message .message-bubble {

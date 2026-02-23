@@ -16,6 +16,7 @@ body {
   justify-content: flex-end;
   align-items: center;
   text-align: center;
+  background: linear-gradient(180deg, rgb(34 29 55 / 0%) 0%, #221D37 40%);
 
   &::after {
     content: '';

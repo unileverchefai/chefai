@@ -708,10 +708,13 @@ export function saveHistory(messages, threadId = null) {
   }
 }
 
+const REACT_SCRIPT = 'https://unpkg.com/react@18/umd/react.production.min.js';
+const REACT_DOM_SCRIPT = 'https://unpkg.com/react-dom@18/umd/react-dom.production.min.js';
+
 export async function loadReact() {
   if (window.React && window.ReactDOM) return;
-  if (!window.React) await loadScript('https://unpkg.com/react@18/umd/react.production.min.js');
-  if (!window.ReactDOM) await loadScript('https://unpkg.com/react-dom@18/umd/react-dom.production.min.js');
+  await loadScript(REACT_SCRIPT);
+  await loadScript(REACT_DOM_SCRIPT);
 }
 
 export function loadScript(src) {

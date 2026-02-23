@@ -87,7 +87,10 @@ export default async function openPersonalizedHub() {
     await loadReact();
 
     if (!window.React || !window.ReactDOM) {
-      throw new Error('React or ReactDOM not loaded');
+      await loadReact();
+    }
+    if (!window.React || !window.ReactDOM) {
+      throw new Error('React or ReactDOM not loaded. Please refresh the page.');
     }
 
     await loadCSS(`${window.hlx.codeBasePath}/helpers/cookie-agreement/cookie-agreement.css`);
@@ -99,8 +102,13 @@ export default async function openPersonalizedHub() {
 
     // Function to render the personalized hub app
     const renderPersonalizedHubApp = () => {
-      const { useState } = window.React;
-      const { createElement: h } = window.React;
+      const { React } = window;
+      const { ReactDOM } = window;
+      if (!React || !ReactDOM) {
+        throw new Error('React or ReactDOM not available. Please refresh the page.');
+      }
+      const { useState } = React;
+      const { createElement: h } = React;
       const PersonalizedHubApp = () => {
         const [currentScreen, setCurrentScreen] = useState(SCREENS.CHAT);
         const [businessData, setBusinessData] = useState(null);
@@ -284,17 +292,17 @@ export default async function openPersonalizedHub() {
         return null;
       };
 
-      if (window.ReactDOM && typeof window.ReactDOM.createRoot === 'function') {
-        reactRoot = window.ReactDOM.createRoot(container);
+      if (ReactDOM && typeof ReactDOM.createRoot === 'function') {
+        reactRoot = ReactDOM.createRoot(container);
 
         requestAnimationFrame(() => {
           reactRoot.render(h(PersonalizedHubApp));
         });
-      } else if (window.ReactDOM && typeof window.ReactDOM.render === 'function') {
+      } else if (ReactDOM && typeof ReactDOM.render === 'function') {
         reactRoot = null;
 
         requestAnimationFrame(() => {
-          window.ReactDOM.render(h(PersonalizedHubApp), container);
+          ReactDOM.render(h(PersonalizedHubApp), container);
         });
       } else {
         throw new Error('ReactDOM is not available');

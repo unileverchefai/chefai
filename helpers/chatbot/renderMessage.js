@@ -272,7 +272,6 @@ export default function renderMessage(message, options = {}) {
           className: 'message-bubble',
           style: {
             maxWidth: '95%',
-            padding: '12px 16px',
             borderRadius: '20px',
             backgroundColor: isUser ? 'var(--light-mushroom)' : 'transparent',
             color: 'var(--text-color)',
