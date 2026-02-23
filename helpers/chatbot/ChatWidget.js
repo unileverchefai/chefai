@@ -81,7 +81,13 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot', type }
           }
 
           // Get or create thread ID (validates on init)
-          const threadId = await getOrCreateThreadId(userId, true);
+          let threadId;
+          if (type === 'quick-actions') {
+            threadId = getStoredThreadId();
+            if (!threadId) return;
+          } else {
+            threadId = await getOrCreateThreadId(userId, true);
+          }
 
           // Load history with fallback (uses cache first, then API)
           const apiHistory = await getHistoryWithFallback(threadId, userId);
