@@ -119,12 +119,12 @@ function mapApiItemToCard(item) {
   return {
     trendName: firstTrend,
     trendClass: trendInfo?.class ?? firstTrend.toLowerCase().replace(/\s+/g, '-'),
-    bgImage: item.image_url ?? trendInfo?.image ?? null,
+    bgImage: item.image_url ?? trendInfo?.image,
     description,
     stat,
     // TODO: Replace href and text with API-provided CTA data when available.
     link: MOCK_CTA,
-    recommendationId: item.id ?? item.recommendation_id ?? null,
+    recommendationId: item.id ?? item.recommendation_id,
   };
 }
 
