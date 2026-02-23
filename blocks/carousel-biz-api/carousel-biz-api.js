@@ -1,6 +1,14 @@
 import createCarousel from '@helpers/carousel/carousel.js';
+import openChatbotModal from '@helpers/chatbot/openChatbotModal.js';
 import { decorateIcons } from '@scripts/aem.js';
 import { createElement } from '@scripts/common.js';
+import {
+  setCookie,
+  getUserIdFromCookie,
+  getAnonymousUserIdFromCookie,
+  getAnonymousUserId,
+  createThreadWithRecommendation,
+} from '@scripts/custom/utils.js';
 import fetchRecommendations from './fetchRecommendations.js';
 
 const MIN_ITEMS = 3;
@@ -8,10 +16,7 @@ const LOADING_CARD_COUNT = 4;
 
 /**
  * Mapping from API trend name → CSS class and background image.
- *
- * Images are mocked locally while the API does not yet return image URLs.
- * TODO: When the API provides image URLs per recommendation, replace
- *       `image` with the API-provided value and remove the local /icons/ files.
+ * Used as fallback when the API does not return image_url for a recommendation.
  *
  * CTA links and labels are also mocked.
  * TODO: When the API provides CTA data (href + label) per recommendation,
@@ -114,12 +119,52 @@ function mapApiItemToCard(item) {
   return {
     trendName: firstTrend,
     trendClass: trendInfo?.class ?? firstTrend.toLowerCase().replace(/\s+/g, '-'),
-    // TODO: Replace with API-provided image URL when the endpoint includes one.
-    bgImage: trendInfo?.image ?? null,
+    bgImage: item.image_url ?? trendInfo?.image,
     description,
     stat,
     // TODO: Replace href and text with API-provided CTA data when available.
     link: MOCK_CTA,
+    recommendationId: item.id ?? item.recommendation_id,
+  };
+}
+
+/**
+ * Sets the chef-ai-thread-id cookie so the chatbot modal opens with this thread.
+ */
+async function ensureBizApiThread(recommendationId) {
+  const storageKey = `chefai-biz-api-thread-${recommendationId}`;
+
+  const stored = sessionStorage.getItem(storageKey);
+  if (stored) {
+    const parsed = JSON.parse(stored);
+    if (parsed?.threadId) {
+      setCookie('chef-ai-thread-id', parsed.threadId);
+      return {
+        threadId: parsed.threadId,
+        displayText: parsed.displayText ?? '',
+        isNew: false,
+      };
+    }
+  }
+
+  let userId = getUserIdFromCookie() ?? getAnonymousUserIdFromCookie();
+  if (!userId) {
+    userId = await getAnonymousUserId();
+  }
+
+  const { threadId, displayText } = await createThreadWithRecommendation(userId, recommendationId);
+
+  sessionStorage.setItem(storageKey, JSON.stringify({
+    threadId,
+    displayText,
+    initialized: true,
+  }));
+  sessionStorage.setItem(`chefai-biz-api-headline-${threadId}`, displayText);
+
+  return {
+    threadId,
+    displayText: displayText ?? '',
+    isNew: true,
   };
 }
 
@@ -130,7 +175,7 @@ function mapApiItemToCard(item) {
  * @param {HTMLUListElement} container
  * @param {Array} cards
  */
-function renderCards(container, cards) {
+function renderCards(container, cards, onTrendCtaClick) {
   container.innerHTML = '';
 
   cards.forEach((cardData) => {
@@ -187,6 +232,12 @@ function renderCards(container, cards) {
         attributes: { href: link.href },
         innerContent: `<span class="cta-text">${link.text}</span><span class="icon icon-arrow_right cta-arrow"></span>`,
       });
+      cta.addEventListener('click', (event) => {
+        if (cardData.recommendationId && typeof onTrendCtaClick === 'function') {
+          event.preventDefault();
+          onTrendCtaClick(cardData);
+        }
+      });
       decorateIcons(cta);
       content.appendChild(cta);
     } else {
@@ -213,6 +264,9 @@ function initializeCarousel(block, container, itemCount) {
   if (block.carouselInstance?.destroy) block.carouselInstance.destroy();
 
   try {
+    const enableDesktopCarousel = itemCount > 3;
+    block.classList.toggle('carousel-biz-api-desktop-carousel', enableDesktopCarousel);
+
     const carousel = createCarousel({
       container,
       block,
@@ -222,7 +276,7 @@ function initializeCarousel(block, container, itemCount) {
       mobileBreakpoint: 900,
       mobileGap: 20,
       desktopGap: 20,
-      disableDesktopCarousel: true,
+      enableDesktopCarousel,
     });
 
     // Remove any stale screen-reader announcement injected by a previous carousel
@@ -281,7 +335,37 @@ export default async function decorate(block) {
     return;
   }
 
+  const handleTrendCtaClick = async (cardData) => {
+    const recommendationId = cardData.recommendationId ?? '';
+    if (!recommendationId) {
+      return;
+    }
+
+    let result = { isNew: false, displayText: '' };
+    try {
+      result = await ensureBizApiThread(recommendationId);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('[carousel-biz-api] Failed to prepare trend thread:', error);
+    }
+
+    openChatbotModal('trends')
+      .then(() => {
+        if (result.isNew && result.displayText) {
+          setTimeout(() => {
+            window.dispatchEvent(new CustomEvent('chefai:trends', {
+              detail: { displayText: result.displayText },
+            }));
+          }, 400);
+        }
+      })
+      .catch((error) => {
+        // eslint-disable-next-line no-console
+        console.error('[carousel-biz-api] Failed to open chatbot from trend CTA:', error);
+      });
+  };
+
   carouselContainer.classList.remove('is-loading');
-  renderCards(carouselContainer, cards);
+  renderCards(carouselContainer, cards, handleTrendCtaClick);
   initializeCarousel(block, carouselContainer, cards.length);
 }
