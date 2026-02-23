@@ -150,7 +150,7 @@
   align-items: center;
   justify-content: center;
   gap: var(--spacing-lg);
-  padding: var(--spacing-2xl);
+  padding: var(--spacing-xl);
   height: 100%;
 }
 
