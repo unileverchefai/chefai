@@ -166,7 +166,7 @@ export default function decorate(block) {
       const errorState = createElement('div', {
         className: 'quick-actions-error',
       });
-      errorState.textContent = 'Failed to load quick actions.';
+      errorState.textContent = 'Nothing urgent right now. We will show quick actions moves as they come up.';
       block.appendChild(errorState);
     });
 }
