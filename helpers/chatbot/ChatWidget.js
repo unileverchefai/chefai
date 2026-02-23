@@ -7,6 +7,8 @@ import {
   getOrCreateThreadId,
   getAnonymousUserId,
   getUserIdFromCookie,
+  validateThread,
+  createThread,
 } from '@scripts/custom/utils.js';
 import sendStreamingMessage from './sendStreamingMessage.js';
 import renderChatUI from './renderChatUI.js';
@@ -86,7 +88,20 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot', type }
             threadId = getStoredThreadId();
             if (!threadId) return;
           } else {
-            threadId = await getOrCreateThreadId(userId, true);
+            // Main chat (ask-button): use cookie, validate so we can retrieve history
+            threadId = getStoredThreadId();
+            if (!threadId) {
+              threadId = await getOrCreateThreadId(userId, true);
+            } else {
+              const isValid = await validateThread(threadId);
+              if (!isValid) {
+                threadId = await createThread(userId);
+                sessionStorage.setItem('chefai-main-chat-thread', JSON.stringify({
+                  threadId,
+                  initialized: true,
+                }));
+              }
+            }
           }
 
           // Load history with fallback (uses cache first, then API)
@@ -286,7 +301,9 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot', type }
     setMessages((prev) => [...prev, placeholderMessage]);
 
     try {
+      const currentThreadId = getStoredThreadId();
       const connection = await sendStreamingMessage(messageText, {
+        thread_id: currentThreadId ?? undefined,
         context: {
           messageHistory: messages.slice(-5),
         },
