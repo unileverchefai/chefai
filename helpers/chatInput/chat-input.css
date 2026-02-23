@@ -32,7 +32,7 @@
   border: none;
   background: transparent;
   font-family: var(--body-font-family);
-  font-size: var(--body-font-size-xs);
+  font-size: var(--body-font-size-xss);
   color: var(--text-color);
   outline: none;
 }
