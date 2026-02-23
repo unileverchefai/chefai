@@ -76,10 +76,6 @@ main > .section:has(.carousel-biz-api-wrapper) {
   background-repeat: no-repeat;
 }
 
-.trend-card:nth-child(n + 5) {
-  display: none;
-}
-
 .trend-card::after {
   content: '';
   position: absolute;
@@ -496,7 +492,6 @@ a.trend-cta {
 
   .carousel-biz-api-container {
     flex-wrap: wrap;
-    justify-content: center;
   }
 
   .trend-card {
@@ -506,6 +501,18 @@ a.trend-cta {
 
   .carousel-biz-api .controls {
     display: none;
+  }
+
+  .carousel-biz-api.carousel-biz-api-desktop-carousel .controls {
+    display: flex;
+  }
+
+  .carousel-biz-api.carousel-biz-api-desktop-carousel .carousel-biz-api-container {
+    flex-wrap: nowrap;
+  }
+
+  .carousel-biz-api.carousel-biz-api-desktop-carousel .carousel-biz-api-carousel-wrapper {
+    overflow: hidden;
   }
 
   .trend-stat.stat-number {

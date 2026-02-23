@@ -1,3 +1,6 @@
+import openPersonalizedHub from '@helpers/personalized-hub/personalized-hub.js';
+import hasSavedBusinessName from '@helpers/personalized-hub/hasSavedBusinessName.js';
+import openChatbotModal from '@helpers/chatbot/openChatbotModal.js';
 import { loadCSS, loadScript } from './aem.js';
 
 /**
@@ -455,3 +458,48 @@ function formatValues(values = false) {
 const { cookieValues } = await getConstantsValues() || {};
 
 export const COOKIE_CONFIG = formatValues(cookieValues?.data);
+
+export function ctaButtonHandler(button = null) {
+  if (!button) {
+    console.error('CTA Button Handler: No button element provided.');
+    return;
+  }
+  const buttonHref = button.getAttribute('href');
+  const shouldOpenRegistration = buttonHref.includes('#unlock-personalized-hub');
+  const isLivePhase = button.closest('[class$="live"]');
+
+  if (!isLivePhase) {
+    // TODO open the registration modal
+  } else {
+    // Prefetch Personalized Hub assets
+    import('@scripts/custom/prefetch.js')
+      .then(({ default: prefetchPersonalizedHub }) => {
+        if (typeof prefetchPersonalizedHub === 'function') {
+          prefetchPersonalizedHub().catch(() => {});
+        }
+      })
+      .catch(() => {});
+
+    button.addEventListener('click', async (e) => {
+      e.preventDefault();
+
+      if (shouldOpenRegistration) {
+        const { default: openSignUpReportModal } = await import('@helpers/signup/signup.js');
+        openSignUpReportModal();
+        return;
+      }
+
+      try {
+        const hasBusiness = await hasSavedBusinessName();
+
+        if (hasBusiness) {
+          await openChatbotModal();
+        } else {
+          await openPersonalizedHub();
+        }
+      } catch (error) {
+        console.error('Error handling CTA button click:', error);
+      }
+    });
+  }
+}
