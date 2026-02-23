@@ -205,9 +205,9 @@ export default async function decorate(block) {
       initializeCarousel(block, list, items.length);
     }).catch((error) => {
     // eslint-disable-next-line no-console
-      console.error('Nothing urgent right now. We will show time-sensitive moves as they come up.');
+      console.error('Failed to load time-sensitive recommendations:', error);
       const errorState = createElement('div', { className: 'carousel-insights-error' });
-      errorState.textContent = 'Failed to load insights.';
+      errorState.textContent = 'Nothing urgent right now. We will show time-sensitive moves as they come up.';
       block.appendChild(errorState);
     });
 }

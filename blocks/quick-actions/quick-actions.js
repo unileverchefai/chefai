@@ -161,12 +161,12 @@ export default function decorate(block) {
     })
     .catch((error) => {
       // eslint-disable-next-line no-console
-      console.error('Nothing urgent right now. We will show quick actions moves as they come up.');
+      console.error('Failed to load quick actions:', error);
       loading.remove();
       const errorState = createElement('div', {
         className: 'quick-actions-error',
       });
-      errorState.textContent = 'Failed to load quick actions.';
+      errorState.textContent = 'Nothing urgent right now. We will show quick actions moves as they come up.';
       block.appendChild(errorState);
     });
 }

@@ -20,26 +20,20 @@ export async function fetchQuickActions(options = {}) {
     user_id: userId,
   };
 
-  try {
-    const response = await fetch(`${ENDPOINTS.recommendations}/`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'X-Subscription-Key': SUBSCRIPTION_KEY,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
+  const response = await fetch(`${ENDPOINTS.recommendations}/`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'X-Subscription-Key': SUBSCRIPTION_KEY,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
 
-    if (!response.ok) {
-      throw new Error('Nothing urgent right now. We will show quick actions moves as they come up.');
-    }
-
-    const data = await response.json();
-    return data.recommendations ?? data.data?.recommendations ?? [];
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('Failed to fetch quick recommendations:', error);
-    throw error;
+  if (!response.ok) {
+    throw new Error('Nothing urgent right now. We will show quick actions moves as they come up.');
   }
+
+  const data = await response.json();
+  return data.recommendations ?? data.data?.recommendations ?? [];
 }
