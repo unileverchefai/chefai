@@ -1,7 +1,7 @@
 import { loadCSS } from '@scripts/aem.js';
 import {
   variantClassesToBEM, getBEMTemplateName, createElement, findVideoLink,
-  addVariantLogic,
+  addVariantLogic, ctaButtonHandler,
 } from '@scripts/common.js';
 import openVideoModal from '@scripts/custom/modal-video.js';
 import setCountdownToHero from './variants/countdown.js';
@@ -237,6 +237,7 @@ function buildHero({ heroClassList, heroContent, heroContainer }) {
   const ctaElement = content.querySelector(':scope > p.button-container');
   if (ctaElement) {
     addElementsToArea(ctaArea, [ctaElement]);
+    ctaButtonHandler(ctaArea.querySelector('.button'));
   }
 
   // build disclaimer area
