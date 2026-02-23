@@ -16,10 +16,7 @@ const LOADING_CARD_COUNT = 4;
 
 /**
  * Mapping from API trend name → CSS class and background image.
- *
- * Images are mocked locally while the API does not yet return image URLs.
- * TODO: When the API provides image URLs per recommendation, replace
- *       `image` with the API-provided value and remove the local /icons/ files.
+ * Used as fallback when the API does not return image_url for a recommendation.
  *
  * CTA links and labels are also mocked.
  * TODO: When the API provides CTA data (href + label) per recommendation,
@@ -122,8 +119,7 @@ function mapApiItemToCard(item) {
   return {
     trendName: firstTrend,
     trendClass: trendInfo?.class ?? firstTrend.toLowerCase().replace(/\s+/g, '-'),
-    // TODO: Replace with API-provided image URL when the endpoint includes one.
-    bgImage: trendInfo?.image ?? null,
+    bgImage: item.image_url ?? trendInfo?.image ?? null,
     description,
     stat,
     // TODO: Replace href and text with API-provided CTA data when available.
@@ -268,6 +264,9 @@ function initializeCarousel(block, container, itemCount) {
   if (block.carouselInstance?.destroy) block.carouselInstance.destroy();
 
   try {
+    const disableDesktopCarousel = itemCount <= 3;
+    block.classList.toggle('carousel-biz-api-desktop-carousel', !disableDesktopCarousel);
+
     const carousel = createCarousel({
       container,
       block,
@@ -277,7 +276,7 @@ function initializeCarousel(block, container, itemCount) {
       mobileBreakpoint: 900,
       mobileGap: 20,
       desktopGap: 20,
-      disableDesktopCarousel: true,
+      disableDesktopCarousel,
     });
 
     // Remove any stale screen-reader announcement injected by a previous carousel
@@ -370,4 +369,3 @@ export default async function decorate(block) {
   renderCards(carouselContainer, cards, handleTrendCtaClick);
   initializeCarousel(block, carouselContainer, cards.length);
 }
-

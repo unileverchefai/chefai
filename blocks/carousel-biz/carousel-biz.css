@@ -610,7 +610,6 @@ a.trend-cta {
 
   .carousel-biz-container {
     flex-wrap: wrap;
-    justify-content: center;
   }
 
   .trend-card {
@@ -620,6 +619,18 @@ a.trend-cta {
 
   .carousel-biz .controls {
     display: none;
+  }
+
+  .carousel-biz.carousel-biz-desktop-carousel .controls {
+    display: flex;
+  }
+
+  .carousel-biz.carousel-biz-desktop-carousel .carousel-biz-container {
+    flex-wrap: nowrap;
+  }
+
+  .carousel-biz.carousel-biz-desktop-carousel .carousel-biz-carousel-wrapper {
+    overflow: hidden;
   }
 
   .trend-stat.stat-number {
