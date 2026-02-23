@@ -161,7 +161,7 @@ export default function decorate(block) {
     })
     .catch((error) => {
       // eslint-disable-next-line no-console
-      console.error('Failed to load quick actions:', error);
+      console.error('Nothing urgent right now. We will show quick actions moves as they come up.');
       loading.remove();
       const errorState = createElement('div', {
         className: 'quick-actions-error',

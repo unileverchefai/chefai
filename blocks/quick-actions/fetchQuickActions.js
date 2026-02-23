@@ -32,7 +32,7 @@ export async function fetchQuickActions(options = {}) {
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to load quick actions: ${response.status}`);
+      throw new Error('Nothing urgent right now. We will show quick actions moves as they come up.');
     }
 
     const data = await response.json();
