@@ -104,12 +104,22 @@ function parseTitleIntoStatAndDescription(rawTitle) {
  */
 function mapApiItemToCard(item) {
   const firstTrend = item.trends?.[0];
-  if (!firstTrend) return null;
+  if (!firstTrend) {
+    // eslint-disable-next-line no-console
+    console.error('[carousel-biz-api] Skipping recommendation — missing mandatory field "trends":', item);
+    return null;
+  }
 
   const trendInfo = TREND_MAP[firstTrend];
   const { stat, description } = item.title
     ? parseTitleIntoStatAndDescription(item.title)
     : { stat: null, description: null };
+
+  if (!description) {
+    // eslint-disable-next-line no-console
+    console.error('[carousel-biz-api] Skipping recommendation — missing mandatory field "description":', item);
+    return null;
+  }
 
   return {
     trendName: firstTrend,
@@ -272,11 +282,20 @@ export default async function decorate(block) {
 
   const recommendations = await fetchRecommendations();
 
+  if (!recommendations) {
+    // eslint-disable-next-line no-console
+    console.error('[carousel-biz-api] No information available from the API. Block removed.');
+    block.remove();
+    return;
+  }
+
   const cards = recommendations
     .map(mapApiItemToCard)
     .filter((card) => card !== null);
 
   if (cards.length < MIN_ITEMS) {
+    // eslint-disable-next-line no-console
+    console.error(`[carousel-biz-api] Not enough valid recommendations to render (got ${cards.length}, need ${MIN_ITEMS}). Block removed.`);
     block.remove();
     return;
   }

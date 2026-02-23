@@ -46,10 +46,18 @@ export default async function fetchRecommendations() {
     const data = await response.json();
 
     // Support both current and alternative response shapes
-    return data.recommendations ?? data.data?.recommendations ?? [];
+    const recommendations = data.recommendations ?? data.data?.recommendations;
+
+    if (Array.isArray(recommendations)) {
+      return recommendations;
+    }
+
+    // eslint-disable-next-line no-console
+    console.warn('[carousel-biz-api] No recommendations returned from API:', data);
+    return [];
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('[carousel-biz-api] Failed to fetch recommendations:', error);
-    return [];
+    return null;
   }
 }
