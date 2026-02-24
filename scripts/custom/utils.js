@@ -717,6 +717,14 @@ export async function loadReact() {
   await loadScript(REACT_DOM_SCRIPT);
 }
 
+const MARKED = 'https://unpkg.com/marked@12.0.2/lib/marked.umd.js';
+const DOMPURIFY = 'https://unpkg.com/dompurify@3.3.1/dist/purify.min.js';
+
+export async function loadMarkedPurify() {
+  await loadScript(MARKED);
+  await loadScript(DOMPURIFY);
+}
+
 export function loadScript(src) {
   return new Promise((resolve, reject) => {
     if (document.querySelector(`script[src="${src}"]`)) {

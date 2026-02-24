@@ -89,7 +89,7 @@ function renderCard(item, index, onActivate) {
   return card;
 }
 
-export default function decorate(block) {
+export default async function decorate(block) {
   block.classList.add('quick-actions');
 
   const userId = block.dataset.userId ?? 'staging-user';
@@ -129,9 +129,13 @@ export default function decorate(block) {
     openChatbotModal('quick-actions')
       .then(() => {
         if (result.isNew && result.displayText) {
+          // 1) Markdown -> HTML
+          const rawHtml = window.marked?.parse(result?.displayText.trim());
+          // 2) Sanitize (important if text comes from BE)
+          const safeHtml = window.DOMPurify?.sanitize(rawHtml);
           setTimeout(() => {
             window.dispatchEvent(new CustomEvent('chefai:quick-action', {
-              detail: { displayText: result.displayText },
+              detail: { displayText: safeHtml },
             }));
           }, 400);
         }
