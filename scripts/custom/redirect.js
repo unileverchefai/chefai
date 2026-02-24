@@ -7,9 +7,13 @@ import { getPathSegments, BASE_FOLDER } from './locale.js';
 export function getBaseUrl(pathname = window.location.pathname ?? '/') {
   const segments = getPathSegments(pathname);
   if (segments.length === 0) return '/';
-  const idx = segments.indexOf(BASE_FOLDER);
-  if (idx === -1) return '/';
-  const baseSegments = segments.slice(0, idx + 1);
+  const baseFolderIndex = segments.indexOf(BASE_FOLDER);
+  if (baseFolderIndex >= 0) {
+    const baseSegments = segments.slice(0, baseFolderIndex + 1);
+    return `/${baseSegments.join('/')}/`;
+  }
+  const baseSegments = segments.slice(0, -1);
+  if (baseSegments.length === 0) return '/';
   return `/${baseSegments.join('/')}/`;
 }
 
