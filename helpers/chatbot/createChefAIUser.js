@@ -1,6 +1,9 @@
 import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
-import { COUNTRY_CODE, LANGUAGE_CODE } from '@api/authentication/constants.js';
+import { getCountry, getLang } from '@scripts/custom/locale.js';
 import { getCookie } from '@scripts/custom/utils.js';
+
+const countryCode = getCountry();
+const languageCode = getLang();
 
 export default async function createChefAIUser(userId, userName, businessData = null) {
   if (!userId) {
@@ -39,8 +42,8 @@ export default async function createChefAIUser(userId, userName, businessData = 
 
   const payload = {
     user_id: userId,
-    country: COUNTRY_CODE,
-    content_language_code: LANGUAGE_CODE.toUpperCase(),
+    country: countryCode,
+    content_language_code: languageCode.toUpperCase(),
     user_name: userName ?? '',
     metadata,
     tc_agreed: tcAgreed,

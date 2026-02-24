@@ -1,14 +1,12 @@
-/** Base folder for future-menus-4; paths are built relative to this. */
-const BASE_FOLDER = 'future-menus-4';
+import { getPathSegments, BASE_FOLDER } from './locale.js';
 
 /**
  * Returns the base URL: path up to and including BASE_FOLDER, with trailing slash.
  * e.g. /uk/en/inspiration/future-menus-4/personalized-hub -> /uk/en/inspiration/future-menus-4/
  */
 export function getBaseUrl(pathname = window.location.pathname ?? '/') {
-  const path = pathname.replace(/\/$/, '') ?? '/';
-  if (path === '' || path === '/') return '/';
-  const segments = path.split('/').filter(Boolean);
+  const segments = getPathSegments(pathname);
+  if (segments.length === 0) return '/';
   const idx = segments.indexOf(BASE_FOLDER);
   if (idx === -1) return '/';
   const baseSegments = segments.slice(0, idx + 1);

@@ -1,4 +1,5 @@
 import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
+import { getCountry } from '@scripts/custom/locale.js';
 import {
   getOrCreateThreadId,
   formatResponse,
@@ -7,6 +8,8 @@ import {
   getAnonymousUserIdFromCookie,
   createUser,
 } from '@scripts/custom/utils.js';
+
+const countryCode = getCountry();
 
 let currentEndpoint = 'capgemini';
 
@@ -61,7 +64,7 @@ export default async function sendMessage(message, options = {}) {
     message,
     thread_id: threadId,
     user_id: userId,
-    country: options.country ?? 'BE',
+    country: options.country ?? countryCode,
   };
 
   try {
