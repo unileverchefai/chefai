@@ -484,6 +484,29 @@ export async function loadTemplate(main) {
   }
 }
 
+/**
+ * This function loads and applies the theme specified in metadata with the key "`theme`".
+ *
+ * Any theme _**MUST**_ have a corresponding `CSS` file in the themes folder.
+ * @returns {Promise<void>}
+ */
+export async function loadTheme() {
+  const theme = toClassName(getMetadata('theme'));
+  if (theme) {
+    try {
+      await loadCSS(`${window.hlx.codeBasePath}/themes/${theme}/${theme}.css`);
+    } catch (e) {
+      console.error(`failed to load theme %c${theme}`, 'color: gold', { error: e });
+    }
+  }
+}
+
+/**
+ * Handles click events on CTA buttons, determining whether to open a registration modal,
+ * personalized hub, or chatbot modal based on the button's href
+ * and the user's saved business information.
+ * @param {Element} button The CTA button element to attach the click handler to.
+ */
 export function ctaButtonHandler(button = null) {
   if (!button) {
     console.error('CTA Button Handler: No button element provided.');
