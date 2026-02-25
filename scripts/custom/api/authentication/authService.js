@@ -8,18 +8,20 @@ import {
   createUser,
 } from '@scripts/custom/utils.js';
 import { ENDPOINTS as CHEF_AI_ENDPOINTS, SUBSCRIPTION_KEY as CHEF_AI_SUBSCRIPTION_KEY } from '@api/endpoints.js';
+import { getCountry, getLang } from '@scripts/custom/locale.js';
 import { apiRequest } from './endpoints.js';
 import {
   setToken, removeToken, getToken,
 } from './tokenManager.js';
 import {
   ENDPOINTS,
-  COUNTRY_CODE,
   SITE_CODE,
-  LANGUAGE_CODE,
   BUSINESS_TYPE_MAP,
   createRegistrationPayload,
 } from './constants.js';
+
+const countryCode = getCountry();
+const languageCode = getLang();
 
 export function isUserLoggedIn() {
   const token = getToken();
@@ -123,7 +125,7 @@ export async function login(email, password) {
 
   try {
     const token = await apiRequest(
-      `${ENDPOINTS.login}?country=${COUNTRY_CODE}&site=${SITE_CODE}`,
+      `${ENDPOINTS.login}?country=${countryCode}&site=${SITE_CODE}`,
       {
         method: 'GET',
         authorization,
@@ -228,8 +230,8 @@ export async function resetPassword(email, mobilePhone = '') {
       body: {
         email,
         baseUrl: window.location.href,
-        countryCode: COUNTRY_CODE,
-        languageCode: LANGUAGE_CODE,
+        countryCode,
+        languageCode,
         site: SITE_CODE,
         mobilePhone: mobilePhone ?? '',
         profileLoginType: 'EMAIL',

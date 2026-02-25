@@ -1,3 +1,8 @@
+import { getCountry, getLang } from '../locale.js';
+
+const countryCode = getCountry();
+const languageCode = getLang();
+
 export const SUBSCRIPTION_KEY = 'hGyKufXGJsFbf-_vR67onc-BLjZ4QdhOrIc-u6RTsLM';
 
 export const API_BASE_URL = 'https://api-hub-we.azure-api.net/chefaibe/st/api/v1';
@@ -20,8 +25,7 @@ export const ENDPOINTS = {
 };
 
 export const DEFAULT_PARAMS = {
-  country_code: 'BE',
-  language_code: 'en',
-  type: 'main',
+  country_code: countryCode,
+  language_code: languageCode,
   limit: 10,
 };

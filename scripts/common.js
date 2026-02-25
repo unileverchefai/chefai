@@ -1,7 +1,9 @@
 import openPersonalizedHub from '@helpers/personalized-hub/personalized-hub.js';
 import hasSavedBusinessName from '@helpers/personalized-hub/hasSavedBusinessName.js';
 import openChatbotModal from '@helpers/chatbot/openChatbotModal.js';
-import { loadCSS, loadScript } from './aem.js';
+import {
+  loadCSS, loadScript, toClassName, getMetadata,
+} from './aem.js';
 
 /**
  * Checks if the current host is a development environment.
@@ -460,6 +462,52 @@ const { cookieValues } = await getConstantsValues() || {};
 
 export const COOKIE_CONFIG = formatValues(cookieValues?.data);
 
+/**
+ * Loads a template based on the 'template' metadata value, including its CSS and JS.
+ *
+ * This function dynamically loads page templates from the `/templates` directory in scripts.js.
+ * @param {Element} main The main element to pass to the template's default function.
+ * @returns {Promise<void>} A promise that resolves when the template is loaded and executed.
+ */
+export async function loadTemplate(main) {
+  const template = toClassName(getMetadata('template'));
+  if (!template) {
+    return;
+  }
+  try {
+    await loadCSS(`${window.hlx.codeBasePath}/templates/${template}/${template}.css`);
+    const mod = await import(`${window.hlx.codeBasePath}/templates/${template}/${template}.js`);
+    if (mod && typeof mod.default === 'function') {
+      await mod.default(main);
+    }
+  } catch (error) {
+    console.error(`Failed to load template ${template}:`, error);
+  }
+}
+
+/**
+ * This function loads and applies the theme specified in metadata with the key "`theme`".
+ *
+ * Any theme _**MUST**_ have a corresponding `CSS` file in the themes folder.
+ * @returns {Promise<void>}
+ */
+export async function loadTheme() {
+  const theme = toClassName(getMetadata('theme'));
+  if (theme) {
+    try {
+      await loadCSS(`${window.hlx.codeBasePath}/themes/${theme}/${theme}.css`);
+    } catch (e) {
+      console.error(`failed to load theme %c${theme}`, 'color: gold', { error: e });
+    }
+  }
+}
+
+/**
+ * Handles click events on CTA buttons, determining whether to open a registration modal,
+ * personalized hub, or chatbot modal based on the button's href
+ * and the user's saved business information.
+ * @param {Element} button The CTA button element to attach the click handler to.
+ */
 export function ctaButtonHandler(button = null) {
   if (!button) {
     console.error('CTA Button Handler: No button element provided.');

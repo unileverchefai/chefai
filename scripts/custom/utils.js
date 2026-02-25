@@ -1,6 +1,9 @@
 import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
-import { COUNTRY_CODE, LANGUAGE_CODE } from '@api/authentication/constants.js';
+import { getCountry, getLang } from '@scripts/custom/locale.js';
 import formatResponse from '@helpers/chatbot/responseHandler.js';
+
+const countryCode = getCountry();
+const languageCode = getLang();
 
 export { formatResponse };
 
@@ -339,8 +342,8 @@ export async function getAnonymousUserId() {
 
   const payload = {
     user_id: cookieId,
-    country: COUNTRY_CODE,
-    content_language_code: LANGUAGE_CODE.toUpperCase(),
+    country: countryCode,
+    content_language_code: languageCode.toUpperCase(),
     tc_agreed: tcAgreed,
   };
 
@@ -391,8 +394,8 @@ export async function createUser() {
 
   const payload = {
     user_id: cookieId,
-    country: COUNTRY_CODE,
-    content_language_code: LANGUAGE_CODE.toUpperCase(),
+    country: countryCode,
+    content_language_code: languageCode.toUpperCase(),
     tc_agreed: tcAgreed,
   };
 
