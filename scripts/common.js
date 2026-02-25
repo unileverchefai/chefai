@@ -464,7 +464,7 @@ export const COOKIE_CONFIG = formatValues(cookieValues?.data);
 /**
  * Loads a template based on the 'template' metadata value, including its CSS and JS.
  *
- * This function is used to dynamically load page templates from the `/templates` directory in scripts.js.
+ * This function dynamically loads page templates from the `/templates` directory in scripts.js.
  * @param {Element} main The main element to pass to the template's default function.
  * @returns {Promise<void>} A promise that resolves when the template is loaded and executed.
  */
