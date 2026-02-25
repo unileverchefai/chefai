@@ -1,9 +1,10 @@
-import { createElement } from '@scripts/common.js';
+import { createElement, LOGIN_MODAL_PLACEHOLDERS } from '@scripts/common.js';
 import { hasToken } from '@auth/tokenManager.js';
 import { logout } from '@auth/authService.js';
 import { loadCSS } from '@scripts/aem.js';
 import openSignInModal from '@helpers/signin/index.js';
 import { getBaseUrl } from '@scripts/custom/redirect.js';
+import { getLang } from '@scripts/custom/locale.js';
 
 loadCSS(`${window.hlx.codeBasePath}/helpers/nav-profile/nav-profile.css`);
 
@@ -67,13 +68,16 @@ export default function createProfileSection() {
       dropdown.classList.remove('nav-profile-dropdown--active');
     });
   } else {
+    const language = getLang();
+    const getSigninText = key => LOGIN_MODAL_PLACEHOLDERS?.[key]?.[language];
+
     const signInText = createElement('span', {
       className: 'nav-profile-text nav-profile-text--signin',
     });
 
     const desktopPrefix = createElement('span', {
       className: 'nav-profile-text-prefix',
-      innerContent: 'Already registered? ',
+      innerContent: `${getSigninText('reg_prompt_q')} `,
     });
 
     const signInLink = createElement('span', {
