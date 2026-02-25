@@ -226,29 +226,30 @@ function formatPlaceholders(values = false) {
     if (!item.key) {
       return;
     }
-    const {
-      key, en, it, de, es,
-    } = item;
-    object[key] = {
-      en, it, de, es,
-    };
+
+    const { key, ...languages } = item;
+    object[key] = Object.fromEntries(
+      Object.entries(languages).filter(
+        ([, value]) => typeof value === 'string' && value.trim() !== '',
+      ),
+    );
   });
+
   return object;
 }
 
 const {
-  loginmodal,
+  signinmodal,
   herobanner,
   countdownhero,
   data: placeholdersData,
 } = await getPlaceholders() || {};
 
 // Format placeholders for different categories and store them in constants for easy access
-export const LOGIN_MODAL_PLACEHOLDERS = formatPlaceholders(loginmodal?.data);
+export const LOGIN_MODAL_PLACEHOLDERS = formatPlaceholders(signinmodal?.data);
 export const HERO_BANNER_PLACEHOLDERS = formatPlaceholders(herobanner?.data);
 export const COUNTDOWN_HERO_PLACEHOLDERS = formatPlaceholders(countdownhero?.data);
 export const OTHER_PLACEHOLDERS = formatPlaceholders(placeholdersData?.data);
-
 /**
  * Extract video ID from YouTube URL
  * @param {string} url The YouTube URL
