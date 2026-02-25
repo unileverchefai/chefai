@@ -1,7 +1,8 @@
 import { getMetadata } from '@scripts/aem.js';
 import {
-  COUNTDOWN_HERO_PLACEHOLDERS, getPageLanguage, createElement, getBEMTemplateName,
+  COUNTDOWN_HERO_PLACEHOLDERS, createElement, getBEMTemplateName,
 } from '@scripts/common.js';
+import { getLang } from '@scripts/custom/locale.js';
 
 let intervalId = null;
 
@@ -62,7 +63,7 @@ function updateCountdown({
 
 export default function setCountdownToHero({ countdownArea, countdownClass }) {
   // Placeholder function for countdown hero decoration
-  const language = getPageLanguage();
+  const language = getLang();
   const labelText = COUNTDOWN_HERO_PLACEHOLDERS['label-text'][language];
   const daysText = COUNTDOWN_HERO_PLACEHOLDERS.days[language];
   const hoursText = COUNTDOWN_HERO_PLACEHOLDERS.hours[language];
