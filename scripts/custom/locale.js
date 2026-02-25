@@ -13,6 +13,8 @@ const DEFAULT_LANG = 'en';
 
 /**
  * Get path segments
+ * @param {string} [pathname] - Defaults to window.location.pathname
+ * @returns {string[]}
  */
 export function getPathSegments(pathname) {
   const path = (pathname ?? (typeof window !== 'undefined' ? window.location.pathname : '')).replace(/\/$/, '') ?? '/';
