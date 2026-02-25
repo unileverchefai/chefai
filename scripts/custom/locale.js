@@ -58,6 +58,7 @@ export function getLang(pathname) {
     return segments[1].toLowerCase();
   }
   if (typeof document !== 'undefined') {
+    //TODO: to refactor this variable in global scope
     const meta = document.querySelector('meta[name="language"]')?.content?.trim();
     if (meta) return meta.toLowerCase().split(/[-_]/)[0] ?? DEFAULT_LANG;
     const htmlLang = document.documentElement?.lang;
