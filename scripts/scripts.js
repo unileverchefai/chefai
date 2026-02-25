@@ -1,5 +1,5 @@
-import { welcomeModalSeen } from '@scripts/custom/utils.js';
-import { getLang } from '@scripts/custom/locale.js';
+import { welcomeModalSeen } from './custom/utils.js';
+import { getLang } from './custom/locale.js';
 import {
   buildBlock,
   loadHeader,

@@ -18,7 +18,7 @@ export default function openSignInModal() {
 
   const language = getLang();
 
-  const getSigninText = key => LOGIN_MODAL_PLACEHOLDERS?.[key]?.[language];
+  const getSigninText = (key) => LOGIN_MODAL_PLACEHOLDERS?.[key]?.[language];
 
   // Create modal content
   const content = createElement('div', {

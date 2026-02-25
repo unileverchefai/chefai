@@ -69,7 +69,7 @@ export default function createProfileSection() {
     });
   } else {
     const language = getLang();
-    const getSigninText = key => LOGIN_MODAL_PLACEHOLDERS?.[key]?.[language];
+    const getSigninText = (key) => LOGIN_MODAL_PLACEHOLDERS?.[key]?.[language];
 
     const signInText = createElement('span', {
       className: 'nav-profile-text nav-profile-text--signin',
