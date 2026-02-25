@@ -176,15 +176,6 @@ export async function loadVariantScript({ blockName, variantName }) {
   }
 }
 
-export function getPageLanguage() {
-  const htmlLang = document.documentElement.lang;
-  if (htmlLang) {
-    const normalizedLang = htmlLang.toLowerCase();
-    return normalizedLang.split(/[-_]/)[0]; // Return the primary language code (e.g., 'en' from 'en-US')
-  }
-  return 'en'; // Default to English if no language is specified
-}
-
 /**
  * Fetches placeholders from the server and returns them as an object.
  * @returns {Promise<Object>} A promise that resolves to an object containing placeholders.

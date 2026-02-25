@@ -1,9 +1,10 @@
-import { createElement, getPageLanguage, LOGIN_MODAL_PLACEHOLDERS } from '@scripts/common.js';
+import { createElement, LOGIN_MODAL_PLACEHOLDERS } from '@scripts/common.js';
 import createModal from '@helpers/modal/index.js';
 import { loadCSS } from '@scripts/aem.js';
 import { login } from '@auth/authService.js';
 import openCookieAgreementModal from '@helpers/cookie-agreement/index.js';
 import { getUrl } from '@scripts/custom/redirect.js';
+import { getLang } from '@scripts/custom/locale.js';
 
 /**
  * Opens the sign-in modal
@@ -15,7 +16,7 @@ export default function openSignInModal() {
     // CSS loading error handled silently
   });
 
-  const language = getPageLanguage();
+  const language = getLang();
 
   const getSigninText = (key) => {
     const entry = LOGIN_MODAL_PLACEHOLDERS?.[key];
