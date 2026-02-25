@@ -1,4 +1,5 @@
 import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
+import { getCountry } from '@scripts/custom/locale.js';
 import {
   getOrCreateThreadId,
   getAnonymousUserId,
@@ -9,6 +10,8 @@ import {
 import { generateRunId, connectToAgentRunStream } from './sseStream.js';
 import sendMessage from './sendMessage.js';
 import formatResponse, { parseStreamingEvent } from './responseHandler.js';
+
+const countryCode = getCountry();
 
 let currentEndpoint = 'capgemini';
 
@@ -158,7 +161,7 @@ export default async function sendStreamingMessage(message, options = {}) {
         message,
         thread_id: threadId,
         user_id: userId,
-        country: options.country ?? 'BE',
+        country: options.country ?? countryCode,
         run_id: runId,
         enable_metadata: true,
       };
@@ -250,7 +253,7 @@ export default async function sendStreamingMessage(message, options = {}) {
           ...options,
           user_id: userId,
           thread_id: threadId,
-          country: options.country || 'BE',
+          country: options.country ?? countryCode,
         });
 
         onComplete(response);
