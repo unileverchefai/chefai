@@ -1,4 +1,4 @@
-import { createElement } from '@scripts/common.js';
+import { createElement, getPageLanguage, LOGIN_MODAL_PLACEHOLDERS } from '@scripts/common.js';
 import createModal from '@helpers/modal/index.js';
 import { loadCSS } from '@scripts/aem.js';
 import { login } from '@auth/authService.js';
@@ -15,6 +15,13 @@ export default function openSignInModal() {
     // CSS loading error handled silently
   });
 
+  const language = getPageLanguage();
+
+  const getSigninText = (key) => {
+    const entry = LOGIN_MODAL_PLACEHOLDERS?.[key];
+    return entry?.[language] ?? entry?.en;
+  };
+
   // Create modal content
   const content = createElement('div', {
     className: 'signin-modal',
@@ -28,14 +35,14 @@ export default function openSignInModal() {
   // Title
   const title = createElement('h2', {
     className: 'signin-modal-title',
-    innerContent: 'Welcome back!',
+    innerContent: getSigninText('title'),
   });
   topArea.appendChild(title);
 
   // Description
   const description = createElement('p', {
     className: 'signin-modal-description',
-    innerContent: 'Login in with your UFS account to get access to your personalised hub',
+    innerContent: getSigninText('description'),
   });
   topArea.appendChild(description);
 
@@ -50,13 +57,13 @@ export default function openSignInModal() {
   });
   const emailLabel = createElement('label', {
     className: 'form-label',
-    innerContent: 'Email address',
+    innerContent: getSigninText('label_email'),
   });
   const emailInput = createElement('input', {
     className: 'form-input',
     attributes: {
       type: 'email',
-      placeholder: 'email@example.com',
+      placeholder: getSigninText('placeholder_email'),
     },
   });
   emailGroup.appendChild(emailLabel);
@@ -69,7 +76,7 @@ export default function openSignInModal() {
   });
   const passwordLabel = createElement('label', {
     className: 'form-label',
-    innerContent: 'Password',
+    innerContent: getSigninText('label_password'),
   });
   const passwordInputWrapper = createElement('div', {
     className: 'form-input-wrapper',
@@ -112,7 +119,7 @@ export default function openSignInModal() {
   });
   const forgotLink = createElement('a', {
     className: 'signin-form-forgot-link',
-    innerContent: 'Forgot your password?',
+    innerContent: getSigninText('link_forgot_pwd'),
     attributes: {
       href: '#',
     },
@@ -132,7 +139,7 @@ export default function openSignInModal() {
   // Sign in button
   const signInButton = createElement('button', {
     className: 'btn-primary',
-    innerContent: 'Sign in',
+    innerContent: getSigninText('button_signin'),
     attributes: {
       type: 'button',
     },
@@ -151,14 +158,18 @@ export default function openSignInModal() {
   });
   const continueLink = createElement('a', {
     className: 'signin-modal-bottom-link',
-    innerContent: 'Continue here',
+    innerContent: getSigninText('footer_link'),
     attributes: {
       href: '#',
     },
   });
-  bottomText.textContent = 'Don\'t have an account? ';
+  bottomText.textContent = `${getSigninText('footer_no_account')} `;
   bottomText.appendChild(continueLink);
-  bottomText.appendChild(document.createTextNode(' to get your personalized hub'));
+  bottomText.appendChild(
+    document.createTextNode(
+      ` ${getSigninText('footer_suffix')}`,
+    ),
+  );
   bottomArea.appendChild(bottomText);
   content.appendChild(bottomArea);
 
@@ -240,7 +251,7 @@ export default function openSignInModal() {
       errorMessage.textContent = error.message ?? 'Invalid email or password. Please try again.';
       errorMessage.style.display = 'block';
       signInButton.disabled = false;
-      signInButton.textContent = 'Sign in';
+      signInButton.textContent = getSigninText('button_signin');
     }
   });
 
