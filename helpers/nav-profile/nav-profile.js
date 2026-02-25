@@ -41,14 +41,6 @@ export default function createProfileSection() {
       className: 'nav-profile-dropdown',
     });
 
-    const accountLink = createElement('a', {
-      className: 'nav-profile-dropdown-item',
-      innerContent: 'My account',
-      attributes: {
-        href: '/account',
-      },
-    });
-
     const logoutButton = createElement('button', {
       className: 'nav-profile-dropdown-item',
       innerContent: 'Logout',
@@ -63,7 +55,7 @@ export default function createProfileSection() {
       window.location.href = getBaseUrl();
     });
 
-    dropdown.append(accountLink, logoutButton);
+    dropdown.append(logoutButton);
     profile.appendChild(dropdown);
 
     profileButton.addEventListener('click', (e) => {

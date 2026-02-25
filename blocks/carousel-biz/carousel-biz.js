@@ -254,16 +254,19 @@ function initializeCarousel(block, container, itemCount) {
   }
 
   try {
+    const enableDesktopCarousel = itemCount > 3;
+    block.classList.toggle('carousel-biz-desktop-carousel', enableDesktopCarousel);
+
     const carousel = createCarousel({
       container,
       block,
       itemCount,
       mobileItemsPerSlide: 1,
-      desktopItemsPerSlide: 4,
+      desktopItemsPerSlide: 3,
       mobileBreakpoint: 900,
       mobileGap: 20,
       desktopGap: 20,
-      disableDesktopCarousel: true,
+      enableDesktopCarousel,
     });
 
     const srAnnouncement = block.querySelector('[aria-live]');

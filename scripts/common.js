@@ -1,3 +1,6 @@
+import openPersonalizedHub from '@helpers/personalized-hub/personalized-hub.js';
+import hasSavedBusinessName from '@helpers/personalized-hub/hasSavedBusinessName.js';
+import openChatbotModal from '@helpers/chatbot/openChatbotModal.js';
 import {
   loadCSS, loadScript, toClassName, getMetadata,
 } from './aem.js';
@@ -458,6 +461,13 @@ const { cookieValues } = await getConstantsValues() || {};
 
 export const COOKIE_CONFIG = formatValues(cookieValues?.data);
 
+/**
+ * Loads a template based on the 'template' metadata value, including its CSS and JS.
+ *
+ * This function is used to dynamically load page templates from the `/templates` directory in scripts.js.
+ * @param {Element} main The main element to pass to the template's default function.
+ * @returns {Promise<void>} A promise that resolves when the template is loaded and executed.
+ */
 export async function loadTemplate(main) {
   const template = toClassName(getMetadata('template'));
   if (!template) {
@@ -471,5 +481,50 @@ export async function loadTemplate(main) {
     }
   } catch (error) {
     console.error(`Failed to load template ${template}:`, error);
+  }
+}
+
+export function ctaButtonHandler(button = null) {
+  if (!button) {
+    console.error('CTA Button Handler: No button element provided.');
+    return;
+  }
+  const buttonHref = button.getAttribute('href');
+  const shouldOpenRegistration = buttonHref.includes('#unlock-personalized-hub');
+  const isLivePhase = button.closest('[class$="live"]');
+
+  if (!isLivePhase) {
+    // TODO open the registration modal
+  } else {
+    // Prefetch Personalized Hub assets
+    import('@scripts/custom/prefetch.js')
+      .then(({ default: prefetchPersonalizedHub }) => {
+        if (typeof prefetchPersonalizedHub === 'function') {
+          prefetchPersonalizedHub().catch(() => {});
+        }
+      })
+      .catch(() => {});
+
+    button.addEventListener('click', async (e) => {
+      e.preventDefault();
+
+      if (shouldOpenRegistration) {
+        const { default: openSignUpReportModal } = await import('@helpers/signup/signup.js');
+        openSignUpReportModal();
+        return;
+      }
+
+      try {
+        const hasBusiness = await hasSavedBusinessName();
+
+        if (hasBusiness) {
+          await openChatbotModal();
+        } else {
+          await openPersonalizedHub();
+        }
+      } catch (error) {
+        console.error('Error handling CTA button click:', error);
+      }
+    });
   }
 }

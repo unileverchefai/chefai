@@ -9,7 +9,10 @@ import {
   getAnonymousUserId,
   createThreadWithRecommendation,
   loadThreadMessages,
+  loadMarkedPurify,
 } from '@scripts/custom/utils.js';
+
+await loadMarkedPurify();
 
 const DEFAULT_LIMIT = 10;
 
@@ -164,14 +167,19 @@ export default async function decorate(block) {
     }
 
     const messageInsight = await loadThreadMessages(result.threadId);
+
     openChatbotModal('insights')
       .then(() => {
         if (messageInsight && messageInsight.length > 0) {
+          // 1) Markdown -> HTML
+          const rawHtml = window.marked?.parse(messageInsight[0]?.text.replace(`**${item.title}**`, '').trim());
+          // 2) Sanitize (important if text comes from BE)
+          const sanHtml = window.DOMPurify?.sanitize(rawHtml);
           setTimeout(() => {
             window.dispatchEvent(new CustomEvent('chefai:insights', {
               detail: {
                 headlineTitle: item.title,
-                displayText: messageInsight[0].text,
+                displayText: sanHtml,
                 prompts: messageInsight[0].metadata?.suggested_prompts ?? [],
               },
             }));
@@ -205,9 +213,9 @@ export default async function decorate(block) {
       initializeCarousel(block, list, items.length);
     }).catch((error) => {
     // eslint-disable-next-line no-console
-      console.error('Failed to load recommendations:', error);
+      console.error('Failed to load time-sensitive recommendations:', error);
       const errorState = createElement('div', { className: 'carousel-insights-error' });
-      errorState.textContent = 'Failed to load insights.';
+      errorState.textContent = 'Nothing urgent right now. We will show time-sensitive moves as they come up.';
       block.appendChild(errorState);
     });
 }

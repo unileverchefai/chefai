@@ -7,6 +7,8 @@ import {
   getOrCreateThreadId,
   getAnonymousUserId,
   getUserIdFromCookie,
+  validateThread,
+  createThread,
 } from '@scripts/custom/utils.js';
 import sendStreamingMessage from './sendStreamingMessage.js';
 import renderChatUI from './renderChatUI.js';
@@ -81,7 +83,26 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot', type }
           }
 
           // Get or create thread ID (validates on init)
-          const threadId = await getOrCreateThreadId(userId, true);
+          let threadId;
+          if (type === 'quick-actions') {
+            threadId = getStoredThreadId();
+            if (!threadId) return;
+          } else {
+            // Main chat (ask-button): use cookie, validate so we can retrieve history
+            threadId = getStoredThreadId();
+            if (!threadId) {
+              threadId = await getOrCreateThreadId(userId, true);
+            } else {
+              const isValid = await validateThread(threadId);
+              if (!isValid) {
+                threadId = await createThread(userId);
+                sessionStorage.setItem('chefai-main-chat-thread', JSON.stringify({
+                  threadId,
+                  initialized: true,
+                }));
+              }
+            }
+          }
 
           // Load history with fallback (uses cache first, then API)
           const apiHistory = await getHistoryWithFallback(threadId, userId);
@@ -97,7 +118,16 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot', type }
               if (headlineText && newMessages.length > 0) {
                 const hasHeadline = newMessages
                   .some((m) => m.metadata?.isQuickActionHeadline);
-
+                // TODO: We should refactor, it's a bit hacky to manage headline
+                // vs regular messages through metadata and sessionStorage like this,
+                // but it allows us to display a headline for both quick actions and
+                // insights without needing separate flows or components. Ideally the
+                // BE would send a specific message type for headlines that we can
+                // easily identify and render differently, rather than relying on this workaround.
+                // 1) Markdown -> HTML
+                const rawHtml = window.marked?.parse(newMessages[0].text.replace(`**${headlineText}**`, ''));
+                // 2) Sanitize (important if text comes from BE)
+                newMessages[0].text = window.DOMPurify?.sanitize(rawHtml);
                 if (!hasHeadline) {
                   const firstMsg = newMessages[0];
                   const firstTime = firstMsg?.createdAt
@@ -280,7 +310,9 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot', type }
     setMessages((prev) => [...prev, placeholderMessage]);
 
     try {
+      const currentThreadId = getStoredThreadId();
       const connection = await sendStreamingMessage(messageText, {
+        thread_id: currentThreadId ?? undefined,
         context: {
           messageHistory: messages.slice(-5),
         },

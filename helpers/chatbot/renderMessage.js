@@ -103,8 +103,9 @@ export default function renderMessage(message, options = {}) {
               lineHeight: '1.5',
               whiteSpace: 'pre-wrap',
             },
+            dangerouslySetInnerHTML: { __html: message.text },
           },
-          convertLinksToClickable(textBeforeRecipes),
+          // TODO:Check if BE can send markdown URL convertLinksToClickable(textBeforeRecipes),
         ),
       ]),
     ...(message.metadata?.images?.length > 0
@@ -272,7 +273,6 @@ export default function renderMessage(message, options = {}) {
           className: 'message-bubble',
           style: {
             maxWidth: '95%',
-            padding: '12px 16px',
             borderRadius: '20px',
             backgroundColor: isUser ? 'var(--light-mushroom)' : 'transparent',
             color: 'var(--text-color)',

@@ -708,10 +708,21 @@ export function saveHistory(messages, threadId = null) {
   }
 }
 
+const REACT_SCRIPT = 'https://unpkg.com/react@18/umd/react.production.min.js';
+const REACT_DOM_SCRIPT = 'https://unpkg.com/react-dom@18/umd/react-dom.production.min.js';
+
 export async function loadReact() {
   if (window.React && window.ReactDOM) return;
-  if (!window.React) await loadScript('https://unpkg.com/react@18/umd/react.production.min.js');
-  if (!window.ReactDOM) await loadScript('https://unpkg.com/react-dom@18/umd/react-dom.production.min.js');
+  await loadScript(REACT_SCRIPT);
+  await loadScript(REACT_DOM_SCRIPT);
+}
+
+const MARKED = 'https://unpkg.com/marked@12.0.2/lib/marked.umd.js';
+const DOMPURIFY = 'https://unpkg.com/dompurify@3.3.1/dist/purify.min.js';
+
+export async function loadMarkedPurify() {
+  await loadScript(MARKED);
+  await loadScript(DOMPURIFY);
 }
 
 export function loadScript(src) {
