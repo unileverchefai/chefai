@@ -6,7 +6,9 @@ import {
   getCookieId,
   getOrCreateCookieId,
   createUser,
+  getPlaceholderText,
 } from '@scripts/custom/utils.js';
+import { VALIDATIONS_PLACEHOLDERS } from '@scripts/common.js';
 import { ENDPOINTS as CHEF_AI_ENDPOINTS, SUBSCRIPTION_KEY as CHEF_AI_SUBSCRIPTION_KEY } from '@api/endpoints.js';
 import { getCountry, getLang } from '@scripts/custom/locale.js';
 import { apiRequest } from './endpoints.js';
@@ -117,7 +119,7 @@ async function loginUserWithCookieId(email, cookieId = null) {
 
 export async function login(email, password) {
   if (!email || !password) {
-    throw new Error('Email and password are required');
+    throw new Error(getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_login_missing_credentials'));
   }
 
   const credentials = btoa(`${email}:${password}`);
@@ -134,7 +136,7 @@ export async function login(email, password) {
     );
 
     if (!token || typeof token !== 'string') {
-      throw new Error('Invalid response from server');
+      throw new Error(getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_login_invalid_response'));
     }
 
     setToken(token);
@@ -144,7 +146,7 @@ export async function login(email, password) {
     return token;
   } catch (error) {
     if (error.message.includes('401') || error.message.includes('Unauthorized')) {
-      throw new Error('Invalid email or password');
+      throw new Error(getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_login_invalid_credentials'));
     }
     throw error;
   }
@@ -163,11 +165,11 @@ export async function register(formData) {
   } = formData;
 
   if (!email || !password || !confirmPassword || !firstName || !lastName) {
-    throw new Error('Please fill in all required fields');
+    throw new Error(getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_register_missing_fields'));
   }
 
   if (password !== confirmPassword) {
-    throw new Error('Passwords do not match');
+    throw new Error(getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_register_password_mismatch'));
   }
 
   const typeOfBusiness = businessType
@@ -208,13 +210,13 @@ export async function register(formData) {
       return response;
     }
 
-    throw new Error(response.message ?? 'Registration failed');
+    throw new Error(response.message ?? getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_register_failed_generic'));
   } catch (error) {
     if (error.message.includes('400') || error.message.includes('Bad Request')) {
-      throw new Error('Invalid registration data. Please check your information.');
+      throw new Error(getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_register_invalid_data'));
     }
     if (error.message.includes('409') || error.message.includes('Conflict')) {
-      throw new Error('An account with this email already exists.');
+      throw new Error(getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_register_email_conflict'));
     }
     throw error;
   }
@@ -222,7 +224,7 @@ export async function register(formData) {
 
 export async function resetPassword(email, mobilePhone = '') {
   if (!email) {
-    throw new Error('Email is required');
+    throw new Error(getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_reset_missing_email'));
   }
 
   try {
@@ -242,7 +244,7 @@ export async function resetPassword(email, mobilePhone = '') {
     return response;
   } catch (error) {
     if (error.message.includes('404') || error.message.includes('Not Found')) {
-      throw new Error('No account found with this email address.');
+      throw new Error(getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_reset_email_not_found'));
     }
     throw error;
   }
