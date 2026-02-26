@@ -1,10 +1,10 @@
-import { createElement, LOGIN_MODAL_PLACEHOLDERS } from '@scripts/common.js';
+import { createElement, SIGNIN_MODAL_PLACEHOLDERS } from '@scripts/common.js';
 import createModal from '@helpers/modal/index.js';
 import { loadCSS } from '@scripts/aem.js';
 import { login } from '@auth/authService.js';
 import openCookieAgreementModal from '@helpers/cookie-agreement/index.js';
 import { getUrl } from '@scripts/custom/redirect.js';
-import { getLang } from '@scripts/custom/locale.js';
+import { getPlaceholderText } from '@scripts/custom/utils.js';
 
 /**
  * Opens the sign-in modal
@@ -15,10 +15,6 @@ export default function openSignInModal() {
   loadCSS(`${window.hlx.codeBasePath}/blocks/sign-in/sign-in.css`).catch(() => {
     // CSS loading error handled silently
   });
-
-  const language = getLang();
-
-  const getSigninText = (key) => LOGIN_MODAL_PLACEHOLDERS?.[key]?.[language];
 
   // Create modal content
   const content = createElement('div', {
@@ -33,14 +29,14 @@ export default function openSignInModal() {
   // Title
   const title = createElement('h2', {
     className: 'signin-modal-title',
-    innerContent: getSigninText('title'),
+    innerContent: getPlaceholderText(SIGNIN_MODAL_PLACEHOLDERS, 'title'),
   });
   topArea.appendChild(title);
 
   // Description
   const description = createElement('p', {
     className: 'signin-modal-description',
-    innerContent: getSigninText('description'),
+    innerContent: getPlaceholderText(SIGNIN_MODAL_PLACEHOLDERS, 'description'),
   });
   topArea.appendChild(description);
 
@@ -55,13 +51,13 @@ export default function openSignInModal() {
   });
   const emailLabel = createElement('label', {
     className: 'form-label',
-    innerContent: getSigninText('label_email'),
+    innerContent: getPlaceholderText(SIGNIN_MODAL_PLACEHOLDERS, 'label_email'),
   });
   const emailInput = createElement('input', {
     className: 'form-input',
     attributes: {
       type: 'email',
-      placeholder: getSigninText('placeholder_email'),
+      placeholder: getPlaceholderText(SIGNIN_MODAL_PLACEHOLDERS, 'placeholder_email'),
     },
   });
   emailGroup.appendChild(emailLabel);
@@ -74,7 +70,7 @@ export default function openSignInModal() {
   });
   const passwordLabel = createElement('label', {
     className: 'form-label',
-    innerContent: getSigninText('label_password'),
+    innerContent: getPlaceholderText(SIGNIN_MODAL_PLACEHOLDERS, 'label_password'),
   });
   const passwordInputWrapper = createElement('div', {
     className: 'form-input-wrapper',
@@ -117,7 +113,7 @@ export default function openSignInModal() {
   });
   const forgotLink = createElement('a', {
     className: 'signin-form-forgot-link',
-    innerContent: getSigninText('link_forgot_pwd'),
+    innerContent: getPlaceholderText(SIGNIN_MODAL_PLACEHOLDERS, 'link_forgot_pwd'),
     attributes: {
       href: '#',
     },
@@ -137,7 +133,7 @@ export default function openSignInModal() {
   // Sign in button
   const signInButton = createElement('button', {
     className: 'btn-primary',
-    innerContent: getSigninText('button_signin'),
+    innerContent: getPlaceholderText(SIGNIN_MODAL_PLACEHOLDERS, 'button_signin'),
     attributes: {
       type: 'button',
     },
@@ -156,16 +152,16 @@ export default function openSignInModal() {
   });
   const continueLink = createElement('a', {
     className: 'signin-modal-bottom-link',
-    innerContent: getSigninText('footer_link'),
+    innerContent: getPlaceholderText(SIGNIN_MODAL_PLACEHOLDERS, 'footer_link'),
     attributes: {
       href: '#',
     },
   });
-  bottomText.textContent = `${getSigninText('footer_no_account')} `;
+  bottomText.textContent = `${getPlaceholderText(SIGNIN_MODAL_PLACEHOLDERS, 'footer_no_account')} `;
   bottomText.appendChild(continueLink);
   bottomText.appendChild(
     document.createTextNode(
-      ` ${getSigninText('footer_suffix')}`,
+      ` ${getPlaceholderText(SIGNIN_MODAL_PLACEHOLDERS, 'footer_suffix')}`,
     ),
   );
   bottomArea.appendChild(bottomText);
@@ -249,7 +245,7 @@ export default function openSignInModal() {
       errorMessage.textContent = error.message ?? 'Invalid email or password. Please try again.';
       errorMessage.style.display = 'block';
       signInButton.disabled = false;
-      signInButton.textContent = getSigninText('button_signin');
+      signInButton.textContent = getPlaceholderText(SIGNIN_MODAL_PLACEHOLDERS, 'button_signin');
     }
   });
 
