@@ -311,33 +311,98 @@ a.insight-card-cta:focus {
   background: color-mix(in srgb, var(--culinary-roots-bright) 95%, transparent);
 }
 
-.shimmer-loading {
-  pointer-events: none;
-}
-
-.shimmer-card {
-  background: linear-gradient(
-    90deg,
-    rgb(255 255 255 / 10%) 0%,
-    rgb(255 255 255 / 20%) 50%,
-    rgb(255 255 255 / 10%) 100%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 1.5s ease-in-out infinite;
-}
-
+/* Loading state animations (same pattern as carousel-biz-api) */
 @keyframes shimmer {
-  0% {
-    background-position: 200% 0;
+  from {
+    background-position: 0% 0%;
   }
 
-  100% {
-    background-position: -200% 0;
+  to {
+    background-position: 100% 100%;
   }
 }
 
-.shimmer-content {
-  height: 180px;
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+.insights-teaser-cards.fade-out .insight-card {
+  animation: fade-out 0.3s ease-in-out forwards;
+}
+
+.insights-teaser-cards.fade-in .insight-card {
+  animation: fade-in 0.4s ease-in-out;
+}
+
+.insights-teaser-cards.is-loading .insight-card {
+  background-color: white !important;
+  background-image: linear-gradient(180deg, rgb(241 90 34 / 10%) 0%, rgb(235 34 99 / 10%) 65%, rgb(176 43 159 / 10%) 100%) !important;
+  position: relative;
+}
+
+.insights-teaser-cards.is-loading .insight-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgb(255 90 0 / 0%) 0%, rgb(255 90 0 / 20%) 30%, rgb(255 90 0 / 30%) 50%, rgb(255 90 0 / 20%) 70%, rgb(255 90 0 / 0%) 100%);
+  background-size: 200% 200%;
+  background-position: 0% 0%;
+  animation: shimmer 1.5s ease-in-out infinite alternate;
+  z-index: 1;
+  border-radius: var(--radius-card);
+}
+
+.insights-teaser-cards.is-loading .insight-card::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 32px;
+  background-image: url('/icons/sprinkle.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-top: -20px;
+  opacity: 1;
+  z-index: 10;
+}
+
+.insights-teaser-cards.is-loading .insight-card * {
+  opacity: 0;
+}
+
+.insights-teaser-cards.is-loading .insight-card .loading-text {
+  opacity: 1 !important;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, calc(-50% + 36px));
+  font-family: var(--ff-unilever-shilling);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 22px;
+  color: var(--text-color);
+  text-align: center;
+  white-space: nowrap;
+  z-index: 10;
 }
 
 .insights-teaser-modal-content {
@@ -442,7 +507,9 @@ a.insight-card-cta:focus {
     transition: none;
   }
 
-  .shimmer-card {
+  .insights-teaser-cards.is-loading .insight-card::after,
+  .insights-teaser-cards.fade-out .insight-card,
+  .insights-teaser-cards.fade-in .insight-card {
     animation: none;
   }
 

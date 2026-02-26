@@ -23,10 +23,16 @@ function parseCardData(row, isLive) {
 
   if (!header || !description) return null;
 
+  const MAX_DESCRIPTION_LENGTH = 120;
+  const descText = description.textContent.trim();
+  const truncatedDesc = descText.length > MAX_DESCRIPTION_LENGTH
+    ? `${descText.slice(0, MAX_DESCRIPTION_LENGTH)}…`
+    : descText;
+
   const cardData = {
     header: header.textContent.trim(),
     stat: stat ? stat.textContent.trim() : null,
-    description: description.textContent.trim(),
+    description: truncatedDesc,
     ctaLabel: null,
     ctaHref: null,
     businessTypes: [],
@@ -290,24 +296,31 @@ function filterCards(container, selectedType) {
 }
 
 /**
- * Creates shimmer loading cards
- * @param {number} count Number of shimmer cards
- * @returns {Element} Container with shimmer cards
+ * Shows loading skeleton state on the cards container
+ * (matches carousel-biz-api pattern: class-driven shimmer overlay)
+ * @param {Element} container The cards container
  */
-function createShimmerCards(count) {
-  const shimmerContainer = createElement('ul', {
-    className: 'insights-teaser-cards shimmer-loading',
+function showLoadingSkeleton(container) {
+  container.classList.add('is-loading');
+  container.querySelectorAll('.insight-card').forEach((card) => {
+    let loadingText = card.querySelector('.loading-text');
+    if (!loadingText) {
+      loadingText = createElement('div', {
+        className: 'loading-text',
+        innerContent: 'Customising insights',
+      });
+      card.appendChild(loadingText);
+    }
   });
+}
 
-  for (let i = 0; i < count; i += 1) {
-    const shimmerCard = createElement('li', {
-      className: 'insight-card shimmer-card',
-      innerContent: '<div class="shimmer-content"></div>',
-    });
-    shimmerContainer.appendChild(shimmerCard);
-  }
-
-  return shimmerContainer;
+/**
+ * Removes loading skeleton state from the cards container
+ * @param {Element} container The cards container
+ */
+function hideLoadingSkeleton(container) {
+  container.classList.remove('is-loading');
+  container.querySelectorAll('.loading-text').forEach((el) => el.remove());
 }
 
 /**
@@ -453,31 +466,25 @@ export default async function decorate(block) {
     block.appendChild(filter);
 
     setupDropdownBehavior(filter, async (selectedType) => {
-      container.style.opacity = '0';
-      container.style.transition = 'opacity 0.3s ease';
+      // Fade out current cards
+      container.classList.add('fade-out');
+      await new Promise((resolve) => { setTimeout(resolve, 300); });
+      container.classList.remove('fade-out');
 
-      // Wait for fade out + artificial delay
-      await new Promise((resolve) => { setTimeout(resolve, 400); });
+      // Show shimmer loading skeleton on existing cards
+      showLoadingSkeleton(container);
 
-      const shimmerCards = createShimmerCards(4);
-      shimmerCards.style.opacity = '0';
-      block.appendChild(shimmerCards);
+      // Artificial loading delay
+      await new Promise((resolve) => { setTimeout(resolve, 800); });
 
-      await new Promise((resolve) => {
-        setTimeout(() => {
-          shimmerCards.style.opacity = '1';
-          shimmerCards.style.transition = 'opacity 0.3s ease';
-          resolve();
-        }, 50);
-      });
-
-      // Wait for artificial loading delay
-      await new Promise((resolve) => { setTimeout(resolve, 400); });
-
-      shimmerCards.remove();
+      // Filter and hide loading state
+      hideLoadingSkeleton(container);
       const visibleCount = filterCards(container, selectedType);
 
-      container.style.opacity = '1';
+      // Fade in filtered cards
+      container.classList.add('fade-in');
+      await new Promise((resolve) => { setTimeout(resolve, 400); });
+      container.classList.remove('fade-in');
 
       if (block.carouselInstance) {
         block.carouselInstance.destroy();
