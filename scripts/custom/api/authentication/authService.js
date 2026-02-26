@@ -145,10 +145,11 @@ export async function login(email, password) {
     loginUserWithCookieId(email).catch(() => {});
     return token;
   } catch (error) {
-    if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+    const message = String(error?.message ?? '');
+    if (error?.status === 401 || message.includes('401') || message.includes('Unauthorized')) {
       throw new Error(getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_login_invalid_credentials'));
     }
-    throw error;
+    throw new Error(getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_login_invalid_response'));
   }
 }
 
@@ -212,13 +213,14 @@ export async function register(formData) {
 
     throw new Error(response.message ?? getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_register_failed_generic'));
   } catch (error) {
-    if (error.message.includes('400') || error.message.includes('Bad Request')) {
-      throw new Error(getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_register_invalid_data'));
-    }
-    if (error.message.includes('409') || error.message.includes('Conflict')) {
+    const message = String(error?.message ?? '').toLowerCase();
+    if (error?.status === 409 || message.includes('409') || message.includes('conflict') || message.includes('already exists')) {
       throw new Error(getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_register_email_conflict'));
     }
-    throw error;
+    if (error?.status === 400 || message.includes('400') || message.includes('bad request')) {
+      throw new Error(getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_register_invalid_data'));
+    }
+    throw new Error(getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_register_failed_generic'));
   }
 }
 
@@ -243,7 +245,8 @@ export async function resetPassword(email, mobilePhone = '') {
 
     return response;
   } catch (error) {
-    if (error.message.includes('404') || error.message.includes('Not Found')) {
+    const message = String(error?.message ?? '');
+    if (error?.status === 404 || message.includes('404') || message.includes('Not Found')) {
       throw new Error(getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_reset_email_not_found'));
     }
     throw error;

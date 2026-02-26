@@ -180,20 +180,20 @@ export default function openSignupPasswordModal(email, registrationData = null) 
     errorMessage.style.color = 'var(--ufs-orange)';
 
     if (!password) {
-      errorMessage.textContent = 'Please enter a password';
+      errorMessage.textContent = getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_pwd_required');
       errorMessage.style.display = 'block';
       passwordInput.focus();
       return;
     }
 
     if (!validation.minLength || !validation.hasCapital || !validation.hasNumberOrSymbol) {
-      errorMessage.textContent = 'Please meet all password requirements';
+      errorMessage.textContent = getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_pwd_requirements_not_met');
       errorMessage.style.display = 'block';
       return;
     }
 
     submitButton.disabled = true;
-    submitButton.textContent = 'Creating account...';
+    submitButton.textContent = getPlaceholderText(SIGNUP_MODAL_PLACEHOLDERS, 'auth_creating_account');
 
     try {
       if (registrationData) {
@@ -209,7 +209,7 @@ export default function openSignupPasswordModal(email, registrationData = null) 
         window.location.href = getUrl('personalized-hub');
       }
     } catch (error) {
-      errorMessage.textContent = error.message ?? 'Failed to create account. Please try again.';
+      errorMessage.textContent = getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_register_failed_generic');
       errorMessage.style.display = 'block';
       submitButton.disabled = false;
       submitButton.textContent = 'Create Account';

@@ -1,6 +1,7 @@
-import { createElement } from '@scripts/common.js';
+import { createElement, FORGET_PW_MODAL_PLACEHOLDERS, SIGNIN_MODAL_PLACEHOLDERS } from '@scripts/common.js';
 import createModal from '@helpers/modal/index.js';
 import { loadCSS } from '@scripts/aem.js';
+import { getPlaceholderText } from '@scripts/custom/utils.js';
 
 export default function openResetPasswordModal() {
   loadCSS(`${window.hlx.codeBasePath}/helpers/reset-password/reset-password.css`).catch(() => {});
@@ -15,13 +16,13 @@ export default function openResetPasswordModal() {
 
   const title = createElement('h2', {
     className: 'reset-password-modal-title',
-    innerContent: 'Forgot your password',
+    innerContent: getPlaceholderText(FORGET_PW_MODAL_PLACEHOLDERS, 'forgot_pwd_title'),
   });
   topArea.appendChild(title);
 
   const description = createElement('p', {
     className: 'reset-password-modal-description',
-    innerContent: 'Enter your email to receive the reset password link',
+    innerContent: getPlaceholderText(FORGET_PW_MODAL_PLACEHOLDERS, 'forgot_pwd_desc'),
   });
   topArea.appendChild(description);
 
@@ -34,13 +35,13 @@ export default function openResetPasswordModal() {
   });
   const emailLabel = createElement('label', {
     className: 'form-label',
-    innerContent: 'Email address',
+    innerContent: getPlaceholderText(SIGNIN_MODAL_PLACEHOLDERS, 'label_email'),
   });
   const emailInput = createElement('input', {
     className: 'form-input',
     attributes: {
       type: 'email',
-      placeholder: 'email@example.com',
+      placeholder: getPlaceholderText(SIGNIN_MODAL_PLACEHOLDERS, 'placeholder_email'),
     },
   });
   emailGroup.appendChild(emailLabel);
@@ -57,7 +58,7 @@ export default function openResetPasswordModal() {
 
   const submitButton = createElement('button', {
     className: 'btn-primary',
-    innerContent: 'Continue',
+    innerContent: getPlaceholderText(FORGET_PW_MODAL_PLACEHOLDERS, 'btn_continue'),
     attributes: {
       type: 'button',
     },
@@ -72,7 +73,7 @@ export default function openResetPasswordModal() {
   });
   const cancelLink = createElement('button', {
     className: 'reset-password-modal-cancel',
-    innerContent: 'Cancel',
+    innerContent: getPlaceholderText(FORGET_PW_MODAL_PLACEHOLDERS, 'btn_cancel'),
     attributes: {
       type: 'button',
     },
@@ -112,7 +113,7 @@ export default function openResetPasswordModal() {
     errorMessage.style.color = 'var(--ufs-orange)';
 
     if (!email) {
-      errorMessage.textContent = 'Please enter your email address';
+      errorMessage.textContent = getPlaceholderText(FORGET_PW_MODAL_PLACEHOLDERS, 'auth_email_required');
       errorMessage.style.display = 'block';
       emailInput.focus();
       return;

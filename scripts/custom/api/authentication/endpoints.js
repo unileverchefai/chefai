@@ -2,8 +2,8 @@ import {
   API_BASE_URL,
   SUBSCRIPTION_KEY,
 } from './constants.js';
-import { VALIDATIONS_PLACEHOLDERS } from '../../common.js';
-import { getPlaceholderText } from '../../utils.js';
+import { VALIDATIONS_PLACEHOLDERS } from '@scripts/common.js';
+import { getPlaceholderText } from '@scripts/custom/utils.js';
 
 const DEFAULT_TIMEOUT = 30000;
 
@@ -102,7 +102,9 @@ export async function apiRequest(endpoint, options = {}) {
       } catch {
         // Use default error message
       }
-      throw new Error(errorMessage);
+      const error = new Error(errorMessage);
+      error.status = response.status;
+      throw error;
     }
 
     if (isTextResponse) {
