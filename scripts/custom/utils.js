@@ -7,6 +7,17 @@ const languageCode = getLang();
 
 export { formatResponse };
 
+/**
+ * Returns the localized value for a given key from a formatted placeholders object.
+ * @param {Object} placeholders - Formatted placeholders (e.g. SIGNIN_MODAL_PLACEHOLDERS).
+ * @param {string} key - The placeholder key to look up.
+ * @returns {string} The localized string, falling back to English, then empty string.
+ */
+export function getPlaceholderText(placeholders, key) {
+  const language = getLang();
+  return placeholders?.[key]?.[language] ?? placeholders?.[key]?.en ?? '';
+}
+
 export function setCookie(name, value, days = 365) {
   try {
     const date = new Date();

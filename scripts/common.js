@@ -239,7 +239,7 @@ const {
 } = await getPlaceholders() || {};
 
 // Format placeholders for different categories and store them in constants for easy access
-export const LOGIN_MODAL_PLACEHOLDERS = formatPlaceholders(signinmodal?.data);
+export const SIGNIN_MODAL_PLACEHOLDERS = formatPlaceholders(signinmodal?.data);
 export const HERO_BANNER_PLACEHOLDERS = formatPlaceholders(herobanner?.data);
 export const COUNTDOWN_HERO_PLACEHOLDERS = formatPlaceholders(countdownhero?.data);
 export const OTHER_PLACEHOLDERS = formatPlaceholders(placeholdersData?.data);
