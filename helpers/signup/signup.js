@@ -174,14 +174,14 @@ export default function openSignUpReportModal() {
     errorMessage.style.color = 'var(--ufs-orange)';
 
     if (!email || !firstName || !lastName) {
-      errorMessage.textContent = 'Please fill in all required fields';
+      errorMessage.textContent = getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_register_missing_fields');
       errorMessage.style.display = 'block';
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      errorMessage.textContent = 'Please enter a valid email address';
+      errorMessage.textContent = getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_email_invalid');
       errorMessage.style.display = 'block';
       return;
     }

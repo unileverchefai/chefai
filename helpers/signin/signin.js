@@ -5,7 +5,7 @@ import { login } from '@auth/authService.js';
 import openCookieAgreementModal from '@helpers/cookie-agreement/index.js';
 import { getUrl } from '@scripts/custom/redirect.js';
 import { getPlaceholderText } from '@scripts/custom/utils.js';
-
+import { VALIDATIONS_PLACEHOLDERS } from '@scripts/common.js';
 /**
  * Opens the sign-in modal
  * @returns {Object} Modal instance
@@ -214,7 +214,7 @@ export default function openSignInModal() {
 
     // Validate fields
     if (!email || !password) {
-      errorMessage.textContent = 'Please enter your email and password';
+      errorMessage.textContent = getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_login_missing_credentials');
       errorMessage.style.display = 'block';
       return;
     }
@@ -242,7 +242,7 @@ export default function openSignInModal() {
       }
     } catch (error) {
       // Show error message
-      errorMessage.textContent = error.message ?? 'Invalid email or password. Please try again.';
+      errorMessage.textContent = getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_login_invalid_credentials');
       errorMessage.style.display = 'block';
       signInButton.disabled = false;
       signInButton.textContent = getPlaceholderText(SIGNIN_MODAL_PLACEHOLDERS, 'button_signin');
