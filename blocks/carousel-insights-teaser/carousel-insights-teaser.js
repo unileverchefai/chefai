@@ -1,30 +1,9 @@
-import { createElement } from '@scripts/common.js';
+import { createElement, validateTheme } from '@scripts/common.js';
 import { getMetadata } from '@scripts/aem.js';
 import createCarousel from '@helpers/carousel/carousel.js';
 import createModal from '@helpers/modal/index.js';
 import openCookieAgreementModal from '@helpers/cookie-agreement/index.js';
 import openPersonalizedHub from '@helpers/personalized-hub/personalized-hub.js';
-
-/**
- * Validates the theme and returns the trend class name
- * @param {string} theme The theme from metadata (t1, t2, t3, t4)
- * @returns {string|null} The valid trend class or null
- */
-function validateTheme(theme) {
-  const themeMap = {
-    t1: 'borderless-cuisine',
-    t2: 'street-food-couture',
-    t3: 'diner-designed',
-    t4: 'culinary-roots',
-    // Also support full names for backwards compatibility
-    'borderless-cuisine': 'borderless-cuisine',
-    'street-food-couture': 'street-food-couture',
-    'diner-designed': 'diner-designed',
-    'culinary-roots': 'culinary-roots',
-  };
-
-  return themeMap[theme] || null;
-}
 
 /**
  * Parses card data from an authored row
@@ -54,26 +33,26 @@ function parseCardData(row, isLive) {
     expandedContent: null,
   };
 
-  if (isLive) {
-    // Parse business types from column 2
-    if (cells[1]) {
-      const businessTypesList = cells[1].querySelector('ul');
-      if (businessTypesList) {
-        const items = businessTypesList.querySelectorAll('li');
-        cardData.businessTypes = [...items].map((item) => item.textContent.trim());
-      }
-    }
+  if (!isLive) {
+    return cardData;
+  }
 
-    // Get CTA info
-    if (cta) {
-      cardData.ctaLabel = cta.textContent.trim();
-      cardData.ctaHref = cta.getAttribute('href');
-    }
+  // Parse business types from column 2
+  const businessTypesList = cells[1]?.querySelector('ul');
+  if (businessTypesList) {
+    const items = businessTypesList.querySelectorAll('li');
+    cardData.businessTypes = [...items].map((item) => item.textContent.trim());
+  }
 
-    // Store expanded content HTML from column 3
-    if (cells[2]) {
-      cardData.expandedContent = cells[2].innerHTML.trim();
-    }
+  // Get CTA info
+  if (cta) {
+    cardData.ctaLabel = cta.textContent.trim();
+    cardData.ctaHref = cta.getAttribute('href');
+  }
+
+  // Store expanded content HTML from column 3
+  if (cells[2]) {
+    cardData.expandedContent = cells[2].innerHTML.trim();
   }
 
   return cardData;
