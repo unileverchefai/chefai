@@ -303,6 +303,10 @@ export function getUserIdFromCookie() {
   return getCookie('user_id');
 }
 
+export function getUserDataFromCookie() {
+  return getCookie('user_data');
+}
+
 export function getAnonymousUserIdFromCookie() {
   return getUserIdFromCookie();
 }
