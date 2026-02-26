@@ -1,9 +1,9 @@
+import { VALIDATIONS_PLACEHOLDERS } from '@scripts/common.js';
+import { getPlaceholderText } from '@scripts/custom/utils.js';
 import {
   API_BASE_URL,
   SUBSCRIPTION_KEY,
 } from './constants.js';
-import { VALIDATIONS_PLACEHOLDERS } from '@scripts/common.js';
-import { getPlaceholderText } from '@scripts/custom/utils.js';
 
 const DEFAULT_TIMEOUT = 30000;
 

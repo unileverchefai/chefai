@@ -1,11 +1,10 @@
-import { createElement, SIGNIN_MODAL_PLACEHOLDERS } from '@scripts/common.js';
+import { createElement, SIGNIN_MODAL_PLACEHOLDERS, VALIDATIONS_PLACEHOLDERS } from '@scripts/common.js';
 import createModal from '@helpers/modal/index.js';
 import { loadCSS } from '@scripts/aem.js';
 import { login } from '@auth/authService.js';
 import openCookieAgreementModal from '@helpers/cookie-agreement/index.js';
 import { getUrl } from '@scripts/custom/redirect.js';
 import { getPlaceholderText } from '@scripts/custom/utils.js';
-import { VALIDATIONS_PLACEHOLDERS } from '@scripts/common.js';
 /**
  * Opens the sign-in modal
  * @returns {Object} Modal instance

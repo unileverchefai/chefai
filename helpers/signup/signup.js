@@ -1,4 +1,4 @@
-import { createElement, SIGNUP_MODAL_PLACEHOLDERS } from '@scripts/common.js';
+import { createElement, SIGNUP_MODAL_PLACEHOLDERS, VALIDATIONS_PLACEHOLDERS } from '@scripts/common.js';
 import createModal from '@helpers/modal/index.js';
 import { loadCSS } from '@scripts/aem.js';
 import { getPlaceholderText } from '@scripts/custom/utils.js';
