@@ -1,0 +1,13 @@
+/* Theme T4: Culinary Roots (Dark Blue) */
+
+body.t4 {
+  /* Page-level theme styling for Culinary Roots */
+  /* The trend color variables are already defined in styles/styles.css:
+     --culinary-roots: #00102d
+     --culinary-roots-bright: #0090ba
+     --gradient-culinary-roots
+     --glow-culinary-roots
+  */
+}
+
+/* Additional page-level overrides for T4 theme can be added here */
