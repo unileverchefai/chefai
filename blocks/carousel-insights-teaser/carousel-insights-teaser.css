@@ -5,7 +5,7 @@ main > .section > .carousel-insights-teaser-wrapper {
 }
 
 /* Style paragraph preceding the carousel-insights-teaser block */
-.section:has(.carousel-insights-teaser) .default-content-wrapper p {
+.carousel-insights-teaser-container .default-content-wrapper p {
   font-size: var(--body-font-size-xss);
   font-weight: 500;
   line-height: 22px;
@@ -16,12 +16,12 @@ main > .section > .carousel-insights-teaser-wrapper {
   padding-block-start: var(--spacing-2xl);
 }
 
-.section:has(.carousel-insights-teaser) .default-content-wrapper {
+.carousel-insights-teaser-container .default-content-wrapper {
   background-color: var(--light-mushroom);
   padding-inline: var(--spacing-md);
 }
 
-.section:has(.carousel-insights-teaser.tease) .default-content-wrapper p {
+.carousel-insights-teaser-container:has(.tease) .default-content-wrapper p {
   padding-bottom: var(--spacing-md);
 }
 
@@ -340,9 +340,9 @@ a.insight-card-cta:focus {
   animation: fade-in 0.4s ease-in-out;
 }
 
-.insights-teaser-cards.is-loading .insight-card {
-  background-color: var(--c-white) !important;
-  background-image: linear-gradient(180deg, rgb(241 90 34 / 10%) 0%, rgb(235 34 99 / 10%) 65%, rgb(176 43 159 / 10%) 100%) !important;
+.carousel-insights-teaser .insights-teaser-cards.is-loading .insight-card {
+  background-color: var(--c-white);
+  background-image: linear-gradient(180deg, rgb(241 90 34 / 10%) 0%, rgb(235 34 99 / 10%) 65%, rgb(176 43 159 / 10%) 100%);
 }
 
 .insights-teaser-cards.is-loading .insight-card::after {
@@ -379,7 +379,7 @@ a.insight-card-cta:focus {
 }
 
 .insights-teaser-cards.is-loading .insight-card .loading-text {
-  opacity: 1 !important;
+  opacity: 1;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -478,12 +478,12 @@ a.insight-card-cta:focus {
 }
 
 @media (width >= 900px) {
-  .section:has(.carousel-insights-teaser) .default-content-wrapper p {
+  .carousel-insights-teaser-container .default-content-wrapper p {
     display: flex;
     justify-content: center;
   }
 
-  .section:has(.carousel-insights-teaser.tease) .default-content-wrapper p {
+  .carousel-insights-teaser-container:has(.tease) .default-content-wrapper p {
     padding-bottom: 20px;
   }
 
