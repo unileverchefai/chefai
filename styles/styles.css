@@ -13,6 +13,7 @@
 @import url('helpers.css');
 @import url('inputs.css');
 @import url('buttons.css');
+@import url('typography.css');
 
 :root {
   /* colors */
