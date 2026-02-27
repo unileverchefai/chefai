@@ -359,7 +359,8 @@ header nav[aria-expanded='true'] {
 
 .signout-button {
   border: 0;
-  padding: 0;
+  padding: 5px;
+  padding-left: 0;
   margin: 24px 0;
   background-color: transparent;
   color: inherit;
@@ -375,4 +376,34 @@ header nav[aria-expanded='true'] {
   opacity: 0.5;
   height: 100vh;
   z-index: 100;
+}
+
+@media (width <= 768px) and (height < 800px) {
+  /* mobile short-height styles */
+	.nav-business-name {
+		font-size: 18px;
+	}
+
+  .default-content-wrapper .nav-link,
+  .default-content-wrapper .nav-link a {
+    font-size: 18px;
+  }
+
+  .language-selector {
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+
+  .language-link {
+    font-size: 18px;
+  }
+
+  .download-report .icon {
+    height: 16px;
+    width: 16px;
+  }
+
+  .download-report span {
+    font-size: 16px;
+  }
 }

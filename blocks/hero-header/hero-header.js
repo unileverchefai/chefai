@@ -1,5 +1,10 @@
 import { createElement } from '@scripts/common.js';
 import { buildNavSections, createHamburgerMenu } from '@blocks/header/header.js';
+import { hasToken } from '@auth/tokenManager.js';
+import { getUserDataFromCookie } from '@scripts/custom/utils.js';
+
+// change background color of hamburger menu when user scrolls down 200px
+const SCROLL_THRESHOLD = 200;
 
 const blockName = 'hero-header';
 const blockClasses = {
@@ -36,6 +41,10 @@ function createLogoLink() {
 }
 
 export default async function decorate(block) {
+  const isLoggedIn = hasToken();
+  const userData = getUserDataFromCookie();
+  const businessName = userData ? JSON.parse(userData)?.business_name : null;
+
   const header = document.querySelector('header');
   const section = block.closest('.section');
   const heroHeaderElement = createElement('header', {
@@ -58,7 +67,7 @@ export default async function decorate(block) {
 
   const nav = heroHeaderElement.querySelector(`.${blockName}__nav`);
   const hamburgerMenu = createHamburgerMenu(nav);
-  const navSections = await buildNavSections();
+  const navSections = await buildNavSections(isLoggedIn, businessName);
   const logoLink = createLogoLink();
   const navBar = createElement('div', { className: `${blockName}__nav-bar` });
   navBar.append(hamburgerMenu, logoLink);
@@ -127,6 +136,16 @@ export default async function decorate(block) {
     } else {
       document.body.prepend(heroHeaderElement);
     }
+
+    function onScroll() {
+      if (window.scrollY >= SCROLL_THRESHOLD) {
+        hamburgerMenu.classList.add('nav-onscroll');
+      } else {
+        hamburgerMenu.classList.remove('nav-onscroll');
+      }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
 
     // Clean up empty sections
     if (
