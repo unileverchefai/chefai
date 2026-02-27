@@ -1,7 +1,8 @@
-import { createElement } from '@scripts/common.js';
+import { createElement, FORGET_PW_MODAL_PLACEHOLDERS, SIGNIN_MODAL_PLACEHOLDERS } from '@scripts/common.js';
 import createModal from '@helpers/modal/index.js';
 import { loadCSS } from '@scripts/aem.js';
 import { resetPassword } from '@auth/authService.js';
+import { getPlaceholderText } from '@scripts/custom/utils.js';
 
 function createPasswordRequirement(text, isValid) {
   const requirement = createElement('div', {
@@ -49,13 +50,13 @@ export default function openChangePasswordModal(email) {
   const title = createElement('h2', {
     className: 'change-password-modal-title',
   });
-  title.textContent = 'Change your password';
+  title.textContent = getPlaceholderText(FORGET_PW_MODAL_PLACEHOLDERS, 'change_pwd_title');
   topArea.appendChild(title);
 
   const description = createElement('p', {
     className: 'change-password-modal-description',
   });
-  description.textContent = 'Please follow the indications to set your new password';
+  description.textContent = getPlaceholderText(FORGET_PW_MODAL_PLACEHOLDERS, 'change_pwd_desc');
   topArea.appendChild(description);
 
   const formContainer = createElement('div', {
@@ -68,7 +69,7 @@ export default function openChangePasswordModal(email) {
   const passwordLabel = createElement('label', {
     className: 'form-label',
   });
-  passwordLabel.textContent = 'Password';
+  passwordLabel.textContent = getPlaceholderText(SIGNIN_MODAL_PLACEHOLDERS, 'label_password');
   const passwordInputWrapper = createElement('div', {
     className: 'form-input-wrapper',
   });
@@ -107,9 +108,18 @@ export default function openChangePasswordModal(email) {
     className: 'password-requirements',
   });
 
-  const requirement1 = createPasswordRequirement('At least 8 characters', false);
-  const requirement2 = createPasswordRequirement('Contains a capital letter', false);
-  const requirement3 = createPasswordRequirement('Contains a number or symbol', false);
+  const requirement1 = createPasswordRequirement(
+    getPlaceholderText(FORGET_PW_MODAL_PLACEHOLDERS, 'pwd_req_length'),
+    false,
+  );
+  const requirement2 = createPasswordRequirement(
+    getPlaceholderText(FORGET_PW_MODAL_PLACEHOLDERS, 'pwd_req_capital'),
+    false,
+  );
+  const requirement3 = createPasswordRequirement(
+    getPlaceholderText(FORGET_PW_MODAL_PLACEHOLDERS, 'pwd_req_symbol'),
+    false,
+  );
 
   requirementsContainer.appendChild(requirement1);
   requirementsContainer.appendChild(requirement2);
@@ -127,7 +137,7 @@ export default function openChangePasswordModal(email) {
 
   const submitButton = createElement('button', {
     className: 'btn-primary',
-    innerContent: 'Update my Password',
+    innerContent: getPlaceholderText(FORGET_PW_MODAL_PLACEHOLDERS, 'btn_update_pwd'),
     attributes: {
       type: 'button',
     },
@@ -208,31 +218,32 @@ export default function openChangePasswordModal(email) {
     errorMessage.textContent = '';
 
     if (!password) {
-      errorMessage.textContent = 'Please enter a password';
+      errorMessage.textContent = getPlaceholderText(FORGET_PW_MODAL_PLACEHOLDERS, 'error_missing_password');
       errorMessage.style.display = 'block';
       passwordInput.focus();
       return;
     }
 
     if (!validation.minLength || !validation.hasCapital || !validation.hasNumberOrSymbol) {
-      errorMessage.textContent = 'Please meet all password requirements';
+      errorMessage.textContent = getPlaceholderText(FORGET_PW_MODAL_PLACEHOLDERS, 'error_password_requirements');
       errorMessage.style.display = 'block';
       return;
     }
 
     submitButton.disabled = true;
-    submitButton.textContent = 'Updating...';
+    submitButton.textContent = getPlaceholderText(FORGET_PW_MODAL_PLACEHOLDERS, 'btn_update_pwd_loading');
 
     try {
       await resetPassword(email, '');
       modal.close();
       window.location.reload();
     } catch (error) {
-      errorMessage.textContent = error.message ?? 'Failed to update password. Please try again.';
+      errorMessage.textContent = error.message
+        ?? getPlaceholderText(FORGET_PW_MODAL_PLACEHOLDERS, 'error_update_password');
       errorMessage.style.color = 'var(--ufs-orange)';
       errorMessage.style.display = 'block';
       submitButton.disabled = false;
-      submitButton.textContent = 'Update my Password';
+      submitButton.textContent = getPlaceholderText(FORGET_PW_MODAL_PLACEHOLDERS, 'btn_update_pwd');
     }
   });
 
