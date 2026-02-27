@@ -254,6 +254,9 @@ function formatPlaceholders(values = false) {
 
 const {
   signinmodal,
+  signupmodal,
+  validations,
+  forgetpwmodal,
   herobanner,
   countdownhero,
   data: placeholdersData,
@@ -261,6 +264,9 @@ const {
 
 // Format placeholders for different categories and store them in constants for easy access
 export const SIGNIN_MODAL_PLACEHOLDERS = formatPlaceholders(signinmodal?.data);
+export const SIGNUP_MODAL_PLACEHOLDERS = formatPlaceholders(signupmodal?.data);
+export const VALIDATIONS_PLACEHOLDERS = formatPlaceholders(validations?.data);
+export const FORGET_PW_MODAL_PLACEHOLDERS = formatPlaceholders(forgetpwmodal?.data);
 export const HERO_BANNER_PLACEHOLDERS = formatPlaceholders(herobanner?.data);
 export const COUNTDOWN_HERO_PLACEHOLDERS = formatPlaceholders(countdownhero?.data);
 export const OTHER_PLACEHOLDERS = formatPlaceholders(placeholdersData?.data);
