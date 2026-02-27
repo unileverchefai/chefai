@@ -10,6 +10,7 @@ import {
 } from '@scripts/custom/utils.js';
 
 const countryCode = getCountry();
+const DEFAULT_TIMEOUT_MS = 180000;
 
 let currentEndpoint = 'capgemini';
 
@@ -19,7 +20,7 @@ export function setEndpoint(endpoint) {
   }
 }
 
-function fetchWithTimeout(url, options, timeout = 30000) {
+function fetchWithTimeout(url, options, timeout = DEFAULT_TIMEOUT_MS) {
   return Promise.race([
     fetch(url, options),
     new Promise((_, reject) => {
@@ -79,7 +80,7 @@ export default async function sendMessage(message, options = {}) {
         },
         body: JSON.stringify(payload),
       },
-      options.timeout || 30000,
+      options.timeout ?? DEFAULT_TIMEOUT_MS,
     );
 
     if (!response.ok) {

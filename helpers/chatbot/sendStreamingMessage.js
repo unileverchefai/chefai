@@ -12,6 +12,7 @@ import sendMessage from './sendMessage.js';
 import formatResponse, { parseStreamingEvent } from './responseHandler.js';
 
 const countryCode = getCountry();
+const DEFAULT_TIMEOUT_MS = 180000;
 
 let currentEndpoint = 'capgemini';
 
@@ -21,7 +22,7 @@ export function setEndpoint(endpoint) {
   }
 }
 
-function fetchWithTimeout(url, options, timeout = 30000) {
+function fetchWithTimeout(url, options, timeout = DEFAULT_TIMEOUT_MS) {
   return Promise.race([
     fetch(url, options),
     new Promise((_, reject) => {
@@ -177,7 +178,7 @@ export default async function sendStreamingMessage(message, options = {}) {
           },
           body: JSON.stringify(payload),
         },
-        options.timeout || 30000,
+        options.timeout ?? DEFAULT_TIMEOUT_MS,
       );
 
       if (!apiResponse.ok) {
