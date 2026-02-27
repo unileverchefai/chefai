@@ -259,6 +259,8 @@ const {
   forgetpwmodal,
   herobanner,
   countdownhero,
+  chatbot,
+  cookies,
   data: placeholdersData,
 } = await getPlaceholders() || {};
 
@@ -269,6 +271,8 @@ export const VALIDATIONS_PLACEHOLDERS = formatPlaceholders(validations?.data);
 export const FORGET_PW_MODAL_PLACEHOLDERS = formatPlaceholders(forgetpwmodal?.data);
 export const HERO_BANNER_PLACEHOLDERS = formatPlaceholders(herobanner?.data);
 export const COUNTDOWN_HERO_PLACEHOLDERS = formatPlaceholders(countdownhero?.data);
+export const CHATBOT_PLACEHOLDERS = formatPlaceholders(chatbot?.data);
+export const COOKIES_PLACEHOLDERS = formatPlaceholders(cookies?.data);
 export const OTHER_PLACEHOLDERS = formatPlaceholders(placeholdersData?.data);
 /**
  * Extract video ID from YouTube URL

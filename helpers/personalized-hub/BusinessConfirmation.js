@@ -1,4 +1,6 @@
 import { initCarouselCards } from '@blocks/carousel-cards/carousel-cards.js';
+import { CHATBOT_PLACEHOLDERS } from '@scripts/common.js';
+import { getPlaceholderText } from '@scripts/custom/utils.js';
 
 export default function BusinessConfirmation({
   businessData,
@@ -178,7 +180,7 @@ export default function BusinessConfirmation({
                 className: 'ph-btn-primary',
                 onClick: onConfirm,
               },
-              'I confirm this is my business',
+              getPlaceholderText(CHATBOT_PLACEHOLDERS, 'business_confirmation_button'),
             ),
           ]
           : [
@@ -189,7 +191,7 @@ export default function BusinessConfirmation({
                 className: 'ph-btn-secondary',
                 onClick: onReject,
               },
-              'None of them',
+              getPlaceholderText(CHATBOT_PLACEHOLDERS, 'business_cancel_button'),
             ),
           ],
       ),

@@ -1,9 +1,18 @@
-import { createElement } from '@scripts/common.js';
+import { createElement, COOKIES_PLACEHOLDERS } from '@scripts/common.js';
 import { loadCSS } from '@scripts/aem.js';
 import createModal from '@helpers/modal/index.js';
 import { loadFragment } from '@blocks/fragment/fragment.js';
+import { getUrl } from '@scripts/custom/redirect.js';
+import { getPlaceholderText } from '@scripts/custom/utils.js';
 
-const COOKIE_FRAGMENT_PATH = '/fragments/cookies';
+async function loadCookieFragmentContent() {
+  const cookiesPath = getUrl('cookies');
+  const fragment = await loadFragment(cookiesPath);
+  if (fragment) {
+    return fragment;
+  }
+  return null;
+}
 
 function setCookie(name, value, days = 365) {
   const date = new Date();
@@ -37,7 +46,7 @@ export default function openCookieAgreementModal(onAgree, onClose, required = fa
   });
 
   const loadingParagraph = createElement('p', {
-    innerContent: 'Loading cookie information…',
+    innerContent: getPlaceholderText(COOKIES_PLACEHOLDERS, 'auth_cookie_loading'),
   });
   textArea.appendChild(loadingParagraph);
 
@@ -50,7 +59,7 @@ export default function openCookieAgreementModal(onAgree, onClose, required = fa
 
   const agreeButton = createElement('button', {
     className: 'cookie-agreement-btn',
-    innerContent: 'I agree',
+    innerContent: getPlaceholderText(COOKIES_PLACEHOLDERS, 'btn_agree'),
     attributes: {
       type: 'button',
     },
@@ -73,7 +82,7 @@ export default function openCookieAgreementModal(onAgree, onClose, required = fa
   });
 
   // Load fragment content asynchronously and inject into the modal text area
-  loadFragment(COOKIE_FRAGMENT_PATH)
+  loadCookieFragmentContent()
     .then((fragment) => {
       if (fragment) {
         textArea.innerHTML = fragment.innerHTML;
@@ -83,11 +92,11 @@ export default function openCookieAgreementModal(onAgree, onClose, required = fa
           link.setAttribute('rel', 'noopener noreferrer');
         });
       } else {
-        textArea.innerHTML = '<p>Unable to load cookie information.</p>';
+        textArea.innerHTML = getPlaceholderText(COOKIES_PLACEHOLDERS, 'auth_cookie_load_error');
       }
     })
     .catch(() => {
-      textArea.innerHTML = '<p>Unable to load cookie information.</p>';
+      textArea.innerHTML = getPlaceholderText(COOKIES_PLACEHOLDERS, 'auth_cookie_load_error');
     });
 
   agreeButton.addEventListener('click', () => {
