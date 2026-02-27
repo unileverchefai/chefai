@@ -43,7 +43,7 @@ function createLogoLink() {
 export default async function decorate(block) {
   const isLoggedIn = hasToken();
   const userData = getUserDataFromCookie();
-  const businessName = userData ? JSON.parse(userData)?.business_name : null;
+  const bizName = userData ? JSON.parse(userData)?.business_name : null;
 
   const header = document.querySelector('header');
   const section = block.closest('.section');
@@ -67,7 +67,7 @@ export default async function decorate(block) {
 
   const nav = heroHeaderElement.querySelector(`.${blockName}__nav`);
   const hamburgerMenu = createHamburgerMenu(nav);
-  const navSections = await buildNavSections(isLoggedIn, businessName);
+  const navSections = await buildNavSections(isLoggedIn, bizName);
   const logoLink = createLogoLink();
   const navBar = createElement('div', { className: `${blockName}__nav-bar` });
   navBar.append(hamburgerMenu, logoLink);
