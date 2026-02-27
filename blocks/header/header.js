@@ -4,9 +4,14 @@ import { loadFragment } from '@blocks/fragment/fragment.js';
 import createProfileSection from '@helpers/nav-profile/nav-profile.js';
 import { hasToken } from '@auth/tokenManager.js';
 import { getUserDataFromCookie } from '@scripts/custom/utils.js';
+import { logout } from '@auth/authService.js';
+import { getBaseUrl } from '@scripts/custom/redirect.js';
 
 // media query match that indicates mobile/tablet width
 const isDesktop = window.matchMedia('(min-width: 992px)');
+
+// change background color of hamburger menu when user scrolls down 200px
+const SCROLL_THRESHOLD = 200;
 
 function closeOnEscape(e) {
   if (e.code === 'Escape') {
@@ -39,13 +44,22 @@ function toggleMenu(nav) {
   const button = nav.querySelector('.nav-hamburger button');
   const navModal = nav.querySelector('.nav-modal');
 
-  document.body.style.overflowY = (expanded || isDesktop.matches) ? '' : 'hidden';
+  document.body.style.overflowY = !expanded ? 'hidden' : '';
   nav.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+  const navModalOverlay = createElement('div', { className: 'nav-modal-overlay', id: 'test' });
 
   if (navModal) {
     if (!expanded) navModal.setAttribute('open', '');
     else navModal.removeAttribute('open');
     toggleAllNavSections(navModal, expanded || isDesktop.matches ? 'false' : 'true');
+    if (isDesktop.matches && !expanded) {
+      nav.prepend(navModalOverlay);
+    } else {
+      const navOverlay = nav.querySelector('.nav-modal-overlay');
+      if (navOverlay && navOverlay.parentNode) {
+        navOverlay.parentNode.removeChild(navOverlay);
+      }
+    }
   }
 
   button.setAttribute('aria-label', expanded ? 'Open navigation' : 'Close navigation');
@@ -56,6 +70,10 @@ function toggleMenu(nav) {
   } else {
     window.removeEventListener('keydown', closeOnEscape);
   }
+
+  navModalOverlay.addEventListener('click', () => {
+    if (nav) toggleMenu(nav);
+  });
 }
 
 // Create brand/logo section
@@ -175,6 +193,52 @@ export async function buildNavSections(isLoggedIn, businessName) {
     });
   });
 
+  // TODO: language selector, using static data for now
+  const languageSelector = createElement('div', {
+    className: 'language-selector',
+    innerContent: '<div class="language-link active">English</div><div class="language-link">Francais</div>',
+  });
+
+  // TODO: add click event to download pdf
+  const downloadIcon = createElement('img', {
+    className: 'icon',
+    attributes: {
+      src: '/icons/download.svg',
+      alt: '',
+      width: '16',
+      height: '16',
+    },
+  });
+  const downdloadReport = createElement('button', {
+    className: 'download-report',
+    attributes: {
+      type: 'button',
+      'aria-label': 'Download report',
+    },
+    innerContent: `${downloadIcon.outerHTML}<span>Download report as PDF</span>`,
+  });
+
+  const signoutButton = createElement('button', {
+    className: 'signout-button',
+    attributes: {
+      type: 'button',
+      'aria-label': 'Sign out',
+    },
+    innerContent: '<span>Sign out</span>',
+  });
+
+  signoutButton.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    await logout();
+    window.location.href = getBaseUrl();
+  });
+
+  navSection.appendChild(languageSelector);
+
+  if (isLoggedIn) {
+    navSection.append(downdloadReport, signoutButton);
+  }
+
   return navModal;
 }
 
@@ -226,6 +290,7 @@ export default async function decorate(block) {
   const nav = createElement('nav', { attributes: { id: 'nav' } });
 
   const navSections = await buildNavSections(isLoggedIn, businessName);
+
   const hamburger = createHamburgerMenu(nav);
 
   // Prepend hamburger and append nav sections
@@ -255,5 +320,15 @@ export default async function decorate(block) {
 
   const navWrapper = createElement('div', { className: 'nav-wrapper' });
   navWrapper.appendChild(nav);
+
+  function onScroll() {
+    if (window.scrollY >= SCROLL_THRESHOLD) {
+      hamburger.classList.add('nav-onscroll');
+    } else {
+      hamburger.classList.remove('nav-onscroll');
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
   block.appendChild(navWrapper);
 }

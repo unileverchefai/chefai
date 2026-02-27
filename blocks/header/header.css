@@ -34,11 +34,14 @@ header .nav-header {
   min-width: 0;
 }
 
+header .nav-header .nav-brand{
+  margin-left: 70px;
+}
+
 /* Navigation elements */
 header .nav-elements {
   display: flex;
   align-items: center;
-  gap: 16px;
   padding: 24px 16px 36px;
   width: 100%;
 
@@ -66,6 +69,12 @@ header .nav-hamburger {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  border-radius: 8px;
+  position: fixed;
+
+  &:hover {
+    background-color: var(--c-white);
+  }
 }
 
 header .nav-hamburger button {
@@ -73,6 +82,7 @@ header .nav-hamburger button {
   height: 44px;
   margin: 0;
   border: 0;
+  border-radius: 8px;
   padding: 8px 4px;
   background-color: transparent;
   backdrop-filter: blur(4px);
@@ -89,6 +99,12 @@ header .nav-hamburger button {
     height: 56px;
     gap: 8px;
   }
+}
+
+header .nav-onscroll {
+  background: #EEEFEF;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px); /* Safari */
 }
 
 header .nav-hamburger-icon {
@@ -114,6 +130,14 @@ header .nav-hamburger-line {
     width: 32px;
     height: 3px;
   }
+}
+
+header .nav-onscroll .nav-hamburger-line{
+  background-color: var(--c-black);
+}
+
+header .nav-hamburger:hover .nav-hamburger-line {
+    background-color: var(--c-black);
 }
 
 .default-content-wrapper .nav-link,
@@ -297,4 +321,58 @@ header nav[aria-expanded='true'] {
   font-weight: 400;
   padding: 8px 0;
   cursor: pointer;
+}
+
+.language-selector {
+  display: flex;
+  justify-content: start;
+  gap: 16px;
+  padding-top: 24px;
+  padding-bottom: 32px;
+}
+
+.language-link {
+  border-radius: 90px;
+  background-color: #EEEFEF;
+  padding: 6px 16px;
+}
+
+.language-selector .active{
+  font-weight: 500;
+  background: rgb(255  90  0 / 10%);
+}
+
+.download-report {
+  border-radius: 0;
+  padding: 0;
+  background: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.download-report span{
+  font-weight: 500;
+}
+
+.signout-button {
+  border: 0;
+  padding: 0;
+  margin: 24px 0;
+  background-color: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.nav-modal-overlay {
+  position: fixed;
+  width: 100vw;
+  background: black;
+  opacity: 0.5;
+  height: 100vh;
+  z-index: 100;
 }
