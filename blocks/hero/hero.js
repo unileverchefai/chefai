@@ -5,14 +5,16 @@ import {
 } from '@scripts/common.js';
 import openVideoModal from '@scripts/custom/modal-video.js';
 import setCountdownToHero from './variants/countdown.js';
+import buildTrendVariant from './variants/trend.js';
 
 const variantClasses = {
   live: 'live',
   countdown: 'countdown',
+  trend: 'trend',
 };
 const blockName = 'hero';
 
-const { live, countdown } = variantClasses;
+const { live, countdown, trend } = variantClasses;
 const MAX_TITLE_LENGTH = 80;
 const MAX_DESCRIPTION_LENGTH = 150;
 let hasLogo = false;
@@ -316,6 +318,7 @@ function setupVideoLink(block) {
 }
 
 export default async function decorate(block) {
+  const isTrend = block.classList.contains(trend);
   const isLive = block.classList.contains(live);
   const isCountdown = block.classList.contains(countdown);
   hasVideo = Boolean(block.classList.contains('video'));
@@ -333,6 +336,18 @@ export default async function decorate(block) {
       console.error('Error loading %cmodal video%c CSS:', 'color: red', '', error);
     }
     setupVideoLink(block);
+  }
+
+  if (isTrend) {
+    addVariantLogic({
+      blockName, variantName: trend, hasStyle: true,
+    });
+    await buildTrendVariant({ block, variant: trend });
+    // const backgroundArea = block.querySelector(`.${trend}--background`);
+    // if (hasLogo && backgroundArea) {
+    //   appendLogoElement(backgroundArea);
+    // }
+    return;
   }
 
   const isContentValid = validateElements(block.querySelector(':scope > div'));
