@@ -4,6 +4,7 @@ import createCarousel from '@helpers/carousel/carousel.js';
 import createModal from '@helpers/modal/index.js';
 import openCookieAgreementModal from '@helpers/cookie-agreement/index.js';
 import openPersonalizedHub from '@helpers/personalized-hub/personalized-hub.js';
+import createDropdown from '@helpers/dropdown/dropdown.js';
 
 /**
  * Parses card data from an authored row
@@ -43,20 +44,17 @@ function parseCardData(row, isLive) {
     return cardData;
   }
 
-  // Parse business types from column 2
   const businessTypesList = cells[1]?.querySelector('ul');
   if (businessTypesList) {
     const items = businessTypesList.querySelectorAll('li');
     cardData.businessTypes = [...items].map((item) => item.textContent.trim());
   }
 
-  // Get CTA info
   if (cta) {
     cardData.ctaLabel = cta.textContent.trim();
     cardData.ctaHref = cta.getAttribute('href');
   }
 
-  // Store expanded content HTML from column 3
   if (cells[2]) {
     cardData.expandedContent = cells[2].innerHTML.trim();
   }
@@ -144,129 +142,6 @@ function createInsightCard(cardData, index, isLive) {
   }
 
   return card;
-}
-
-/**
- * Creates the dropdown filter element
- * @param {Object} config Dropdown configuration
- * @returns {Element} The dropdown filter element
- */
-function createDropdownFilter(config) {
-  const filter = createElement('div', {
-    className: 'insights-teaser-filter',
-  });
-
-  const button = createElement('button', {
-    className: 'insights-teaser-dropdown',
-    attributes: {
-      'aria-label': `Filter by ${config.defaultLabel}`,
-      'aria-expanded': 'false',
-      'aria-haspopup': 'listbox',
-    },
-    innerContent: `
-      <span class="insights-teaser-dropdown-text">${config.defaultLabel}</span>
-      <svg class="insights-teaser-dropdown-arrow" width="12" height="6" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M1 1L6 5L11 1" stroke="#131313" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    `,
-  });
-
-  filter.appendChild(button);
-
-  const menu = createElement('div', {
-    className: 'insights-teaser-dropdown-menu',
-    attributes: {
-      role: 'listbox',
-      'aria-hidden': 'true',
-    },
-  });
-
-  config.options.forEach((option, index) => {
-    const optionElement = createElement('div', {
-      className: 'insights-teaser-dropdown-option',
-      attributes: {
-        role: 'option',
-        'aria-selected': index === 0 ? 'true' : 'false',
-        'data-value': option,
-      },
-      innerContent: option,
-    });
-    if (index === 0) optionElement.classList.add('active');
-    menu.appendChild(optionElement);
-  });
-
-  filter.appendChild(menu);
-
-  return filter;
-}
-
-/**
- * Sets up dropdown behavior
- * @param {Element} filter The filter element
- * @param {Function} onSelectionChange Callback when selection changes
- */
-function setupDropdownBehavior(filter, onSelectionChange) {
-  const button = filter.querySelector('.insights-teaser-dropdown');
-  const menu = filter.querySelector('.insights-teaser-dropdown-menu');
-  const options = menu.querySelectorAll('.insights-teaser-dropdown-option');
-  let isOpen = false;
-
-  const toggleDropdown = () => {
-    isOpen = !isOpen;
-    filter.classList.toggle('open', isOpen);
-    button.setAttribute('aria-expanded', isOpen);
-    menu.setAttribute('aria-hidden', !isOpen);
-  };
-
-  const closeDropdown = () => {
-    if (isOpen) {
-      isOpen = false;
-      filter.classList.remove('open');
-      button.setAttribute('aria-expanded', 'false');
-      menu.setAttribute('aria-hidden', 'true');
-    }
-  };
-
-  const selectOption = (option) => {
-    const value = option.getAttribute('data-value');
-    const text = option.textContent;
-
-    options.forEach((opt) => {
-      opt.classList.remove('active');
-      opt.setAttribute('aria-selected', 'false');
-    });
-    option.classList.add('active');
-    option.setAttribute('aria-selected', 'true');
-
-    button.querySelector('.insights-teaser-dropdown-text').textContent = text;
-
-    closeDropdown();
-    onSelectionChange(value);
-  };
-
-  button.addEventListener('click', (e) => {
-    e.stopPropagation();
-    toggleDropdown();
-  });
-
-  options.forEach((option) => {
-    option.addEventListener('click', () => selectOption(option));
-  });
-
-  button.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      toggleDropdown();
-    } else if (e.key === 'Escape') {
-      closeDropdown();
-    }
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!filter.contains(e.target)) {
-      closeDropdown();
-    }
-  });
 }
 
 /**
@@ -409,7 +284,6 @@ export default async function decorate(block) {
     dropdownConfig = parseDropdownConfig(rows[0]);
     cardRows = rows.slice(1);
 
-    // Validate "All business types" exists
     if (!dropdownConfig.options.includes('All business types')) {
       // eslint-disable-next-line no-console
       console.error('carousel-insights-teaser: "All business types" option is required in LIVE phase');
@@ -460,48 +334,51 @@ export default async function decorate(block) {
     }
   });
 
-  // Add dropdown filter for LIVE phase (if more than just "All business types")
   if (isLive && dropdownConfig.options.length > 1) {
-    const filter = createDropdownFilter(dropdownConfig);
-    block.appendChild(filter);
+    const { element: filter } = createDropdown({
+      options: dropdownConfig.options.map((opt) => ({ label: opt, value: opt })),
+      onSelect: async (selectedType) => {
+        container.classList.add('fade-out');
+        await new Promise((resolve) => { setTimeout(resolve, 300); });
+        container.classList.remove('fade-out');
 
-    setupDropdownBehavior(filter, async (selectedType) => {
-      // Fade out current cards
-      container.classList.add('fade-out');
-      await new Promise((resolve) => { setTimeout(resolve, 300); });
-      container.classList.remove('fade-out');
+        showLoadingSkeleton(container);
 
-      // Show shimmer loading skeleton on existing cards
-      showLoadingSkeleton(container);
+        await new Promise((resolve) => { setTimeout(resolve, 800); });
 
-      // Artificial loading delay
-      await new Promise((resolve) => { setTimeout(resolve, 800); });
+        hideLoadingSkeleton(container);
+        const visibleCount = filterCards(container, selectedType);
 
-      // Filter and hide loading state
-      hideLoadingSkeleton(container);
-      const visibleCount = filterCards(container, selectedType);
+        container.classList.add('fade-in');
+        await new Promise((resolve) => { setTimeout(resolve, 400); });
+        container.classList.remove('fade-in');
 
-      // Fade in filtered cards
-      container.classList.add('fade-in');
-      await new Promise((resolve) => { setTimeout(resolve, 400); });
-      container.classList.remove('fade-in');
+        if (block.carouselInstance) {
+          block.carouselInstance.destroy();
+        }
 
-      if (block.carouselInstance) {
-        block.carouselInstance.destroy();
-      }
-
-      if (visibleCount > 0) {
-        block.carouselInstance = createCarousel({
-          container,
-          block,
-          itemCount: visibleCount,
-          mobileItemsPerSlide: 1,
-          desktopItemsPerSlide: 4,
-          disableDesktopCarousel: true,
-          mobileBreakpoint: 900,
-        });
-      }
+        if (visibleCount > 0) {
+          block.carouselInstance = createCarousel({
+            container,
+            block,
+            itemCount: visibleCount,
+            mobileItemsPerSlide: 1,
+            desktopItemsPerSlide: 4,
+            disableDesktopCarousel: true,
+            mobileBreakpoint: 900,
+          });
+        }
+      },
+      classes: {
+        filter: 'insights-teaser-filter',
+        button: 'insights-teaser-dropdown',
+        text: 'insights-teaser-dropdown-text',
+        arrow: 'insights-teaser-dropdown-arrow',
+        menu: 'insights-teaser-dropdown-menu',
+        option: 'insights-teaser-dropdown-option',
+      },
     });
+    block.appendChild(filter);
   }
 
   block.appendChild(container);

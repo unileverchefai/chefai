@@ -1,6 +1,7 @@
 import createCarousel from '@helpers/carousel/carousel.js';
 import { decorateIcons } from '@scripts/aem.js';
 import { createElement } from '@scripts/common.js';
+import createDropdown from '@helpers/dropdown/dropdown.js';
 
 /**
  * Trend code to CSS class and display name mapping
@@ -62,12 +63,12 @@ function parseAuthoredContent(block) {
     const contentCell = cells[0];
     const metaCell = cells[1];
 
-    // trend name
     const h3 = contentCell.querySelector('h3');
     if (!h3) return null;
 
     const trendName = h3.textContent.trim();
     const paragraphs = contentCell.querySelectorAll('p');
+
     let bgImage = null;
     let description = '';
     let link = null;
@@ -104,7 +105,6 @@ function parseAuthoredContent(block) {
     }
 
     if (descParagraph) {
-      // extract text before br or picture
       const clone = descParagraph.cloneNode(true);
       const br = clone.querySelector('br');
       const pic = clone.querySelector('picture');
@@ -128,10 +128,8 @@ function parseAuthoredContent(block) {
       ? [...typesList.querySelectorAll('li')].map((li) => li.textContent.trim())
       : [];
 
-    // description is mandatory
     if (!description) return null;
 
-    // map trend code to CSS class and display name
     const normalizedCode = normalizeTrendCode(trendName);
     const trendMapping = TREND_CODE_MAP[normalizedCode];
     const trendClass = trendMapping?.class || '';
@@ -215,7 +213,6 @@ function renderCards(container, cards) {
       content.appendChild(desc);
     }
 
-    // TODO: CTA is always rendered to maintain space (next phase of the project!)
     if (link) {
       const cta = createElement('a', {
         className: 'trend-cta',
@@ -229,7 +226,6 @@ function renderCards(container, cards) {
 
       content.appendChild(cta);
     } else {
-      // TODO: CTA is always rendered to maintain space (next phase of the project!)
       const cta = createElement('div', {
         className: 'trend-cta trend-cta-spacer',
         attributes: { 'aria-hidden': 'true' },
@@ -297,61 +293,7 @@ export default function decorate(block) {
   const allCards = cards;
   block.innerHTML = '';
 
-  // filter dropdown
-  const filterContainer = createElement('div', {
-    className: 'carousel-biz-filter',
-  });
-
-  // dropdown button
-  const dropdownButton = createElement('button', {
-    className: 'biz-dropdown',
-    attributes: {
-      'aria-label': `Filter by ${dropdownData?.label || 'business type'}`,
-      'aria-expanded': 'false',
-      'aria-haspopup': 'listbox',
-    },
-    innerContent: `
-      <span class="biz-dropdown-text">${dropdownData?.label}</span>
-      <svg class="biz-dropdown-arrow" width="12" height="6" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M1 1L6 5L11 1" stroke="#131313" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    `,
-  });
-  const dropdownText = dropdownButton.querySelector('.biz-dropdown-text');
-
-  // dropdown menu
-  const dropdownMenu = createElement('div', {
-    className: 'biz-dropdown-menu',
-    attributes: {
-      role: 'listbox',
-      'aria-hidden': 'true',
-    },
-    innerContent: `
-      <div class="biz-dropdown-option active" role="option" aria-selected="true" data-value="all">
-        ${dropdownData?.label}
-      </div>
-    `,
-  });
-
-  if (dropdownData?.options) {
-    dropdownData.options.forEach((optionText) => {
-      const option = createElement('div', {
-        className: 'biz-dropdown-option',
-        attributes: {
-          role: 'option',
-          'aria-selected': 'false',
-          'data-value': optionText,
-        },
-        innerContent: optionText,
-      });
-      dropdownMenu.appendChild(option);
-    });
-  }
-
-  filterContainer.appendChild(dropdownButton);
-  filterContainer.appendChild(dropdownMenu);
-  block.appendChild(filterContainer);
-
+  // Carousel container must be created before filterCards (closure needs carouselContainer)
   const carouselWrapper = createElement('div', {
     className: 'carousel-biz-carousel-wrapper',
   });
@@ -361,130 +303,71 @@ export default function decorate(block) {
   });
 
   carouselWrapper.appendChild(carouselContainer);
-  block.appendChild(carouselWrapper);
-
-  renderCards(carouselContainer, allCards);
-  initializeCarousel(block, carouselContainer, allCards.length);
-
-  let isOpen = false;
-
-  const toggleDropdown = () => {
-    isOpen = !isOpen;
-    dropdownButton.setAttribute('aria-expanded', isOpen.toString());
-    dropdownMenu.setAttribute('aria-hidden', (!isOpen).toString());
-    filterContainer.classList.toggle('open', isOpen);
-  };
-
-  const closeDropdown = () => {
-    isOpen = false;
-    dropdownButton.setAttribute('aria-expanded', 'false');
-    dropdownMenu.setAttribute('aria-hidden', 'true');
-    filterContainer.classList.remove('open');
-  };
 
   const filterCards = async (restaurantType) => {
     const filteredCards = restaurantType === 'all'
       ? allCards
       : allCards.filter((card) => card.restaurantTypes.includes(restaurantType));
 
-    // fade out existing cards
     carouselContainer.classList.add('fade-out');
-    carouselContainer.classList.remove('fade-in', 'is-loading');
-
     await new Promise((resolve) => { setTimeout(resolve, 300); });
-
-    // always render placeholder loading cards, 4 placeholders. Not sure if good UX...
-    carouselContainer.innerHTML = '';
-
-    for (let i = 0; i < 4; i += 1) {
-      const loadingCard = createElement('li', {
-        className: 'trend-card',
-      });
-      const loadingText = createElement('div', {
-        className: 'loading-text',
-        innerContent: 'Customising insights',
-      });
-      loadingCard.appendChild(loadingText);
-      carouselContainer.appendChild(loadingCard);
-    }
-
-    // trigger animation
     carouselContainer.classList.remove('fade-out');
+
     carouselContainer.classList.add('is-loading');
+    carouselContainer.querySelectorAll('.trend-card').forEach((card) => {
+      if (!card.querySelector('.loading-text')) {
+        card.appendChild(createElement('div', {
+          className: 'loading-text',
+          innerContent: 'Customising insights',
+        }));
+      }
+    });
 
     await new Promise((resolve) => { setTimeout(resolve, 500); });
 
+    carouselContainer.classList.remove('is-loading');
+    carouselContainer.querySelectorAll('.loading-text').forEach((el) => el.remove());
+
     if (filteredCards.length === 0) {
-      if (block.carouselInstance?.destroy) {
-        block.carouselInstance.destroy();
-      }
-
-      carouselContainer.classList.remove('is-loading');
+      if (block.carouselInstance?.destroy) block.carouselInstance.destroy();
       carouselContainer.innerHTML = '<li class="empty-state">No insights available for this selection.</li>';
-
-      // hide carousel controls
       const controls = block.querySelector('.controls');
-      if (controls) {
-        controls.style.display = 'none';
-      }
+      if (controls) controls.style.display = 'none';
       return;
     }
 
     const controls = block.querySelector('.controls');
-    if (controls) {
-      controls.style.display = '';
-    }
+    if (controls) controls.style.display = '';
 
-    // update cards
     renderCards(carouselContainer, filteredCards);
     initializeCarousel(block, carouselContainer, filteredCards.length);
 
-    // remove animations
-    carouselContainer.classList.remove('is-loading');
     carouselContainer.classList.add('fade-in');
-
-    setTimeout(() => {
-      carouselContainer.classList.remove('fade-in');
-    }, 400);
+    await new Promise((resolve) => { setTimeout(resolve, 400); });
+    carouselContainer.classList.remove('fade-in');
   };
 
-  const selectOption = (option) => {
-    dropdownMenu.querySelectorAll('.biz-dropdown-option').forEach((opt) => {
-      opt.classList.remove('active');
-      opt.setAttribute('aria-selected', 'false');
-    });
-    option.classList.add('active');
-    option.setAttribute('aria-selected', 'true');
+  const dropdownOptions = [
+    { label: dropdownData?.label ?? 'All business types', value: 'all' },
+    ...(dropdownData?.options ?? []).map((opt) => ({ label: opt, value: opt })),
+  ];
 
-    dropdownText.textContent = option.textContent;
-
-    closeDropdown();
-
-    const selectedType = option.dataset.value;
-    filterCards(selectedType);
-  };
-
-  dropdownButton.addEventListener('click', toggleDropdown);
-
-  document.addEventListener('click', (e) => {
-    if (!filterContainer.contains(e.target) && isOpen) {
-      closeDropdown();
-    }
+  const { element: filterContainer } = createDropdown({
+    options: dropdownOptions,
+    onSelect: filterCards,
+    classes: {
+      filter: 'carousel-biz-filter',
+      button: 'biz-dropdown',
+      text: 'biz-dropdown-text',
+      arrow: 'biz-dropdown-arrow',
+      menu: 'biz-dropdown-menu',
+      option: 'biz-dropdown-option',
+    },
   });
 
-  dropdownMenu.addEventListener('click', (e) => {
-    const option = e.target.closest('.biz-dropdown-option');
-    if (option) {
-      selectOption(option);
-    }
-  });
+  block.appendChild(filterContainer);
+  block.appendChild(carouselWrapper);
 
-  dropdownButton.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      toggleDropdown();
-    } else if (e.key === 'Escape' && isOpen) {
-      closeDropdown();
-    }
-  });
+  renderCards(carouselContainer, allCards);
+  initializeCarousel(block, carouselContainer, allCards.length);
 }

@@ -2,6 +2,7 @@
 
 body.t2 {
   /* Page-level theme styling for Street Food Couture */
+
   /* The trend color variables are already defined in styles/styles.css:
      --street-food-couture: #622c57
      --street-food-couture-bright: #622c57
@@ -10,4 +11,13 @@ body.t2 {
   */
 }
 
-/* Additional page-level overrides for T2 theme can be added here */
+/* carousel-insights-teaser: trend-specific colours */
+
+/* SFC: hot pink #ff2c94 — no design-system variable exists for this colour */
+body.t2 .carousel-insights-teaser {
+  --insight-card-bg: var(--street-food-couture);
+  --insight-cta-bg: rgb(255 44 148 / 50%);
+  --insight-cta-bg-hover: rgb(255 44 148 / 70%);
+  --insight-cta-shadow: rgb(255 44 148 / 60%);
+  --insight-cta-shadow-hover: rgb(255 44 148 / 80%);
+}

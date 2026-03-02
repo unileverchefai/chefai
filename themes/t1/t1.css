@@ -2,6 +2,7 @@
 
 body.t1 {
   /* Page-level theme styling for Borderless Cuisine */
+
   /* The trend color variables are already defined in styles/styles.css:
      --borderless-cuisine: #ed6c00
      --borderless-cuisine-bright: #f9b000
@@ -10,4 +11,11 @@ body.t1 {
   */
 }
 
-/* Additional page-level overrides for T1 theme can be added here */
+/* carousel-insights-teaser: trend-specific colours */
+body.t1 .carousel-insights-teaser {
+  --insight-card-bg: var(--borderless-cuisine);
+  --insight-cta-bg: color-mix(in srgb, var(--borderless-cuisine-bright) 50%, transparent);
+  --insight-cta-bg-hover: color-mix(in srgb, var(--borderless-cuisine-bright) 70%, transparent);
+  --insight-cta-shadow: color-mix(in srgb, var(--borderless-cuisine-bright) 60%, transparent);
+  --insight-cta-shadow-hover: color-mix(in srgb, var(--borderless-cuisine-bright) 80%, transparent);
+}
