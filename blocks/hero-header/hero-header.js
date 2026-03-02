@@ -74,6 +74,7 @@ export default async function decorate(block) {
   nav.append(navBar, navSections);
   document.addEventListener('userDataUpdated', (event) => {
     if (!event.detail) {
+      // eslint-disable-next-line no-console
       console.warn('[Hero Header] userDataUpdated event received without detail');
       return;
     }
