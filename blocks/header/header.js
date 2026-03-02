@@ -5,7 +5,7 @@ import createProfileSection from '@helpers/nav-profile/nav-profile.js';
 import { hasToken } from '@auth/tokenManager.js';
 import { getUserDataFromCookie } from '@scripts/custom/utils.js';
 import { logout } from '@auth/authService.js';
-import { getBaseUrl } from '@scripts/custom/redirect.js';
+import { getBaseUrl, changeCountryLanguagePath } from '@scripts/custom/redirect.js';
 
 // media query match that indicates mobile/tablet width
 const isDesktop = window.matchMedia('(min-width: 992px)');
@@ -194,10 +194,23 @@ export async function buildNavSections(isLoggedIn, businessName) {
   });
 
   // TODO: language selector, using static data for now
+  const languageSelectorP = [...navLinks].find((el) => el.textContent.toLowerCase().includes('languageselector'));
+  const languageLinks = languageSelectorP?.querySelectorAll('a');
   const languageSelector = createElement('div', {
     className: 'language-selector',
-    innerContent: '<div class="language-link active">English</div><div class="language-link">Francais</div>',
   });
+
+  languageLinks.forEach((link, index) => {
+    const languageLinkContainer = createElement('div', {
+      className: `language-link ${index === 0 && 'active'}`,
+    });
+    const hrefLink = changeCountryLanguagePath(link.getAttribute('href'));
+    link.setAttribute('href', hrefLink);
+    languageLinkContainer.append(link);
+    languageSelector.append(languageLinkContainer);
+  });
+
+  languageSelectorP.remove();
 
   // TODO: add click event to download pdf
   const downloadIcon = createElement('img', {
@@ -279,7 +292,6 @@ export function createHamburgerMenu(nav) {
  */
 export default async function decorate(block) {
   block.textContent = '';
-
   const isLoggedIn = hasToken();
   const userData = getUserDataFromCookie();
   const businessName = userData ? JSON.parse(userData)?.business_name : null;
