@@ -1,4 +1,4 @@
-import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
+import { SUBSCRIPTION_KEY, ENDPOINTS, DEFAULT_TIMEOUT_MS } from '@api/endpoints.js';
 import { getCountry } from '@scripts/custom/locale.js';
 import {
   getOrCreateThreadId,
@@ -12,7 +12,6 @@ import sendMessage from './sendMessage.js';
 import formatResponse, { parseStreamingEvent } from './responseHandler.js';
 
 const countryCode = getCountry();
-const DEFAULT_TIMEOUT_MS = 180000;
 
 let currentEndpoint = 'capgemini';
 
