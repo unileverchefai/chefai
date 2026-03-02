@@ -2,6 +2,7 @@
 
 body.t3 {
   /* Page-level theme styling for Diner Designed */
+
   /* The trend color variables are already defined in styles/styles.css:
      --diner-designed: #679641
      --diner-designed-bright: #a1b83b
@@ -10,4 +11,11 @@ body.t3 {
   */
 }
 
-/* Additional page-level overrides for T3 theme can be added here */
+/* carousel-insights-teaser: trend-specific colours */
+body.t3 .carousel-insights-teaser {
+  --insight-card-bg: var(--diner-designed);
+  --insight-cta-bg: color-mix(in srgb, var(--diner-designed-bright) 50%, transparent);
+  --insight-cta-bg-hover: color-mix(in srgb, var(--diner-designed-bright) 70%, transparent);
+  --insight-cta-shadow: color-mix(in srgb, var(--diner-designed-bright) 60%, transparent);
+  --insight-cta-shadow-hover: color-mix(in srgb, var(--diner-designed-bright) 80%, transparent);
+}

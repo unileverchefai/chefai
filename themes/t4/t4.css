@@ -2,6 +2,7 @@
 
 body.t4 {
   /* Page-level theme styling for Culinary Roots */
+
   /* The trend color variables are already defined in styles/styles.css:
      --culinary-roots: #00102d
      --culinary-roots-bright: #0090ba
@@ -10,4 +11,11 @@ body.t4 {
   */
 }
 
-/* Additional page-level overrides for T4 theme can be added here */
+/* carousel-insights-teaser: trend-specific colours (culinary-roots-bright at 80/95% per Figma spec) */
+body.t4 .carousel-insights-teaser {
+  --insight-card-bg: var(--culinary-roots);
+  --insight-cta-bg: color-mix(in srgb, var(--culinary-roots-bright) 80%, transparent);
+  --insight-cta-bg-hover: color-mix(in srgb, var(--culinary-roots-bright) 95%, transparent);
+  --insight-cta-shadow: color-mix(in srgb, var(--culinary-roots-bright) 80%, transparent);
+  --insight-cta-shadow-hover: color-mix(in srgb, var(--culinary-roots-bright) 95%, transparent);
+}
