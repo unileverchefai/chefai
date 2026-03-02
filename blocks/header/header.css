@@ -140,17 +140,6 @@ header .nav-hamburger:hover .nav-hamburger-line {
     background-color: var(--c-black);
 }
 
-.default-content-wrapper .nav-link,
-.default-content-wrapper .nav-link a {
-  background-color: transparent;
-  color: black;
-  font-size: 24px;
-  font-weight: 900;
-  padding: 8px 0;
-  cursor: pointer;
-  margin: 0;
-}
-
 /* Nav sections */
 header .nav-modal {
   color: var(--squid-ink);
@@ -195,6 +184,17 @@ header .nav-modal {
   }
 }
 
+header .default-content-wrapper .nav-link,
+header .default-content-wrapper .nav-link a {
+  background-color: transparent;
+  color: black;
+  font-size: 24px;
+  font-weight: 900;
+  padding: 8px 0;
+  cursor: pointer;
+  margin: 0;
+}
+
 header .nav-modal[open] {
   overflow: hidden;
   transform: translateX(0);
@@ -233,7 +233,7 @@ header .nav-elements .nav-brand {
   inset: 0;
   background: rgb(255 255 255 / 85%);
   backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px); /* Safari */
+   -webkit-backdrop-filter: blur(30px); /* Safari */
 }
 
 header nav[aria-expanded='true'] {
