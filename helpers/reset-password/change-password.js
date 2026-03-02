@@ -218,20 +218,20 @@ export default function openChangePasswordModal(email) {
     errorMessage.textContent = '';
 
     if (!password) {
-      errorMessage.textContent = getPlaceholderText(FORGET_PW_MODAL_PLACEHOLDERS, 'error_missing_password');
+      errorMessage.textContent = getPlaceholderText(FORGET_PW_MODAL_PLACEHOLDERS, 'auth_pwd_required');
       errorMessage.style.display = 'block';
       passwordInput.focus();
       return;
     }
 
     if (!validation.minLength || !validation.hasCapital || !validation.hasNumberOrSymbol) {
-      errorMessage.textContent = getPlaceholderText(FORGET_PW_MODAL_PLACEHOLDERS, 'error_password_requirements');
+      errorMessage.textContent = getPlaceholderText(FORGET_PW_MODAL_PLACEHOLDERS, 'auth_pwd_requirements_not_met');
       errorMessage.style.display = 'block';
       return;
     }
 
     submitButton.disabled = true;
-    submitButton.textContent = getPlaceholderText(FORGET_PW_MODAL_PLACEHOLDERS, 'btn_update_pwd_loading');
+    submitButton.textContent = getPlaceholderText(FORGET_PW_MODAL_PLACEHOLDERS, 'auth_updating');
 
     try {
       await resetPassword(email, '');
@@ -239,7 +239,7 @@ export default function openChangePasswordModal(email) {
       window.location.reload();
     } catch (error) {
       errorMessage.textContent = error.message
-        ?? getPlaceholderText(FORGET_PW_MODAL_PLACEHOLDERS, 'error_update_password');
+        ?? getPlaceholderText(FORGET_PW_MODAL_PLACEHOLDERS, 'auth_pwd_update_failed');
       errorMessage.style.color = 'var(--ufs-orange)';
       errorMessage.style.display = 'block';
       submitButton.disabled = false;

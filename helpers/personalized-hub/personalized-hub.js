@@ -1,6 +1,8 @@
-import { loadReact, getCookieId, getUserIdFromCookie } from '@scripts/custom/utils.js';
+import {
+  loadReact, getCookieId, getUserIdFromCookie, getPlaceholderText,
+} from '@scripts/custom/utils.js';
 import sendStreamingMessage from '@helpers/chatbot/sendStreamingMessage.js';
-import { createElement } from '@scripts/common.js';
+import { createElement, VALIDATIONS_PLACEHOLDERS } from '@scripts/common.js';
 import { loadCSS } from '@scripts/aem.js';
 import createModal from '@helpers/modal/index.js';
 
@@ -213,7 +215,7 @@ export default async function openPersonalizedHub() {
             },
             onError: () => {
               setLoadingStep(0);
-              setError('Something went wrong while creating your personalised insights. Please try again.');
+              setError(getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'business_creation_error'));
               setCurrentScreen(SCREENS.CHAT);
             },
           });
