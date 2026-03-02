@@ -103,8 +103,9 @@ header .nav-hamburger button {
 
 header .nav-onscroll {
   background: #EEEFEF;
-  backdrop-filter: blur(16px);
+  /* stylelint-disable-next-line property-no-vendor-prefix */
   -webkit-backdrop-filter: blur(16px); /* Safari */
+  backdrop-filter: blur(16px);
 }
 
 header .nav-hamburger-icon {
@@ -138,17 +139,6 @@ header .nav-onscroll .nav-hamburger-line{
 
 header .nav-hamburger:hover .nav-hamburger-line {
     background-color: var(--c-black);
-}
-
-.default-content-wrapper .nav-link,
-.default-content-wrapper .nav-link a {
-  background-color: transparent;
-  color: black;
-  font-size: 24px;
-  font-weight: 900;
-  padding: 8px 0;
-  cursor: pointer;
-  margin: 0;
 }
 
 /* Nav sections */
@@ -195,6 +185,17 @@ header .nav-modal {
   }
 }
 
+header .default-content-wrapper .nav-link,
+header .default-content-wrapper .nav-link a {
+  background-color: transparent;
+  color: black;
+  font-size: 24px;
+  font-weight: 900;
+  padding: 8px 0;
+  cursor: pointer;
+  margin: 0;
+}
+
 header .nav-modal[open] {
   overflow: hidden;
   transform: translateX(0);
@@ -232,8 +233,9 @@ header .nav-elements .nav-brand {
   position: absolute;
   inset: 0;
   background: rgb(255 255 255 / 85%);
-  backdrop-filter: blur(30px);
+  /* stylelint-disable-next-line property-no-vendor-prefix */
   -webkit-backdrop-filter: blur(30px); /* Safari */
+  backdrop-filter: blur(30px);
 }
 
 header nav[aria-expanded='true'] {
