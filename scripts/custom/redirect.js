@@ -26,3 +26,30 @@ export function getUrl(pageName, pathname = window.location.pathname ?? '/') {
   if (base === '/') return `/${pageName}`;
   return `${base.replace(/\/$/, '')}/${pageName}`;
 }
+
+/**
+ * Replaces the country/language part of the URL path.
+ * e.g. changeCountryLanguagePath('be/nl')
+ * /uk/en/inspiration/future-menus-4/ -> /be/nl/inspiration/future-menus-4/
+ */
+export function changeCountryLanguagePath(
+  newCountryLang,
+  pathname = window.location.pathname ?? '/',
+) {
+  if (!newCountryLang) return pathname;
+
+  const segments = getPathSegments(pathname);
+  const [country, lang] = newCountryLang.split('/');
+
+  if (!country || !lang) return pathname;
+
+  // If path already has country/lang → replace them
+  if (segments.length >= 2) {
+    segments[0] = country;
+    segments[1] = lang;
+    return `/${segments.join('/')}${pathname.endsWith('/') ? '/' : ''}`;
+  }
+
+  // If path is shorter than expected → prepend
+  return `/${country}/${lang}/${segments.join('/')}`;
+}
