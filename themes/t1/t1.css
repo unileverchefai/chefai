@@ -1,0 +1,13 @@
+/* Theme T1: Borderless Cuisine (Orange) */
+
+body.t1 {
+  /* Page-level theme styling for Borderless Cuisine */
+  /* The trend color variables are already defined in styles/styles.css:
+     --borderless-cuisine: #ed6c00
+     --borderless-cuisine-bright: #f9b000
+     --gradient-borderless-cuisine
+     --glow-borderless-cuisine
+  */
+}
+
+/* Additional page-level overrides for T1 theme can be added here */

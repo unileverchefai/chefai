@@ -1,9 +1,10 @@
-import { createElement } from '@scripts/common.js';
+import { createElement, SIGNIN_MODAL_PLACEHOLDERS } from '@scripts/common.js';
 import { hasToken } from '@auth/tokenManager.js';
 import { logout } from '@auth/authService.js';
 import { loadCSS } from '@scripts/aem.js';
 import openSignInModal from '@helpers/signin/index.js';
 import { getBaseUrl } from '@scripts/custom/redirect.js';
+import { getPlaceholderText } from '@scripts/custom/utils.js';
 
 loadCSS(`${window.hlx.codeBasePath}/helpers/nav-profile/nav-profile.css`);
 
@@ -73,7 +74,7 @@ export default function createProfileSection() {
 
     const desktopPrefix = createElement('span', {
       className: 'nav-profile-text-prefix',
-      innerContent: 'Already registered? ',
+      innerContent: `${getPlaceholderText(SIGNIN_MODAL_PLACEHOLDERS, 'reg_prompt_q')} `,
     });
 
     const signInLink = createElement('span', {

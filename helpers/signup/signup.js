@@ -1,6 +1,7 @@
-import { createElement } from '@scripts/common.js';
+import { createElement, SIGNUP_MODAL_PLACEHOLDERS, VALIDATIONS_PLACEHOLDERS } from '@scripts/common.js';
 import createModal from '@helpers/modal/index.js';
 import { loadCSS } from '@scripts/aem.js';
+import { getPlaceholderText } from '@scripts/custom/utils.js';
 
 export default function openSignUpReportModal() {
   loadCSS(`${window.hlx.codeBasePath}/helpers/signup/signup.css`).catch(() => {});
@@ -15,13 +16,13 @@ export default function openSignUpReportModal() {
 
   const title = createElement('h2', {
     className: 'signup-modal-title',
-    innerContent: 'Your report is ready!',
+    innerContent: getPlaceholderText(SIGNUP_MODAL_PLACEHOLDERS, 'title'),
   });
   topArea.appendChild(title);
 
   const description = createElement('p', {
     className: 'signup-modal-description',
-    innerContent: 'Please provide the details below to unlock your tailored report and receive recipes, trends and other valuable resources.',
+    innerContent: getPlaceholderText(SIGNUP_MODAL_PLACEHOLDERS, 'description'),
   });
   topArea.appendChild(description);
 
@@ -34,13 +35,13 @@ export default function openSignUpReportModal() {
   });
   const emailLabel = createElement('label', {
     className: 'form-label',
-    innerContent: 'Email address',
+    innerContent: getPlaceholderText(SIGNUP_MODAL_PLACEHOLDERS, 'label_email'),
   });
   const emailInput = createElement('input', {
     className: 'form-input',
     attributes: {
       type: 'email',
-      placeholder: 'email@example.com',
+      placeholder: getPlaceholderText(SIGNUP_MODAL_PLACEHOLDERS, 'placeholder_email'),
     },
   });
   emailGroup.appendChild(emailLabel);
@@ -56,13 +57,13 @@ export default function openSignUpReportModal() {
   });
   const firstNameLabel = createElement('label', {
     className: 'form-label',
-    innerContent: 'First name',
+    innerContent: getPlaceholderText(SIGNUP_MODAL_PLACEHOLDERS, 'label_firstname'),
   });
   const firstNameInput = createElement('input', {
     className: 'form-input',
     attributes: {
       type: 'text',
-      placeholder: 'John',
+      placeholder: getPlaceholderText(SIGNUP_MODAL_PLACEHOLDERS, 'placeholder_firstname'),
     },
   });
   firstNameGroup.appendChild(firstNameLabel);
@@ -74,13 +75,13 @@ export default function openSignUpReportModal() {
   });
   const surnameLabel = createElement('label', {
     className: 'form-label',
-    innerContent: 'Surname',
+    innerContent: getPlaceholderText(SIGNUP_MODAL_PLACEHOLDERS, 'label_surname'),
   });
   const surnameInput = createElement('input', {
     className: 'form-input',
     attributes: {
       type: 'text',
-      placeholder: 'Smith',
+      placeholder: getPlaceholderText(SIGNUP_MODAL_PLACEHOLDERS, 'placeholder_surname'),
     },
   });
   surnameGroup.appendChild(surnameLabel);
@@ -105,7 +106,7 @@ export default function openSignUpReportModal() {
     attributes: {
       for: 'marketing-consent',
     },
-    innerContent: 'I want to receive offers and updates from Unilever Food Solutions tailored to my interests and preferences',
+    innerContent: getPlaceholderText(SIGNUP_MODAL_PLACEHOLDERS, 'checkbox_consent'),
   });
   consentGroup.appendChild(consentCheckbox);
   consentGroup.appendChild(consentLabel);
@@ -127,7 +128,7 @@ export default function openSignUpReportModal() {
   });
   const continueButton = createElement('button', {
     className: 'btn-primary',
-    innerContent: 'Continue',
+    innerContent: getPlaceholderText(SIGNUP_MODAL_PLACEHOLDERS, 'button_continue'),
     attributes: {
       type: 'button',
     },
@@ -173,14 +174,14 @@ export default function openSignUpReportModal() {
     errorMessage.style.color = 'var(--ufs-orange)';
 
     if (!email || !firstName || !lastName) {
-      errorMessage.textContent = 'Please fill in all required fields';
+      errorMessage.textContent = getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_register_missing_fields');
       errorMessage.style.display = 'block';
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      errorMessage.textContent = 'Please enter a valid email address';
+      errorMessage.textContent = getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_email_invalid');
       errorMessage.style.display = 'block';
       return;
     }

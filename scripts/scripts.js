@@ -1,4 +1,5 @@
-import { welcomeModalSeen } from '@scripts/custom/utils.js';
+import { welcomeModalSeen } from './custom/utils.js';
+import { getLang } from './custom/locale.js';
 import {
   buildBlock,
   loadHeader,
@@ -97,7 +98,9 @@ export function decorateMain(main) {
  * @param {Element} doc The container element
  */
 async function loadEager(doc) {
-  document.documentElement.lang = 'en';
+  const lang = getLang();
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
   await getPlaceholders();
   decorateTemplateAndTheme();
   const main = doc.querySelector('main');
