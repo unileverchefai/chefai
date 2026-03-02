@@ -38,6 +38,7 @@ export default async function buildTrendVariant({ block, variant }) {
     background: `${variant}--background`,
     media: `${variant}--media`,
     title: `${variant}--title`,
+    titleText: `${variant}--title-text`,
   };
 
   const trendTemplate = `
@@ -46,11 +47,17 @@ export default async function buildTrendVariant({ block, variant }) {
   `;
 
   const trendWrapper = createElement('div', {
-    class: blockClasses.wrapper,
+    className: blockClasses.wrapper,
     innerContent: trendTemplate,
   });
 
   const backgroundArea = trendWrapper.querySelector(`.${blockClasses.background}`);
+  const titleTextWrapper = createElement('span', {
+    className: blockClasses.titleText,
+    innerContent: title.innerHTML,
+  });
+  title.innerHTML = '';
+  title.appendChild(titleTextWrapper);
   title.classList.add(blockClasses.title);
   backgroundArea.appendChild(title);
 

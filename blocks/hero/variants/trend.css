@@ -2,6 +2,8 @@
 	position: relative;
 	padding: 0;
 	background-color: var(--c-white);
+
+	--trend-theme-color: var(--trend-color, var(--smoke));
 }
 
 .trend--wrapper {
@@ -16,19 +18,31 @@
 	padding: 104px var(--spacing-md) 170px;
 	overflow: hidden;
 	display: flex;
+	flex-direction: column;
 	justify-content: center;
-	align-items: flex-start;
+	align-items: center;
 	text-align: center;
+	background-color: var(--trend-theme-color);
+}
 
-	&::before {
-		content: '';
-		position: absolute;
-		inset: 0;
-		background:
-			linear-gradient(180deg, rgb(0 0 0 / 0%) 15.673%, rgb(0 0 0 / 20%) 78.094%),
-			linear-gradient(90deg, var(--smoke) 0%, var(--smoke) 100%);
-		z-index: 0;
-	}
+.hero__trend .hero--logo-wrapper {
+	position: relative;
+	left: auto;
+	top: auto;
+	translate: none;
+	order: -1;
+	z-index: var(--z-content);
+	margin: 0 auto var(--spacing-sm);
+}
+
+.hero__trend .hero--logo-text::after {
+	width: 130px;
+	height: 75px;
+	filter: drop-shadow(0 1px 7px rgb(0 0 0 / 40%)) drop-shadow(0 6px 10px rgb(0 0 0 / 18%));
+}
+
+.hero__trend .hero--logo-number {
+	display: none;
 }
 
 .trend--title {
@@ -36,25 +50,20 @@
 	z-index: var(--z-content);
 	margin: 0;
 	max-width: 333px;
-	color: transparent;
+	color: var(--c-white);
 	text-align: center;
 	font-size: 52px;
 	font-family: var(--ff-unilever-shilling), sans-serif;
 	font-weight: 700;
-	line-height: 44px;
+	line-height: 1;
 	letter-spacing: -2px;
-	text-shadow: var(--glow-borderless-cuisine);
+	background: var(--trend-color);
 
-	&::before {
-		content: '';
-		display: block;
-		width: 130px;
-		height: 75px;
-		margin: 0 auto var(--spacing-sm);
-		background-image: var(--future-menu-logo-text-url);
-		background-repeat: no-repeat;
-		background-position: center;
-		background-size: contain;
+	& .trend--title-text {
+		color: rgb(0 0 0 / 40%);
+		-webkit-text-stroke: 1.7px var(--c-white);
+		mix-blend-mode: overlay;
+		text-shadow: 0 0 10px rgb(255 255 255 / 65%), 0 0 30px rgb(255 255 255 / 15%);
 	}
 }
 
@@ -90,24 +99,23 @@
 		padding: 120px var(--spacing-lg) 210px;
 
 		&::before {
-			background:
-				linear-gradient(180deg, rgb(0 0 0 / 0%) 15.673%, rgb(0 0 0 / 20%) 78.094%),
-				linear-gradient(90deg, var(--smoke) 0%, var(--smoke) 100%);
+			background: var(--trend-theme-color);
 		}
+	}
+
+	.hero__trend .hero--logo-wrapper {
+		margin: 0 auto var(--spacing-md);
+	}
+
+	.hero__trend .hero--logo-text::after {
+		width: 250px;
+		height: 141px;
 	}
 
 	.trend--title {
 		max-width: 818px;
 		width: 100%;
 		font-size: 72px;
-		line-height: 1;
-
-		&::before {
-			width: 250px;
-			height: 141px;
-			margin: 0 auto var(--spacing-md);
-			filter: drop-shadow(0 2px 8px rgb(0 0 0 / 50%));
-		}
 	}
 
 	.trend--media {

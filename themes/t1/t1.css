@@ -2,12 +2,18 @@
 
 body.t1 {
   /* Page-level theme styling for Borderless Cuisine */
+
   /* The trend color variables are already defined in styles/styles.css:
      --borderless-cuisine: #ed6c00
      --borderless-cuisine-bright: #f9b000
      --gradient-borderless-cuisine
      --glow-borderless-cuisine
   */
+
+  --trend-color: var(--borderless-cuisine);
+  --trend-color-bright: var(--borderless-cuisine-bright);
+  --gradient-trend: var(--gradient-borderless-cuisine);
+  --glow-trend: var(--glow-borderless-cuisine);
 }
 
 /* Additional page-level overrides for T1 theme can be added here */

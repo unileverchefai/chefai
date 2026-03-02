@@ -343,10 +343,10 @@ export default async function decorate(block) {
       blockName, variantName: trend, hasStyle: true,
     });
     await buildTrendVariant({ block, variant: trend });
-    // const backgroundArea = block.querySelector(`.${trend}--background`);
-    // if (hasLogo && backgroundArea) {
-    //   appendLogoElement(backgroundArea);
-    // }
+    const backgroundArea = block.querySelector(`.${trend}--background`);
+    if (hasLogo && backgroundArea) {
+      appendLogoElement(backgroundArea);
+    }
     return;
   }
 

@@ -2,12 +2,18 @@
 
 body.t2 {
   /* Page-level theme styling for Street Food Couture */
+
   /* The trend color variables are already defined in styles/styles.css:
      --street-food-couture: #622c57
      --street-food-couture-bright: #622c57
      --gradient-street-food-couture
      --glow-street-food-couture
   */
+
+  --trend-color: var(--street-food-couture);
+  --trend-color-bright: var(--street-food-couture-bright);
+  --gradient-trend: var(--gradient-street-food-couture);
+  --glow-trend: var(--glow-street-food-couture);
 }
 
 /* Additional page-level overrides for T2 theme can be added here */
