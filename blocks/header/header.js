@@ -131,7 +131,7 @@ const createNavHeader = () => {
 export async function buildNavSections(isLoggedIn, businessName) {
   const navMeta = getMetadata('nav');
   const navPath = navMeta ? new URL(navMeta, window.location).pathname : '/nav';
-  const fragment = await loadFragment('/drafts/cognizantmoment/ktabrizi/nav' || navPath);
+  const fragment = await loadFragment(navPath);
 
   const navModal = createElement('div', { className: 'nav-modal' });
   const navModalBackdrop = createElement('div', { className: 'nav-modal-backdrop' });
@@ -165,20 +165,15 @@ export async function buildNavSections(isLoggedIn, businessName) {
       details.classList.add('nav-details');
 
       const summary = document.createElement('summary');
-      summary.classList.add('nav-link'); // keeps your "nav-link" semantics for the main item
+      summary.classList.add('nav-link');
       summary.textContent = el.textContent?.trim() ?? '';
 
-      // Add sub-link to each li in the UL
       next.querySelectorAll('li').forEach((li) => li.classList.add('sub-link'));
 
-      // Build structure
       details.appendChild(summary);
-      details.appendChild(next); // moves the existing UL under details
+      details.appendChild(next);
 
-      // Replace the original "label" element with details, and remove the label element
       el.replaceWith(details);
-
-      // Since we consumed the UL by moving it, the next iteration is safe
     }
   });
 
@@ -200,9 +195,9 @@ export async function buildNavSections(isLoggedIn, businessName) {
     className: 'language-selector',
   });
 
-  languageLinks.forEach((link, index) => {
+  languageLinks?.forEach((link) => {
     const languageLinkContainer = createElement('div', {
-      className: `language-link ${index === 0 && 'active'}`,
+      className: `language-link ${window.location.pathname.includes(link.getAttribute('href')) && 'active'}`,
     });
     const hrefLink = changeCountryLanguagePath(link.getAttribute('href'));
     link.setAttribute('href', hrefLink);
@@ -210,7 +205,7 @@ export async function buildNavSections(isLoggedIn, businessName) {
     languageSelector.append(languageLinkContainer);
   });
 
-  languageSelectorP.remove();
+  languageSelectorP?.remove();
 
   // TODO: add click event to download pdf
   const downloadIcon = createElement('img', {
