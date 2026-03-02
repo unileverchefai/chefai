@@ -420,8 +420,9 @@ header .nav-elements {
 
 .hero-header .nav-onscroll {
   background: #EEEFEF;
-  backdrop-filter: blur(16px);
+  /* stylelint-disable-next-line property-no-vendor-prefix */
   -webkit-backdrop-filter: blur(16px); /* Safari */
+  backdrop-filter: blur(16px);
 }
 
 .hero-header .nav-hamburger-icon {
@@ -549,8 +550,9 @@ header .nav-modal[open] {
   position: absolute;
   inset: 0;
   background: rgb(255 255 255 / 85%);
-  backdrop-filter: blur(30px);
+  /* stylelint-disable-next-line property-no-vendor-prefix */
   -webkit-backdrop-filter: blur(30px); /* Safari */
+  backdrop-filter: blur(30px);
 }
 
 header nav[aria-expanded='true'] {

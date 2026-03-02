@@ -103,8 +103,9 @@ header .nav-hamburger button {
 
 header .nav-onscroll {
   background: #EEEFEF;
-  backdrop-filter: blur(16px);
+  /* stylelint-disable-next-line property-no-vendor-prefix */
   -webkit-backdrop-filter: blur(16px); /* Safari */
+  backdrop-filter: blur(16px);
 }
 
 header .nav-hamburger-icon {
@@ -232,8 +233,9 @@ header .nav-elements .nav-brand {
   position: absolute;
   inset: 0;
   background: rgb(255 255 255 / 85%);
+  /* stylelint-disable-next-line property-no-vendor-prefix */
+  -webkit-backdrop-filter: blur(30px); /* Safari */
   backdrop-filter: blur(30px);
-   -webkit-backdrop-filter: blur(30px); /* Safari */
 }
 
 header nav[aria-expanded='true'] {
