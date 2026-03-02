@@ -19,7 +19,6 @@ const MAX_TITLE_LENGTH = 80;
 const MAX_DESCRIPTION_LENGTH = 150;
 let hasLogo = false;
 let hasVideo = false;
-let videoElement = null;
 
 /**
 * BEM class names for hero block areas
@@ -83,11 +82,38 @@ function appendLogoElement(area) {
 }
 
 /**
+* Appends a video play button wrapper to the specified media area.
+* @param {HTMLElement} area - The target area to append the video element to.
+* @param {HTMLAnchorElement|null} videoEl - The source video link element.
+*/
+function appendVideoElement(area, videoEl) {
+  const videoLink = videoEl.href;
+  const videoWrapper = createElement('div', {
+    className: 'hero--video-wrapper',
+    innerContent: `
+      <a href="${videoLink}" class="hero--play-button video-play-button" aria-label="Play Video"></a>
+      `,
+  });
+  const videoButton = videoWrapper.querySelector('a');
+
+  ['click', 'keydown'].forEach((eventType) => {
+    videoButton.addEventListener(eventType, (e) => {
+      if (eventType === 'click' || e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openVideoModal(videoLink);
+      }
+    });
+  });
+  area.appendChild(videoWrapper);
+}
+
+/**
 * Adds elements to a specified area, clearing existing content first.
 * @param {HTMLElement} area - The target area to add elements into the template.
 * @param {HTMLElement[]} elements - The elements to add to the area.
+* @param {HTMLAnchorElement|null} [videoEl=null] - The video link element, if available.
 */
-function addElementsToArea(area, elements) {
+function addElementsToArea(area, elements, videoEl = null) {
   area.innerHTML = '';
   elements.forEach((el) => {
     area.appendChild(el);
@@ -102,31 +128,15 @@ function addElementsToArea(area, elements) {
   if (hasLogo && isMediaArea) {
     appendLogoElement(area);
   }
-  if (hasVideo && videoElement && isMediaArea) {
-    const videoLink = videoElement.href;
-    const videoWrapper = createElement('div', {
-      className: 'hero--video-wrapper',
-      innerContent: `
-      <a href="${videoLink}" class="hero--play-button video-play-button" aria-label="Play Video"></a>
-      `,
-    });
-    const videoButton = videoWrapper.querySelector('a');
-
-    ['click', 'keydown'].forEach((eventType) => {
-      videoButton.addEventListener(eventType, (e) => {
-        if (eventType === 'click' || e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          openVideoModal(videoLink);
-        }
-      });
-    });
-    area.appendChild(videoWrapper);
+  if (hasVideo && videoEl && isMediaArea) {
+    appendVideoElement(area, videoEl);
   }
 }
 
 /**
  * Validate mandatory elements in hero content
  * @param {HTMLElement} heroContent - The original hero content element.
+ * @param {HTMLAnchorElement|null} videoEl - The video link element, if available.
  * @return {boolean} - True if all mandatory elements are present and valid, false otherwise.
  * @description
  * _Mandatory elements:_
@@ -137,8 +147,8 @@ function addElementsToArea(area, elements) {
  *
  * - _Logo, countdown timer, disclaimer text_
 */
-function validateElements(heroContent) {
-  if (hasVideo && !videoElement) {
+function validateElements(heroContent, videoEl) {
+  if (hasVideo && !videoEl) {
     console.warn('Hero block validation failed: Missing %cvideo link%c element.', 'color: red', '');
     return false;
   }
@@ -208,9 +218,12 @@ function validateMediaElements(mediaElements) {
  * @param {Object} params - The parameters object.
  * @param {Object} params.heroClassList - The BEM class names for the hero block areas.
  * @param {HTMLElement} params.heroContent - The original hero content element.
- * @param {HTMLElement} params.heroContainer - The hero container element to populate.
+* @param {HTMLElement} params.heroContainer - The hero container element to populate.
+* @param {HTMLAnchorElement|null} [params.videoElement=null] - The video link element, if available.
 */
-function buildHero({ heroClassList, heroContent, heroContainer }) {
+function buildHero({
+  heroClassList, heroContent, heroContainer, videoElement = null,
+}) {
   const mediaArea = heroContainer.querySelector(`.${heroClassList.media}`);
   const contentArea = heroContainer.querySelector(`.${heroClassList.textContent}`);
   const ctaArea = heroContainer.querySelector(`.${heroClassList.cta}`);
@@ -226,7 +239,7 @@ function buildHero({ heroClassList, heroContent, heroContainer }) {
 
   // build media area
   if (mediaElements.length > 0) {
-    addElementsToArea(mediaArea, [...mediaElements]);
+    addElementsToArea(mediaArea, [...mediaElements], videoElement);
   }
   // build text content area
   const textTitle = content.querySelector(':scope > h1');
@@ -281,9 +294,17 @@ function setVariantClass(variant) {
 * @param {boolean} [params.hasStyle=false] - Whether the variant has an associated style to load.
  * @param {boolean} [params.isCountdown=false] - Whether to include the countdown timer area.
  * @param {boolean} [params.useButtons=false] - Whether to include buttons in the variant.
+ * @param {HTMLAnchorElement|null} [params.videoElement=null]
+ *  - The video link element, if available.
 */
 async function buildVariant({
-  variant, block, hasScript = false, hasStyle = false, isCountdown = false, useButtons = false,
+  variant,
+  block,
+  hasScript = false,
+  hasStyle = false,
+  isCountdown = false,
+  useButtons = false,
+  videoElement = null,
 }) {
   // Placeholder for future variant-specific build logic
   const variantName = variant;
@@ -294,7 +315,12 @@ async function buildVariant({
 
   const heroContainer = buildHeroContainer({ variantClass, isCountdown });
   const heroContent = block.querySelector(':scope > div');
-  buildHero({ heroClassList: heroClasses(variantClass), heroContent, heroContainer });
+  buildHero({
+    heroClassList: heroClasses(variantClass),
+    heroContent,
+    heroContainer,
+    videoElement,
+  });
   block.textContent = '';
   block.appendChild(heroContainer);
 }
@@ -302,22 +328,23 @@ async function buildVariant({
 /**
  * Setup video link for hero block
  * @param {HTMLElement} block - The hero block element.
+ * @return {HTMLAnchorElement|null} - The extracted video link element.
  */
 function setupVideoLink(block) {
   const videolink = findVideoLink(block);
   if (!videolink) {
-    videoElement = null;
-    return;
+    return null;
   }
   if (videolink.parentElement.localName === 'p') {
     videolink.parentElement.remove();
   } else {
     videolink.remove();
   }
-  videoElement = videolink;
+  return videolink;
 }
 
 export default async function decorate(block) {
+  let videoElement = null;
   const isTrend = block.classList.contains(trend);
   const isLive = block.classList.contains(live);
   const isCountdown = block.classList.contains(countdown);
@@ -335,22 +362,48 @@ export default async function decorate(block) {
     } catch (error) {
       console.error('Error loading %cmodal video%c CSS:', 'color: red', '', error);
     }
-    setupVideoLink(block);
+
+    videoElement = setupVideoLink(block);
   }
 
   if (isTrend) {
     addVariantLogic({
       blockName, variantName: trend, hasStyle: true,
     });
-    await buildTrendVariant({ block, variant: trend });
-    const backgroundArea = block.querySelector(`.${trend}--background`);
-    if (hasLogo && backgroundArea) {
+    const trendClass = setVariantClass(trend);
+    await buildTrendVariant({ block, variant: trendClass });
+    const backgroundArea = block.querySelector(`.${trendClass}--background`);
+    const mediaArea = block.querySelector(`.${trendClass}--media`);
+
+    if (!backgroundArea) {
+      console.error('Trend hero variant: %cBackground area%c element is missing. Please make sure to include a background area in the template.', 'color: red;', '');
+      return;
+    }
+
+    if (!mediaArea) {
+      console.error('Trend hero variant: %cMedia area%c element is missing. Please make sure to include a media area in the template.', 'color: red;', '');
+      const picture = block.querySelector('picture');
+      if (!picture) {
+        console.error('Trend hero variant: No %cpicture%c element found for media area. Please make sure to include a picture element in the second row of the block or provide a fallback background.', 'color: red;', '');
+      }
+      if (hasVideo && !videoElement) {
+        console.error('Trend hero variant: %cVideo link%c is indicated but no video link element found. Please make sure to include a video link element in the second row of the block.', 'color: red;', '');
+      }
+      return;
+    }
+
+    if (hasLogo) {
       appendLogoElement(backgroundArea);
     }
+
+    if (hasVideo && videoElement) {
+      appendVideoElement(mediaArea, videoElement);
+    }
+
     return;
   }
 
-  const isContentValid = validateElements(block.querySelector(':scope > div'));
+  const isContentValid = validateElements(block.querySelector(':scope > div'), videoElement);
   if (!isContentValid) {
     console.error('Hero block decoration aborted due to %cvalidation%c errors. The block will not be rendered.', 'color: red', '');
     block.innerHTML = '';
@@ -364,7 +417,7 @@ export default async function decorate(block) {
 
   if (isLive) {
     await buildVariant({
-      variant: live, block, useButtons: true,
+      variant: live, block, useButtons: true, videoElement,
     });
     const ctaButton = block.querySelector('.orange-button');
     ctaButton.classList.add('glowy');
@@ -378,6 +431,7 @@ export default async function decorate(block) {
       hasStyle: true,
       isCountdown: true,
       useButtons: true,
+      videoElement,
     });
     const countdownClass = getBEMTemplateName({ blockName, variantName: countdown, modifierName: 'countdown-timer' });
     const countdownArea = block.querySelector(`.${countdownClass}`);
