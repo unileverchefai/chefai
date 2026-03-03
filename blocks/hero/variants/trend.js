@@ -25,6 +25,7 @@ function validateElements({ block, title, mediaWrapper }) {
 export default async function buildTrendVariant({ block, variant }) {
   const title = block.querySelector(':scope > div:first-child > div > h1');
   const mediaWrapper = block.querySelector(':scope > div:nth-child(2) > div');
+  const backgroundWrapper = block.querySelector(':scope > div:nth-child(3) > div');
   // fist row: just title. grab it to the template
   // second row: media. could be image or image + video link.
   // third row: used for background images on the first row. optional
@@ -39,6 +40,7 @@ export default async function buildTrendVariant({ block, variant }) {
     media: `${variant}--media`,
     title: `${variant}--title`,
     titleText: `${variant}--title-text`,
+    backgroundImage: `${variant}--background-image`,
   };
 
   const trendTemplate = `
@@ -65,6 +67,15 @@ export default async function buildTrendVariant({ block, variant }) {
   const pictureEl = mediaWrapper.querySelector('picture');
   if (pictureEl) {
     mediaArea.appendChild(pictureEl);
+  }
+
+  if (backgroundWrapper) {
+    const backgroundImage = backgroundWrapper.querySelector('img');
+    const { src } = backgroundImage;
+    if (src) {
+      backgroundArea.classList.add('image-background');
+      backgroundArea.style.setProperty('--trend-bg-image', `url(${src})`);
+    }
   }
 
   block.innerHTML = '';

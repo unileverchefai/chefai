@@ -14,6 +14,9 @@ body.t2 {
   --trend-color-bright: var(--street-food-couture-bright);
   --gradient-trend: var(--gradient-street-food-couture);
   --glow-trend: var(--glow-street-food-couture);
+  --text-trend-glow: var(--street-food-glow);
+  --text-trend-glow-80: var(--street-food-glow-80);
+  --text-trend-glow-25: var(--street-food-glow-25);
 }
 
 /* Additional page-level overrides for T2 theme can be added here */

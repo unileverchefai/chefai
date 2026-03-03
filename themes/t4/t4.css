@@ -14,6 +14,9 @@ body.t4 {
   --trend-color-bright: var(--culinary-roots-bright);
   --gradient-trend: var(--gradient-culinary-roots);
   --glow-trend: var(--glow-culinary-roots);
+  --text-trend-glow: var(--culinary-roots-glow);
+  --text-trend-glow-80: var(--culinary-roots-glow-80);
+  --text-trend-glow-25: var(--culinary-roots-glow-25);
 }
 
 /* Additional page-level overrides for T4 theme can be added here */

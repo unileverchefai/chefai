@@ -62,9 +62,17 @@
 
   /* Trend stat glow colors */
   --borderless-glow: #ffab00;
+  --borderless-glow-80: #ffab00cc;
+  --borderless-glow-25: #ffab0040;
   --street-food-glow: #dc4d8b;
+  --street-food-glow-80: #dc4d8bcc;
+  --street-food-glow-25: #dc4d8b40;
   --diner-designed-glow: #a1b83b;
+  --diner-designed-glow-80: #a1b83bcc;
+  --diner-designed-glow-25: #a1b83b40;
   --culinary-roots-glow: #0090ba;
+  --culinary-roots-glow-80: #0090bacc;
+  --culinary-roots-glow-25: #0090ba40;
 
   /* Cross-trend colors */
   --cross-trend-shadow: rgb(176 43 159 / 20%);

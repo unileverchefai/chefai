@@ -14,6 +14,9 @@ body.t3 {
   --trend-color-bright: var(--diner-designed-bright);
   --gradient-trend: var(--gradient-diner-designed);
   --glow-trend: var(--glow-diner-designed);
+  --text-trend-glow: var(--diner-designed-glow);
+  --text-trend-glow-80: var(--diner-designed-glow-80);
+  --text-trend-glow-25: var(--diner-designed-glow-25);
 }
 
 /* Additional page-level overrides for T3 theme can be added here */
