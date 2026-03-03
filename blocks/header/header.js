@@ -3,7 +3,7 @@ import { getMetadata } from '@scripts/aem.js';
 import { loadFragment } from '@blocks/fragment/fragment.js';
 import createProfileSection from '@helpers/nav-profile/nav-profile.js';
 import { hasToken } from '@auth/tokenManager.js';
-import { getUserDataFromCookie } from '@scripts/custom/utils.js';
+import { getUserDataFromCookie, clearAllChatData, shouldResetGuestState } from '@scripts/custom/utils.js';
 import { logout } from '@auth/authService.js';
 import { getBaseUrl, changeCountryLanguagePath } from '@scripts/custom/redirect.js';
 
@@ -289,6 +289,10 @@ export function createHamburgerMenu(nav) {
 export default async function decorate(block) {
   block.textContent = '';
   const isLoggedIn = hasToken();
+  if (shouldResetGuestState()) {
+    clearAllChatData();
+  }
+
   const userData = getUserDataFromCookie();
   const businessName = userData ? JSON.parse(userData)?.business_name : null;
   // Get campaign phase metadata (defaults to 'teaser')

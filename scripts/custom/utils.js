@@ -1,6 +1,7 @@
 import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
 import { getCountry, getLang } from '@scripts/custom/locale.js';
 import formatResponse from '@helpers/chatbot/responseHandler.js';
+import { hasToken } from '@auth/tokenManager.js';
 
 const countryCode = getCountry();
 const languageCode = getLang();
@@ -42,6 +43,23 @@ export function getCookie(name) {
   } catch {
     return null;
   }
+}
+
+/**
+ * Determine if guest state should be reset.
+ * Returns true when there is persisted identity/business data but no auth token.
+ * Callers are responsible for invoking clearAllChatData when this is true.
+ * @returns {boolean}
+ */
+export function shouldResetGuestState() {
+  if (hasToken()) {
+    return false;
+  }
+
+  const userId = getCookie('user_id');
+  const userData = getCookie('user_data');
+
+  return !!(userId || userData);
 }
 
 /**
