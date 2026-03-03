@@ -188,7 +188,7 @@ export async function buildNavSections(isLoggedIn, businessName) {
     });
   });
 
-  // TODO: language selector, using static data for now
+  // Language Selector
   const languageSelectorP = [...navLinks].find((el) => el.textContent.toLowerCase().includes('languageselector'));
   const languageLinks = languageSelectorP?.querySelectorAll('a');
   const languageSelector = createElement('div', {
@@ -217,6 +217,7 @@ export async function buildNavSections(isLoggedIn, businessName) {
       height: '16',
     },
   });
+
   const downdloadReport = createElement('button', {
     className: 'download-report',
     attributes: {
