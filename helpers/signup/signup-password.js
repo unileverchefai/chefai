@@ -4,6 +4,7 @@ import { loadCSS } from '@scripts/aem.js';
 import { register } from '@auth/authService.js';
 import { getUrl } from '@scripts/custom/redirect.js';
 import { getPlaceholderText } from '@scripts/custom/utils.js';
+import { trackSignupSuccess } from './signup.analytics.js';
 
 function createPasswordRequirement(text) {
   const requirement = createElement('div', {
@@ -206,11 +207,22 @@ export default function openSignupPasswordModal(email, registrationData = null) 
         };
 
         await register(formData);
+        const formName = title.textContent?.trim() ?? '';
+        const displayText = submitButton.textContent?.trim() ?? '';
+        const href = getUrl('personalized-hub');
+        trackSignupSuccess({
+          formName,
+          displayText,
+          href,
+        });
         modal.close();
         window.location.href = getUrl('personalized-hub');
       }
     } catch (error) {
-      errorMessage.textContent = getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_register_failed_generic');
+      const fallbackMessage = getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_register_failed_generic');
+      const errorMessageText = String(error?.message ?? '').trim() || fallbackMessage;
+
+      errorMessage.textContent = errorMessageText;
       errorMessage.style.display = 'block';
       submitButton.disabled = false;
       submitButton.textContent = 'Create Account';
