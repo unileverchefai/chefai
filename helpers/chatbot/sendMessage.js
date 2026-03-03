@@ -1,4 +1,4 @@
-import { SUBSCRIPTION_KEY, ENDPOINTS, DEFAULT_TIMEOUT_MS } from '@api/endpoints.js';
+import { SUBSCRIPTION_KEY, ENDPOINTS, STREAMING_TIMEOUT_MS } from '@api/endpoints.js';
 import { getCountry } from '@scripts/custom/locale.js';
 import {
   getOrCreateThreadId,
@@ -19,7 +19,7 @@ export function setEndpoint(endpoint) {
   }
 }
 
-function fetchWithTimeout(url, options, timeout = DEFAULT_TIMEOUT_MS) {
+function fetchWithTimeout(url, options, timeout = STREAMING_TIMEOUT_MS) {
   return Promise.race([
     fetch(url, options),
     new Promise((_, reject) => {
@@ -79,7 +79,7 @@ export default async function sendMessage(message, options = {}) {
         },
         body: JSON.stringify(payload),
       },
-      options.timeout ?? DEFAULT_TIMEOUT_MS,
+      options.timeout ?? STREAMING_TIMEOUT_MS,
     );
 
     if (!response.ok) {

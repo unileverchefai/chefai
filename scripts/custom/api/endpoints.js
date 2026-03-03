@@ -3,7 +3,7 @@ import { getCountry, getLang } from '../locale.js';
 const countryCode = getCountry();
 const languageCode = getLang();
 
-export const DEFAULT_TIMEOUT_MS = 180000;
+export const STREAMING_TIMEOUT_MS = 180000;
 export const SUBSCRIPTION_KEY = 'hGyKufXGJsFbf-_vR67onc-BLjZ4QdhOrIc-u6RTsLM';
 export const API_BASE_URL = 'https://api-hub-we.azure-api.net/chefaibe/st/api/v1';
 
