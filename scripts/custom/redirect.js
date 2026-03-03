@@ -30,7 +30,7 @@ export function getUrl(pageName, pathname = window.location.pathname ?? '/') {
 /**
  * Replaces the country/language part of the URL path.
  * e.g. changeCountryLanguagePath('be/nl')
- * /uk/en/inspiration/future-menus-4/ -> /be/nl/inspiration/future-menus-4/
+ * /uk/en/inspiration/future-menus-4/ ->> /be/nl/inspiration/future-menus-4/
  */
 export function changeCountryLanguagePath(
   newCountryLang,
