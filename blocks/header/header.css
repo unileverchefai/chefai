@@ -314,7 +314,7 @@ header nav[aria-expanded='true'] {
 
 /* Swap icon when opened */
 .nav-details[open] > summary.nav-link::after {
-  background-image: url("/icons/arrow-up.svg");
+  background-image: url("/icons/arrow-up-icon.svg");
 }
 
 .nav-details .sub-link {
