@@ -103,7 +103,7 @@ const createNavHeader = () => {
   const closeIcon = createElement('img', {
     className: 'icon',
     attributes: {
-      src: '/icons/close.svg',
+      src: '/icons/close-icon.svg',
       alt: '',
       width: '16',
       height: '16',
@@ -211,7 +211,7 @@ export async function buildNavSections(isLoggedIn, businessName) {
   const downloadIcon = createElement('img', {
     className: 'icon',
     attributes: {
-      src: '/icons/download.svg',
+      src: '/icons/download-icon.svg',
       alt: '',
       width: '16',
       height: '16',
