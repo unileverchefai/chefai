@@ -219,7 +219,7 @@ export default function openSignupPasswordModal(email, registrationData = null) 
         });
 
         modal.close();
-        // window.location.href = href;
+        window.location.href = href;
       }
     } catch (error) {
       const fallbackMessage = getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_register_failed_generic');
