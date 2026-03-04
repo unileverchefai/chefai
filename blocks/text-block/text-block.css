@@ -100,7 +100,7 @@ main > .section > .text-block-wrapper {
   }
 
   .text-block .text-content {
-    padding-inline: 314px;
+    padding-inline: 120px;
   }
 
   .text-block h3 {
@@ -120,5 +120,11 @@ main > .section > .text-block-wrapper {
     font-size: var(--typo-p1-reg-size-desktop);
     line-height: 26px;
     margin-bottom: var(--spacing-md);
+  }
+}
+
+@media (width >= 1400px) {
+  .text-block .text-content {
+    padding-inline: 314px;
   }
 }
