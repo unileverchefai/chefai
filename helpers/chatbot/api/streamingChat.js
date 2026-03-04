@@ -1,34 +1,10 @@
-import { SUBSCRIPTION_KEY, ENDPOINTS, STREAMING_TIMEOUT_MS } from '@api/endpoints.js';
-import { getCountry } from '@scripts/custom/locale.js';
 import {
-  getOrCreateThreadId,
-  getAnonymousUserId,
-  getUserIdFromCookie,
-  getAnonymousUserIdFromCookie,
-  createUser,
-} from '@scripts/custom/utils.js';
+  resolveUserId,
+  resolveThreadId,
+  postChatMessage,
+} from './chatApi.js';
 import { generateRunId, connectToAgentRunStream } from './sseStream.js';
-import sendMessage from './sendMessage.js';
-import formatResponse, { parseStreamingEvent } from './responseHandler.js';
-
-const countryCode = getCountry();
-
-let currentEndpoint = 'capgemini';
-
-export function setEndpoint(endpoint) {
-  if (ENDPOINTS[endpoint]) {
-    currentEndpoint = endpoint;
-  }
-}
-
-function fetchWithTimeout(url, options, timeout = STREAMING_TIMEOUT_MS) {
-  return Promise.race([
-    fetch(url, options),
-    new Promise((_, reject) => {
-      setTimeout(() => reject(new Error('Request timeout: API took too long to respond')), timeout);
-    }),
-  ]);
-}
+import formatResponse, { parseStreamingEvent } from './responseFormatter.js';
 
 /**
  * Send a chat message with SSE streaming support.
@@ -50,29 +26,14 @@ export default async function sendStreamingMessage(message, options = {}) {
     onMetadata = () => {},
   } = options;
 
-  const cookieUserId = getUserIdFromCookie();
-  const anonymousUserId = getAnonymousUserIdFromCookie();
-  let userId = options.user_id ?? cookieUserId ?? anonymousUserId;
+  const userId = await resolveUserId(options.user_id);
 
-  if (!userId) {
-    userId = await getAnonymousUserId();
-  }
-
-  // Get or reuse thread ID (same as sendMessage): use options.thread_id if provided
   const skipCache = options.skipCache ?? false;
-  let threadId = options.thread_id ?? null;
-  if (!threadId) {
-    try {
-      threadId = await getOrCreateThreadId(userId, false, skipCache);
-    } catch (error) {
-      if (error.message && error.message.includes('does not exist')) {
-        userId = await createUser();
-        threadId = await getOrCreateThreadId(userId, false, skipCache);
-      } else {
-        throw error;
-      }
-    }
-  }
+  const threadId = await resolveThreadId({
+    userId,
+    threadId: options.thread_id ?? null,
+    skipCache,
+  });
 
   // Accumulate streaming text and metadata
   let accumulatedText = '';
@@ -156,40 +117,15 @@ export default async function sendStreamingMessage(message, options = {}) {
       }
 
       // Step 3: Send API request with the SAME run_id (only API fields, no callbacks)
-      const endpoint = ENDPOINTS[currentEndpoint];
-      const payload = {
+      const apiResponseData = await postChatMessage({
         message,
-        thread_id: threadId,
-        user_id: userId,
-        country: options.country ?? countryCode,
-        run_id: runId,
-        enable_metadata: true,
-      };
-
-      const apiResponse = await fetchWithTimeout(
-        endpoint,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-            'X-Subscription-Key': SUBSCRIPTION_KEY,
-          },
-          body: JSON.stringify(payload),
-        },
-        options.timeout ?? STREAMING_TIMEOUT_MS,
-      );
-
-      if (!apiResponse.ok) {
-        throw new Error(`API error: ${apiResponse.status} ${apiResponse.statusText}`);
-      }
-
-      const responseText = await apiResponse.text();
-      if (!responseText) {
-        throw new Error('API returned empty response');
-      }
-
-      const apiResponseData = JSON.parse(responseText);
+        threadId,
+        userId,
+        country: options.country,
+        runId,
+        enableMetadata: true,
+        timeout: options.timeout,
+      });
 
       if (!finalResponse) {
         finalResponse = apiResponseData;
@@ -249,14 +185,16 @@ export default async function sendStreamingMessage(message, options = {}) {
       }
 
       try {
-        const response = await sendMessage(message, {
-          ...options,
-          user_id: userId,
-          thread_id: threadId,
-          country: options.country ?? countryCode,
+        const response = await postChatMessage({
+          message,
+          threadId,
+          userId,
+          country: options.country,
+          timeout: options.timeout,
         });
 
-        onComplete(response);
+        const formatted = formatResponse(response);
+        onComplete(formatted);
       } catch (fallbackError) {
         onError(fallbackError);
       }
@@ -265,3 +203,4 @@ export default async function sendStreamingMessage(message, options = {}) {
 
   return controlObject;
 }
+

@@ -1,6 +1,5 @@
 import SuggestedPrompts from './SuggestedPrompts.js';
-
-const USER_ID = 1;
+import { USER_ID, formatMessageText } from './messageModel.js';
 
 export default function renderMessage(message, options = {}) {
   const { createElement: h } = window.React;
@@ -103,9 +102,8 @@ export default function renderMessage(message, options = {}) {
               lineHeight: '1.5',
               whiteSpace: 'pre-wrap',
             },
-            dangerouslySetInnerHTML: { __html: message.text },
+            dangerouslySetInnerHTML: { __html: formatMessageText(textBeforeRecipes || message.text || '') },
           },
-          // TODO:Check if BE can send markdown URL convertLinksToClickable(textBeforeRecipes),
         ),
       ]),
     ...(message.metadata?.images?.length > 0

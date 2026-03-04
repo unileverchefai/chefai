@@ -10,11 +10,9 @@ import {
   validateThread,
   createThread,
 } from '@scripts/custom/utils.js';
-import sendStreamingMessage from './sendStreamingMessage.js';
+import sendStreamingMessage from './api/streamingChat.js';
 import renderChatUI from './renderChatUI.js';
-
-const USER_ID = 1;
-const AI_ID = 2;
+import { USER_ID, AI_ID, buildHeadlineMessage } from './messageModel.js';
 
 export default function ChatWidget({ personalizedHubTrigger = '#chatbot', type } = {}) {
   const {
@@ -118,33 +116,25 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot', type }
               if (headlineText && newMessages.length > 0) {
                 const hasHeadline = newMessages
                   .some((m) => m.metadata?.isQuickActionHeadline);
-                // TODO: We should refactor, it's a bit hacky to manage headline
-                // vs regular messages through metadata and sessionStorage like this,
-                // but it allows us to display a headline for both quick actions and
-                // insights without needing separate flows or components. Ideally the
-                // BE would send a specific message type for headlines that we can
-                // easily identify and render differently, rather than relying on this workaround.
-                // 1) Markdown -> HTML
-                const rawHtml = window.marked?.parse(newMessages[0].text.replace(`**${headlineText}**`, ''));
-                // 2) Sanitize (important if text comes from BE)
-                newMessages[0].text = window.DOMPurify?.sanitize(rawHtml);
+
+                const firstMsg = newMessages[0];
+                if (firstMsg && typeof firstMsg.text === 'string') {
+                  newMessages[0] = {
+                    ...firstMsg,
+                    text: firstMsg.text.replace(`**${headlineText}**`, '').trim(),
+                  };
+                }
+
                 if (!hasHeadline) {
-                  const firstMsg = newMessages[0];
                   const firstTime = firstMsg?.createdAt
                     ? new Date(firstMsg.createdAt).getTime()
                     : Date.now();
-                  const headlineMessage = {
-                    _id: `headline_${threadId}`,
-                    text: headlineText,
+                  const headlineMessage = buildHeadlineMessage({
+                    threadId,
+                    headlineText,
                     createdAt: new Date(firstTime - 1),
-                    user: {
-                      _id: AI_ID,
-                      name: 'Chef AI',
-                    },
-                    metadata: {
-                      isQuickActionHeadline: true,
-                    },
-                  };
+                    type: type === 'quick-actions' ? 'quick-actions' : 'chat',
+                  });
                   newMessages = [headlineMessage, ...newMessages];
                 }
               }
@@ -416,21 +406,12 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot', type }
       const displayText = event.detail?.displayText;
       if (!displayText) return;
 
-      const headlineMessage = {
-        _id: `headline_${Date.now()}`,
-        text: displayText,
+      const headlineMessage = buildHeadlineMessage({
+        headlineText: displayText,
         createdAt: new Date(),
-        user: {
-          _id: AI_ID,
-          name: 'Chef AI',
-        },
-        metadata: {
-          isQuickActionHeadline: true,
-        },
-      };
+        type: 'quick-action',
+      });
 
-      // TODO: This logic is a bit hacky - we should ideally have a clearer way to manage
-      // headline vs regular messages in all the flows.
       if (type === 'insights') {
         const headlineInsightMessage = {
           _id: `headline_${Date.now()}`,

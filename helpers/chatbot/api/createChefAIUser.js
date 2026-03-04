@@ -10,7 +10,6 @@ export default async function createChefAIUser(userId, userName, businessData = 
     throw new Error('User ID is required to create ChefAI user');
   }
 
-  // Build metadata with business_verified if business data exists
   const metadata = {};
   if (businessData && businessData.business_name) {
     let addressStr = businessData.address ?? '';
@@ -36,7 +35,6 @@ export default async function createChefAIUser(userId, userName, businessData = 
       website_uri: businessData.url ?? '',
     };
   }
-  metadata.additionalProperty = 'anything';
 
   const tcAgreed = getCookie('personalized-hub-consent') === 'true';
 
@@ -76,3 +74,5 @@ export default async function createChefAIUser(userId, userName, businessData = 
   console.log('[ChefAI User] User created successfully:', json);
   return json;
 }
+
+

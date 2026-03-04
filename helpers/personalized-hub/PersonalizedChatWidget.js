@@ -1,5 +1,5 @@
 import sendMessage from '../chatbot/sendMessage.js';
-import sendStreamingMessage from '../chatbot/sendStreamingMessage.js';
+import sendStreamingMessage from '../chatbot/api/streamingChat.js';
 import renderMessage from '../chatbot/renderMessage.js';
 import ChatInput from '../chatInput/ChatInput.js';
 
