@@ -5,6 +5,7 @@ import { login } from '@auth/authService.js';
 import openCookieAgreementModal from '@helpers/cookie-agreement/index.js';
 import { getUrl } from '@scripts/custom/redirect.js';
 import { getPlaceholderText } from '@scripts/custom/utils.js';
+import trackSigninHeaderLinkClick from './signin.analytics.js';
 /**
  * Opens the sign-in modal
  * @returns {Object} Modal instance
@@ -13,6 +14,14 @@ export default function openSignInModal() {
   // Load sign-in CSS
   loadCSS(`${window.hlx.codeBasePath}/blocks/sign-in/sign-in.css`).catch(() => {
     // CSS loading error handled silently
+  });
+
+  const signInDisplayText = getPlaceholderText(SIGNIN_MODAL_PLACEHOLDERS, 'button_signin');
+
+  trackSigninHeaderLinkClick({
+    name: 'header link',
+    displayText: signInDisplayText,
+    href: 'overlay trigger',
   });
 
   // Create modal content
