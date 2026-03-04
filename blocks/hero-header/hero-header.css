@@ -2,8 +2,6 @@
   display: flex;
   flex-direction: column;
   gap: 32px;
-  max-width: 1030px;
-  margin: 0 auto;
 }
 
 .hero-header {
@@ -62,6 +60,10 @@
   height: 69px;
   top: 24px;
   right: 0;
+
+  @media (width >= 992px) {
+    right: 100px;
+  }
 }
 
 .hero-header__logo-text {
@@ -127,6 +129,11 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+  }
+
+  @media (width >= 992px) {
+    gap: 36px;
+    padding: 40px 100px 56px;
   }
 }
 
@@ -209,6 +216,12 @@
   flex-direction: column;
   gap: 32px;
   margin-top: 60px;
+
+  @media (width >= 992px) {
+    margin: 0 auto;
+    margin-bottom: 32px;
+    max-width: 1030px;
+  }
 }
 
 .hero-header__content-row {
@@ -390,7 +403,7 @@ header .nav-elements {
   z-index: 50;
 
   &:hover {
-    background-color: var(--c-white);
+    background-color: rgb(238 239 239 / 90%);
   }
 }
 
@@ -419,10 +432,10 @@ header .nav-elements {
 }
 
 .hero-header .nav-onscroll {
-  background: #EEEFEF;
+  background: rgb(238 239 239 / 50%);
   /* stylelint-disable-next-line property-no-vendor-prefix */
-  -webkit-backdrop-filter: blur(16px); /* Safari */
-  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(10px); /* Safari */
+  backdrop-filter: blur(10px);
 }
 
 .hero-header .nav-hamburger-icon {
@@ -695,6 +708,10 @@ header nav[aria-expanded='true'] {
   opacity: 0.5;
   height: 100vh;
   z-index: 100;
+
+  @media (width >= 992px) {
+    top: 0;
+  }
 }
 
 @media (width <= 768px) and (height < 800px) {
