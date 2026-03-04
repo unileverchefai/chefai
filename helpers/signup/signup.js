@@ -2,6 +2,7 @@ import { createElement, SIGNUP_MODAL_PLACEHOLDERS, VALIDATIONS_PLACEHOLDERS } fr
 import createModal from '@helpers/modal/index.js';
 import { loadCSS } from '@scripts/aem.js';
 import { getPlaceholderText } from '@scripts/custom/utils.js';
+import { trackSignupStart } from './signup.analytics.js';
 
 export default function openSignUpReportModal() {
   loadCSS(`${window.hlx.codeBasePath}/helpers/signup/signup.css`).catch(() => {});
@@ -111,6 +112,20 @@ export default function openSignUpReportModal() {
   consentGroup.appendChild(consentCheckbox);
   consentGroup.appendChild(consentLabel);
   formContainer.appendChild(consentGroup);
+
+  let signupStartTracked = false;
+  consentCheckbox.addEventListener('change', () => {
+    if (consentCheckbox.checked && !signupStartTracked) {
+      const formName = title.textContent?.trim() ?? '';
+      const displayText = consentLabel.textContent?.trim() ?? '';
+      trackSignupStart({
+        formName,
+        displayText,
+        href: 'checkbox',
+      });
+      signupStartTracked = true;
+    }
+  });
 
   const errorMessage = createElement('div', {
     className: 'signup-form-error',

@@ -72,7 +72,7 @@ async function getEventsSettings(targetUrl = eventsSettingsUrl) {
   }
 }
 
-function pushEventToDataLayer(eventInfo = {}) {
+export function pushEventToDataLayer(eventInfo = {}) {
   window.adobeDataLayer = window.adobeDataLayer || [];
   window.adobeDataLayer.push({
     ...eventInfo,
