@@ -31,7 +31,7 @@ export function validateTheme(theme) {
  * @returns {boolean} True if the host is a development environment, false otherwise.
  */
 export function isDevHost() {
-  const devHosts = ['localhost', '127.0.0.1', 'aem.page', 'aem.live'];
+  const devHosts = ['localhost', '127.0.0.1', 'aem.page', 'aem.live', 'dev.ufs.com', 'stage.ufs.com'];
   return devHosts.some((url) => window.location.host.includes(url));
 }
 
