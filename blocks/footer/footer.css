@@ -8,8 +8,10 @@ footer .footer > div {
   padding: 40px 24px 24px;
 }
 
-footer .footer p {
+footer .footer p,
+footer .footer p a{
   margin: 0;
+  color: #5D5D5D;
 }
 
 footer .default-content-wrapper {
