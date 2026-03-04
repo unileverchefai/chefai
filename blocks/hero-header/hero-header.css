@@ -219,7 +219,7 @@
 
   @media (width >= 992px) {
     margin: 0 auto;
-    margin-bottom: 32px;
+    margin-block-end: 32px;
     max-width: 1030px;
   }
 }
@@ -584,7 +584,7 @@ header nav[aria-expanded='true'] {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
+  margin-block-end: 24px;
 }
 
 .nav-modal-close {

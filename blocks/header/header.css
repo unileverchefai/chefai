@@ -254,7 +254,7 @@ header nav[aria-expanded='true'] {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
+  margin-block-end: 24px;
 }
 
 .nav-modal-close {
