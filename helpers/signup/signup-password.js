@@ -207,16 +207,19 @@ export default function openSignupPasswordModal(email, registrationData = null) 
         };
 
         await register(formData);
+
         const formName = title.textContent?.trim() ?? '';
         const displayText = submitButton.textContent?.trim() ?? '';
         const href = getUrl('personalized-hub');
+
         trackSignupSuccess({
-          formName,
-          displayText,
+          registrationType: registrationData?.registrationType,
+          displayText: displayText || formName,
           href,
         });
+
         modal.close();
-        window.location.href = getUrl('personalized-hub');
+        // window.location.href = href;
       }
     } catch (error) {
       const fallbackMessage = getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_register_failed_generic');
@@ -225,7 +228,7 @@ export default function openSignupPasswordModal(email, registrationData = null) 
       errorMessage.textContent = errorMessageText;
       errorMessage.style.display = 'block';
       submitButton.disabled = false;
-      submitButton.textContent = 'Create Account';
+      submitButton.textContent = getPlaceholderText(SIGNUP_MODAL_PLACEHOLDERS, 'button_create_account') || 'Create Account';
     }
   });
 

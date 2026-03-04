@@ -1,18 +1,24 @@
-import { pushEventToDataLayer } from '@scripts/custom/analytics.js';
-
 export function trackSignupStart({
-  formName,
+  registrationType,
   displayText,
   href,
-}) {
-  pushEventToDataLayer({
-    event: 'signupStart',
+} = {}) {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  if (!window.adobeDataLayer) {
+    window.adobeDataLayer = [];
+  }
+
+  window.adobeDataLayer.push({
+    event: 'registrationStart',
     _ufs: {
-      signup: {
-        formName: formName ?? '',
-        displayText: displayText ?? '',
-        href: href ?? '',
-        signupStart: {
+      registration: {
+        registrationType: registrationType || '',
+        displayText,
+        href,
+        registrationStart: {
           value: 1,
         },
       },
@@ -26,18 +32,26 @@ export function trackSignupStart({
 }
 
 export function trackSignupSuccess({
-  formName,
+  registrationType,
   displayText,
   href,
-}) {
-  pushEventToDataLayer({
-    event: 'signupSuccess',
+} = {}) {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  if (!window.adobeDataLayer) {
+    window.adobeDataLayer = [];
+  }
+
+  window.adobeDataLayer.push({
+    event: 'registrationComplete',
     _ufs: {
-      signup: {
-        formName: formName ?? '',
-        displayText: displayText ?? '',
-        href: href ?? '',
-        signupSuccess: {
+      registration: {
+        registrationType: registrationType || '',
+        displayText,
+        href,
+        registrationComplete: {
           value: 1,
         },
       },
