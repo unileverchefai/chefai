@@ -9,6 +9,23 @@ body.t1 {
      --gradient-borderless-cuisine
      --glow-borderless-cuisine
   */
+
+  --trend-color: var(--borderless-cuisine);
+  --trend-color-bright: var(--borderless-cuisine-bright);
+  --gradient-trend: var(--gradient-borderless-cuisine);
+  --glow-trend: var(--glow-borderless-cuisine);
+  --text-trend-glow: var(--borderless-glow);
+  --text-trend-glow-80: var(--borderless-glow-80);
+  --text-trend-glow-25: var(--borderless-glow-25);
+  --trend-title-fill: rgb(0 0 0 / 40%);
+  --trend-title-stroke-color: var(--c-white);
+  --trend-title-stroke-width: 1.7px;
+  --trend-title-blend-mode: overlay;
+  --trend-title-shadow: 0 0 10px rgb(255 255 255 / 65%), 0 0 30px rgb(255 255 255 / 15%);
+  --trend-title-image-fill: var(--c-white);
+  --trend-title-image-stroke-color: var(--borderless-glow);
+  --trend-title-image-stroke-width: 1.2px;
+  --trend-title-image-shadow: var(--glow-borderless-cuisine);
 }
 
 /* carousel-insights-teaser: trend-specific colours */

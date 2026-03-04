@@ -160,7 +160,7 @@
   margin: 0;
 }
 
-:is(.hero__countdown--content, .hero__live--content)::before {
+:is(.hero__countdown--content, .hero__live--content, .hero__trend--content)::before {
   content: '';
   position: absolute;
   top: 0;
@@ -171,7 +171,7 @@
   z-index: -1;
 }
 
-:is(.hero__countdown--content, .hero__live--content)::after {
+:is(.hero__countdown--content, .hero__live--content, .hero__trend--content)::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -218,8 +218,7 @@
     height: 717px;
   }
 
-  .hero__live--media,
-  .hero__countdown--media {
+  :is(.hero__countdown--media, .hero__live--media, .hero__trend--media) {
     order: 2;
     position: relative;
 
@@ -239,7 +238,7 @@
     }
   }
 
-  :is(.hero__countdown--media, .hero__live--media) img {
+  :is(.hero__countdown--media, .hero__live--media, .hero__trend--media) img {
     max-height: none;
     aspect-ratio: 16 / 9;
   }

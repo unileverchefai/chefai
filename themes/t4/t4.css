@@ -9,6 +9,23 @@ body.t4 {
      --gradient-culinary-roots
      --glow-culinary-roots
   */
+
+  --trend-color: var(--culinary-roots);
+  --trend-color-bright: var(--culinary-roots-bright);
+  --gradient-trend: var(--gradient-culinary-roots);
+  --glow-trend: var(--glow-culinary-roots);
+  --text-trend-glow: var(--culinary-roots-glow);
+  --text-trend-glow-80: var(--culinary-roots-glow-80);
+  --text-trend-glow-25: var(--culinary-roots-glow-25);
+  --trend-title-fill: rgb(0 0 0 / 46%);
+  --trend-title-stroke-color: #56c8f2;
+  --trend-title-stroke-width: 1.7px;
+  --trend-title-blend-mode: hard-light;
+  --trend-title-shadow: 0 0 10px rgb(33 108 135), 0 0 20px rgb(35 119 149);
+  --trend-title-image-fill: var(--c-white);
+  --trend-title-image-stroke-color: var(--culinary-roots-glow);
+  --trend-title-image-stroke-width: 1.2px;
+  --trend-title-image-shadow: var(--glow-culinary-roots);
 }
 
 /* carousel-insights-teaser: trend-specific colours (culinary-roots-bright at 80/95% per Figma spec) */
