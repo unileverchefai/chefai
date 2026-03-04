@@ -17,6 +17,15 @@ body.t2 {
   --text-trend-glow: var(--street-food-glow);
   --text-trend-glow-80: var(--street-food-glow-80);
   --text-trend-glow-25: var(--street-food-glow-25);
+  --trend-title-fill: rgb(0 0 0 / 20%);
+  --trend-title-stroke-color: #ff91c1;
+  --trend-title-stroke-width: 1.7px;
+  --trend-title-blend-mode: hard-light;
+  --trend-title-shadow: 0 0 10px rgb(220 77 139), 0 0 20px rgb(177 46 103 / 55%);
+  --trend-title-image-fill: var(--c-white);
+  --trend-title-image-stroke-color: #ff2c94;
+  --trend-title-image-stroke-width: 1.2px;
+  --trend-title-image-shadow: var(--glow-street-food-couture);
 }
 
 /* Additional page-level overrides for T2 theme can be added here */

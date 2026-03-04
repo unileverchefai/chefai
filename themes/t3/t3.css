@@ -17,6 +17,15 @@ body.t3 {
   --text-trend-glow: var(--diner-designed-glow);
   --text-trend-glow-80: var(--diner-designed-glow-80);
   --text-trend-glow-25: var(--diner-designed-glow-25);
+  --trend-title-fill: rgb(0 0 0 / 40%);
+  --trend-title-stroke-color: var(--c-white);
+  --trend-title-stroke-width: 1.7px;
+  --trend-title-blend-mode: overlay;
+  --trend-title-shadow: 0 0 10px rgb(255 255 255 / 65%), 0 0 30px rgb(255 255 255 / 55%);
+  --trend-title-image-fill: var(--c-white);
+  --trend-title-image-stroke-color: var(--diner-designed-glow);
+  --trend-title-image-stroke-width: 1.2px;
+  --trend-title-image-shadow: var(--glow-diner-designed);
 }
 
 /* Additional page-level overrides for T3 theme can be added here */
