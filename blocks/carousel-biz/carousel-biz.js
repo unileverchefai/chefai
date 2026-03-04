@@ -1,7 +1,6 @@
 import createCarousel from '@helpers/carousel/carousel.js';
 import { decorateIcons } from '@scripts/aem.js';
-import { createElement } from '@scripts/common.js';
-import { TREND_CODE_MAP, normalizeTrendCode } from '@scripts/trends.js';
+import { createElement, TREND_CODE_MAP, normalizeTrendCode } from '@scripts/common.js';
 import createDropdown from '@helpers/dropdown/dropdown.js';
 
 /**

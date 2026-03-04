@@ -1,11 +1,6 @@
 import createCarousel from '@helpers/carousel/carousel.js';
 import { decorateIcons, getMetadata } from '@scripts/aem.js';
-import { createElement } from '@scripts/common.js';
-import {
-  TREND_CODE_MAP,
-  normalizeTrendCode,
-  getTrendClassFromTheme,
-} from '@scripts/trends.js';
+import { createElement, TREND_CODE_MAP, normalizeTrendCode, getTrendClassFromTheme } from '@scripts/common.js';
 
 /**
  * Temporary URL implementation!!!
