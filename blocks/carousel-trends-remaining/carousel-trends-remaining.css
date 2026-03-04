@@ -1,0 +1,13 @@
+/* Importing from carousel-biz since it's the same stucture and styling */
+@import url('../carousel-biz/carousel-biz.css');
+
+main > .section > .carousel-trends-remaining-wrapper {
+  padding: 0;
+  overflow: visible;
+  display: flex;
+  justify-content: center;
+}
+
+main > .section:has(.carousel-trends-remaining-wrapper) {
+  overflow: visible;
+}

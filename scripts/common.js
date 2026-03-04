@@ -1,6 +1,7 @@
 import openPersonalizedHub from '@helpers/personalized-hub/personalized-hub.js';
 import hasSavedBusinessName from '@helpers/personalized-hub/hasSavedBusinessName.js';
 import openChatbotModal from '@helpers/chatbot/openChatbotModal.js';
+import { getTrendClassFromTheme } from '@scripts/trends.js';
 import {
   loadCSS, loadScript, toClassName, getMetadata,
 } from './aem.js';
@@ -11,19 +12,7 @@ import {
  * @returns {string|null} The valid trend class or null
  */
 export function validateTheme(theme) {
-  const themeMap = {
-    t1: 'borderless-cuisine',
-    t2: 'street-food-couture',
-    t3: 'diner-designed',
-    t4: 'culinary-roots',
-    // Also support full names for backwards compatibility
-    'borderless-cuisine': 'borderless-cuisine',
-    'street-food-couture': 'street-food-couture',
-    'diner-designed': 'diner-designed',
-    'culinary-roots': 'culinary-roots',
-  };
-
-  return themeMap[theme] || null;
+  return getTrendClassFromTheme(theme);
 }
 
 /**

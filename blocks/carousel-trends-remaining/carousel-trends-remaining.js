@@ -1,35 +1,50 @@
 import createCarousel from '@helpers/carousel/carousel.js';
-import { decorateIcons } from '@scripts/aem.js';
+import { decorateIcons, getMetadata } from '@scripts/aem.js';
 import { createElement } from '@scripts/common.js';
-import { TREND_CODE_MAP, normalizeTrendCode } from '@scripts/trends.js';
-import createDropdown from '@helpers/dropdown/dropdown.js';
+import {
+  TREND_CODE_MAP,
+  normalizeTrendCode,
+  getTrendClassFromTheme,
+} from '@scripts/trends.js';
 
 /**
- * Parse dropdown options from first row
- * @param {HTMLElement} firstRow - First row containing dropdown data
- * @returns {Object} Dropdown label and options array
+ * Temporary URL implementation!!!
+ * Landing Page URLs for fetching carousel-biz data
+ * Can be absolute AEM URLs or relative paths.
+ * Absolute URLs are converted to same-origin paths at fetch time to avoid CORS.
  */
-function parseDropdownData(firstRow) {
-  const cells = firstRow.children;
-  if (cells.length < 2) return null;
+const TEASE_LANDING_PAGE_URL = 'https://develop--chefai--unileverchefai.aem.page/';
+const LIVE_LANDING_PAGE_URL = 'https://develop--chefai--unileverchefai.aem.page/';
 
-  const label = cells[0].textContent.trim();
-  const optionsList = cells[1].querySelector('ul');
+/**
+ * Resolve configured landing URL to a same-origin fetch URL.
+ * This avoids browser CORS errors when local/dev runs on a different origin.
+ * @param {string} configuredUrl - Configured URL (absolute or relative)
+ * @returns {string} Same-origin fetch URL
+ */
+function getFetchableLandingUrl(configuredUrl) {
+  try {
+    const parsed = new URL(configuredUrl, window.location.origin);
 
-  if (!optionsList) return null;
+    if (parsed.origin !== window.location.origin) {
+      return `${parsed.pathname}${parsed.search}${parsed.hash}`;
+    }
 
-  const options = [...optionsList.querySelectorAll('li')].map((li) => li.textContent.trim());
-
-  return { label, options };
+    return parsed.toString();
+  } catch {
+    return configuredUrl;
+  }
 }
 
 /**
  * Parse authored block content into card data with restaurant types
+ * Adapted from carousel-biz to work with fetched HTML
  * @param {HTMLElement} block - The block element with authored content
  * @returns {Array} Array of card data objects
  */
 function parseAuthoredContent(block) {
   const rows = [...block.children];
+  // First row in carousel-biz contains dropdown data; skip it
   const cardRows = rows.slice(1);
 
   const cards = cardRows.map((row) => {
@@ -73,7 +88,6 @@ function parseAuthoredContent(block) {
     let descParagraph = [...paragraphs].find((p) => !p.querySelector('picture') && !p.querySelector('a'));
 
     if (!descParagraph) {
-      // look for paragraph with text content, excluding the first one (bg image)
       descParagraph = [...paragraphs].slice(1).find((p) => {
         const textContent = p.textContent.trim();
         return textContent && !p.querySelector('a');
@@ -98,7 +112,6 @@ function parseAuthoredContent(block) {
       }
     }
 
-    // extract assigned restaurant types from second column
     const typesList = metaCell.querySelector('ul');
     const restaurantTypes = typesList
       ? [...typesList.querySelectorAll('li')].map((li) => li.textContent.trim())
@@ -126,12 +139,6 @@ function parseAuthoredContent(block) {
 }
 
 /**
- * Track the currently selected business type filter
- * Used to append ?biz-type= parameter to trend CTA links
- */
-let currentFilter = 'all';
-
-/**
  * Render carousel cards from card data
  * @param {HTMLElement} container - The carousel container element
  * @param {Array} cards - Array of card data objects
@@ -148,6 +155,7 @@ function renderCards(container, cards) {
       description = false,
       link = false,
     } = cardData;
+
     const card = createElement('li', {
       className: `trend-card${trendClass ? ` ${trendClass}` : ''}`,
       attributes: {
@@ -183,7 +191,6 @@ function renderCards(container, cards) {
         className: `trend-stat ${statClass}`,
         innerContent: `<span>${cardData.stat}</span>`,
       });
-
       content.appendChild(stat);
     }
 
@@ -205,16 +212,6 @@ function renderCards(container, cards) {
         `,
       });
       decorateIcons(cta);
-
-      // appending biz-type parameter to URL if a business type is selected
-      cta.addEventListener('click', () => {
-        if (currentFilter !== 'all') {
-          const url = new URL(cta.href, window.location.origin);
-          url.searchParams.set('biz-type', currentFilter);
-          cta.href = url.toString();
-        }
-      });
-
       content.appendChild(cta);
     } else {
       const cta = createElement('div', {
@@ -264,27 +261,97 @@ function initializeCarousel(block, container, itemCount) {
     block.carouselInstance = carousel;
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.error('Failed to initialize carousel-biz:', error);
+    console.error('Failed to initialize carousel-trends-remaining:', error);
   }
 }
 
-export default function decorate(block) {
-  const MIN_ITEMS = 3;
+/**
+ * Fetch and parse Landing Page HTML to extract carousel-biz data
+ * @param {string} url - Landing Page URL
+ * @returns {Promise<Array>} Array of card data objects
+ */
+async function fetchLandingPageCards(url) {
+  try {
+    const fetchableUrl = getFetchableLandingUrl(url);
+    const response = await fetch(fetchableUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch Landing Page: ${response.status}`);
+    }
 
-  const firstRow = block.children[0];
-  const dropdownData = parseDropdownData(firstRow);
+    const html = await response.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
 
-  const cards = parseAuthoredContent(block);
+    const bizBlock = doc.querySelector('.carousel-biz');
+    if (!bizBlock) {
+      throw new Error('carousel-biz block not found in Landing Page HTML');
+    }
 
-  if (cards.length < MIN_ITEMS) {
+    return parseAuthoredContent(bizBlock);
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('[carousel-trends-remaining] Error fetching Landing Page:', error);
+    return [];
+  }
+}
+
+/**
+ * Decorate the carousel-trends-remaining block
+ * @param {HTMLElement} block - The block element
+ */
+export default async function decorate(block) {
+  block.classList.add('carousel-biz');
+
+  const isTease = block.classList.contains('tease');
+  const isLive = block.classList.contains('live');
+
+  if (!isTease && !isLive) {
+    // eslint-disable-next-line no-console
+    console.error('[carousel-trends-remaining] Block must have variant class "tease" or "live"');
     block.remove();
     return;
   }
 
-  const allCards = cards;
+  // Choose Landing Page URL based on variant (for now they are the same! future TODO: update))
+  const landingPageUrl = isTease ? TEASE_LANDING_PAGE_URL : LIVE_LANDING_PAGE_URL;
+
+  // Fetch card data from Landing Page
+  let cards = await fetchLandingPageCards(landingPageUrl);
+
+  if (cards.length === 0) {
+    // eslint-disable-next-line no-console
+    console.warn('[carousel-trends-remaining] No cards found in Landing Page');
+    block.remove();
+    return;
+  }
+
+  // here the current trend is removed
+  const currentTheme = getMetadata('theme');
+  if (currentTheme) {
+    const currentTrendClass = getTrendClassFromTheme(currentTheme);
+
+    if (currentTrendClass) {
+      cards = cards.filter((card) => card.trendClass !== currentTrendClass);
+    }
+  }
+
+  // business type filter for live variant
+  if (isLive) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const bizType = urlParams.get('biz-type');
+
+    if (bizType) {
+      cards = cards.filter((card) => card.restaurantTypes.includes(bizType));
+    }
+  }
+
+  if (cards.length === 0) {
+    block.remove();
+    return;
+  }
+
   block.innerHTML = '';
 
-  // Carousel container must be created before filterCards (closure needs carouselContainer)
   const carouselWrapper = createElement('div', {
     className: 'carousel-biz-carousel-wrapper',
   });
@@ -294,74 +361,8 @@ export default function decorate(block) {
   });
 
   carouselWrapper.appendChild(carouselContainer);
-
-  const filterCards = async (restaurantType) => {
-    //  current filter for URL parameter on CTA clicks
-    currentFilter = restaurantType;
-
-    const filteredCards = restaurantType === 'all'
-      ? allCards
-      : allCards.filter((card) => card.restaurantTypes.includes(restaurantType));
-
-    carouselContainer.classList.add('fade-out');
-    await new Promise((resolve) => { setTimeout(resolve, 300); });
-    carouselContainer.classList.remove('fade-out');
-
-    carouselContainer.classList.add('is-loading');
-    carouselContainer.querySelectorAll('.trend-card').forEach((card) => {
-      if (!card.querySelector('.loading-text')) {
-        card.appendChild(createElement('div', {
-          className: 'loading-text',
-          innerContent: 'Customising insights',
-        }));
-      }
-    });
-
-    await new Promise((resolve) => { setTimeout(resolve, 500); });
-
-    carouselContainer.classList.remove('is-loading');
-    carouselContainer.querySelectorAll('.loading-text').forEach((el) => el.remove());
-
-    if (filteredCards.length === 0) {
-      if (block.carouselInstance?.destroy) block.carouselInstance.destroy();
-      carouselContainer.innerHTML = '<li class="empty-state">No insights available for this selection.</li>';
-      const controls = block.querySelector('.controls');
-      if (controls) controls.style.display = 'none';
-      return;
-    }
-
-    const controls = block.querySelector('.controls');
-    if (controls) controls.style.display = '';
-
-    renderCards(carouselContainer, filteredCards);
-    initializeCarousel(block, carouselContainer, filteredCards.length);
-
-    carouselContainer.classList.add('fade-in');
-    await new Promise((resolve) => { setTimeout(resolve, 400); });
-    carouselContainer.classList.remove('fade-in');
-  };
-
-  const dropdownOptions = [
-    { label: dropdownData?.label ?? 'All business types', value: 'all' },
-    ...(dropdownData?.options ?? []).map((opt) => ({ label: opt, value: opt })),
-  ];
-
-  const { element: filterContainer } = createDropdown({
-    options: dropdownOptions,
-    onSelect: filterCards,
-    classes: {
-      filter: 'carousel-biz-filter',
-      button: 'biz-dropdown',
-      text: 'biz-dropdown-text',
-      arrow: 'biz-dropdown-arrow',
-      menu: 'biz-dropdown-menu',
-      option: 'biz-dropdown-option',
-    },
-  });
-
-  block.appendChild(filterContainer);
   block.appendChild(carouselWrapper);
 
-  renderCards(carouselContainer, allCards);
-  initializeCarousel(block, carouselContainer, allCards.length);
+  renderCards(carouselContainer, cards);
+  initializeCarousel(block, carouselContainer, cards.length);
 }
