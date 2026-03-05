@@ -26,7 +26,7 @@ main > .section > .title-wrapper {
   text-align: center;
   font-feature-settings: 'liga' off, 'clig' off;
   font-family: var(--ff-unilever-shilling);
-  font-size: var(--heading-font-size-s);
+  font-size: var(--typo-h2-size-mobile);
   font-style: normal;
   margin: 0;
 
@@ -48,10 +48,10 @@ main > .section > .title-wrapper {
   text-align: center;
   font-feature-settings: 'liga' off, 'clig' off;
   font-family: var(--ff-chefs-hand);
-  font-size: var(--heading-font-size-l);
+  font-size: var(--typo-ch-h2-size-mobile);
   font-style: normal;
   font-weight: var(--typo-ch-h2-weight);
-  line-height: 25px;
+  line-height: var(--typo-ch-h2-line-mobile);
   letter-spacing: var(--typo-ch-h2-tracking);
 }
 
@@ -60,10 +60,10 @@ main > .section > .title-wrapper {
   text-align: center;
   font-feature-settings: 'liga' off, 'clig' off;
   font-family: var(--ff-unilever-shilling);
-  font-size: var(--body-font-size-xss);
+  font-size: var(--typo-p1-reg-size-mobile);
   font-style: normal;
   font-weight: var(--typo-subheadline-weight);
-  line-height: 22px;
+  line-height: var(--typo-p1-reg-line-mobile);
   margin: 0;
 }
 
