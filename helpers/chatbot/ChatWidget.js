@@ -51,7 +51,7 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot', type }
           mobileGap: 16,
           desktopGap: 24,
           swipeOnDesktop: true,
-          hideArrows: true,
+          hideArrows: false,
           disableDesktopCarousel: false,
         });
         instances.push(instance);
