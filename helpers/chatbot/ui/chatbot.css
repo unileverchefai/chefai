@@ -1,6 +1,7 @@
-/* Chatbot Block Styles */
-@import url('../../helpers/chatInput/chat-input.css');
+@import url('../../chatInput/chat-input.css');
+@import url('../../carousel/carousel.css');
 
+/* Chatbot Block Styles */
 .ph-predefined-questions {
   display: flex;
   flex-direction: column;
@@ -119,8 +120,11 @@
 
 .message-bubble div p {
     margin: 0;
-    margin-top: -5px;
     padding: 0;
+}
+
+.message-bubble div ul {
+    margin-top: 0;
 }
 
 .message-bubble div p:first-child {
@@ -128,8 +132,17 @@
     padding: 0;
 }
 
-.message-bubble div ul {
-    margin-top: -30px;
+.recipe-ingredients-list {
+    padding-left: 20px;
+    margin: 0 0 8px 0;
+    columns: 2;
+    column-gap: 16px;
+}
+
+@media (width < 900px) {
+    .recipe-ingredients-list {
+        columns: 1;
+    }
 }
 
 .chat-message.ai-message {
@@ -263,7 +276,7 @@
 }
 
 /* RTL support */
-[dir="rtl"] .chatbot-container {
+[dir=\"rtl\"] .chatbot-container {
     direction: rtl;
 }
 
@@ -272,7 +285,6 @@
     outline: 2px solid var(--link-color);
     outline-offset: 2px;
 }
-
 
 /* Message content styles */
 .message-images {
@@ -300,12 +312,7 @@
 
 /* Product carousel inside messages */
 .chatbot-carousel {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
   margin-top: var(--spacing-md);
-  padding-bottom: var(--spacing-xs);
-  overflow-x: hidden;
 }
 
 .chatbot-carousel-card {
@@ -319,6 +326,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xxs);
+  text-decoration: none !important;
 }
 
 .chat-product-image {
@@ -334,6 +342,8 @@
   font-size: var(--body-font-size-xs);
   font-weight: 600;
   line-height: 1.4;
+  color: var(--text-color);
+  text-decoration: none;
 }
 
 .chat-product-description {
@@ -370,3 +380,4 @@
     color: var(--link-color);
     font-weight: 500;
 }
+

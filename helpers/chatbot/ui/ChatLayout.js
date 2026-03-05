@@ -1,5 +1,5 @@
-import renderMessage from './renderMessage.js';
-import ChatInput from '../chatInput/ChatInput.js';
+import renderMessage from './MessageBubble.js';
+import ChatInput from '../../chatInput/ChatInput.js';
 
 export default function renderChatUI({
   error,

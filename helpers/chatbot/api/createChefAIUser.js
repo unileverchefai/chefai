@@ -74,5 +74,3 @@ export default async function createChefAIUser(userId, userName, businessData = 
   console.log('[ChefAI User] User created successfully:', json);
   return json;
 }
-
-

@@ -38,7 +38,7 @@ export default async function openChatbotModal(type) {
 
   try {
     // Ensure chatbot styles are loaded
-    await loadCSS(`${window.hlx.codeBasePath}/helpers/chatbot/chatbot.css`);
+    await loadCSS(`${window.hlx.codeBasePath}/helpers/chatbot/ui/chatbot.css`);
 
     // Configure API endpoint the same way as the inline chatbot block
     const endpoint = getMetadata('chatbot-endpoint') || 'capgemini';

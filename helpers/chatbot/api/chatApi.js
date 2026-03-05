@@ -75,7 +75,6 @@ export async function postChatMessage({
   userId,
   country,
   runId,
-  enableMetadata = false,
   timeout,
 }) {
   const endpoint = getEndpoint();
@@ -89,9 +88,6 @@ export async function postChatMessage({
 
   if (runId) {
     payload.run_id = runId;
-    if (enableMetadata) {
-      payload.enable_metadata = true;
-    }
   }
 
   const response = await fetchWithTimeout(
@@ -123,4 +119,3 @@ export async function postChatMessage({
 
   return JSON.parse(responseText);
 }
-

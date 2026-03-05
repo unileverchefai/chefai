@@ -203,4 +203,3 @@ export default async function sendStreamingMessage(message, options = {}) {
 
   return controlObject;
 }
-
