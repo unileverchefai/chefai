@@ -75,7 +75,7 @@ main > .section > .title-wrapper {
 
 @media (width >= 900px) {
   .title {
-    max-width: auto;
+    max-width: none;
     margin: 0 auto;
     padding: 64px 100px 32px;
     gap: var(--spacing-md);
