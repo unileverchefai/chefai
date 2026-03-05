@@ -129,11 +129,36 @@ const createNavHeader = () => {
   return navHeader;
 };
 
+/**
+ * Determines the correct path to the nav fragment based on metadata and current URL structure
+ * @param {string} navMeta The nav path specified in metadata (if any)
+ * @returns {string} The resolved nav path
+ * @description
+ * The function first checks if a nav path is provided in the metadata.
+ * If it exists, it uses that path directly.
+ * If no metadata path is provided, it checks if the current URL includes
+ * a specific base folder (e.g., for localized paths).
+ * If the base folder is present, it constructs the nav path
+ * by appending '/nav' to the base folder path.
+ * If neither condition is met, it defaults to '/nav'.
+*/
+function setNavPath(navMeta) {
+  const hasNavMeta = !!navMeta;
+  const hasBaseFolder = window.location.pathname.includes(BASE_FOLDER);
+  const { pathname } = window.location;
+  if (hasNavMeta) {
+    return navMeta; // should be a full path to the nav fragment, e.g., '/content/ufs/en/nav'
+  }
+  if (hasBaseFolder) {
+    const basePath = pathname.substring(0, pathname.indexOf(BASE_FOLDER) + BASE_FOLDER.length);
+    return `${basePath}/nav`;
+  }
+  return '/nav';
+}
+
 export async function buildNavSections(isLoggedIn, businessName) {
   const navMeta = getMetadata('nav');
-  const pathName = window.location.pathname;
-  const navBasePath = pathName.slice(0, pathName.indexOf(BASE_FOLDER) + BASE_FOLDER.length + 1);
-  const navPath = navMeta ? new URL(navMeta, navBasePath) : `${navBasePath}nav`;
+  const navPath = setNavPath(navMeta);
   const fragment = await loadFragment(navPath);
 
   const navModal = createElement('div', { className: 'nav-modal' });
