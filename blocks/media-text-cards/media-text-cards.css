@@ -252,7 +252,7 @@
   margin: 0;
   border-radius: var(--radius-sm);
   border: 1px solid var(--ufs-orange);
-  background: linear-gradient(121.62deg, rgb(241 90 34 / 10%) 30.082%, rgb(235 34 99 / 10%) 55.841%, rgb(176 43 159 / 10%) 68.189%);
+  background: linear-gradient(121.62deg, rgb(241 90 34 / 10%) 30.082%, rgb(235 34 99 / 10%) 55.841%, rgb(176 43 159 / 10%) 68.189%), var(--c-white);
   overflow: hidden;
 }
 
