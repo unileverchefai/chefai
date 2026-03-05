@@ -169,6 +169,11 @@
   gap: var(--spacing-xs);
 }
 
+/* Preserve spacing when <p> is not authored (non-video variant) */
+.media-text-cards .media-title > div:not(:has(p)) {
+  padding-bottom: calc(var(--spacing-xs) + 14px);
+}
+
 .media-text-cards .media-title::before {
   content: '';
   position: absolute;
@@ -198,9 +203,18 @@
 }
 
 .media-text-cards .media-title p {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   font-size: 12px;
   font-weight: 400;
   line-height: normal;
+}
+
+.media-text-cards .media-title p .clock-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
 }
 
 /* Cards text */
@@ -292,6 +306,11 @@
 
   .media-text-cards .media-title p {
     font-size: 14px;
+  }
+
+  .media-text-cards .media-title p .clock-icon {
+    width: 18px;
+    height: 18px;
   }
 
   .media-text-cards .cards-text {
