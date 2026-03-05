@@ -14,6 +14,21 @@ main > .section:has(.carousel-biz-wrapper) {
   padding: var(--spacing-lg) var(--spacing-md) 32px;
   max-width: 100%;
   margin: 0 auto;
+
+  --carousel-biz-stat-gradient-borderless: linear-gradient(
+    191.69deg,
+    rgb(237 108 0 / 0%) 26.34%,
+    rgb(237 108 0 / 100%) 44.162%
+  );
+  --carousel-biz-stat-fill-20: rgb(0 0 0 / 20%);
+  --carousel-biz-stat-fill-40: rgb(0 0 0 / 40%);
+  --carousel-biz-stat-fill-46: rgb(0 0 0 / 46%);
+  --carousel-biz-stroke-pink: #ff91c1;
+  --carousel-biz-stroke-blue: #56c8f2;
+  --carousel-biz-glow-white-soft: 0 0 10px rgb(255 255 255 / 65%), 0 0 30px rgb(255 255 255 / 15%);
+  --carousel-biz-glow-white-strong: 0 0 10px rgb(255 255 255 / 65%), 0 0 30px rgb(255 255 255 / 55%);
+  --carousel-biz-glow-pink: 0 0 10px rgb(220 77 139), 0 0 20px rgb(177 46 103 / 55%);
+  --carousel-biz-glow-blue: 0 0 10px rgb(33 108 135), 0 0 20px rgb(35 119 149);
 }
 
 .carousel-biz-filter {
@@ -155,13 +170,20 @@ main > .section:has(.carousel-biz-wrapper) {
   from {
     opacity: 1;
   }
-  
+
   to {
     opacity: 0;
   }
 }
 
 .trend-card {
+  --trend-stat-gradient: none;
+  --trend-stat-fill: var(--c-white);
+  --trend-stat-stroke-width: 0;
+  --trend-stat-stroke: transparent;
+  --trend-stat-blend-mode: normal;
+  --trend-stat-shadow: none;
+
   position: relative;
   width: var(--card-width-mobile);
   height: var(--card-height-mobile);
@@ -296,6 +318,15 @@ main > .section:has(.carousel-biz-wrapper) {
   font-weight: 700;
   line-height: normal;
   color: var(--c-white);
+  font-feature-settings: 'liga' off, 'clig' off;
+  background: var(--trend-stat-gradient);
+}
+
+.trend-stat span {
+  color: var(--trend-stat-fill);
+  -webkit-text-stroke: var(--trend-stat-stroke-width) var(--trend-stat-stroke);
+  mix-blend-mode: var(--trend-stat-blend-mode);
+  text-shadow: var(--trend-stat-shadow);
 }
 
 .trend-stat.stat-number {
@@ -327,6 +358,12 @@ main > .section:has(.carousel-biz-wrapper) {
   --trend-gradient: var(--gradient-borderless-cuisine);
   --trend-header-gradient: var(--header-gradient-borderless-cuisine);
   --trend-glow: var(--glow-borderless-cuisine);
+  --trend-stat-gradient: var(--carousel-biz-stat-gradient-borderless);
+  --trend-stat-fill: var(--carousel-biz-stat-fill-40);
+  --trend-stat-stroke-width: 1.7px;
+  --trend-stat-stroke: var(--c-white);
+  --trend-stat-blend-mode: overlay;
+  --trend-stat-shadow: var(--carousel-biz-glow-white-soft);
 
   background-color: var(--borderless-cuisine);
 }
@@ -335,19 +372,8 @@ main > .section:has(.carousel-biz-wrapper) {
   background: var(--trend-gradient);
 }
 
-.trend-card.borderless-cuisine .trend-stat {
-  background: linear-gradient(
-    191.69deg,
-    rgb(237 108 0 / 0%) 26.34%,
-    rgb(237 108 0 / 100%) 44.162%
-  );
-}
-
-.trend-card.borderless-cuisine .trend-stat span {
-  color: rgb(0 0 0 / 40%);
-  -webkit-text-stroke: 1.5px white;
-  mix-blend-mode: overlay;
-  text-shadow: 0 0 10px rgb(255 255 255 / 65%), 0 0 30px rgb(255 255 255 / 35%);
+.trend-card.borderless-cuisine .trend-stat.stat-number {
+  font-size: 72px;
 }
 
 /* ----> Street Food Couture <---- */
@@ -355,6 +381,12 @@ main > .section:has(.carousel-biz-wrapper) {
   --trend-gradient: var(--gradient-street-food-couture);
   --trend-header-gradient: var(--header-gradient-street-food-couture);
   --trend-glow: var(--glow-street-food-couture);
+  --trend-stat-gradient: var(--gradient-street-food-couture);
+  --trend-stat-fill: var(--carousel-biz-stat-fill-20);
+  --trend-stat-stroke-width: 1.7px;
+  --trend-stat-stroke: var(--carousel-biz-stroke-pink);
+  --trend-stat-blend-mode: hard-light;
+  --trend-stat-shadow: var(--carousel-biz-glow-pink);
 
   background-color: var(--street-food-couture);
 }
@@ -363,22 +395,17 @@ main > .section:has(.carousel-biz-wrapper) {
   background: var(--trend-gradient);
 }
 
-/* .trend-card.street-food-couture .trend-stat { -----> TO DO
-  background: 
-    
-} */
-
-.trend-card.street-food-couture .trend-stat span {
-  -webkit-text-stroke: 1.5px #DC4D8B;
-  text-shadow: #DC4D8B 0 0 39px;
-  color: transparent;
-}
-
 /* ----> Diner Designed <---- */
 .trend-card.diner-designed {
   --trend-gradient: var(--gradient-diner-designed);
   --trend-header-gradient: var(--header-gradient-diner-designed);
   --trend-glow: var(--glow-diner-designed);
+  --trend-stat-gradient: var(--gradient-diner-designed);
+  --trend-stat-fill: var(--carousel-biz-stat-fill-40);
+  --trend-stat-stroke-width: 1.7px;
+  --trend-stat-stroke: var(--c-white);
+  --trend-stat-blend-mode: overlay;
+  --trend-stat-shadow: var(--carousel-biz-glow-white-strong);
 
   background-color: var(--diner-designed);
 }
@@ -387,22 +414,17 @@ main > .section:has(.carousel-biz-wrapper) {
   background: var(--trend-gradient);
 }
 
-/* .trend-card.diner-designed .trend-stat { -----> TO DO
-  background: 
-    
-} */
-
-.trend-card.diner-designed .trend-stat span {
-  -webkit-text-stroke: 1.5px #A1B83B;
-  text-shadow: #A1B83B 0 0 39px;
-  color: transparent;
-}
-
 /* ----> Culinary Roots <---- */
 .trend-card.culinary-roots {
   --trend-gradient: var(--gradient-culinary-roots);
   --trend-header-gradient: var(--header-gradient-culinary-roots);
   --trend-glow: var(--glow-culinary-roots);
+  --trend-stat-gradient: var(--gradient-culinary-roots);
+  --trend-stat-fill: var(--carousel-biz-stat-fill-46);
+  --trend-stat-stroke-width: 1.7px;
+  --trend-stat-stroke: var(--carousel-biz-stroke-blue);
+  --trend-stat-blend-mode: hard-light;
+  --trend-stat-shadow: var(--carousel-biz-glow-blue);
 
   background-color: var(--culinary-roots);
 }
@@ -411,21 +433,16 @@ main > .section:has(.carousel-biz-wrapper) {
   background: var(--trend-gradient);
 }
 
- /* .trend-card.culinary-roots .trend-stat { -----> TO DO
-  background: 
-    
-} */
-
-.trend-card.culinary-roots .trend-stat span {
-  -webkit-text-stroke: 1.5px #0090BA;
-  text-shadow: #0090BA 0 0 39px;
-  color: transparent;
-}
-
 /* ----> Cross Trend <---- */
 .trend-card.cross-trend {
   --trend-gradient: var(--gradient-cross-trend);
   --trend-header-gradient: var(--header-gradient-cross-trend);
+  --trend-stat-gradient: var(--gradient-cross-trend);
+  --trend-stat-fill: transparent;
+  --trend-stat-stroke-width: 2px;
+  --trend-stat-stroke: var(--squid-ink);
+  --trend-stat-blend-mode: normal;
+  --trend-stat-shadow: none;
 
   background-color: var(--c-white);
   box-shadow: var(--box-shadow-card-trend), inset 0 0 14px var(--cross-trend-shadow);
@@ -433,16 +450,6 @@ main > .section:has(.carousel-biz-wrapper) {
 
 .trend-card.cross-trend::after {
   background: var(--trend-gradient);
-}
-
- /* .trend-card.cross-trend .trend-stat { -----> TO DO
-  background: 
-    
-} */
-
-.trend-card.cross-trend .trend-stat span {
-  color: transparent;
-  -webkit-text-stroke: 2px var(--squid-ink);
 }
 
 .trend-card.cross-trend .trend-header {
