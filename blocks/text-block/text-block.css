@@ -37,15 +37,10 @@ main > .section > .text-block-wrapper {
 }
 
 .text-block a {
-  color: var(--c-black);
+  color: var(--link-hover-color);
   text-decoration: underline;
   text-decoration-skip-ink: none;
   overflow-wrap: break-word;
-}
-
-.text-block a:hover {
-  color: var(--link-hover-color);
-  text-decoration: underline;
 }
 
 .text-block a:focus-visible {
