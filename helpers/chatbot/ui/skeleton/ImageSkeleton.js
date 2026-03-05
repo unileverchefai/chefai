@@ -12,7 +12,7 @@ export default function ImageSkeleton({
   loading = 'lazy',
   ...imgProps
 }) {
-  const React = window.React;
+  const { React } = window;
   const [loaded, setLoaded] = React.useState(false);
 
   if (!src) {
