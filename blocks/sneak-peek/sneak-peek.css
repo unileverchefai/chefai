@@ -248,7 +248,7 @@ main {
 }
 
 /* DESKTOP */
-@media (width >= 900px) {
+@media (width >= 700px) {
 	.business-block {
 		display: flex;
 		flex-direction: row;
@@ -257,11 +257,11 @@ main {
 	}
 
 	.business-block h2 {
-		font-size: var(--heading-font-size-l);
+		font-size: var(--heading-font-size-s);
 	}
 
 	.business-block-right	 {
-		font-size: var(--heading-font-size-m);
+		font-size: var(--heading-font-size-s);
 	}
 
 	.sneak-peek-title {
@@ -293,7 +293,7 @@ main {
 	}
 
 	.lower-block {
-		margin-top: -100px;
+		margin-top: -2rem;
 	}
 
 	.lower-block::after {
@@ -305,6 +305,34 @@ main {
 				rgb(255 255 255 / 0%) 0%,
 				rgb(255 255 255 / 100%) 40%);
 	}
+}
+
+@media (width >= 900px) {
+    .business-block h2 {
+        font-size: var(--heading-font-size-l);
+    }
+
+	.business-block-right {
+        font-size: var(--heading-font-size-m);
+    }
+}
+
+@media (width >= 900px) and (height < 800px) {
+    .fp-card--left {
+        transform: translateX(calc(-50% - 10vw)) scale(.92) translateY(90px);
+    }
+
+    .fp-card--right {
+        transform: translateX(calc(-50% + 10vw)) scale(.92) translateY(90px);
+    }
+
+	.fp-card--center {
+		transform: translateX(-50%) translateY(60px);
+	}
+
+	.business-block h2 {
+        font-size: var(--heading-font-size-s);
+    }
 }
 
 @media (width <= 768px) and (height < 800px) {
@@ -319,12 +347,12 @@ main {
 	}
 
 	.business-block h2 {
-		font-size: 14px;
+		font-size: var(--body-font-size-xss);
 		margin-left: 10px;
 	}
 
 	.business-block-right {
-		font-size: 14px;
+		font-size: var(--body-font-size-xss);
 	}
 
 	.floating-cta__container {

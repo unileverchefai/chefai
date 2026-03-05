@@ -1,3 +1,5 @@
+import { VALIDATIONS_PLACEHOLDERS } from '@scripts/common.js';
+import { getPlaceholderText } from '@scripts/custom/utils.js';
 import {
   API_BASE_URL,
   SUBSCRIPTION_KEY,
@@ -38,7 +40,7 @@ function fetchWithTimeout(url, options, timeout = DEFAULT_TIMEOUT) {
   return Promise.race([
     fetch(url, options),
     new Promise((_, reject) => {
-      setTimeout(() => reject(new Error('Request timeout: API took too long to respond')), timeout);
+      setTimeout(() => reject(new Error(getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_api_timeout_detail'))), timeout);
     }),
   ]);
 }
@@ -100,7 +102,9 @@ export async function apiRequest(endpoint, options = {}) {
       } catch {
         // Use default error message
       }
-      throw new Error(errorMessage);
+      const error = new Error(errorMessage);
+      error.status = response.status;
+      throw error;
     }
 
     if (isTextResponse) {
@@ -109,16 +113,16 @@ export async function apiRequest(endpoint, options = {}) {
 
     const responseText = await response.text();
     if (!responseText) {
-      throw new Error('API returned empty response');
+      throw new Error(getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_api_empty_response'));
     }
 
     return JSON.parse(responseText);
   } catch (error) {
     if (error.message.includes('timeout')) {
-      throw new Error('Request timeout. Please try again.');
+      throw new Error(getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_api_timeout_retry'));
     }
     if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-      throw new Error('Network error. Please check your connection and try again.');
+      throw new Error(getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_api_network_error'));
     }
     throw error;
   }

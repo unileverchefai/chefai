@@ -1,0 +1,125 @@
+main > .section > .text-block-wrapper {
+  padding: 0;
+}
+
+.text-block {
+  display: flex;
+  padding: var(--spacing-lg) var(--spacing-md);
+  align-items: center;
+  gap: 10px;
+  font-family: var(--ff-unilever-shilling);
+  font-feature-settings: 'liga' off, 'clig' off;
+  color: var(--c-black);
+}
+
+.text-block .text-content {
+  width: 100%;
+}
+
+.text-block h3 {
+  font-size: var(--typo-h3-med-size-mobile);
+  line-height: var(--typo-h3-med-line-mobile);
+  font-weight: var(--typo-h3-med-weight);
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.text-block p {
+  font-size: var(--typo-p1-reg-size-mobile);
+  line-height: 23px;
+  font-weight: var(--typo-p1-reg-weight);
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.text-block p:last-child {
+  margin-bottom: 0;
+}
+
+.text-block a {
+  color: var(--link-hover-color);
+  text-decoration: underline;
+  text-decoration-skip-ink: none;
+  overflow-wrap: break-word;
+}
+
+.text-block a:focus-visible {
+  outline: 2px solid var(--link-color);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.text-block ul,
+.text-block ol {
+  font-size: var(--typo-p1-reg-size-mobile);
+  line-height: 23px;
+  font-weight: var(--typo-p1-reg-weight);
+  padding-left: var(--spacing-lg);
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.text-block ul {
+  list-style-type: disc;
+}
+
+.text-block ol {
+  list-style-type: decimal;
+}
+
+.text-block li {
+  margin-bottom: var(--spacing-xs);
+}
+
+.text-block li:last-child {
+  margin-bottom: 0;
+}
+
+.text-block strong {
+  font-weight: var(--typo-p1-bold-weight);
+}
+
+.text-block em {
+  font-style: italic;
+}
+
+.text-block u {
+  text-decoration: underline;
+}
+
+@media (width >= 900px) {
+  .text-block {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: var(--spacing-2xl) 100px;
+  }
+
+  .text-block .text-content {
+    padding-inline: 120px;
+  }
+
+  .text-block h3 {
+    font-size: var(--typo-h3-med-size-desktop);
+    line-height: var(--typo-h3-med-line-desktop);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .text-block p {
+    font-size: var(--typo-p1-reg-size-desktop);
+    line-height: 26px;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .text-block ul,
+  .text-block ol {
+    font-size: var(--typo-p1-reg-size-desktop);
+    line-height: 26px;
+    margin-bottom: var(--spacing-md);
+  }
+}
+
+@media (width >= 1400px) {
+  .text-block .text-content {
+    padding-inline: 314px;
+  }
+}

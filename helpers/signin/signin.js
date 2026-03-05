@@ -1,10 +1,11 @@
-import { createElement } from '@scripts/common.js';
+import { createElement, SIGNIN_MODAL_PLACEHOLDERS, VALIDATIONS_PLACEHOLDERS } from '@scripts/common.js';
 import createModal from '@helpers/modal/index.js';
 import { loadCSS } from '@scripts/aem.js';
 import { login } from '@auth/authService.js';
 import openCookieAgreementModal from '@helpers/cookie-agreement/index.js';
 import { getUrl } from '@scripts/custom/redirect.js';
-
+import { getPlaceholderText } from '@scripts/custom/utils.js';
+import trackSigninHeaderLinkClick from './signin.analytics.js';
 /**
  * Opens the sign-in modal
  * @returns {Object} Modal instance
@@ -13,6 +14,14 @@ export default function openSignInModal() {
   // Load sign-in CSS
   loadCSS(`${window.hlx.codeBasePath}/blocks/sign-in/sign-in.css`).catch(() => {
     // CSS loading error handled silently
+  });
+
+  const signInDisplayText = getPlaceholderText(SIGNIN_MODAL_PLACEHOLDERS, 'button_signin');
+
+  trackSigninHeaderLinkClick({
+    name: 'header link',
+    displayText: signInDisplayText,
+    href: 'overlay trigger',
   });
 
   // Create modal content
@@ -28,14 +37,14 @@ export default function openSignInModal() {
   // Title
   const title = createElement('h2', {
     className: 'signin-modal-title',
-    innerContent: 'Welcome back!',
+    innerContent: getPlaceholderText(SIGNIN_MODAL_PLACEHOLDERS, 'title'),
   });
   topArea.appendChild(title);
 
   // Description
   const description = createElement('p', {
     className: 'signin-modal-description',
-    innerContent: 'Login in with your UFS account to get access to your personalised hub',
+    innerContent: getPlaceholderText(SIGNIN_MODAL_PLACEHOLDERS, 'description'),
   });
   topArea.appendChild(description);
 
@@ -50,13 +59,13 @@ export default function openSignInModal() {
   });
   const emailLabel = createElement('label', {
     className: 'form-label',
-    innerContent: 'Email address',
+    innerContent: getPlaceholderText(SIGNIN_MODAL_PLACEHOLDERS, 'label_email'),
   });
   const emailInput = createElement('input', {
     className: 'form-input',
     attributes: {
       type: 'email',
-      placeholder: 'email@example.com',
+      placeholder: getPlaceholderText(SIGNIN_MODAL_PLACEHOLDERS, 'placeholder_email'),
     },
   });
   emailGroup.appendChild(emailLabel);
@@ -69,7 +78,7 @@ export default function openSignInModal() {
   });
   const passwordLabel = createElement('label', {
     className: 'form-label',
-    innerContent: 'Password',
+    innerContent: getPlaceholderText(SIGNIN_MODAL_PLACEHOLDERS, 'label_password'),
   });
   const passwordInputWrapper = createElement('div', {
     className: 'form-input-wrapper',
@@ -112,7 +121,7 @@ export default function openSignInModal() {
   });
   const forgotLink = createElement('a', {
     className: 'signin-form-forgot-link',
-    innerContent: 'Forgot your password?',
+    innerContent: getPlaceholderText(SIGNIN_MODAL_PLACEHOLDERS, 'link_forgot_pwd'),
     attributes: {
       href: '#',
     },
@@ -132,7 +141,7 @@ export default function openSignInModal() {
   // Sign in button
   const signInButton = createElement('button', {
     className: 'btn-primary',
-    innerContent: 'Sign in',
+    innerContent: getPlaceholderText(SIGNIN_MODAL_PLACEHOLDERS, 'button_signin'),
     attributes: {
       type: 'button',
     },
@@ -151,14 +160,18 @@ export default function openSignInModal() {
   });
   const continueLink = createElement('a', {
     className: 'signin-modal-bottom-link',
-    innerContent: 'Continue here',
+    innerContent: getPlaceholderText(SIGNIN_MODAL_PLACEHOLDERS, 'footer_link'),
     attributes: {
       href: '#',
     },
   });
-  bottomText.textContent = 'Don\'t have an account? ';
+  bottomText.textContent = `${getPlaceholderText(SIGNIN_MODAL_PLACEHOLDERS, 'footer_no_account')} `;
   bottomText.appendChild(continueLink);
-  bottomText.appendChild(document.createTextNode(' to get your personalized hub'));
+  bottomText.appendChild(
+    document.createTextNode(
+      ` ${getPlaceholderText(SIGNIN_MODAL_PLACEHOLDERS, 'footer_suffix')}`,
+    ),
+  );
   bottomArea.appendChild(bottomText);
   content.appendChild(bottomArea);
 
@@ -209,7 +222,7 @@ export default function openSignInModal() {
 
     // Validate fields
     if (!email || !password) {
-      errorMessage.textContent = 'Please enter your email and password';
+      errorMessage.textContent = getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_login_missing_credentials');
       errorMessage.style.display = 'block';
       return;
     }
@@ -237,10 +250,10 @@ export default function openSignInModal() {
       }
     } catch (error) {
       // Show error message
-      errorMessage.textContent = error.message ?? 'Invalid email or password. Please try again.';
+      errorMessage.textContent = getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_login_invalid_credentials');
       errorMessage.style.display = 'block';
       signInButton.disabled = false;
-      signInButton.textContent = 'Sign in';
+      signInButton.textContent = getPlaceholderText(SIGNIN_MODAL_PLACEHOLDERS, 'button_signin');
     }
   });
 

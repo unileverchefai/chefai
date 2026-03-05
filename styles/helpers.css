@@ -1,3 +1,34 @@
+/* Shared keyframe animations (used by carousel blocks with loading/filter states) */
+@keyframes shimmer {
+  from {
+    background-position: 0% 0%;
+  }
+
+  to {
+    background-position: 100% 100%;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
 /* Utility classes */
 .text-bold {
   font-weight: 600;

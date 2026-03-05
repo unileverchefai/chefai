@@ -1,17 +1,19 @@
-/** Base folder for future-menus-4; paths are built relative to this. */
-const BASE_FOLDER = 'future-menus-4';
+import { getPathSegments, BASE_FOLDER } from './locale.js';
 
 /**
  * Returns the base URL: path up to and including BASE_FOLDER, with trailing slash.
  * e.g. /uk/en/inspiration/future-menus-4/personalized-hub -> /uk/en/inspiration/future-menus-4/
  */
 export function getBaseUrl(pathname = window.location.pathname ?? '/') {
-  const path = pathname.replace(/\/$/, '') ?? '/';
-  if (path === '' || path === '/') return '/';
-  const segments = path.split('/').filter(Boolean);
-  const idx = segments.indexOf(BASE_FOLDER);
-  if (idx === -1) return '/';
-  const baseSegments = segments.slice(0, idx + 1);
+  const segments = getPathSegments(pathname);
+  if (segments.length === 0) return '/';
+  const baseFolderIndex = segments.indexOf(BASE_FOLDER);
+  if (baseFolderIndex >= 0) {
+    const baseSegments = segments.slice(0, baseFolderIndex + 1);
+    return `/${baseSegments.join('/')}/`;
+  }
+  const baseSegments = segments.slice(0, -1);
+  if (baseSegments.length === 0) return '/';
   return `/${baseSegments.join('/')}/`;
 }
 
@@ -23,4 +25,31 @@ export function getUrl(pageName, pathname = window.location.pathname ?? '/') {
   const base = getBaseUrl(pathname);
   if (base === '/') return `/${pageName}`;
   return `${base.replace(/\/$/, '')}/${pageName}`;
+}
+
+/**
+ * Replaces the country/language part of the URL path.
+ * e.g. changeCountryLanguagePath('be/nl')
+ * /uk/en/inspiration/future-menus-4/ ->> /be/nl/inspiration/future-menus-4/
+ */
+export function changeCountryLanguagePath(
+  newCountryLang,
+  pathname = window.location.pathname ?? '/',
+) {
+  if (!newCountryLang) return pathname;
+
+  const segments = getPathSegments(pathname);
+  const [country, lang] = newCountryLang.split('/');
+
+  if (!country || !lang) return pathname;
+
+  // If path already has country/lang → replace them
+  if (segments.length >= 2) {
+    segments[0] = country;
+    segments[1] = lang;
+    return `/${segments.join('/')}${pathname.endsWith('/') ? '/' : ''}`;
+  }
+
+  // If path is shorter than expected → prepend
+  return `/${country}/${lang}/${segments.join('/')}`;
 }

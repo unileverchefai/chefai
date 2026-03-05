@@ -1,8 +1,11 @@
+import { getCountry, getLang } from '../../locale.js';
+
+const countryCode = getCountry();
+const languageCode = getLang();
+
 export const API_BASE_URL = 'https://stage-api.ufs.com/auth';
 export const SUBSCRIPTION_KEY = 'f6acb8e1cc574a41bbcc82e177524a9d';
-export const COUNTRY_CODE = 'GB';
-export const SITE_CODE = 'ufs-gb';
-export const LANGUAGE_CODE = 'en';
+export const SITE_CODE = `ufs-${countryCode}`;
 
 export const ENDPOINTS = {
   login: '/authenticate',
@@ -51,8 +54,8 @@ export function createRegistrationPayload(data) {
     gender: null,
     integrationSourceName: null,
     title: null,
-    countryCode: COUNTRY_CODE,
-    languageCode: LANGUAGE_CODE,
+    countryCode,
+    languageCode,
     fbUserId: null,
     fbToken: null,
     numberOfCovers: null,
@@ -65,7 +68,7 @@ export function createRegistrationPayload(data) {
     street: null,
     city: null,
     district: null,
-    country: COUNTRY_CODE,
+    country: countryCode,
     zipCode: null,
     typeOfBusiness,
     typeOfCuisine: null,
@@ -87,13 +90,13 @@ export function createRegistrationPayload(data) {
     openOnSaturday: null,
     openOnSunday: null,
     operatorRefId: null,
-    confirmUrl: null,
+    confirmUrl: `https://stage.unileverfoodsolutions.${countryCode}/profil-erstellen/registration-completion.html`,
     passwordMd5Hash: null,
     newsletterOptIn: marketingConsent,
     oldNewsletterOptIn: null,
     confirmedNewsletterOptIn: marketingConsent,
     updateNewsletterSubscription: true,
-    newsletterConfirmUrl: null,
+    newsletterConfirmUrl: `https://stage.unileverfoodsolutions.${countryCode}/profil-erstellen/registration-completion.html`,
     accountOptIn: true,
     accountOptInConfirmed: null,
     enableNewsletterOptInWithConsent: null,

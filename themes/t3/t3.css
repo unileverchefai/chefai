@@ -1,0 +1,38 @@
+/* Theme T3: Diner Designed (Green) */
+
+body.t3 {
+  /* Page-level theme styling for Diner Designed */
+
+  /* The trend color variables are already defined in styles/styles.css:
+     --diner-designed: #679641
+     --diner-designed-bright: #a1b83b
+     --gradient-diner-designed
+     --glow-diner-designed
+  */
+
+  --trend-color: var(--diner-designed);
+  --trend-color-bright: var(--diner-designed-bright);
+  --gradient-trend: var(--gradient-diner-designed);
+  --glow-trend: var(--glow-diner-designed);
+  --text-trend-glow: var(--diner-designed-glow);
+  --text-trend-glow-80: var(--diner-designed-glow-80);
+  --text-trend-glow-25: var(--diner-designed-glow-25);
+  --trend-title-fill: rgb(0 0 0 / 40%);
+  --trend-title-stroke-color: var(--c-white);
+  --trend-title-stroke-width: 1.7px;
+  --trend-title-blend-mode: overlay;
+  --trend-title-shadow: 0 0 10px rgb(255 255 255 / 65%), 0 0 30px rgb(255 255 255 / 55%);
+  --trend-title-image-fill: var(--c-white);
+  --trend-title-image-stroke-color: var(--diner-designed-glow);
+  --trend-title-image-stroke-width: 1.2px;
+  --trend-title-image-shadow: var(--glow-diner-designed);
+}
+
+/* carousel-insights-teaser: trend-specific colours */
+body.t3 .carousel-insights-teaser {
+  --insight-card-bg: var(--diner-designed);
+  --insight-cta-bg: color-mix(in srgb, var(--diner-designed-bright) 50%, transparent);
+  --insight-cta-bg-hover: color-mix(in srgb, var(--diner-designed-bright) 70%, transparent);
+  --insight-cta-shadow: color-mix(in srgb, var(--diner-designed-bright) 60%, transparent);
+  --insight-cta-shadow-hover: color-mix(in srgb, var(--diner-designed-bright) 80%, transparent);
+}

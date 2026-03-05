@@ -1,3 +1,6 @@
+import { CHATBOT_PLACEHOLDERS } from '@scripts/common.js';
+import { getPlaceholderText } from '@scripts/custom/utils.js';
+
 const SENTENCE_BOUNDARY = /\.\s+|\n+/;
 const PHRASE_BOUNDARY = /\s+(?=[A-Z])/;
 const BUSINESS_NAME_PLACEHOLDER = '\u200B\u200B\u200B';
@@ -75,7 +78,7 @@ export default function LoadingState({
           h(
             'div',
             { key: 'title', className: 'ph-loading-title' },
-            'Creating your personalised insights',
+            getPlaceholderText(CHATBOT_PLACEHOLDERS, 'business_creation_label'),
           ),
           h(
             'div',

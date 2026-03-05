@@ -118,7 +118,16 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot', type }
               if (headlineText && newMessages.length > 0) {
                 const hasHeadline = newMessages
                   .some((m) => m.metadata?.isQuickActionHeadline);
-
+                // TODO: We should refactor, it's a bit hacky to manage headline
+                // vs regular messages through metadata and sessionStorage like this,
+                // but it allows us to display a headline for both quick actions and
+                // insights without needing separate flows or components. Ideally the
+                // BE would send a specific message type for headlines that we can
+                // easily identify and render differently, rather than relying on this workaround.
+                // 1) Markdown -> HTML
+                const rawHtml = window.marked?.parse(newMessages[0].text.replace(`**${headlineText}**`, ''));
+                // 2) Sanitize (important if text comes from BE)
+                newMessages[0].text = window.DOMPurify?.sanitize(rawHtml);
                 if (!hasHeadline) {
                   const firstMsg = newMessages[0];
                   const firstTime = firstMsg?.createdAt

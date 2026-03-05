@@ -1,8 +1,23 @@
 import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
-import { COUNTRY_CODE, LANGUAGE_CODE } from '@api/authentication/constants.js';
+import { getCountry, getLang } from '@scripts/custom/locale.js';
 import formatResponse from '@helpers/chatbot/responseHandler.js';
+import { hasToken } from '@auth/tokenManager.js';
+
+const countryCode = getCountry();
+const languageCode = getLang();
 
 export { formatResponse };
+
+/**
+ * Returns the localized value for a given key from a formatted placeholders object.
+ * @param {Object} placeholders - Formatted placeholders (e.g. SIGNIN_MODAL_PLACEHOLDERS).
+ * @param {string} key - The placeholder key to look up.
+ * @returns {string} The localized string, falling back to English, then empty string.
+ */
+export function getPlaceholderText(placeholders, key) {
+  const language = getLang();
+  return placeholders?.[key]?.[language] ?? placeholders?.[key]?.en ?? '';
+}
 
 export function setCookie(name, value, days = 365) {
   try {
@@ -28,6 +43,23 @@ export function getCookie(name) {
   } catch {
     return null;
   }
+}
+
+/**
+ * Determine if guest state should be reset.
+ * Returns true when there is persisted identity/business data but no auth token.
+ * Callers are responsible for invoking clearAllChatData when this is true.
+ * @returns {boolean}
+ */
+export function shouldResetGuestState() {
+  if (hasToken()) {
+    return false;
+  }
+
+  const userId = getCookie('user_id');
+  const userData = getCookie('user_data');
+
+  return !!(userId || userData);
 }
 
 /**
@@ -300,6 +332,10 @@ export function getUserIdFromCookie() {
   return getCookie('user_id');
 }
 
+export function getUserDataFromCookie() {
+  return getCookie('user_data');
+}
+
 export function getAnonymousUserIdFromCookie() {
   return getUserIdFromCookie();
 }
@@ -339,8 +375,8 @@ export async function getAnonymousUserId() {
 
   const payload = {
     user_id: cookieId,
-    country: COUNTRY_CODE,
-    content_language_code: LANGUAGE_CODE.toUpperCase(),
+    country: countryCode,
+    content_language_code: languageCode.toUpperCase(),
     tc_agreed: tcAgreed,
   };
 
@@ -391,8 +427,8 @@ export async function createUser() {
 
   const payload = {
     user_id: cookieId,
-    country: COUNTRY_CODE,
-    content_language_code: LANGUAGE_CODE.toUpperCase(),
+    country: countryCode,
+    content_language_code: languageCode.toUpperCase(),
     tc_agreed: tcAgreed,
   };
 
@@ -715,6 +751,14 @@ export async function loadReact() {
   if (window.React && window.ReactDOM) return;
   await loadScript(REACT_SCRIPT);
   await loadScript(REACT_DOM_SCRIPT);
+}
+
+const MARKED = 'https://unpkg.com/marked@12.0.2/lib/marked.umd.js';
+const DOMPURIFY = 'https://unpkg.com/dompurify@3.3.1/dist/purify.min.js';
+
+export async function loadMarkedPurify() {
+  await loadScript(MARKED);
+  await loadScript(DOMPURIFY);
 }
 
 export function loadScript(src) {

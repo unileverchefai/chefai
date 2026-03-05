@@ -1,7 +1,31 @@
 import openPersonalizedHub from '@helpers/personalized-hub/personalized-hub.js';
 import hasSavedBusinessName from '@helpers/personalized-hub/hasSavedBusinessName.js';
 import openChatbotModal from '@helpers/chatbot/openChatbotModal.js';
-import { loadCSS, loadScript } from './aem.js';
+import { BASE_FOLDER } from './custom/locale.js';
+import {
+  loadCSS, loadScript, toClassName, getMetadata,
+} from './aem.js';
+
+/**
+ * Validates the theme and returns the trend class name
+ * @param {string} theme The theme from metadata (t1, t2, t3, t4)
+ * @returns {string|null} The valid trend class or null
+ */
+export function validateTheme(theme) {
+  const themeMap = {
+    t1: 'borderless-cuisine',
+    t2: 'street-food-couture',
+    t3: 'diner-designed',
+    t4: 'culinary-roots',
+    // Also support full names for backwards compatibility
+    'borderless-cuisine': 'borderless-cuisine',
+    'street-food-couture': 'street-food-couture',
+    'diner-designed': 'diner-designed',
+    'culinary-roots': 'culinary-roots',
+  };
+
+  return themeMap[theme] || null;
+}
 
 /**
  * Checks if the current host is a development environment.
@@ -174,15 +198,6 @@ export async function loadVariantScript({ blockName, variantName }) {
   }
 }
 
-export function getPageLanguage() {
-  const htmlLang = document.documentElement.lang;
-  if (htmlLang) {
-    const normalizedLang = htmlLang.toLowerCase();
-    return normalizedLang.split(/[-_]/)[0]; // Return the primary language code (e.g., 'en' from 'en-US')
-  }
-  return 'en'; // Default to English if no language is specified
-}
-
 /**
  * Fetches placeholders from the server and returns them as an object.
  * @returns {Promise<Object>} A promise that resolves to an object containing placeholders.
@@ -226,29 +241,40 @@ function formatPlaceholders(values = false) {
     if (!item.key) {
       return;
     }
-    const {
-      key, en, it, de, es,
-    } = item;
-    object[key] = {
-      en, it, de, es,
-    };
+
+    const { key, ...languages } = item;
+    object[key] = Object.fromEntries(
+      Object.entries(languages).filter(
+        ([, value]) => typeof value === 'string' && value.trim() !== '',
+      ),
+    );
   });
+
   return object;
 }
 
 const {
-  loginmodal,
+  signinmodal,
+  signupmodal,
+  validations,
+  forgetpwmodal,
   herobanner,
   countdownhero,
+  chatbot,
+  cookies,
   data: placeholdersData,
 } = await getPlaceholders() || {};
 
 // Format placeholders for different categories and store them in constants for easy access
-export const LOGIN_MODAL_PLACEHOLDERS = formatPlaceholders(loginmodal?.data);
+export const SIGNIN_MODAL_PLACEHOLDERS = formatPlaceholders(signinmodal?.data);
+export const SIGNUP_MODAL_PLACEHOLDERS = formatPlaceholders(signupmodal?.data);
+export const VALIDATIONS_PLACEHOLDERS = formatPlaceholders(validations?.data);
+export const FORGET_PW_MODAL_PLACEHOLDERS = formatPlaceholders(forgetpwmodal?.data);
 export const HERO_BANNER_PLACEHOLDERS = formatPlaceholders(herobanner?.data);
 export const COUNTDOWN_HERO_PLACEHOLDERS = formatPlaceholders(countdownhero?.data);
+export const CHATBOT_PLACEHOLDERS = formatPlaceholders(chatbot?.data);
+export const COOKIES_PLACEHOLDERS = formatPlaceholders(cookies?.data);
 export const OTHER_PLACEHOLDERS = formatPlaceholders(placeholdersData?.data);
-
 /**
  * Extract video ID from YouTube URL
  * @param {string} url The YouTube URL
@@ -467,6 +493,52 @@ const { cookieValues } = await getConstantsValues() || {};
 
 export const COOKIE_CONFIG = formatValues(cookieValues?.data);
 
+/**
+ * Loads a template based on the 'template' metadata value, including its CSS and JS.
+ *
+ * This function dynamically loads page templates from the `/templates` directory in scripts.js.
+ * @param {Element} main The main element to pass to the template's default function.
+ * @returns {Promise<void>} A promise that resolves when the template is loaded and executed.
+ */
+export async function loadTemplate(main) {
+  const template = toClassName(getMetadata('template'));
+  if (!template) {
+    return;
+  }
+  try {
+    await loadCSS(`${window.hlx.codeBasePath}/templates/${template}/${template}.css`);
+    const mod = await import(`${window.hlx.codeBasePath}/templates/${template}/${template}.js`);
+    if (mod && typeof mod.default === 'function') {
+      await mod.default(main);
+    }
+  } catch (error) {
+    console.error(`Failed to load template ${template}:`, error);
+  }
+}
+
+/**
+ * This function loads and applies the theme specified in metadata with the key "`theme`".
+ *
+ * Any theme _**MUST**_ have a corresponding `CSS` file in the themes folder.
+ * @returns {Promise<void>}
+ */
+export async function loadTheme() {
+  const theme = toClassName(getMetadata('theme'));
+  if (theme) {
+    try {
+      await loadCSS(`${window.hlx.codeBasePath}/themes/${theme}/${theme}.css`);
+    } catch (e) {
+      console.error(`failed to load theme %c${theme}`, 'color: gold', { error: e });
+    }
+  }
+}
+
+/**
+ * Handles click events on CTA buttons, determining whether to open a registration modal,
+ * personalized hub, or chatbot modal based on the button's href
+ * and the user's saved business information.
+ * @param {Element} button The CTA button element to attach the click handler to.
+ */
 export function ctaButtonHandler(button = null) {
   if (!button) {
     console.error('CTA Button Handler: No button element provided.');

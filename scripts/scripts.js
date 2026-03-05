@@ -1,4 +1,5 @@
-import { welcomeModalSeen } from '@scripts/custom/utils.js';
+import { welcomeModalSeen } from './custom/utils.js';
+import { getLang } from './custom/locale.js';
 import {
   buildBlock,
   loadHeader,
@@ -14,7 +15,7 @@ import {
   loadCSS,
   getMetadata,
 } from './aem.js';
-import { getPlaceholders } from './common.js';
+import { getPlaceholders, loadTemplate, loadTheme } from './common.js';
 
 /**
  * Builds hero block and prepends to main in a new section.
@@ -97,11 +98,15 @@ export function decorateMain(main) {
  * @param {Element} doc The container element
  */
 async function loadEager(doc) {
-  document.documentElement.lang = 'en';
+  const lang = getLang();
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
   await getPlaceholders();
   decorateTemplateAndTheme();
   const main = doc.querySelector('main');
   if (main) {
+    await loadTemplate(main);
+    await loadTheme();
     decorateMain(main);
     document.body.classList.add('appear');
     await loadSection(main.querySelector('.section'), waitForFirstImage);

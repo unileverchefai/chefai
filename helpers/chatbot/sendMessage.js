@@ -1,4 +1,5 @@
-import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
+import { SUBSCRIPTION_KEY, ENDPOINTS, STREAMING_TIMEOUT_MS } from '@api/endpoints.js';
+import { getCountry } from '@scripts/custom/locale.js';
 import {
   getOrCreateThreadId,
   formatResponse,
@@ -8,6 +9,8 @@ import {
   createUser,
 } from '@scripts/custom/utils.js';
 
+const countryCode = getCountry();
+
 let currentEndpoint = 'capgemini';
 
 export function setEndpoint(endpoint) {
@@ -16,7 +19,7 @@ export function setEndpoint(endpoint) {
   }
 }
 
-function fetchWithTimeout(url, options, timeout = 30000) {
+function fetchWithTimeout(url, options, timeout = STREAMING_TIMEOUT_MS) {
   return Promise.race([
     fetch(url, options),
     new Promise((_, reject) => {
@@ -61,7 +64,7 @@ export default async function sendMessage(message, options = {}) {
     message,
     thread_id: threadId,
     user_id: userId,
-    country: options.country ?? 'BE',
+    country: options.country ?? countryCode,
   };
 
   try {
@@ -76,7 +79,7 @@ export default async function sendMessage(message, options = {}) {
         },
         body: JSON.stringify(payload),
       },
-      options.timeout || 30000,
+      options.timeout ?? STREAMING_TIMEOUT_MS,
     );
 
     if (!response.ok) {

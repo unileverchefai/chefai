@@ -1,0 +1,38 @@
+/* Theme T1: Borderless Cuisine (Orange) */
+
+body.t1 {
+  /* Page-level theme styling for Borderless Cuisine */
+
+  /* The trend color variables are already defined in styles/styles.css:
+     --borderless-cuisine: #ed6c00
+     --borderless-cuisine-bright: #f9b000
+     --gradient-borderless-cuisine
+     --glow-borderless-cuisine
+  */
+
+  --trend-color: var(--borderless-cuisine);
+  --trend-color-bright: var(--borderless-cuisine-bright);
+  --gradient-trend: var(--gradient-borderless-cuisine);
+  --glow-trend: var(--glow-borderless-cuisine);
+  --text-trend-glow: var(--borderless-glow);
+  --text-trend-glow-80: var(--borderless-glow-80);
+  --text-trend-glow-25: var(--borderless-glow-25);
+  --trend-title-fill: rgb(0 0 0 / 40%);
+  --trend-title-stroke-color: var(--c-white);
+  --trend-title-stroke-width: 1.7px;
+  --trend-title-blend-mode: overlay;
+  --trend-title-shadow: 0 0 10px rgb(255 255 255 / 65%), 0 0 30px rgb(255 255 255 / 15%);
+  --trend-title-image-fill: var(--c-white);
+  --trend-title-image-stroke-color: var(--borderless-glow);
+  --trend-title-image-stroke-width: 1.2px;
+  --trend-title-image-shadow: var(--glow-borderless-cuisine);
+}
+
+/* carousel-insights-teaser: trend-specific colours */
+body.t1 .carousel-insights-teaser {
+  --insight-card-bg: var(--borderless-cuisine);
+  --insight-cta-bg: color-mix(in srgb, var(--borderless-cuisine-bright) 50%, transparent);
+  --insight-cta-bg-hover: color-mix(in srgb, var(--borderless-cuisine-bright) 70%, transparent);
+  --insight-cta-shadow: color-mix(in srgb, var(--borderless-cuisine-bright) 60%, transparent);
+  --insight-cta-shadow-hover: color-mix(in srgb, var(--borderless-cuisine-bright) 80%, transparent);
+}

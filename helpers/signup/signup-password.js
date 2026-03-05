@@ -1,8 +1,10 @@
-import { createElement } from '@scripts/common.js';
+import { createElement, SIGNUP_MODAL_PLACEHOLDERS, VALIDATIONS_PLACEHOLDERS } from '@scripts/common.js';
 import createModal from '@helpers/modal/index.js';
 import { loadCSS } from '@scripts/aem.js';
 import { register } from '@auth/authService.js';
 import { getUrl } from '@scripts/custom/redirect.js';
+import { getPlaceholderText } from '@scripts/custom/utils.js';
+import { trackSignupSuccess } from './signup.analytics.js';
 
 function createPasswordRequirement(text) {
   const requirement = createElement('div', {
@@ -180,20 +182,20 @@ export default function openSignupPasswordModal(email, registrationData = null) 
     errorMessage.style.color = 'var(--ufs-orange)';
 
     if (!password) {
-      errorMessage.textContent = 'Please enter a password';
+      errorMessage.textContent = getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_pwd_required');
       errorMessage.style.display = 'block';
       passwordInput.focus();
       return;
     }
 
     if (!validation.minLength || !validation.hasCapital || !validation.hasNumberOrSymbol) {
-      errorMessage.textContent = 'Please meet all password requirements';
+      errorMessage.textContent = getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_pwd_requirements_not_met');
       errorMessage.style.display = 'block';
       return;
     }
 
     submitButton.disabled = true;
-    submitButton.textContent = 'Creating account...';
+    submitButton.textContent = getPlaceholderText(SIGNUP_MODAL_PLACEHOLDERS, 'auth_creating_account');
 
     try {
       if (registrationData) {
@@ -205,14 +207,28 @@ export default function openSignupPasswordModal(email, registrationData = null) 
         };
 
         await register(formData);
+
+        const formName = title.textContent?.trim() ?? '';
+        const displayText = submitButton.textContent?.trim() ?? '';
+        const href = getUrl('personalized-hub');
+
+        trackSignupSuccess({
+          registrationType: registrationData?.registrationType,
+          displayText: displayText || formName,
+          href,
+        });
+
         modal.close();
-        window.location.href = getUrl('personalized-hub');
+        window.location.href = href;
       }
     } catch (error) {
-      errorMessage.textContent = error.message ?? 'Failed to create account. Please try again.';
+      const fallbackMessage = getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'auth_register_failed_generic');
+      const errorMessageText = String(error?.message ?? '').trim() || fallbackMessage;
+
+      errorMessage.textContent = errorMessageText;
       errorMessage.style.display = 'block';
       submitButton.disabled = false;
-      submitButton.textContent = 'Create Account';
+      submitButton.textContent = getPlaceholderText(SIGNUP_MODAL_PLACEHOLDERS, 'button_create_account') || 'Create Account';
     }
   });
 

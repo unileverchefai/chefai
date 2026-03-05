@@ -1,6 +1,8 @@
-import { loadReact, getCookieId, getUserIdFromCookie } from '@scripts/custom/utils.js';
+import {
+  loadReact, getCookieId, getUserIdFromCookie, getPlaceholderText,
+} from '@scripts/custom/utils.js';
 import sendStreamingMessage from '@helpers/chatbot/sendStreamingMessage.js';
-import { createElement } from '@scripts/common.js';
+import { createElement, VALIDATIONS_PLACEHOLDERS } from '@scripts/common.js';
 import { loadCSS } from '@scripts/aem.js';
 import createModal from '@helpers/modal/index.js';
 
@@ -50,7 +52,6 @@ if (typeof window !== 'undefined') {
 
 export default async function openPersonalizedHub() {
   await loadCSS(`${window.hlx.codeBasePath}/helpers/personalized-hub/personalized-hub.css`);
-
   const container = createElement('div', {
     className: 'personalized-hub-container',
     attributes: { id: 'personalized-hub-modal-root' },
@@ -151,26 +152,7 @@ export default async function openPersonalizedHub() {
             setBusinessCandidates(normalized);
             setBusinessData(normalized[0]);
             setCurrentScreen(SCREENS.CONFIRMATION);
-            return;
           }
-
-          const trimmedName = (typeof result === 'string' ? result : (result ?? '')).trim();
-          if (!trimmedName) {
-            setError('Business name is required.');
-            return;
-          }
-
-          const singleBusiness = {
-            business_name: trimmedName,
-            address: '',
-            image_url: '',
-            logo_url: '',
-          };
-
-          setBusinessCandidates([singleBusiness]);
-          setBusinessData(singleBusiness);
-
-          setCurrentScreen(SCREENS.CONFIRMATION);
         };
 
         const handleConfirm = () => {
@@ -213,7 +195,7 @@ export default async function openPersonalizedHub() {
             },
             onError: () => {
               setLoadingStep(0);
-              setError('Something went wrong while creating your personalised insights. Please try again.');
+              setError(getPlaceholderText(VALIDATIONS_PLACEHOLDERS, 'business_creation_error'));
               setCurrentScreen(SCREENS.CHAT);
             },
           });
