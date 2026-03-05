@@ -418,6 +418,14 @@ export async function addVariantLogic({
   }
 }
 
+function getBasePath(url) {
+  const { origin, pathname } = url;
+  const pathSegments = pathname.split('/').filter(Boolean);
+  const baseIndex = pathSegments.indexOf(BASE_FOLDER);
+  const basePath = baseIndex !== -1 ? `/${pathSegments.slice(0, baseIndex + 1).join('/')}` : '';
+  return `${origin}${basePath}`;
+}
+
 /**
  * Fetches constants values from the constants.json file.
  * @returns {Promise<Object|null>} A promise that resolves to the constants
@@ -425,7 +433,7 @@ export async function addVariantLogic({
  */
 async function getConstantsValues() {
   const currentUrl = new URL(window.location.href);
-  const constantsUrl = `${currentUrl.origin}/constants.json`;
+  const constantsUrl = `${getBasePath(currentUrl)}/constants.json`;
   try {
     const response = await fetch(constantsUrl);
     if (!response.ok) {
