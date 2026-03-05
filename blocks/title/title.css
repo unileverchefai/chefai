@@ -11,6 +11,16 @@ main > .section > .title-wrapper {
   padding: 40px 16px 24px;
 }  
 
+.title.grey,
+.title.light-mushroom {
+  background: var(--light-mushroom);
+}
+
+.title.dark,
+.title.squid-ink {
+  background: var(--squid-ink);
+}
+
 .title h2 {
   color: var(--text-color);
   text-align: center;
@@ -23,6 +33,12 @@ main > .section > .title-wrapper {
   font-weight: 500;
   line-height: 25px;
 }
+
+.title.dark h2,
+.title.squid-ink h2 {
+  color: var(--c-white);
+}
+
 
   .title h2 .subtitle {
   display: block;
@@ -49,6 +65,12 @@ main > .section > .title-wrapper {
   line-height: 22px;
   margin: 0;
 }
+
+.title.dark p,
+.title.squid-ink p {
+  color: var(--c-white);
+}
+
 
 @media (width >= 900px) { 
   .title {
