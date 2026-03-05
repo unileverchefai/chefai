@@ -523,10 +523,13 @@ export default function renderMessage(message, options = {}) {
               className: 'carousel-cards-container',
             },
             products.map((product, index) => h(
-              'div',
+              'a',
               {
                 key: `product-${index}`,
                 className: 'chatbot-carousel-card',
+                href: product.url || undefined,
+                target: product.url ? '_blank' : undefined,
+                rel: product.url ? 'noopener noreferrer' : undefined,
               },
               [
                 (product.image_url || product.image) && h(
@@ -559,17 +562,6 @@ export default function renderMessage(message, options = {}) {
                     className: 'chat-product-description',
                   },
                   product.description,
-                ),
-                product.url && h(
-                  'a',
-                  {
-                    key: 'link',
-                    href: product.url,
-                    target: '_blank',
-                    rel: 'noopener noreferrer',
-                    className: 'chat-product-link',
-                  },
-                  'check it out',
                 ),
               ],
             )),

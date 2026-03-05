@@ -313,6 +313,7 @@
 /* Product carousel inside messages */
 .chatbot-carousel {
   margin-top: var(--spacing-md);
+  max-width: 720px;
 }
 
 .chatbot-carousel-card {
