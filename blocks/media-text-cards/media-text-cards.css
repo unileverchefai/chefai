@@ -1,7 +1,20 @@
 /* ===== MEDIA SECTION ===== */
 
 .section.media-text-cards-container {
+  background: var(--c-white);
+}
+
+.section.media-text-cards-container:has(.grey) {
   background: var(--light-mushroom);
+}
+
+.section.media-text-cards-container:has(.dark) {
+  background: var(--squid-ink);
+  color: var(--c-white);
+}
+
+.section.media-text-cards-container:has(.dark) *:not(.subtitle) {
+  color: var(--c-white);
 }
 
 .section .media-text-cards-wrapper {
