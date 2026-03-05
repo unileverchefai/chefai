@@ -68,7 +68,7 @@ export default function ChatWidget({ personalizedHubTrigger = '#chatbot', type }
         }
       });
     };
-  }, [messages.length]);
+  }, [messages]);
 
   // Focus input field when chatbot opens
   useEffect(() => {

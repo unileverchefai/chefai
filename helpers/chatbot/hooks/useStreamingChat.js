@@ -84,6 +84,17 @@ export default function useStreamingChat({
 
     setMessages((prev) => [...prev, placeholderMessage]);
 
+    // Ensure latest messages are visible immediately after sending.
+    // Use a micro-delay so the DOM has rendered the new bubbles.
+    const container = document.getElementsByClassName('chat-messages')[0];
+    console.log(container);
+    if (container) {
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: 'instant',
+      });
+    }
+
     try {
       const currentThreadId = getStoredThreadId();
       const connection = await sendStreamingMessage(messageText, {

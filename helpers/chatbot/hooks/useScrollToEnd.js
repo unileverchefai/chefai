@@ -32,7 +32,7 @@ export default function useScrollToEnd(messages) {
       return;
     }
     if (initialScrollDone.current && messages.length > 0) {
-      scrollToEnd(true);
+      scrollToEnd(false);
     }
   }, [messages, scrollToEnd]);
 

@@ -1,5 +1,6 @@
 @import url('../../chatInput/chat-input.css');
 @import url('../../carousel/carousel.css');
+@import url('./skeleton/skeleton.css');
 
 /* Chatbot Block Styles */
 .ph-predefined-questions {

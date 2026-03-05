@@ -1,4 +1,5 @@
 import SuggestedPrompts from './SuggestedPrompts.js';
+import ImageSkeleton from './skeleton/ImageSkeleton.js';
 import { USER_ID, formatMessageText } from '../model/messageModel.js';
 
 export default function renderMessage(message, options = {}) {
@@ -392,17 +393,17 @@ export default function renderMessage(message, options = {}) {
           message.metadata.images
             .filter((img) => !cardImageUrls.has(img.url))
             .map((img, idx) => h(
-              'img',
+              ImageSkeleton,
               {
                 key: `img-${idx}`,
                 src: img.url,
-                alt: img.alt,
+                alt: img.alt ?? '',
                 style: {
                   maxWidth: message.metadata.images.length === 1 ? '50%' : 'calc(50% - 4px)',
-                  height: 'auto',
                   borderRadius: '8px',
-                  objectFit: 'cover',
                 },
+                width: 200,
+                height: 115,
                 loading: 'lazy',
               },
             )),
@@ -433,14 +434,16 @@ export default function renderMessage(message, options = {}) {
               },
               [
                 recipe.image_url && h(
-                  'img',
+                  ImageSkeleton,
                   {
                     key: 'image',
                     src: recipe.image_url,
                     alt: recipe.title_in_user_language
-                      || recipe.title_in_original_language
-                      || 'Recipe image',
-                    className: 'chat-product-image',
+                      ?? recipe.title_in_original_language
+                      ?? 'Recipe image',
+                    imgClassName: 'chat-product-image',
+                    width: '100%',
+                    height: 120,
                   },
                 ),
                 h(
@@ -532,16 +535,18 @@ export default function renderMessage(message, options = {}) {
                 rel: product.url ? 'noopener noreferrer' : undefined,
               },
               [
-                (product.image_url || product.image) && h(
-                  'img',
+                (product.image_url ?? product.image) && h(
+                  ImageSkeleton,
                   {
                     key: 'image',
-                    src: product.image_url || product.image,
+                    src: product.image_url ?? product.image,
                     alt: product.name
-                      || product.title_in_user_language
-                      || product.title_in_original_language
-                      || 'Product image',
-                    className: 'chat-product-image',
+                      ?? product.title_in_user_language
+                      ?? product.title_in_original_language
+                      ?? 'Product image',
+                    imgClassName: 'chat-product-image',
+                    width: '100%',
+                    height: 120,
                   },
                 ),
                 h(

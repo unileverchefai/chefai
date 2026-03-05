@@ -5,6 +5,7 @@ export default function renderChatUI({
   error,
   messages,
   isTyping,
+  messagesEndRef,
   inputValue,
   setInputValue,
   handleSend,
@@ -51,11 +52,18 @@ export default function renderChatUI({
             padding: '20px',
             display: 'flex',
             flexDirection: 'column',
-            scrollBehavior: 'smooth',
+            scrollBehavior: 'auto',
           },
         },
         [
           ...messages.map((msg) => renderMessage(msg, { onPromptClick })),
+          h(
+            'div',
+            {
+              key: 'messages-end',
+              ref: messagesEndRef,
+            },
+          ),
         ],
       ),
       h(ChatInput, {
