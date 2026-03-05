@@ -6,6 +6,7 @@ import { hasToken } from '@auth/tokenManager.js';
 import { getUserDataFromCookie, clearAllChatData, shouldResetGuestState } from '@scripts/custom/utils.js';
 import { logout } from '@auth/authService.js';
 import { getBaseUrl, changeCountryLanguagePath } from '@scripts/custom/redirect.js';
+import { BASE_FOLDER } from '@scripts/custom/locale.js';
 
 // media query match that indicates mobile/tablet width
 const isDesktop = window.matchMedia('(min-width: 992px)');
@@ -130,7 +131,9 @@ const createNavHeader = () => {
 
 export async function buildNavSections(isLoggedIn, businessName) {
   const navMeta = getMetadata('nav');
-  const navPath = navMeta ? new URL(navMeta, window.location.pathname) : `${window.location.pathname}nav`;
+  const pathName = window.location.pathname;
+  const navBasePath = pathName.slice(0, pathName.indexOf(BASE_FOLDER) + BASE_FOLDER.length + 1);
+  const navPath = navMeta ? new URL(navMeta, navBasePath) : `${navBasePath}nav`;
   const fragment = await loadFragment(navPath);
 
   const navModal = createElement('div', { className: 'nav-modal' });

@@ -52,16 +52,17 @@ function parseDropdownData(firstRow) {
  * @param {HTMLElement} block - The block element with authored content
  * @returns {Array} Array of card data objects
  */
-function parseAuthoredContent(block) {
+function parseAuthoredContent(block, hasNoDropdown = false) {
   const rows = [...block.children];
-  const cardRows = rows.slice(1);
+  const cardRows = hasNoDropdown ? rows : rows.slice(1);
 
   const cards = cardRows.map((row) => {
     const cells = row.children;
-    if (cells.length < 2) return null;
+    if (cells.length < 1) return null;
+    if (!hasNoDropdown && cells.length < 2) return null;
 
     const contentCell = cells[0];
-    const metaCell = cells[1];
+    const metaCell = hasNoDropdown ? null : cells[1];
 
     const h3 = contentCell.querySelector('h3');
     if (!h3) return null;
@@ -123,7 +124,7 @@ function parseAuthoredContent(block) {
     }
 
     // extract assigned restaurant types from second column
-    const typesList = metaCell.querySelector('ul');
+    const typesList = metaCell ? metaCell.querySelector('ul') : null;
     const restaurantTypes = typesList
       ? [...typesList.querySelectorAll('li')].map((li) => li.textContent.trim())
       : [];
@@ -280,10 +281,12 @@ function initializeCarousel(block, container, itemCount) {
 export default function decorate(block) {
   const MIN_ITEMS = 3;
 
-  const firstRow = block.children[0];
-  const dropdownData = parseDropdownData(firstRow);
+  const hasNoDropdown = block.classList.contains('no-dropdown');
 
-  const cards = parseAuthoredContent(block);
+  const firstRow = hasNoDropdown ? null : block.children[0];
+  const dropdownData = hasNoDropdown ? null : parseDropdownData(firstRow);
+
+  const cards = parseAuthoredContent(block, hasNoDropdown);
 
   if (cards.length < MIN_ITEMS) {
     block.remove();
@@ -347,25 +350,28 @@ export default function decorate(block) {
     carouselContainer.classList.remove('fade-in');
   };
 
-  const dropdownOptions = [
-    { label: dropdownData?.label ?? 'All business types', value: 'all' },
-    ...(dropdownData?.options ?? []).map((opt) => ({ label: opt, value: opt })),
-  ];
+  if (!hasNoDropdown) {
+    const dropdownOptions = [
+      { label: dropdownData?.label ?? 'All business types', value: 'all' },
+      ...(dropdownData?.options ?? []).map((opt) => ({ label: opt, value: opt })),
+    ];
 
-  const { element: filterContainer } = createDropdown({
-    options: dropdownOptions,
-    onSelect: filterCards,
-    classes: {
-      filter: 'carousel-biz-filter',
-      button: 'biz-dropdown',
-      text: 'biz-dropdown-text',
-      arrow: 'biz-dropdown-arrow',
-      menu: 'biz-dropdown-menu',
-      option: 'biz-dropdown-option',
-    },
-  });
+    const { element: filterContainer } = createDropdown({
+      options: dropdownOptions,
+      onSelect: filterCards,
+      classes: {
+        filter: 'carousel-biz-filter',
+        button: 'biz-dropdown',
+        text: 'biz-dropdown-text',
+        arrow: 'biz-dropdown-arrow',
+        menu: 'biz-dropdown-menu',
+        option: 'biz-dropdown-option',
+      },
+    });
 
-  block.appendChild(filterContainer);
+    block.appendChild(filterContainer);
+  }
+
   block.appendChild(carouselWrapper);
 
   renderCards(carouselContainer, allCards);
