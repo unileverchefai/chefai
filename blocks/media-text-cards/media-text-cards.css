@@ -169,11 +169,6 @@
   gap: var(--spacing-xs);
 }
 
-/* Preserve spacing when <p> is not authored (non-video variant) */
-.media-text-cards .media-title > div:not(:has(p)) {
-  padding-bottom: calc(var(--spacing-xs) + 14px);
-}
-
 .media-text-cards .media-title::before {
   content: '';
   position: absolute;
@@ -235,6 +230,11 @@
   align-items: center;
   gap: var(--spacing-md);
   width: 100%;
+}
+
+/* Preserve spacing when <p> is not authored (non-video variant) */
+.media-text-cards .media-title > div:not(:has(p)) {
+  padding-bottom: calc(var(--spacing-xs) + 14px);
 }
 
 .media-text-cards .cards-text h4 {
