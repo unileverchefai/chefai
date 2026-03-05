@@ -1,9 +1,11 @@
 main > .section > .carousel-biz-wrapper {
+  margin: 0;
   padding: 0;
   overflow: visible;
 }
 
 main > .section:has(.carousel-biz-wrapper) {
+  margin: 0;
   overflow: visible;
 }
 
@@ -586,7 +588,7 @@ a.trend-cta {
 
 @media (width >= 900px) {
   .carousel-biz {
-    padding: var(--spacing-lg) 100px 80px;
+    padding: var(--spacing-lg) 100px;
   }
 
   .carousel-biz-carousel-wrapper {
@@ -610,6 +612,7 @@ a.trend-cta {
 
   .carousel-biz-container {
     flex-wrap: wrap;
+    justify-content: center;
   }
 
   .trend-card {
