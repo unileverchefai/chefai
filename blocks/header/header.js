@@ -130,7 +130,7 @@ const createNavHeader = () => {
 
 export async function buildNavSections(isLoggedIn, businessName) {
   const navMeta = getMetadata('nav');
-  const navPath = navMeta ? new URL(navMeta, window.location.pathname) : `${window.location.pathname}nav`;
+  const navPath = navMeta ? new URL(navMeta, window.location.pathname) : '/nav';
   const fragment = await loadFragment(navPath);
 
   const navModal = createElement('div', { className: 'nav-modal' });
