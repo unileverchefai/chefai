@@ -379,7 +379,6 @@
 }
 
 .ai-message .message-bubble a {
-    color: var(--link-color);
     font-weight: 500;
 }
 

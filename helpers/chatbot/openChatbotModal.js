@@ -6,20 +6,34 @@ import { setEndpoint } from './api/chatApi.js';
 
 const ANIMATION_DURATION = 300;
 
+const chatbotModalState = {
+  modal: null,
+  container: null,
+  reactRoot: null,
+};
+
 /**
  * Opens the Chef AI chatbot in a modal.
- * This reuses the existing ChatWidget, but renders it in an overlay instead of inline.
+ * Keeps the modal and React root in the DOM when closed so that reopening reuses the same content.
  * @param {Object} type - Type of chatbot to open (e.g. 'quick-actions', 'insights')
  * @returns {Promise<void>}
  */
 export default async function openChatbotModal(type) {
-  // Container for React app
+  if (chatbotModalState.modal && chatbotModalState.container && chatbotModalState.reactRoot) {
+    chatbotModalState.modal.open();
+    setTimeout(() => {
+      const input = chatbotModalState.container.querySelector('.chat-input');
+      if (input && typeof input.focus === 'function') {
+        input.focus();
+      }
+    }, ANIMATION_DURATION + 50);
+    return;
+  }
+
   const container = createElement('div', {
     className: 'chatbot-modal-container',
     attributes: { id: 'chatbot-modal-root' },
   });
-
-  let reactRoot = null;
 
   const modal = createModal({
     content: container,
@@ -28,20 +42,19 @@ export default async function openChatbotModal(type) {
     contentClass: 'modal-content chatbot-modal-content',
     overlayBackground: 'var(--modal-overlay-bg)',
     animationDuration: ANIMATION_DURATION,
+    keepInDomOnClose: true,
     onClose: () => {
-      if (reactRoot) {
-        reactRoot.unmount();
-        reactRoot = null;
+      if (chatbotModalState.reactRoot) {
+        chatbotModalState.reactRoot.unmount();
+        chatbotModalState.reactRoot = null;
       }
     },
   });
 
   try {
-    // Ensure chatbot styles are loaded
     await loadCSS(`${window.hlx.codeBasePath}/helpers/chatbot/ui/chatbot.css`);
 
-    // Configure API endpoint the same way as the inline chatbot block
-    const endpoint = getMetadata('chatbot-endpoint') || 'capgemini';
+    const endpoint = getMetadata('chatbot-endpoint') ?? 'capgemini';
     setEndpoint(endpoint);
 
     await loadReact();
@@ -53,15 +66,16 @@ export default async function openChatbotModal(type) {
     const { default: ChatWidget } = await import('./ChatWidget.js');
     const { createElement: h } = window.React;
 
-    reactRoot = window.ReactDOM.createRoot(container);
+    const reactRoot = window.ReactDOM.createRoot(container);
+    chatbotModalState.modal = modal;
+    chatbotModalState.container = container;
+    chatbotModalState.reactRoot = reactRoot;
 
-    // Open modal first, then mount React to avoid layout jumps
     modal.open();
 
     requestAnimationFrame(() => {
       reactRoot.render(h(ChatWidget, { personalizedHubTrigger: null, type }));
 
-      // Focus input after React renders and modal animation completes
       setTimeout(() => {
         const input = container.querySelector('.chat-input');
         if (input && typeof input.focus === 'function') {
