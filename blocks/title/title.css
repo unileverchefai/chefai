@@ -11,12 +11,12 @@ main > .section > .title-wrapper {
   padding: 40px 16px 24px;
 }  
 
-.title.var-1,
+.title.grey,
 .title.light-mushroom {
   background: var(--light-mushroom);
 }
 
-.title.var-2,
+.title.dark,
 .title.squid-ink {
   background: var(--squid-ink);
 }
@@ -34,7 +34,7 @@ main > .section > .title-wrapper {
   line-height: 25px;
 }
 
-.title.var-2 h2,
+.title.dark h2,
 .title.squid-ink h2 {
   color: var(--c-white);
 }
@@ -66,7 +66,7 @@ main > .section > .title-wrapper {
   margin: 0;
 }
 
-.title.var-2 p,
+.title.dark p,
 .title.squid-ink p {
   color: var(--c-white);
 }
