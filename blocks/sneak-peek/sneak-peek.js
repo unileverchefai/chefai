@@ -44,17 +44,17 @@ export default async function decorate(block) {
   lowerBlock.appendChild(insightBlock);
 
   // Create three cards for the sneak peek insights
-  for (let i = 0; i < 3; i += 1) {
+  for (let i = 0; i < 4; i += 1) {
     let cardPosition;
     if (i === 0) {
       cardPosition = 'left';
-    } else if (i === 1) {
+    } else if (i === 1 || i === 2) {
       cardPosition = 'center';
     } else {
       cardPosition = 'right';
     }
     const card = createElement('div', {
-      className: `insight-card fp-card--${cardPosition}`,
+      className: `insight-card fp-card--${cardPosition} ${i === 1 && 'glow'}`,
       innerContent: `
         <div class="insight-card-content">
           <h3>${insightData?.title ?? ''}</h3>
