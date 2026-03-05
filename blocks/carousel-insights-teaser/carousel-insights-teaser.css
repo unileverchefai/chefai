@@ -31,7 +31,7 @@ main > .section > .carousel-insights-teaser-wrapper {
 
 .carousel-insights-teaser {
   width: 100%;
-  padding: 0 0 var(--spacing-md) var(--spacing-md);
+  padding: 0 0 64px var(--spacing-md);
   background-color: var(--light-mushroom);
 }
 
