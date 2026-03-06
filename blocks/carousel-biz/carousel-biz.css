@@ -332,13 +332,15 @@ main > .section:has(.carousel-biz-wrapper) {
 .trend-stat.stat-number {
   font-size: var(--stat-size-number-mobile);
   letter-spacing: -2px;
-  padding: 0 var(--spacing-lg);
+  padding: 0 var(--spacing-lg) 30px;
+  margin-block-end: -30px;
 }
 
 .trend-stat.stat-word {
   font-size: var(--stat-size-word-mobile);
   letter-spacing: -1.5px;
-  padding: 0 var(--spacing-lg);
+  padding: 0 var(--spacing-lg) 60px;
+  margin-block-end: -60px;
 }
 
 .trend-description {
