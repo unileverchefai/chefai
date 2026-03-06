@@ -1,0 +1,140 @@
+main > .section > .teaser-block-wrapper {
+  padding: 0;
+}
+
+.teaser-block {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    justify-content: center;
+    align-items: center;
+    padding: var(--spacing-4xl) var(--spacing-md);
+}
+
+.teaser-block h2 {
+  color: var(--text-color);
+  text-align: center;
+  font-feature-settings: 'liga' off, 'clig' off;
+  font-family: var(--ff-unilever-shilling);
+  font-size: var(--typo-h2-size-mobile);
+  font-style: normal;
+  margin: 0;
+
+  /* If I apply font-weight 600, it's too bold. Keeping it 500 for now */
+  font-weight: var(--typo-h2-weight);
+  line-height: var(--typo-h2-line);
+}
+
+.teaser-block h2+p {
+  color: var(--text-color);
+  text-align: center;
+  font-feature-settings: 'liga' off, 'clig' off;
+  font-family: var(--ff-unilever-shilling);
+  font-size: var(--typo-p1-reg-size-mobile);
+  font-style: normal;
+  font-weight: var(--typo-subheadline-weight);
+  line-height: var(--typo-p1-reg-line-mobile);
+  margin: 0;
+}
+
+.teaser-block .teaser-heading {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+    padding: 0 15px;
+}
+
+.teaser-block .media-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 358px;
+    height: 200px;
+    border-radius: 12px;
+    background: var(--light-smoke);
+}
+
+.teaser-block .button-container {
+    display: flex;
+    height: 54px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    border-radius: 99px;
+    background: linear-gradient(180deg, #0000 0%, #0003 100%), var(--orange-dark);
+    box-shadow: 0 0 0 4px #fff3;
+    max-width: 354px;
+}
+
+.teaser-block .button-container a {
+    width: 100%;
+    background: none;
+    padding: 19px 40px;
+    color: white;
+    text-align: center;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: -0.14px;
+}
+
+@media (width >= 900px) {
+    .teaser-block {
+        display: grid;
+        grid-template:
+            "media content"
+            "media button";
+        grid-template-columns: auto auto;
+        grid-template-rows: auto auto;
+        align-items: center;
+        gap: 16px 42px;
+        padding: 80px 205px;
+    }
+
+    .teaser-block .media-wrapper {
+        grid-area: media;
+        width: 500px;
+        height: 289px;
+    }
+
+    .teaser-block .teaser-heading {
+        grid-area: content;
+        align-self: end;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        justify-content: start;
+        align-items: start;
+        padding: 0;
+    }
+
+    .teaser-block .button-container {
+        grid-area: button;
+        align-self: start;
+        margin: 0;
+    }
+
+    .teaser-block h2 {
+        color: var(--text-color);
+        font-family: var(--ff-unilever-shilling);
+        font-size: var(--typo-h2-size-desktop);
+        font-style: normal;
+
+        /* Same as on mobile: Keeping it 500 for now */
+        font-weight: var(--typo-h2-weight);
+        line-height: var(--typo-h2-line-desktop);
+    }
+
+    .teaser-block h2+p {
+        color: var(--text-color);
+        font-family: var(--ff-unilever-shilling);
+        font-size: var(--body-font-size-s);
+        font-style: normal;
+        font-weight: var(--typo-p1-reg-weight);
+        line-height: var(--typo-p1-reg-line-desktop);
+        text-align: start;
+    }
+}
