@@ -1,7 +1,7 @@
 import { getMetadata, loadCSS } from '@scripts/aem.js';
 import { createElement } from '@scripts/common.js';
 import { loadReact } from '@scripts/custom/utils.js';
-import { setEndpoint } from './api/chatApi.js';
+import { setEndpoint } from '../api/chatApi.js';
 
 export default async function chatbot(block) {
   await loadCSS(`${window.hlx.codeBasePath}/helpers/chatbot/ui/chatbot.css`);
@@ -38,7 +38,7 @@ export default async function chatbot(block) {
       throw new Error('React or ReactDOM not loaded');
     }
 
-    const { default: ChatWidget } = await import('./ChatWidget.js');
+    const { default: ChatWidget } = await import('../ui/ChatWidget.js');
 
     const root = window.ReactDOM.createRoot(chatContainer);
 

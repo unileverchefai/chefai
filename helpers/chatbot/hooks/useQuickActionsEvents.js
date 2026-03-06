@@ -15,27 +15,16 @@ export default function useQuickActionsEvents(type, setMessages) {
       });
 
       if (type === 'insights') {
-        const headlineInsightMessage = {
-          _id: `headline_${Date.now()}`,
-          text: event.detail?.headlineTitle,
+        const headlineInsightMessage = buildHeadlineMessage({
+          headlineText: event.detail?.headlineTitle ?? displayText,
           createdAt: new Date(),
-          user: {
-            _id: AI_ID,
-            name: 'Chef AI',
-          },
-          metadata: {
-            isQuickActionHeadline: true,
-          },
-        };
-
+          type: 'insights',
+        });
         const insightMessage = {
-          _id: `headline_${Date.now()}`,
+          _id: `insight_${Date.now()}`,
           text: displayText,
           createdAt: new Date(),
-          user: {
-            _id: AI_ID,
-            name: 'Chef AI',
-          },
+          user: { _id: AI_ID, name: 'Chef AI' },
           metadata: {
             isQuickActionHeadline: false,
             ...(event.detail?.prompts && { suggested_prompts: event.detail.prompts }),

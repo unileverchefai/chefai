@@ -1,8 +1,8 @@
 import { getMetadata, loadCSS } from '@scripts/aem.js';
 import { createElement } from '@scripts/common.js';
 import createModal from '@helpers/modal/index.js';
-import { loadReact } from '@scripts/custom/utils.js';
-import { setEndpoint } from './api/chatApi.js';
+import { loadReact, getStoredThreadId } from '@scripts/custom/utils.js';
+import { setEndpoint } from '../api/chatApi.js';
 
 const ANIMATION_DURATION = 300;
 
@@ -20,6 +20,12 @@ const chatbotModalState = {
  */
 export default async function openChatbotModal(type) {
   if (chatbotModalState.modal && chatbotModalState.container && chatbotModalState.reactRoot) {
+    const { default: ChatWidget } = await import('../ui/ChatWidget.js');
+    const { createElement: h } = window.React;
+    const currentThreadId = getStoredThreadId();
+    chatbotModalState.reactRoot.render(
+      h(ChatWidget, { key: currentThreadId ?? type, personalizedHubTrigger: null, type }),
+    );
     chatbotModalState.modal.open();
     setTimeout(() => {
       const input = chatbotModalState.container.querySelector('.chat-input');
@@ -63,7 +69,7 @@ export default async function openChatbotModal(type) {
       throw new Error('React or ReactDOM not loaded');
     }
 
-    const { default: ChatWidget } = await import('./ChatWidget.js');
+    const { default: ChatWidget } = await import('../ui/ChatWidget.js');
     const { createElement: h } = window.React;
 
     const reactRoot = window.ReactDOM.createRoot(container);
@@ -73,8 +79,15 @@ export default async function openChatbotModal(type) {
 
     modal.open();
 
+    const initialThreadId = getStoredThreadId();
     requestAnimationFrame(() => {
-      reactRoot.render(h(ChatWidget, { personalizedHubTrigger: null, type }));
+      reactRoot.render(
+        h(ChatWidget, {
+          key: initialThreadId ?? type,
+          personalizedHubTrigger: null,
+          type,
+        }),
+      );
 
       setTimeout(() => {
         const input = container.querySelector('.chat-input');

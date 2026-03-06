@@ -1,9 +1,9 @@
 import createCarousel from '@helpers/carousel/carousel.js';
-import useChatHistory from './hooks/useChatHistory.js';
-import useStreamingChat from './hooks/useStreamingChat.js';
-import useScrollToEnd from './hooks/useScrollToEnd.js';
-import useQuickActionsEvents from './hooks/useQuickActionsEvents.js';
-import renderChatUI from './ui/ChatLayout.js';
+import useChatHistory from '../hooks/useChatHistory.js';
+import useStreamingChat from '../hooks/useStreamingChat.js';
+import useScrollToEnd from '../hooks/useScrollToEnd.js';
+import useQuickActionsEvents from '../hooks/useQuickActionsEvents.js';
+import renderChatUI from './ChatLayout.js';
 
 export default function ChatWidget({ personalizedHubTrigger = '#chatbot', type } = {}) {
   const {

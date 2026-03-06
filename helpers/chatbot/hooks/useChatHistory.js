@@ -66,26 +66,25 @@ export default function useChatHistory(type) {
 
           if (cancelled) return;
 
-          // Only update if we got new messages from API
+          // API is source of truth for this thread: replace state to avoid duplicates
+          // (same message can have different _id from streaming vs API)
           if (apiHistory && apiHistory.length > 0) {
-            setMessages((prev) => {
-              // Merge with existing messages, avoiding duplicates
-              const existingIds = new Set(prev.map((m) => m._id));
-              let newMessages = apiHistory.filter((m) => !existingIds.has(m._id));
+            setMessages(() => {
+              let list = [...apiHistory];
               const headlineText = sessionStorage
                 .getItem(`chefai-quick-action-headline-${threadId}`);
-              if (headlineText && newMessages.length > 0) {
-                const hasHeadline = newMessages
+              if (headlineText && list.length > 0) {
+                const hasHeadline = list
                   .some((m) => m.metadata?.isQuickActionHeadline);
-
-                const firstMsg = newMessages[0];
+                const firstMsg = list[0];
                 if (firstMsg && typeof firstMsg.text === 'string') {
-                  newMessages[0] = {
-                    ...firstMsg,
-                    text: firstMsg.text.replace(`**${headlineText}**`, '').trim(),
-                  };
+                  let text = firstMsg.text
+                    .replace(`**${headlineText}**`, '')
+                    .trim();
+                  const escaped = headlineText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                  text = text.replace(new RegExp(`^\\s*${escaped}\\s*\\n?`, 'i'), '').trim();
+                  list[0] = { ...firstMsg, text };
                 }
-
                 if (!hasHeadline) {
                   const firstTime = firstMsg?.createdAt
                     ? new Date(firstMsg.createdAt).getTime()
@@ -96,22 +95,18 @@ export default function useChatHistory(type) {
                     createdAt: new Date(firstTime - 1),
                     type: type === 'quick-actions' ? 'quick-actions' : 'chat',
                   });
-                  newMessages = [headlineMessage, ...newMessages];
+                  list = [headlineMessage, ...list];
                 }
               }
-
-              if (newMessages.length > 0) {
-                return [...prev, ...newMessages].sort((a, b) => {
-                  const timeA = a.createdAt instanceof Date
-                    ? a.createdAt.getTime()
-                    : new Date(a.createdAt).getTime();
-                  const timeB = b.createdAt instanceof Date
-                    ? b.createdAt.getTime()
-                    : new Date(b.createdAt).getTime();
-                  return timeA - timeB;
-                });
-              }
-              return prev;
+              return list.sort((a, b) => {
+                const timeA = a.createdAt instanceof Date
+                  ? a.createdAt.getTime()
+                  : new Date(a.createdAt).getTime();
+                const timeB = b.createdAt instanceof Date
+                  ? b.createdAt.getTime()
+                  : new Date(b.createdAt).getTime();
+                return timeA - timeB;
+              });
             });
           }
         } catch {

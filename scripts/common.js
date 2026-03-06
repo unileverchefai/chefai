@@ -1,6 +1,6 @@
 import openPersonalizedHub from '@helpers/personalized-hub/personalized-hub.js';
 import hasSavedBusinessName from '@helpers/personalized-hub/hasSavedBusinessName.js';
-import openChatbotModal from '@helpers/chatbot/openChatbotModal.js';
+import openChatbotModal from '@helpers/chatbot/view/openChatbotModal.js';
 import {
   loadCSS, loadScript, toClassName, getMetadata,
 } from './aem.js';

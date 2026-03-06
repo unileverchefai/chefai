@@ -1,9 +1,9 @@
-import formatResponse from './api/responseFormatter.js';
+import formatResponse from './responseFormatter.js';
 import {
   resolveUserId,
   resolveThreadId,
   postChatMessage,
-} from './api/chatApi.js';
+} from './chatApi.js';
 
 export default async function sendMessage(message, options = {}) {
   try {

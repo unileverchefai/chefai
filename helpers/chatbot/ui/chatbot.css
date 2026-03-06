@@ -122,6 +122,7 @@
 .message-bubble {
     contain: layout style;
     overflow-wrap: break-word;
+    font-size: var(--body-font-size-xs);
 }
 
 .message-bubble div p {
@@ -136,6 +137,14 @@
 .message-bubble div p:first-child {
     margin: 0;
     padding: 0;
+}
+
+.message-bubble .message-body-title {
+    font-family: var(--ff-unilever-shilling);
+    font-size: var(--body-font-size-m);
+    line-height: 1.4;
+    margin: 0 0 8px 0;
+    font-weight: 600;
 }
 
 .recipe-ingredients-list {

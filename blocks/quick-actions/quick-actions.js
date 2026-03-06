@@ -1,5 +1,5 @@
 import { createElement } from '@scripts/common.js';
-import openChatbotModal from '@helpers/chatbot/openChatbotModal.js';
+import openChatbotModal from '@helpers/chatbot/view/openChatbotModal.js';
 import {
   setCookie,
   getUserIdFromCookie,
@@ -32,6 +32,7 @@ async function ensureQuickActionThread(recommendationId) {
 
   const { threadId, displayText } = await createThreadWithRecommendation(userId, recommendationId);
 
+  setCookie('chef-ai-thread-id', threadId);
   sessionStorage.setItem(storageKey, JSON.stringify({
     threadId,
     displayText,
@@ -129,13 +130,10 @@ export default async function decorate(block) {
     openChatbotModal('quick-actions')
       .then(() => {
         if (result.isNew && result.displayText) {
-          // 1) Markdown -> HTML
-          const rawHtml = window.marked?.parse(result?.displayText.trim());
-          // 2) Sanitize (important if text comes from BE)
-          const safeHtml = window.DOMPurify?.sanitize(rawHtml);
+          const plainTitle = result.displayText.trim();
           setTimeout(() => {
             window.dispatchEvent(new CustomEvent('chefai:quick-action', {
-              detail: { displayText: safeHtml },
+              detail: { displayText: plainTitle },
             }));
           }, 400);
         }
