@@ -120,13 +120,12 @@ background: rgba(255, 90, 0, 0.5);
 - Use percentage for alpha values (e.g., `30%` not `.3`)
 - Use slash `/` before alpha channel
 
-## React Integration (Chatbot Block)
+## React Integration (Chatbot helpers)
 
-The chatbot block dynamically loads React 19 to avoid global bundle bloat. The AEM block loader loads `blocks/chatbot/chatbot.js`, which re-exports the helper entry. Real logic lives under `helpers/chatbot/`:
+The chatbot helpers dynamically load React to avoid global bundle bloat. Real logic lives under `helpers/chatbot/`:
 
 **Key Files:**
-- [blocks/chatbot/chatbot.js](blocks/chatbot/chatbot.js) - Thin bridge; re-exports from helpers
-- [helpers/chatbot/view/chatbot.js](chefai/helpers/chatbot/view/chatbot.js) - Inline block entry, loads React CDN
+- [helpers/chatbot/view/chatbot.js](chefai/helpers/chatbot/view/chatbot.js) - Inline entry, loads React CDN and mounts the widget
 - [helpers/chatbot/view/openChatbotModal.js](chefai/helpers/chatbot/view/openChatbotModal.js) - Modal entry
 - [helpers/chatbot/ui/ChatWidget.js](chefai/helpers/chatbot/ui/ChatWidget.js) - React widget (hooks + layout)
 - [scripts/custom/utils.js](chefai/scripts/custom/utils.js) - `loadReact()` and shared utilities

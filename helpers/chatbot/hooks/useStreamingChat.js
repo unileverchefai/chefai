@@ -3,6 +3,16 @@ import { getStoredThreadId } from '@scripts/custom/utils.js';
 import sendStreamingMessage from '../api/streamingChat.js';
 import { USER_ID, AI_ID } from '../model/messageModel.js';
 
+function scrollChatToBottom() {
+  const container = document.getElementsByClassName('chat-messages')[0];
+  if (!container) return;
+
+  container.scrollTo({
+    top: container.scrollHeight,
+    behavior: 'instant',
+  });
+}
+
 export default function useStreamingChat({
   personalizedHubTrigger,
   messages,
@@ -86,82 +96,78 @@ export default function useStreamingChat({
 
     // Ensure latest messages are visible immediately after sending.
     // Use a micro-delay so the DOM has rendered the new bubbles.
-    const container = document.getElementsByClassName('chat-messages')[0];
-    console.log(container);
-    if (container) {
-      container.scrollTo({
-        top: container.scrollHeight,
-        behavior: 'instant',
-      });
-    }
+    scrollChatToBottom();
 
     try {
       const currentThreadId = getStoredThreadId();
+
+      const onChunk = (text) => {
+        // Update the streaming message with accumulated text
+        setMessages((prev) => prev.map((msg) => (
+          msg._id === placeholderMessageId
+            ? {
+              ...msg,
+              text,
+            }
+            : msg
+        )));
+      };
+
+      const onComplete = (finalMessage) => {
+        // Replace placeholder with final message
+        setMessages((prev) => prev.map((msg) => (
+          msg._id === placeholderMessageId
+            ? {
+              ...finalMessage,
+              _id: placeholderMessageId,
+            }
+            : msg
+        )));
+        streamingMessageIdRef.current = null;
+        setIsTyping(false);
+      };
+
+      const onError = () => {
+        // Error handling is done in sendStreamingMessage fallback
+        // Just update the placeholder with error message if needed
+        setMessages((prev) => prev.map((msg) => (
+          msg._id === placeholderMessageId
+            ? {
+              ...msg,
+              text: msg.text
+                || 'Sorry, I\'m having trouble connecting right now. Please try again in a moment.',
+              isStreaming: false,
+            }
+            : msg
+        )));
+        streamingMessageIdRef.current = null;
+        setIsTyping(false);
+      };
+
+      const onMetadata = (metadata) => {
+        // Update message metadata if needed
+        setMessages((prev) => prev.map((msg) => (
+          msg._id === placeholderMessageId
+            ? {
+              ...msg,
+              metadata: {
+                ...msg.metadata,
+                ...metadata,
+              },
+            }
+            : msg
+        )));
+      };
+
       const connection = await sendStreamingMessage(messageText, {
         thread_id: currentThreadId ?? undefined,
         context: {
           messageHistory: messages.slice(-5),
         },
-        onChunk: (text) => {
-          // Update the streaming message with accumulated text
-          setMessages((prev) => {
-            const updated = prev.map((msg) => {
-              if (msg._id === placeholderMessageId) {
-                return {
-                  ...msg,
-                  text,
-                };
-              }
-              return msg;
-            });
-            return updated;
-          });
-        },
-        onComplete: (finalMessage) => {
-          // Replace placeholder with final message
-          setMessages((prev) => prev.map((msg) => {
-            if (msg._id === placeholderMessageId) {
-              return {
-                ...finalMessage,
-                _id: placeholderMessageId,
-              };
-            }
-            return msg;
-          }));
-          streamingMessageIdRef.current = null;
-          setIsTyping(false);
-        },
-        onError: () => {
-          // Error handling is done in sendStreamingMessage fallback
-          // Just update the placeholder with error message if needed
-          setMessages((prev) => prev.map((msg) => {
-            if (msg._id === placeholderMessageId) {
-              return {
-                ...msg,
-                text: msg.text || 'Sorry, I\'m having trouble connecting right now. Please try again in a moment.',
-                isStreaming: false,
-              };
-            }
-            return msg;
-          }));
-          streamingMessageIdRef.current = null;
-          setIsTyping(false);
-        },
-        onMetadata: (metadata) => {
-          // Update message metadata if needed
-          setMessages((prev) => prev.map((msg) => {
-            if (msg._id === placeholderMessageId) {
-              return {
-                ...msg,
-                metadata: {
-                  ...msg.metadata,
-                  ...metadata,
-                },
-              };
-            }
-            return msg;
-          }));
-        },
+        onChunk,
+        onComplete,
+        onError,
+        onMetadata,
       });
 
       streamingConnectionRef.current = connection;
@@ -171,16 +177,19 @@ export default function useStreamingChat({
       // Remove placeholder and add error message
       setMessages((prev) => {
         const filtered = prev.filter((msg) => msg._id !== placeholderMessageId);
-        return [...filtered, {
-          _id: Date.now().toString(),
-          text: 'Sorry, I\'m having trouble connecting right now. Please try again in a moment.',
-          createdAt: new Date(),
-          user: {
-            _id: AI_ID,
-            name: 'Chef AI',
+        return [
+          ...filtered,
+          {
+            _id: Date.now().toString(),
+            text: 'Sorry, I\'m having trouble connecting right now. Please try again in a moment.',
+            createdAt: new Date(),
+            user: {
+              _id: AI_ID,
+              name: 'Chef AI',
+            },
+            system: true,
           },
-          system: true,
-        }];
+        ];
       });
 
       streamingMessageIdRef.current = null;

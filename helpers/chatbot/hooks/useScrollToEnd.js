@@ -13,27 +13,40 @@ export default function useScrollToEnd(messages) {
     const messagesContainer = messagesEndRef.current?.closest('.chat-messages');
     if (messagesContainer) {
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    } else if (messagesEndRef.current) {
+      return;
+    }
+
+    if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: useSmooth ? 'smooth' : 'auto' });
     }
   }, []);
 
   useEffect(() => {
+    const hasMessages = messages.length > 0;
+
     if (isInitialMount.current) {
       isInitialMount.current = false;
-      if (messages.length > 0) {
-        setTimeout(() => {
-          scrollToEnd(false);
-          initialScrollDone.current = true;
-        }, 350);
-      } else {
+
+      if (!hasMessages) {
         initialScrollDone.current = true;
+        return undefined;
       }
-      return;
+
+      const timeoutId = setTimeout(() => {
+        scrollToEnd(false);
+        initialScrollDone.current = true;
+      }, 350);
+
+      return () => {
+        clearTimeout(timeoutId);
+      };
     }
-    if (initialScrollDone.current && messages.length > 0) {
+
+    if (initialScrollDone.current && hasMessages) {
       scrollToEnd(false);
     }
+
+    return undefined;
   }, [messages, scrollToEnd]);
 
   useEffect(() => {
@@ -52,17 +65,21 @@ export default function useScrollToEnd(messages) {
       if (!initialScrollHandled) {
         isScrolledToBottom = false;
         initialScrollHandled = true;
-      } else {
+      }
+
+      if (!isScrolledToBottom) {
         isScrolledToBottom = Math.abs(
           messagesContainer.scrollHeight - messagesContainer.scrollTop
           - messagesContainer.clientHeight,
         ) < 2;
       }
+
       if (isScrolledToBottom) {
         scrollButton.style.display = 'none';
-      } else {
-        scrollButton.style.display = '';
+        return;
       }
+
+      scrollButton.style.display = '';
     };
 
     messagesContainer.addEventListener('scroll', handleScroll);

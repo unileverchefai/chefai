@@ -7,7 +7,7 @@ The code is organised into clear layers so the team can quickly find API calls, 
 ### Folder structure
 
 - **`view/`** (entry points):
-  - `chatbot.js`: AEM block entry that mounts the inline chatbot, loads `ui/chatbot.css`, resolves the endpoint via `getMetadata`, and lazy‑loads `ChatWidget`. The block is loaded via `blocks/chatbot/chatbot.js`, which imports this and exports it as default.
+  - `chatbot.js`: Inline chatbot entry that mounts the widget into authored content, loads `ui/chatbot.css`, resolves the endpoint via `getMetadata`, and lazy‑loads `ChatWidget`. This is used via helpers/imports, not as a standalone AEM block anymore.
   - `openChatbotModal.js`: Opens the ChefAI chatbot in a modal. Uses a singleton modal and React root; when closed with `keepInDomOnClose`, the overlay is hidden (not removed) so reopening reuses the same DOM and keeps images cached. Re‑render uses `key={getStoredThreadId() ?? type}` so switching threads gets a fresh widget. Import from `@helpers/chatbot/view/openChatbotModal.js` or `@helpers/chatbot`.
 - **`api/`**:
   - `chatApi.js`: Endpoint selection (`setEndpoint` / `getEndpoint`), user/thread resolution, and `postChatMessage` with timeout support.
@@ -124,5 +124,5 @@ flowchart TD
   uiRender --> useScrollToEndHook[hooks/useScrollToEnd scroll]
 ```
 
-Messages from the backend (including recipes, recipe_details, products, images, and suggested prompts) are normalised in `responseFormatter.js` and attached as `metadata` on each `ChatMessage`. The UI reads only from this model and runs text content through `formatMessageText`, ensuring any HTML is generated from markdown and sanitised with `DOMPurify` before being injected into the DOM. Images in `MessageBubble` use `ui/skeleton/ImageSkeleton` as a placeholder until loaded. The modal opened via `openChatbotModal` (from `view/openChatbotModal.js`) keeps the overlay in the DOM on close (see `@helpers/modal/caching.js`) so that reopening reuses the same content and avoids reloading images. The inline chatbot block is loaded by AEM from `blocks/chatbot/chatbot.js`, which imports `view/chatbot.js` and exports it as default.
+Messages from the backend (including recipes, recipe_details, products, images, and suggested prompts) are normalised in `responseFormatter.js` and attached as `metadata` on each `ChatMessage`. The UI reads only from this model and runs text content through `formatMessageText`, ensuring any HTML is generated from markdown and sanitised with `DOMPurify` before being injected into the DOM. Images in `MessageBubble` use `ui/skeleton/ImageSkeleton` as a placeholder until loaded. The modal opened via `openChatbotModal` (from `view/openChatbotModal.js`) keeps the overlay in the DOM on close (see `@helpers/modal/caching.js`) so that reopening reuses the same content and avoids reloading images.
 
