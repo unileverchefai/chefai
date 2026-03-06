@@ -120,14 +120,15 @@ background: rgba(255, 90, 0, 0.5);
 - Use percentage for alpha values (e.g., `30%` not `.3`)
 - Use slash `/` before alpha channel
 
-## React Integration (Chatbot Block)
+## React Integration (Chatbot helpers)
 
-The chatbot block dynamically loads React 19 to avoid global bundle bloat:
+The chatbot helpers dynamically load React to avoid global bundle bloat. Real logic lives under `helpers/chatbot/`:
 
 **Key Files:**
-- [blocks/chatbot/chatbot.js](blocks/chatbot/chatbot.js) - Entry point, loads React CDN
-- [blocks/chatbot/ChatWidget.js](blocks/chatbot/ChatWidget.js) - React functional component
-- [blocks/chatbot/utils.js](blocks/chatbot/utils.js) - Session storage helpers
+- [helpers/chatbot/view/chatbot.js](chefai/helpers/chatbot/view/chatbot.js) - Inline entry, loads React CDN and mounts the widget
+- [helpers/chatbot/view/openChatbotModal.js](chefai/helpers/chatbot/view/openChatbotModal.js) - Modal entry
+- [helpers/chatbot/ui/ChatWidget.js](chefai/helpers/chatbot/ui/ChatWidget.js) - React widget (hooks + layout)
+- [scripts/custom/utils.js](chefai/scripts/custom/utils.js) - `loadReact()` and shared utilities
 
 **Pattern:**
 ```javascript
@@ -146,12 +147,12 @@ root.render(window.React.createElement(ChatWidget));
 
 **Chatbot API Configuration:**
 - Base URL: `https://api-hub-we.azure-api.net/chefaibe/st/api/v1`
-- Subscription key stored in [blocks/chatbot/constants/api.js](blocks/chatbot/constants/api.js)
 - Endpoint selection via metadata: `<meta name="chatbot-endpoint" content="capgemini">`
+- API helpers: [helpers/chatbot/api/chatApi.js](chefai/helpers/chatbot/api/chatApi.js) (`setEndpoint`, `postChatMessage`, etc.)
 
 **Request Pattern:**
 ```javascript
-import sendMessage from './sendMessage.js';
+import sendMessage from '@helpers/chatbot/api/sendMessage.js';
 
 const response = await sendMessage(userMessage, {
   user_id: 'user123',
@@ -228,7 +229,7 @@ This enables content reuse without manual block authoring.
 - **Block loading:** [scripts/scripts.js](scripts/scripts.js#L60-L80)
 - **Core utilities:** [scripts/aem.js](scripts/aem.js) (721 lines of helpers)
 - **Design tokens:** [styles/styles.css](styles/styles.css#L13-L50)
-- **React loader:** [blocks/chatbot/utils.js](blocks/chatbot/utils.js)
+- **React loader:** [scripts/custom/utils.js](chefai/scripts/custom/utils.js) (`loadReact()`); chatbot entry: [helpers/chatbot/view/chatbot.js](chefai/helpers/chatbot/view/chatbot.js)
 - **Video utilities:** [scripts/common.js](scripts/common.js)
 
 ## Project Context

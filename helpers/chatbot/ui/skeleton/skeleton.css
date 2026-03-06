@@ -1,0 +1,50 @@
+/* Image skeleton placeholder (default 200×115) */
+.image-skeleton-wrapper {
+  position: relative;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.image-skeleton {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base, #e8e8e8) 0%,
+    var(--skeleton-highlight, #f0f0f0) 50%,
+    var(--skeleton-base, #e8e8e8) 100%
+  );
+  background-size: 200% 100%;
+  animation: image-skeleton-shimmer 1.2s ease-in-out infinite;
+}
+
+.image-skeleton-wrapper.is-loaded .image-skeleton {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.image-skeleton-wrapper .image-skeleton-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.image-skeleton-wrapper.is-loaded .image-skeleton-img {
+  opacity: 1;
+}
+
+@keyframes image-skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

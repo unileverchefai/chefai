@@ -1,7 +1,7 @@
 import { createElement } from '@scripts/common.js';
 import createCarousel from '@helpers/carousel/carousel.js';
 import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
-import openChatbotModal from '@helpers/chatbot/openChatbotModal.js';
+import openChatbotModal from '@helpers/chatbot/view/openChatbotModal.js';
 import {
   setCookie,
   getUserIdFromCookie,
@@ -9,6 +9,7 @@ import {
   getAnonymousUserId,
   createThreadWithRecommendation,
   loadThreadMessages,
+  getHistoryWithFallback,
   loadMarkedPurify,
 } from '@scripts/custom/utils.js';
 
@@ -166,25 +167,29 @@ export default async function decorate(block) {
       console.error('Failed to prepare insights thread:', error);
     }
 
-    const messageInsight = await loadThreadMessages(result.threadId);
+    // For existing threads, preload history into cache so the widget shows messages
+    if (!result.isNew && result.threadId) {
+      await getHistoryWithFallback(result.threadId);
+    }
 
     openChatbotModal('insights')
-      .then(() => {
-        if (messageInsight && messageInsight.length > 0) {
-          // 1) Markdown -> HTML
-          const rawHtml = window.marked?.parse(messageInsight[0]?.text.replace(`**${item.title}**`, '').trim());
-          // 2) Sanitize (important if text comes from BE)
-          const sanHtml = window.DOMPurify?.sanitize(rawHtml);
-          setTimeout(() => {
-            window.dispatchEvent(new CustomEvent('chefai:insights', {
-              detail: {
-                headlineTitle: item.title,
-                displayText: sanHtml,
-                prompts: messageInsight[0].metadata?.suggested_prompts ?? [],
-              },
-            }));
-          }, 400);
-        }
+      .then(async () => {
+        if (!result.isNew) return;
+        const messageInsight = await loadThreadMessages(result.threadId);
+        if (!messageInsight?.length) return;
+        const rawHtml = window.marked?.parse(
+          messageInsight[0]?.text.replace(`**${item.title}**`, '').trim(),
+        );
+        const sanHtml = window.DOMPurify?.sanitize(rawHtml);
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent('chefai:insights', {
+            detail: {
+              headlineTitle: item.title,
+              displayText: sanHtml,
+              prompts: messageInsight[0].metadata?.suggested_prompts ?? [],
+            },
+          }));
+        }, 400);
       })
       .catch((error) => {
         // eslint-disable-next-line no-console
@@ -204,10 +209,6 @@ export default async function decorate(block) {
 
       items.forEach((item, index) => {
         list.appendChild(renderCard(item, index, handleCardActivate));
-      });
-
-      items.forEach((item, index) => {
-        list.appendChild(renderCard(item, index));
       });
 
       initializeCarousel(block, list, items.length);

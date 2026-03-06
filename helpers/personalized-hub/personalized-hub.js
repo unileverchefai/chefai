@@ -1,7 +1,7 @@
 import {
   loadReact, getCookieId, getUserIdFromCookie, getPlaceholderText,
 } from '@scripts/custom/utils.js';
-import sendStreamingMessage from '@helpers/chatbot/sendStreamingMessage.js';
+import sendStreamingMessage from '@helpers/chatbot/api/streamingChat.js';
 import { createElement, VALIDATIONS_PLACEHOLDERS } from '@scripts/common.js';
 import { loadCSS } from '@scripts/aem.js';
 import createModal from '@helpers/modal/index.js';

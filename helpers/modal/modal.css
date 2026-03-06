@@ -97,10 +97,10 @@
   }
 
   .modal-handle {
-    display: block;
+    display: none;
   }
 
   .modal-close {
-    display: none;
+    display: flex;
   }
 }

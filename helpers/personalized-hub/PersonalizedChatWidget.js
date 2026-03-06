@@ -1,6 +1,6 @@
-import sendMessage from '../chatbot/sendMessage.js';
-import sendStreamingMessage from '../chatbot/sendStreamingMessage.js';
-import renderMessage from '../chatbot/renderMessage.js';
+import sendMessage from '../chatbot/api/sendMessage.js';
+import sendStreamingMessage from '../chatbot/api/streamingChat.js';
+import renderMessage from '../chatbot/ui/MessageBubble.js';
 import ChatInput from '../chatInput/ChatInput.js';
 
 const USER_ID = 1;
