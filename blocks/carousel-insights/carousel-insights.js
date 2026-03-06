@@ -9,6 +9,7 @@ import {
   getAnonymousUserId,
   createThreadWithRecommendation,
   loadThreadMessages,
+  getHistoryWithFallback,
   loadMarkedPurify,
 } from '@scripts/custom/utils.js';
 
@@ -164,6 +165,11 @@ export default async function decorate(block) {
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Failed to prepare insights thread:', error);
+    }
+
+    // For existing threads, preload history into cache so the widget shows messages
+    if (!result.isNew && result.threadId) {
+        await getHistoryWithFallback(result.threadId);
     }
 
     openChatbotModal('insights')
