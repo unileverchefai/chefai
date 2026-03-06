@@ -143,6 +143,10 @@ main > .section:has(.carousel-biz-wrapper) {
   margin: 0;
   padding: 0;
   transition: transform var(--transition-base);
+
+  .section& {
+    flex-direction: column;
+  }
 }
 
 /* Loading state animations */
@@ -622,6 +626,10 @@ a.trend-cta {
   .carousel-biz-container {
     flex-wrap: wrap;
     justify-content: center;
+
+    .section& {
+      flex-direction: row;
+    }
   }
 
   .trend-card {
