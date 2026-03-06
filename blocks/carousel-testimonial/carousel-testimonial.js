@@ -252,6 +252,15 @@ export default function decorate(block) {
     }
   });
 
+  const MIN_ITEMS = 3;
+  if (items.length < MIN_ITEMS) {
+    // eslint-disable-next-line no-console
+    console.error(`carousel-testimonial: requires at least ${MIN_ITEMS} items to render, but only ${items.length} valid item(s) were found.`);
+    block.innerHTML = '';
+    block.hidden = true;
+    return;
+  }
+
   block.innerHTML = '';
   block.appendChild(carouselContainer);
 

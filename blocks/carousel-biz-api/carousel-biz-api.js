@@ -1,5 +1,5 @@
 import createCarousel from '@helpers/carousel/carousel.js';
-import openChatbotModal from '@helpers/chatbot/openChatbotModal.js';
+import openChatbotModal from '@helpers/chatbot/view/openChatbotModal.js';
 import { decorateIcons } from '@scripts/aem.js';
 import { createElement } from '@scripts/common.js';
 import {

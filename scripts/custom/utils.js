@@ -1,6 +1,6 @@
 import { SUBSCRIPTION_KEY, ENDPOINTS } from '@api/endpoints.js';
 import { getCountry, getLang } from '@scripts/custom/locale.js';
-import formatResponse from '@helpers/chatbot/responseHandler.js';
+import formatResponse from '@helpers/chatbot/api/responseFormatter.js';
 import { hasToken } from '@auth/tokenManager.js';
 
 const countryCode = getCountry();

@@ -1,4 +1,4 @@
-import openChatbotModal from '@helpers/chatbot/openChatbotModal.js';
+import openChatbotModal from '@helpers/chatbot/view/openChatbotModal.js';
 import { createElement } from '@scripts/common.js';
 import {
   setCookie,

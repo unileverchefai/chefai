@@ -1,5 +1,5 @@
 /**
- * Reusable component for displaying suggested prompts/quick questions.
+* Reusable component for displaying suggested prompts/quick questions.
  * Uses the same design as the personalized hub predefined questions.
  *
  * @param {Object} props

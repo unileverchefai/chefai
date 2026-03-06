@@ -1,5 +1,6 @@
 import { createElement } from '@scripts/common.js';
 import { loadCSS } from '@scripts/aem.js';
+import performKeepInDomClose from './caching.js';
 
 /**
  * Creates a generic, reusable modal component
@@ -14,6 +15,8 @@ import { loadCSS } from '@scripts/aem.js';
  * @param {string} [options.closeButtonClass='modal-close'] - CSS class for the close button
  * @param {Function} [options.onClose] - Callback function called when modal closes
  * @param {Function} [options.onOpen] - Callback function called when modal opens
+ * @param {boolean} [options.keepInDomOnClose=false] - When true, close hides the overlay instead of
+ * removing it and does not call onClose; next open() reuses the same overlay
  * @param {HTMLElement} [options.customCloseButton] - Custom close button element
  * @param {string} [options.closeButtonLabel='Close'] - Aria label for close button
  * @param {string} [options.closeButtonText='×'] - Text content for close button
@@ -38,6 +41,7 @@ export default function createModal(options = {}) {
     closeButtonClass = 'modal-close',
     onClose,
     onOpen,
+    keepInDomOnClose = false,
     customCloseButton,
     closeButtonLabel = 'Close',
     overlayBackground,
@@ -231,35 +235,49 @@ export default function createModal(options = {}) {
     }
 
     setTimeout(() => {
-      if (modalOverlay && modalOverlay.parentNode) {
-        document.body.removeChild(modalOverlay);
-      }
-      document.body.style.overflow = '';
-      isOpen = false;
-      isAnimating = false;
-
-      if (escapeHandler) {
-        document.removeEventListener('keydown', escapeHandler);
-        escapeHandler = null;
-      }
-
-      if (focusTrapHandler) {
-        document.removeEventListener('keydown', focusTrapHandler);
-        focusTrapHandler = null;
-      }
-
-      // Restore focus to the element that opened the modal
-      if (previousActiveElement && typeof previousActiveElement.focus === 'function') {
-        try {
-          previousActiveElement.focus();
-        } catch (err) {
-          // Element might not be focusable anymore, ignore
+      if (keepInDomOnClose && modalOverlay) {
+        performKeepInDomClose(modalOverlay, {
+          removeListeners: () => {
+            if (escapeHandler) {
+              document.removeEventListener('keydown', escapeHandler);
+              escapeHandler = null;
+            }
+            if (focusTrapHandler) {
+              document.removeEventListener('keydown', focusTrapHandler);
+              focusTrapHandler = null;
+            }
+          },
+          previousActiveElement,
+        });
+        isOpen = false;
+        isAnimating = false;
+        previousActiveElement = null;
+      } else {
+        if (modalOverlay && modalOverlay.parentNode) {
+          document.body.removeChild(modalOverlay);
         }
-      }
-      previousActiveElement = null;
-
-      if (onClose) {
-        onClose();
+        document.body.style.overflow = '';
+        isOpen = false;
+        isAnimating = false;
+        if (escapeHandler) {
+          document.removeEventListener('keydown', escapeHandler);
+          escapeHandler = null;
+        }
+        if (focusTrapHandler) {
+          document.removeEventListener('keydown', focusTrapHandler);
+          focusTrapHandler = null;
+        }
+        if (previousActiveElement && typeof previousActiveElement.focus === 'function') {
+          try {
+            previousActiveElement.focus();
+          } catch (err) {
+            // Element might not be focusable anymore, ignore
+          }
+        }
+        previousActiveElement = null;
+        if (onClose) {
+          onClose();
+        }
       }
     }, animationDuration);
   }
@@ -375,6 +393,37 @@ export default function createModal(options = {}) {
    */
   function open() {
     if (isOpen || isAnimating) return;
+
+    // Reopen: overlay already in DOM but hidden (keepInDomOnClose)
+    if (keepInDomOnClose && modalOverlay && modalOverlay.parentNode === document.body) {
+      modalOverlay.style.display = '';
+      document.body.style.overflow = 'hidden';
+      setupEventListeners();
+      setupSwipeToClose();
+      previousActiveElement = document.activeElement;
+      modalOverlay.classList.add('visible');
+      isOpen = true;
+      setTimeout(() => {
+        const focusableElements = getFocusableElements();
+        if (focusableElements.length > 0) {
+          const firstInput = focusableElements.find((el) => el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT');
+          if (firstInput) {
+            firstInput.focus();
+          } else {
+            const firstElement = focusableElements.find((el) => el !== closeButton)
+            ?? focusableElements[0];
+            firstElement.focus();
+          }
+        } else if (modalContent) {
+          modalContent.setAttribute('tabindex', '-1');
+          modalContent.focus();
+        }
+      }, animationDuration);
+      if (onOpen) {
+        onOpen();
+      }
+      return;
+    }
 
     // Load modal CSS if not already loaded
     loadCSS(`${window.hlx.codeBasePath}/helpers/modal/modal.css`).catch(() => {
