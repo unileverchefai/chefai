@@ -12,6 +12,13 @@ const chatbotModalState = {
   reactRoot: null,
 };
 
+function scrollModalChatToBottom(container) {
+  if (!container) return;
+  const messagesContainer = container.querySelector('.chat-messages');
+  if (!messagesContainer) return;
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
 /**
  * Opens the Chef AI chatbot in a modal.
  * Keeps the modal and React root in the DOM when closed so that reopening reuses the same content.
@@ -32,6 +39,7 @@ export default async function openChatbotModal(type) {
       if (input && typeof input.focus === 'function') {
         input.focus();
       }
+      scrollModalChatToBottom(chatbotModalState.container);
     }, ANIMATION_DURATION + 50);
     return;
   }
@@ -94,6 +102,7 @@ export default async function openChatbotModal(type) {
         if (input && typeof input.focus === 'function') {
           input.focus();
         }
+        scrollModalChatToBottom(container);
       }, ANIMATION_DURATION + 50);
     });
   } catch (error) {

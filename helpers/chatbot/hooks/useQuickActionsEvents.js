@@ -31,6 +31,12 @@ export default function useQuickActionsEvents(type, setMessages) {
           },
         };
         setMessages((prev) => [headlineInsightMessage, insightMessage, ...prev]);
+      } else if (type === 'quick-actions') {
+        setMessages((prev) => {
+          const hasHeadline = prev.some((m) => m.metadata?.isQuickActionHeadline);
+          if (hasHeadline) return prev;
+          return [headlineMessage, ...prev];
+        });
       } else {
         setMessages((prev) => [headlineMessage, ...prev]);
       }

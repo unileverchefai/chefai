@@ -21,8 +21,11 @@ export default function useChatHistory(type) {
   const cachedHistory = getHistory(storedThreadId);
   const [messages, setMessages] = useState(cachedHistory.length > 0 ? cachedHistory : []);
 
-  // For all types: when cache is empty for current thread, load from API (cache is single-slot)
   useEffect(() => {
+    if (type === 'insights') {
+      return undefined;
+    }
+
     let cancelled = false;
     let initialized = false;
 
@@ -33,33 +36,27 @@ export default function useChatHistory(type) {
       try {
         let threadId;
 
-        if (type === 'insights') {
+        const cookieUserId = getUserIdFromCookie();
+        let userId = cookieUserId;
+        if (!userId) {
+          userId = await getAnonymousUserId();
+        }
+
+        if (type === 'quick-actions') {
           threadId = getStoredThreadId();
           if (!threadId) return;
-          if (messages.length > 0) return; // cache hit, no need to load
         } else {
-          const cookieUserId = getUserIdFromCookie();
-          let userId = cookieUserId;
-          if (!userId) {
-            userId = await getAnonymousUserId();
-          }
-
-          if (type === 'quick-actions') {
-            threadId = getStoredThreadId();
-            if (!threadId) return;
+          threadId = getStoredThreadId();
+          if (!threadId) {
+            threadId = await getOrCreateThreadId(userId, true);
           } else {
-            threadId = getStoredThreadId();
-            if (!threadId) {
-              threadId = await getOrCreateThreadId(userId, true);
-            } else {
-              const isValid = await validateThread(threadId);
-              if (!isValid) {
-                threadId = await createThread(userId);
-                sessionStorage.setItem('chefai-main-chat-thread', JSON.stringify({
-                  threadId,
-                  initialized: true,
-                }));
-              }
+            const isValid = await validateThread(threadId);
+            if (!isValid) {
+              threadId = await createThread(userId);
+              sessionStorage.setItem('chefai-main-chat-thread', JSON.stringify({
+                threadId,
+                initialized: true,
+              }));
             }
           }
         }
@@ -71,11 +68,6 @@ export default function useChatHistory(type) {
         if (cancelled) return;
 
         if (!apiHistory?.length) return;
-
-        if (type === 'insights') {
-          setMessages(apiHistory);
-          return;
-        }
 
         setMessages(() => {
           let list = [...apiHistory];
