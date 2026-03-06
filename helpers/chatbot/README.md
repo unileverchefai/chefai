@@ -7,8 +7,8 @@ The code is organised into clear layers so the team can quickly find API calls, 
 ### Folder structure
 
 - **`view/`** (entry points):
-  - `chatbot.js`: AEM block entry that mounts the inline chatbot, loads `ui/chatbot.css`, resolves the endpoint via `getMetadata`, and lazy‑loads `ChatWidget`. The block loader loads `blocks/chatbot/chatbot.js`, which re‑exports this.
-  - `openChatbotModal.js`: Opens the ChefAI chatbot in a modal. Uses a singleton modal and React root; when closed with `keepInDomOnClose`, the overlay is hidden (not removed) so reopening reuses the same DOM and keeps images cached. Import from `@helpers/chatbot/view/openChatbotModal.js` or `@helpers/chatbot`.
+  - `chatbot.js`: AEM block entry that mounts the inline chatbot, loads `ui/chatbot.css`, resolves the endpoint via `getMetadata`, and lazy‑loads `ChatWidget`. The block is loaded via `blocks/chatbot/chatbot.js`, which imports this and exports it as default.
+  - `openChatbotModal.js`: Opens the ChefAI chatbot in a modal. Uses a singleton modal and React root; when closed with `keepInDomOnClose`, the overlay is hidden (not removed) so reopening reuses the same DOM and keeps images cached. Re‑render uses `key={getStoredThreadId() ?? type}` so switching threads gets a fresh widget. Import from `@helpers/chatbot/view/openChatbotModal.js` or `@helpers/chatbot`.
 - **`api/`**:
   - `chatApi.js`: Endpoint selection (`setEndpoint` / `getEndpoint`), user/thread resolution, and `postChatMessage` with timeout support.
   - `streamingChat.js`: High‑level SSE orchestration (`sendStreamingMessage`) that combines `chatApi`, `sseStream`, and `responseFormatter`.
@@ -17,17 +17,17 @@ The code is organised into clear layers so the team can quickly find API calls, 
   - `responseFormatter.js`: Maps raw API responses into internal `ChatMessage` objects and collects images, recipes, products, and suggested prompts into `metadata`.
   - `createChefAIUser.js`: Helper for creating ChefAI users from other parts of the site.
 - **`hooks/`**:
-  - `useChatHistory.js`: Loads cached and remote history, validates/creates threads, merges quick‑action headlines, and persists chat history.
+  - `useChatHistory.js`: Unified history for all types (`insights`, `quick-actions`, main chat). Uses a single-slot sessionStorage cache; when cache is empty or for a different thread, loads from API via `getHistoryWithFallback`. Validates/creates threads for main chat, merges quick‑action headlines, and persists history on change.
   - `useStreamingChat.js`: Manages message sending, SSE connection lifecycle, placeholder AI message, errors, and personalised‑hub trigger behaviour.
   - `useScrollToEnd.js`: Keeps the chat scrolled to the most recent message and controls the mobile “scroll to bottom” button.
   - `useQuickActionsEvents.js`: Listens for `chefai:quick-action` and `chefai:insights` events and injects headline messages using the shared message model.
 - **`ui/`**:
   - `ChatWidget.js`: Main widget composition; wires hooks (`useChatHistory`, `useStreamingChat`, `useScrollToEnd`, `useQuickActionsEvents`) and passes data to the layout.
   - `ChatLayout.js`: Stateless layout built with `window.React.createElement`; renders the message list, `ChatInput`, error banner, and scroll button.
-  - `MessageBubble.js`: Message renderer responsible for text, images, recipes and recipe details, in‑message product carousel, timestamps, and suggested prompts. Uses `messageFormatter.js` for link conversion, recipe section/details rendering, and shared carousel card rendering.
-  - `messageFormatter.js`: Pure helpers used by `MessageBubble` (e.g. `convertLinksToClickable`, `renderRecipesSection`, `renderRecipeDetails`, `renderCarouselCard`, `getItemDisplayTitle`). No React state or hooks.
+  - `MessageBubble.js`: Message renderer responsible for text, images, recipes and recipe details, in‑message product carousel, timestamps, and suggested prompts. Uses `messageFormatter.js` for link conversion, recipe section/details rendering, and shared carousel card rendering. Renders the first bold paragraph in message body as an h2 (`.message-body-title`).
+  - `messageFormatter.js`: Pure helpers used by `MessageBubble`: `bubbleStyles`, `promoteFirstBoldParagraphToH2`, `renderHeadline`, `renderBodyText`, `getItemDisplayTitle`, `getRecipeDetailTitle`, `convertLinksToClickable`, `renderRecipesSection`, `renderRecipeDetails`, `renderCarouselCard`. No React state or hooks.
   - `SuggestedPrompts.js`: Reusable chip list of suggested prompts.
-  - `chatbot.css`: All visual styling for the inline and modal chatbot, including message bubbles and in‑message carousels (imports `skeleton/skeleton.css`).
+  - `chatbot.css`: All visual styling for the inline and modal chatbot, including message bubbles and in‑message carousels (imports `carousel/carousel.css` and `skeleton/skeleton.css`). Chatbot carousels show navigation arrows on all viewports; on mobile, controls stack (indicators above, arrows below) to avoid overlap.
   - `skeleton/`: Image loading placeholders used inside `MessageBubble` (recipe/product cards, metadata images):
     - `ImageSkeleton.js`: Placeholder component (e.g. 200×115) that hides once the image has loaded.
     - `skeleton.css`: Styles for the skeleton shimmer and wrapper.
@@ -124,5 +124,5 @@ flowchart TD
   uiRender --> useScrollToEndHook[hooks/useScrollToEnd scroll]
 ```
 
-Messages from the backend (including recipes, recipe_details, products, images, and suggested prompts) are normalised in `responseFormatter.js` and attached as `metadata` on each `ChatMessage`. The UI reads only from this model and runs text content through `formatMessageText`, ensuring any HTML is generated from markdown and sanitised with `DOMPurify` before being injected into the DOM. Images in `MessageBubble` use `ui/skeleton/ImageSkeleton` as a placeholder until loaded. The modal opened via `openChatbotModal` (from `view/openChatbotModal.js`) keeps the overlay in the DOM on close (see `@helpers/modal/caching.js`) so that reopening reuses the same content and avoids reloading images. The inline chatbot block is loaded by AEM from `blocks/chatbot/chatbot.js`, which re‑exports `view/chatbot.js`.
+Messages from the backend (including recipes, recipe_details, products, images, and suggested prompts) are normalised in `responseFormatter.js` and attached as `metadata` on each `ChatMessage`. The UI reads only from this model and runs text content through `formatMessageText`, ensuring any HTML is generated from markdown and sanitised with `DOMPurify` before being injected into the DOM. Images in `MessageBubble` use `ui/skeleton/ImageSkeleton` as a placeholder until loaded. The modal opened via `openChatbotModal` (from `view/openChatbotModal.js`) keeps the overlay in the DOM on close (see `@helpers/modal/caching.js`) so that reopening reuses the same content and avoids reloading images. The inline chatbot block is loaded by AEM from `blocks/chatbot/chatbot.js`, which imports `view/chatbot.js` and exports it as default.
 

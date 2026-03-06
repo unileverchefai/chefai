@@ -169,7 +169,7 @@ export default async function decorate(block) {
 
     // For existing threads, preload history into cache so the widget shows messages
     if (!result.isNew && result.threadId) {
-        await getHistoryWithFallback(result.threadId);
+      await getHistoryWithFallback(result.threadId);
     }
 
     openChatbotModal('insights')

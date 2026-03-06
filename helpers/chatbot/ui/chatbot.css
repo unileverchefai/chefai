@@ -64,6 +64,24 @@
     position: relative;
 }
 
+.chatbot-carousel.carousel-base .arrows {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.carousel-base .arrow {
+    width: 30px;
+    height: 30px;
+}
+
+.carousel-base .indicator {
+    display: none;
+}
+
+.chatbot-carousel.carousel-base .controls  {
+    gap: var(--spacing-2xl);
+}
+
 @media (width < 900px) {
     .chatbot-modal-scroll-button {
         height: 44px;
@@ -82,8 +100,9 @@
         cursor: pointer;
     }
 
-    .chatbot-carousel.carousel-base .arrows {
-        display: flex;
+    .chatbot-carousel.carousel-base .controls {
+        flex-direction: column;
+        gap: var(--spacing-sm);
     }
 }
 
