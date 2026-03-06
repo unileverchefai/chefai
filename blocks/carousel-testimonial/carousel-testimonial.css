@@ -14,13 +14,11 @@ main > .section > .carousel-testimonial-wrapper {
   overflow: hidden;
 }
 
-.carousel-testimonial.var-1,
-.carousel-testimonial.light-mushroom {
+.carousel-testimonial.grey {
   background: var(--light-mushroom);
 }
 
-.carousel-testimonial.var-2,
-.carousel-testimonial.squid-ink {
+.carousel-testimonial.dark {
   background: var(--squid-ink);
 }
 
@@ -311,29 +309,25 @@ main > .section > .carousel-testimonial-wrapper {
   outline-offset: 2px;
 }
 
-.carousel-testimonial.var-2 .arrow,
+.carousel-testimonial.dark .arrow,
 .carousel-testimonial.squid-ink .arrow {
   background: transparent;
   border-color: rgb(255 255 255 / 30%);
 }
 
-.carousel-testimonial.var-2 .arrow svg,
-.carousel-testimonial.squid-ink .arrow svg {
+.carousel-testimonial.dark .arrow svg {
   fill: var(--c-white);
 }
 
-.carousel-testimonial.var-2 .arrow:hover,
-.carousel-testimonial.squid-ink .arrow:hover {
+.carousel-testimonial.dark .arrow:hover{
   border-color: var(--ufs-orange);
 }
 
-.carousel-testimonial.var-2 .indicator,
-.carousel-testimonial.squid-ink .indicator {
+.carousel-testimonial.dark .indicator{
   background-color: rgb(255 255 255 / 30%);
 }
 
-.carousel-testimonial.var-2 .indicator.active,
-.carousel-testimonial.squid-ink .indicator.active {
+.carousel-testimonial.dark .indicator.active {
   background-color: var(--ufs-orange);
 }
 
