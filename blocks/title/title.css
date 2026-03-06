@@ -8,21 +8,38 @@ main > .section > .title-wrapper {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 40px 16px 24px;
-}  
+  padding: var(--spacing-2xl) var(--spacing-md) var(--spacing-lg);
+}
+
+.title.grey,
+.title.light-mushroom {
+  background: var(--light-mushroom);
+}
+
+.title.dark,
+.title.squid-ink {
+  background: var(--squid-ink);
+}
 
 .title h2 {
   color: var(--text-color);
   text-align: center;
   font-feature-settings: 'liga' off, 'clig' off;
   font-family: var(--ff-unilever-shilling);
-  font-size: var(--heading-font-size-s);
+  font-size: var(--typo-h2-size-mobile);
   font-style: normal;
+  margin: 0;
 
   /* If I apply font-weight 600, it's too bold. Keeping it 500 for now */
-  font-weight: 500;
-  line-height: 25px;
+  font-weight: var(--typo-h2-weight);
+  line-height: var(--typo-h2-line);
 }
+
+.title.dark h2,
+.title.squid-ink h2 {
+  color: var(--c-white);
+}
+
 
   .title h2 .subtitle {
   display: block;
@@ -31,11 +48,11 @@ main > .section > .title-wrapper {
   text-align: center;
   font-feature-settings: 'liga' off, 'clig' off;
   font-family: var(--ff-chefs-hand);
-  font-size: var(--heading-font-size-l);
+  font-size: var(--typo-ch-h2-size-mobile);
   font-style: normal;
-  font-weight: 400;
-  line-height: 25px;
-  letter-spacing: -0.3px;
+  font-weight: var(--typo-ch-h2-weight);
+  line-height: var(--typo-ch-h2-line-mobile);
+  letter-spacing: var(--typo-ch-h2-tracking);
 }
 
 .title p {
@@ -43,39 +60,45 @@ main > .section > .title-wrapper {
   text-align: center;
   font-feature-settings: 'liga' off, 'clig' off;
   font-family: var(--ff-unilever-shilling);
-  font-size: var(--body-font-size-xss);
+  font-size: var(--typo-p1-reg-size-mobile);
   font-style: normal;
-  font-weight: 400;
-  line-height: 22px;
+  font-weight: var(--typo-subheadline-weight);
+  line-height: var(--typo-p1-reg-line-mobile);
   margin: 0;
 }
 
-@media (width >= 900px) { 
+.title.dark p,
+.title.squid-ink p {
+  color: var(--c-white);
+}
+
+
+@media (width >= 900px) {
   .title {
-    max-width: 1440px;
+    max-width: none;
     margin: 0 auto;
-    padding: 64px 100px;
-    gap: 16px;
+    padding: 64px 100px 32px;
+    gap: var(--spacing-md);
   }
 
   .title h2 {
     color: var(--text-color);
     font-family: var(--ff-unilever-shilling);
-    font-size: 25px;
+    font-size: var(--typo-h2-size-desktop);
     font-style: normal;
-    
+
       /* Same as on mobile: Keeping it 500 for now */
-    font-weight: 500;
-    line-height: 32px; 
+    font-weight: var(--typo-h2-weight);
+    line-height: var(--typo-h2-line-desktop);
   }
 
   .title h2 .subtitle {
     color: var(--ufs-orange);
     font-family: var(--ff-chefs-hand);
-    font-size: 42px;
+    font-size: var(--typo-ch-h2-size-desktop);
     font-style: normal;
-    font-weight: 400;
-    line-height: 32px;
+    font-weight: var(--typo-ch-h2-weight);
+    line-height: var(--typo-ch-h2-line-desktop);
     letter-spacing: -0.3px;
   }
 
@@ -84,7 +107,7 @@ main > .section > .title-wrapper {
     font-family: var(--ff-unilever-shilling);
     font-size: var(--body-font-size-s);
     font-style: normal;
-    font-weight: 400;
-    line-height: 24px;
+    font-weight: var(--typo-p1-reg-weight);
+    line-height: var(--typo-p1-reg-line-desktop);
   }
 }

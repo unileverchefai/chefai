@@ -107,11 +107,13 @@ function validateRequiredElements(block) {
     }
   }
 
-  // Required: paragraph text
-  const textContent = mediaSectionContent.querySelector('p');
-  if (!textContent || !textContent.textContent.trim()) {
-    console.warn('media-text-cards: Media section is %cmissing%c paragraph text', 'color: red;', '');
-    return false;
+  // Required: paragraph text only when a video is present (e.g. "3 min" label)
+  if (hasVideoLink) {
+    const textContent = mediaSectionContent.querySelector('p');
+    if (!textContent || !textContent.textContent.trim()) {
+      console.warn('media-text-cards: Media section is %cmissing%c paragraph text', 'color: red;', '');
+      return false;
+    }
   }
 
   // Required: 3 USP cards
@@ -212,6 +214,16 @@ export default function decorate(block) {
       const linkParent = videoLink.closest('h1, h2, h3, h4, h5, h6, p, div');
       if (linkParent) {
         linkParent.remove();
+      }
+
+      // clock is added before P on video variants
+      const durationP = mediaSection.querySelector('p');
+      if (durationP) {
+        const clockIcon = createElement('img', {
+          className: 'clock-icon',
+          attributes: { src: '/icons/clock.svg', alt: '', 'aria-hidden': 'true' },
+        });
+        durationP.prepend(clockIcon);
       }
     } else {
       // if no video link, check for image only

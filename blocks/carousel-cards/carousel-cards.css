@@ -12,14 +12,11 @@ main > .section > .carousel-cards-wrapper {
 }
 
 /* Background variations */
-.carousel-cards.var-1,
-.carousel-cards.light-mushroom {
+.carousel-cards.grey {
   background-color: var(--light-mushroom);
 }
 
-.carousel-cards.var-2,
-.carousel-cards.ink-squid,
-.carousel-cards.squid-ink {
+.carousel-cards.dark {
   background-color: var(--squid-ink);
 }
 
@@ -68,8 +65,7 @@ main > .section > .carousel-cards-wrapper {
   cursor: pointer;
 }
 
-.carousel-cards.var-1 .card,
-.carousel-cards.light-mushroom .card {
+.carousel-cards.grey .card {
   background: rgb(255 255 255 / 95%);
   backdrop-filter: var(--backdrop-blur);
 }
